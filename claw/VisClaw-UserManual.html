@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VisClaw for Visio — User Manual</title>
+    <style>
+/* PointClaw user manual — kalmstrom.com brand */
+:root {
+    --brand-navy: #154363;
+    --brand-blue: #095495;
+    --brand-soft-blue: #a2bfd6;
+    --brand-text: #454545;
+    --brand-red: #FF0000;
+    --brand-green: #4F8035;
+    --brand-bg-subtle: #F9F9F9;
+    --brand-border: #CCCCCC;
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Verdana', 'Segoe UI', 'Calibri', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--brand-text);
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+.page-content { padding: 22mm 28mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col              { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.screenshot           { break-inside: avoid; }
+img                   { break-inside: avoid; }
+
+/* Cover page */
+.cover-page {
+    background: var(--brand-navy);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 297mm;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-accent-bar {
+    height: 8px;
+    background: linear-gradient(90deg, var(--brand-blue), var(--brand-soft-blue));
+}
+.cover-logo-wrap {
+    padding: 18mm 28mm 0;
+    display: flex;
+    justify-content: flex-start;
+}
+.cover-logo-wrap img {
+    height: 22mm;
+    width: auto;
+    background: white;
+    padding: 4mm 6mm;
+    border-radius: 3px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12mm 28mm 24mm;
+}
+.cover-eyebrow {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand-soft-blue);
+    margin-bottom: 8mm;
+}
+.cover-title {
+    font-size: 40pt;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+}
+.cover-subtitle {
+    font-size: 15pt;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 6mm;
+    max-width: 140mm;
+}
+.cover-lead {
+    font-size: 11pt;
+    line-height: 1.7;
+    margin-top: 14mm;
+    max-width: 140mm;
+    opacity: 0.88;
+}
+.cover-footer {
+    padding: 8mm 28mm;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.75);
+}
+.cover-footer .brand {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: white;
+}
+
+/* Page header */
+.page-header {
+    padding: 8mm 28mm 4mm;
+    margin-bottom: 8mm;
+    border-bottom: 2px solid var(--brand-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8pt;
+    color: var(--brand-blue);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.page-header .page-left {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+}
+.page-header .page-left::before {
+    content: '';
+    display: inline-block;
+    width: 22mm;
+    height: 5mm;
+    background: url(data:image/png;base64,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) left center/contain no-repeat;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Page footer */
+.page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 5mm 28mm;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #888;
+}
+.page-footer .brand-mark {
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+
+/* Typography */
+h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 6mm;
+    letter-spacing: -0.01em;
+}
+h1 .chapter-num {
+    display: block;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 3mm;
+}
+h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-top: 9mm;
+    margin-bottom: 3mm;
+    border-bottom: 1px solid #dde4ec;
+    padding-bottom: 1.5mm;
+}
+h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--brand-text);
+    margin-top: 5mm;
+    margin-bottom: 2mm;
+}
+h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 1.5mm;
+}
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--brand-blue); text-decoration: none; }
+a:hover { color: var(--brand-red); }
+
+strong { color: var(--brand-navy); }
+
+/* Chapter intro banner */
+.chapter-intro {
+    background: #eef4fa;
+    border-left: 4px solid var(--brand-blue);
+    padding: 4mm 6mm;
+    margin-bottom: 7mm;
+    border-radius: 0 4px 4px 0;
+}
+.chapter-intro p { margin: 0; font-size: 10.5pt; }
+
+/* Callout boxes */
+.note-box {
+    background: #fff8e1;
+    border-left: 3px solid #f9a825;
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.tip-box {
+    background: #eef6ea;
+    border-left: 3px solid var(--brand-green);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.info-box {
+    background: #eef4fa;
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.warn-box {
+    background: #fce4ec;
+    border-left: 3px solid var(--brand-red);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+
+/* Step list */
+.step-list {
+    counter-reset: step-counter;
+    list-style: none;
+    padding-left: 0;
+    margin: 3mm 0;
+}
+.step-list li {
+    counter-increment: step-counter;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3mm;
+    padding-left: 0;
+}
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--brand-blue);
+    color: white;
+    font-size: 8pt;
+    font-weight: 700;
+    min-width: 6mm;
+    height: 6mm;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4mm;
+    margin-top: 0.5mm;
+    flex-shrink: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Two-column cards */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6mm;
+    margin: 4mm 0;
+}
+.three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5mm;
+    margin: 4mm 0;
+}
+.feature-card {
+    background: var(--brand-bg-subtle);
+    border: 1px solid #e3e8ee;
+    border-top: 3px solid var(--brand-blue);
+    border-radius: 4px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 {
+    color: var(--brand-navy);
+    margin-bottom: 2mm;
+    font-size: 10pt;
+}
+.feature-card p {
+    margin: 0;
+    font-size: 9.5pt;
+    line-height: 1.55;
+}
+
+/* Tables */
+table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+}
+table.data th {
+    background: var(--brand-navy);
+    color: white;
+    text-align: left;
+    padding: 2.5mm 3mm;
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: 0.03em;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+table.data td {
+    padding: 2mm 3mm;
+    border-bottom: 1px solid #e3e8ee;
+    vertical-align: top;
+}
+table.data tr:nth-child(even) td {
+    background: var(--brand-bg-subtle);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 0.5mm 2mm;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.badge-blue    { background: #e6f0f9; color: var(--brand-blue); }
+.badge-green   { background: #e8f5e9; color: var(--brand-green); }
+.badge-orange  { background: #fff3e0; color: #e65100; }
+.badge-red     { background: #fce4ec; color: #c62828; }
+
+/* Severity cells used in the audit report tables */
+table.data td.sev-error { color: #c62828; }
+table.data td.sev-warn  { color: #e65100; }
+table.data td.sev-info  { color: var(--brand-blue); }
+
+/* Inline SVG illustrations */
+figure.illo {
+    margin: 5mm auto 6mm auto;
+    text-align: center;
+    max-width: 140mm;
+    break-inside: avoid;
+}
+figure.illo svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+figure.illo figcaption {
+    font-size: 9pt;
+    color: var(--brand-text);
+    font-style: italic;
+    margin-top: 2mm;
+    line-height: 1.4;
+}
+
+/* Code / keyboard */
+code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    background: var(--brand-bg-subtle);
+    padding: 0.3mm 1.5mm;
+    border-radius: 2px;
+    color: var(--brand-navy);
+}
+kbd {
+    font-family: 'Segoe UI', 'Verdana', sans-serif;
+    font-size: 9pt;
+    background: #fff;
+    border: 1px solid var(--brand-border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0.3mm 2mm;
+    color: var(--brand-text);
+}
+
+/* TOC */
+.toc-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 10mm;
+    border-bottom: 2px solid var(--brand-blue);
+    padding-bottom: 3mm;
+}
+.toc-entry {
+    display: flex;
+    align-items: baseline;
+    padding: 1.5mm 0;
+}
+.toc-entry.toc-h1 {
+    font-weight: 700;
+    margin-top: 3mm;
+    color: var(--brand-navy);
+    font-size: 11pt;
+}
+.toc-entry.toc-h2 {
+    padding-left: 6mm;
+    font-size: 10pt;
+    color: var(--brand-text);
+    font-weight: 400;
+}
+.toc-num {
+    min-width: 14mm;
+    flex-shrink: 0;
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+.toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--brand-border);
+    margin: 0 2mm 1.5mm;
+}
+.toc-page {
+    color: var(--brand-blue);
+    font-size: 9.5pt;
+    font-weight: 700;
+}
+.toc-entry a {
+    color: inherit;
+}
+
+/* Quote / testimonial */
+.quote {
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 6mm;
+    margin: 5mm 0;
+    font-style: italic;
+    color: var(--brand-text);
+    background: var(--brand-bg-subtle);
+}
+
+    </style>
+</head>
+<body>
+
+<!-- Cover page -->
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-logo-wrap">
+        <img src="data:image/png;base64,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" alt="kalmstrom.com Business Solutions">
+    </div>
+    <div class="cover-body">
+        <div class="cover-eyebrow">kalmstrom.com Business Solutions</div>
+        <div class="cover-title">VisClaw for Visio</div>
+        <div class="cover-subtitle">Draw, connect, and lay out diagrams with an AI assistant that lives inside Visio.</div>
+        <div class="cover-lead">
+            VisClaw is a sidebar companion for Microsoft Visio. Describe the diagram you want &mdash; drop a master, connect these two shapes, lay this page out as a flow, recolour anything tagged "critical" &mdash; and it performs the work directly on your open drawing. It reaches into the Visio object model from pages and shapes down to individual ShapeSheet cells, so answers are precise and undoable.
+        </div>
+    </div>
+    <div class="cover-footer">
+        <div><span class="brand">kalmstrom.com</span> &nbsp;&middot;&nbsp; Business Solutions</div>
+        <div>User Manual &middot; Edition 1</div>
+    </div>
+</div>
+
+
+<!-- Placeholder: auto-generated by build-chapters.py with --auto-toc -->
+<div class="page">
+    <div class="page-header">
+        <div>VisClaw for Visio</div>
+        <div>Contents</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <div class="toc-entry toc-h1"><span class="toc-num">1</span>Meet VisClaw<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>What it is<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>What makes it different<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>What VisClaw can do<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>Who it is for<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.5</span>What you need<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Installation &amp; Setup<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>Install the add-in<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>Get your Anthropic API key<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>Enter the key<div class="toc-dots"></div><span class="toc-page">6</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>First run<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>Open a blank drawing<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>Ask for a simple diagram<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>Ask for something that uses the connection graph<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.4</span>Ask for a layout change<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.5</span>Watch out for&hellip;<div class="toc-dots"></div><span class="toc-page">8</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>Driving Visio<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>Pages<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Shapes<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Formatting<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Shape text<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.5</span>Masters and stencils<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.6</span>ShapeSheet access<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.7</span>Shape data<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.8</span>Finding shapes<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.9</span>Connectors and connection graphs<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.10</span>Hyperlinks<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.11</span>Export and save<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.12</span>Undo scopes<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.13</span>Example recipes<div class="toc-dots"></div><span class="toc-page">12</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Settings<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>API key<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Model<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Logging<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>Panel position<div class="toc-dots"></div><span class="toc-page">13</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">6</span>Tips &amp; troubleshooting<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.1</span>Getting the most out of VisClaw<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.2</span>Common pitfalls<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Cost and token tips<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Bug-report helpers<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Where to get help<div class="toc-dots"></div><span class="toc-page">15</span></div>
+        </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; Contents</div>
+    </div>
+</div>
+
+
+<!-- Chapter 1 — Introduction -->
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch1"><span class="chapter-num">Chapter 1</span>Meet VisClaw</h1>
+
+        <div class="chapter-intro">
+            <p>VisClaw is a Visio add-in from kalmstrom.com Business Solutions. It opens a chat panel on the right side of your drawing and lets you describe what you want done to the diagram &mdash; in plain English &mdash; and then does it, directly on the file you already have open.</p>
+        </div>
+<h2>1.1 What it is</h2>
+        <p>VisClaw is a Microsoft Visio task-pane add-in built with VSTO. It runs <strong>inside</strong> the Visio process and drives your open drawing through the native Visio object model. Every change it makes is a real Visio edit that you can see happen, undo with <kbd>Ctrl</kbd>+<kbd>Z</kbd>, and save with the file in the normal way.</p>
+
+        <p>Under the hood it talks to Anthropic's Claude language model. You supply your own API key; the add-in does not run through any kalmstrom-hosted service.</p>
+<h2>1.2 What makes it different</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Lives inside Visio</h4>
+                <p>No separate app, no export, no copy and paste. VisClaw drives the drawing Visio already has open.</p>
+            </div>
+<div class="feature-card">
+                <h4>Deep into the object model</h4>
+                <p>From pages and shapes down to individual ShapeSheet cells. When a high-level tool cannot express what you need, VisClaw reaches into the ShapeSheet directly.</p>
+            </div>
+<div class="feature-card">
+                <h4>Understands connections</h4>
+                <p>Connectors are first-class. VisClaw can walk the connection graph from any shape, list all connections on a page, and find a shape's neighbours.</p>
+            </div>
+<div class="feature-card">
+                <h4>Real Visio edits</h4>
+                <p>Every action is a normal Visio edit &mdash; undoable with <kbd>Ctrl</kbd>+<kbd>Z</kbd>, saved with the file in the normal way. Multi-step tool calls can be wrapped in a single undo scope.</p>
+            </div>
+        </div>
+<h2>1.3 What VisClaw can do</h2>
+        <p>VisClaw ships with more than fifty purpose-built tools. The capability areas are:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>Area</th><th>Coverage</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Pages</td><td>Add, delete, rename, list, set size, set orientation, fit to shapes, lay out.</td></tr>
+                <tr><td>Shapes</td><td>Add, delete, duplicate, copy between pages, group, ungroup, rotate, z-order, align, distribute.</td></tr>
+                <tr><td>Formatting</td><td>Fill colour, line colour, line weight, arrows, line pattern.</td></tr>
+                <tr><td>Shape text</td><td>Set text, font, size, colour, style, alignment.</td></tr>
+                <tr><td>ShapeSheet</td><td>Get and set individual cells when the typed tools don't go far enough.</td></tr>
+                <tr><td>Shape data</td><td>List and set the name/value property pairs Visio calls "shape data".</td></tr>
+                <tr><td>Masters and stencils</td><td>List masters, open a stencil, drop masters by name onto a page.</td></tr>
+                <tr><td>Finding</td><td>Search by master, by text, by detail; list all shapes on a page.</td></tr>
+                <tr><td>Connectors</td><td>Add connectors, list connections on a page, walk the connection graph, fetch shape neighbours, get connector endpoints.</td></tr>
+                <tr><td>Hyperlinks</td><td>Attach hyperlinks to shapes.</td></tr>
+                <tr><td>Export and save</td><td>Page PNG, full-document PDF, save document.</td></tr>
+                <tr><td>Undo scopes</td><td>Wrap a multi-step edit in a single undo step.</td></tr>
+            </tbody>
+        </table>
+<h2>1.4 Who it is for</h2>
+        <ul>
+            <li><strong>Process analysts</strong> drawing flowcharts, swim lanes, BPMN diagrams.</li>
+            <li><strong>IT architects</strong> producing network, data-flow and architecture diagrams.</li>
+            <li><strong>Facilities and floor-plan designers</strong> laying out rooms, furniture and equipment.</li>
+            <li><strong>Anyone</strong> who would rather describe the diagram they want than click through every shape and connector by hand.</li>
+        </ul>
+<h2>1.5 What you need</h2>
+<table class="data">
+            <thead><tr><th>Requirement</th><th>Details</th></tr></thead>
+            <tbody>
+                <tr><td>Microsoft Visio</td><td>Desktop version on Windows &mdash; Visio Professional or Standard, 2019 or newer.</td></tr>
+                <tr><td>Windows</td><td>Windows 10 or Windows 11, 64-bit recommended.</td></tr>
+                <tr><td>Anthropic API key</td><td>Free account at console.anthropic.com &mdash; pay-as-you-go.</td></tr>
+                <tr><td>Internet connection</td><td>Required for every AI interaction. No local or offline mode.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 2 &mdash; Installation &amp; Setup</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch2"><span class="chapter-num">Chapter 2</span>Installation &amp; Setup</h1>
+
+        <div class="chapter-intro">
+            <p>Installing VisClaw takes about five minutes: install the add-in, get an Anthropic API key, and paste it into the settings window.</p>
+        </div>
+<h2>2.1 Install the add-in</h2>
+        <ol class="step-list">
+    <li>Close every open Visio window.</li>
+    <li>Run the VisClaw installer (<code>VisClaw Setup.exe</code> or the ClickOnce link supplied by kalmstrom.com).</li>
+    <li>Follow the wizard &mdash; accept the prompts to install the Visual Studio Tools for Office (VSTO) runtime if it asks.</li>
+    <li>Open Visio. On the <strong>Home</strong> tab you should see a new <strong>VisClaw</strong> button.</li>
+</ol>
+
+
+        <figure class="illo">
+<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="illo-trust-title illo-trust-desc">
+        <title id="illo-trust-title">Installer trust prompt</title>
+        <desc id="illo-trust-desc">A stylised Windows SmartScreen dialog asking whether to install VisClaw from kalmstrom.com. A green arrow points to the Install button; a red cross marks the Don't install button.</desc>
+        <rect x="60" y="24" width="340" height="180" rx="8" fill="#ffffff" stroke="#1f3a5f" stroke-width="1.6"/>
+        <path d="M 60 32 Q 60 24 68 24 L 392 24 Q 400 24 400 32 L 400 52 L 60 52 Z" fill="#1f3a5f"/>
+        <text x="76" y="44" font-size="11" fill="#faf6ee" font-family="Segoe UI, Inter, sans-serif" font-weight="700">Install Application &#8212; Security Warning</text>
+        <g font-family="Segoe UI, Inter, sans-serif" fill="#1f3a5f">
+            <circle cx="90" cy="84" r="14" fill="#fff3e0" stroke="#e89c3d" stroke-width="1.5"/>
+            <text x="90" y="90" font-size="16" fill="#e89c3d" text-anchor="middle" font-weight="700">!</text>
+            <text x="114" y="82" font-size="12" font-weight="700">Install VisClaw for Visio?</text>
+            <text x="114" y="100" font-size="10" fill="#8a8076">Publisher: kalmstrom.com Business Solutions</text>
+            <text x="114" y="114" font-size="10" fill="#8a8076">Location: kalmstrom.com</text>
+        </g>
+        <rect x="74" y="134" width="312" height="40" rx="4" fill="#fdf4e1" stroke="#e8d9bc" stroke-width="0.8"/>
+        <text x="86" y="150" font-size="9.5" fill="#8a8076" font-family="Segoe UI, Inter, sans-serif" font-style="italic">Add-ins can harm your computer. Only install if you trust</text>
+        <text x="86" y="162" font-size="9.5" fill="#8a8076" font-family="Segoe UI, Inter, sans-serif" font-style="italic">the publisher. VisClaw is signed by kalmstrom.com.</text>
+        <rect x="196" y="182" width="86" height="14" rx="3" fill="#6fa86b" stroke="#1f3a5f" stroke-width="1.2"/>
+        <text x="239" y="193" font-size="10" fill="#faf6ee" font-family="Segoe UI, Inter, sans-serif" font-weight="700" text-anchor="middle">Install</text>
+        <rect x="296" y="182" width="90" height="14" rx="3" fill="#ffffff" stroke="#b8b0a2" stroke-width="1"/>
+        <text x="341" y="193" font-size="10" fill="#8a8076" font-family="Segoe UI, Inter, sans-serif" text-anchor="middle">Don&#39;t install</text>
+        <g stroke="#6fa86b" stroke-width="2.2" fill="none">
+            <path d="M 240 216 L 240 200" stroke-linecap="round"/>
+            <path d="M 234 206 L 240 200 L 246 206" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <circle cx="398" cy="214" r="10" fill="#e56b6f"/>
+        <path d="M 393 209 L 403 219 M 403 209 L 393 219" stroke="#faf6ee" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <figcaption>The one-time install prompt. Publisher is <em>kalmstrom.com Business Solutions</em>; click <strong>Install</strong>.</figcaption>
+</figure>
+<div class="note-box">
+    <strong>The button is missing?</strong> Go to <em>File &rarr; Options &rarr; Add-ins</em>. At the bottom, change <em>Manage</em> to <em>COM Add-ins</em>, click <em>Go&hellip;</em> and make sure <em>VisClaw</em> is ticked. If it is in the <em>Disabled Items</em> list, re-enable it there.
+</div>
+<h2>2.2 Get your Anthropic API key</h2>
+        <ol class="step-list">
+    <li>Go to <strong>console.anthropic.com</strong> and sign in or create an account.</li>
+    <li>Open the <strong>API Keys</strong> page.</li>
+    <li>Click <strong>Create key</strong>, give it a name such as <em>VisClaw</em>, and copy the key &mdash; it starts with <code>sk-ant-</code>.</li>
+    <li>Add billing information. Anthropic charges pay-as-you-go; there is no monthly subscription required.</li>
+</ol>
+<div class="tip-box">
+            <strong>Cost in practice.</strong> Most VisClaw actions are inexpensive &mdash; adding a shape, connecting two boxes, formatting a page uses very few tokens. The exception is "walk the connection graph" on a large diagram, which can return hundreds of nodes.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 2 &mdash; Installation &amp; Setup</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>2.3 Enter the key</h2>
+        <ol class="step-list">
+    <li>In Visio, click <strong>VisClaw</strong> on the Home ribbon to open the chat panel.</li>
+    <li>Click the gear icon (<strong>&#x2699;</strong>) in the panel header to open <em>Settings</em>.</li>
+    <li>Paste your Anthropic key into the API key field.</li>
+    <li>Click <strong>Save</strong>.</li>
+</ol>
+<div class="info-box">
+    <strong>Key storage.</strong> The key is encrypted with Windows DPAPI and stored under <code>%APPDATA%\VisClaw\</code>. Only your Windows user profile can read it.
+</div>
+
+
+        <figure class="illo">
+<svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="illo-keyflow-title illo-keyflow-desc">
+        <title id="illo-keyflow-title">Where your API key goes</title>
+        <desc id="illo-keyflow-desc">A four-step flow: your API key is pasted in Settings, encrypted with Windows DPAPI on disk, and attached to every request going to Anthropic. The key never goes through kalmstrom.com.</desc>
+        <g font-family="Segoe UI, Inter, sans-serif">
+            <rect x="14" y="64" width="110" height="74" rx="8" fill="#fdf4e1" stroke="#1f3a5f" stroke-width="1.3"/>
+            <rect x="28" y="78" width="82" height="14" rx="3" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.8"/>
+            <text x="32" y="88" font-size="9" fill="#b8b0a2" font-family="Consolas, monospace">sk-ant-&hellip;</text>
+            <rect x="28" y="100" width="56" height="14" rx="3" fill="#e89c3d"/>
+            <text x="56" y="110" font-size="9" fill="#faf6ee" text-anchor="middle" font-weight="700">Save</text>
+            <text x="69" y="130" font-size="10" fill="#1f3a5f" text-anchor="middle" font-weight="700">Settings</text>
+            <rect x="160" y="64" width="110" height="74" rx="8" fill="#f1f8e9" stroke="#6fa86b" stroke-width="1.3"/>
+            <g transform="translate(215 96)">
+                <path d="M -10 0 Q -10 -14 0 -14 Q 10 -14 10 0 L 10 4 L 14 4 Q 16 4 16 6 L 16 16 Q 16 18 14 18 L -14 18 Q -16 18 -16 16 L -16 6 Q -16 4 -14 4 L -10 4 Z" fill="#6fa86b" stroke="#1f3a5f" stroke-width="1.2"/>
+                <circle cx="0" cy="9" r="2" fill="#faf6ee"/>
+                <rect x="-1" y="10" width="2" height="6" fill="#faf6ee"/>
+            </g>
+            <text x="215" y="130" font-size="10" fill="#1f3a5f" text-anchor="middle" font-weight="700">DPAPI</text>
+            <text x="215" y="144" font-size="8" fill="#8a8076" text-anchor="middle" font-style="italic">encrypted per-user</text>
+            <rect x="306" y="64" width="110" height="74" rx="8" fill="#fff3e0" stroke="#e89c3d" stroke-width="1.3"/>
+            <rect x="322" y="82" width="78" height="14" rx="3" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.7"/>
+            <rect x="328" y="88" width="8" height="2" rx="0.5" fill="#b8b0a2"/>
+            <rect x="340" y="88" width="32" height="2" rx="0.5" fill="#b8b0a2"/>
+            <rect x="322" y="100" width="78" height="14" rx="3" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.7"/>
+            <rect x="328" y="106" width="20" height="2" rx="0.5" fill="#1f3a5f"/>
+            <rect x="352" y="106" width="40" height="2" rx="0.5" fill="#b8b0a2"/>
+            <text x="361" y="130" font-size="10" fill="#1f3a5f" text-anchor="middle" font-weight="700">HTTPS request</text>
+            <rect x="452" y="64" width="94" height="74" rx="8" fill="#fdf4e1" stroke="#2b78c2" stroke-width="1.3"/>
+            <path d="M 480 102 Q 468 102 468 92 Q 468 82 478 80 Q 480 70 492 70 Q 504 70 508 80 Q 520 80 522 90 Q 522 102 510 102 Z" fill="#2b78c2"/>
+            <text x="499" y="130" font-size="9.5" fill="#1f3a5f" text-anchor="middle" font-weight="700">Anthropic</text>
+        </g>
+        <g stroke="#1f3a5f" stroke-width="1.5" fill="none">
+            <path d="M 124 100 L 158 100"/>
+            <path d="M 155 96 L 160 100 L 155 104" fill="#1f3a5f"/>
+            <path d="M 270 100 L 304 100"/>
+            <path d="M 301 96 L 306 100 L 301 104" fill="#1f3a5f"/>
+            <path d="M 416 100 L 450 100"/>
+            <path d="M 447 96 L 452 100 L 447 104" fill="#1f3a5f"/>
+        </g>
+        <g font-family="Segoe UI, Inter, sans-serif">
+            <text x="280" y="34" font-size="11" fill="#1f3a5f" text-anchor="middle" font-weight="700">Your key never leaves your machine&#8230; except to the API it belongs to.</text>
+            <rect x="196" y="166" width="168" height="22" rx="4" fill="#fce4ec" stroke="#e56b6f" stroke-width="1"/>
+            <text x="280" y="181" font-size="10" fill="#e56b6f" text-anchor="middle" font-weight="700">Never sent to kalmstrom.com</text>
+        </g>
+    </svg>
+    <figcaption>The add-in is a direct client: your key goes from Settings to encrypted local storage to Anthropic&#8217;s API. No kalmstrom.com middleman.</figcaption>
+</figure>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 3 &mdash; First run</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch3"><span class="chapter-num">Chapter 3</span>First run</h1>
+
+        <div class="chapter-intro">
+            <p>The fastest way to understand what VisClaw feels like is to open an empty drawing and ask it to do three small things in a row.</p>
+        </div>
+<h2>3.1 Open a blank drawing</h2>
+        <p>In Visio, create a new blank drawing. It doesn't matter which template &mdash; a simple blank canvas is fine. Click the <strong>VisClaw</strong> button on the Home ribbon so the chat panel opens on the right.</p>
+
+        <figure class="illo">
+<svg viewBox="0 0 460 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="illo-pane-title illo-pane-desc">
+        <title id="illo-pane-title">Anatomy of the VisClaw chat pane</title>
+        <desc id="illo-pane-desc">A labelled diagram of the chat pane showing the header, conversation area, status bar, and input box with send button.</desc>
+        <rect x="12" y="12" width="220" height="376" rx="8" fill="#fdf4e1" stroke="#1f3a5f" stroke-width="1.4"/>
+        <path d="M 12 20 Q 12 12 20 12 L 224 12 Q 232 12 232 20 L 232 50 L 12 50 Z" fill="#1f3a5f"/>
+        <text x="26" y="34" font-size="11" fill="#faf6ee" font-family="Segoe UI, Inter, sans-serif" font-weight="700">VisClaw</text>
+        <circle cx="220" cy="31" r="4.5" fill="#6fa86b"/>
+        <g transform="translate(198 22)" fill="none" stroke="#faf6ee" stroke-width="1.4">
+            <circle cx="0" cy="9" r="4"/>
+            <path d="M 0 2.5 L 0 0 M 0 18 L 0 15.5 M -6.5 9 L -9 9 M 9 9 L 6.5 9 M -4.6 4.4 L -6.4 2.6 M 6.4 15.4 L 4.6 13.6 M -4.6 13.6 L -6.4 15.4 M 6.4 2.6 L 4.6 4.4"/>
+        </g>
+        <g font-family="Segoe UI, Inter, sans-serif">
+            <rect x="22" y="62" width="150" height="38" rx="10" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.7"/>
+            <rect x="30" y="72" width="134" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="30" y="80" width="118" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="30" y="88" width="76" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="72" y="108" width="150" height="30" rx="10" fill="#2b78c2"/>
+            <rect x="80" y="118" width="134" height="3" rx="1" fill="#faf6ee"/>
+            <rect x="80" y="126" width="96" height="3" rx="1" fill="#faf6ee"/>
+            <rect x="22" y="146" width="170" height="54" rx="10" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.7"/>
+            <rect x="30" y="156" width="154" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="30" y="164" width="140" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="30" y="172" width="148" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="30" y="180" width="110" height="3" rx="1" fill="#b8b0a2"/>
+            <rect x="72" y="210" width="150" height="30" rx="10" fill="#2b78c2"/>
+            <rect x="80" y="220" width="120" height="3" rx="1" fill="#faf6ee"/>
+            <rect x="80" y="228" width="90" height="3" rx="1" fill="#faf6ee"/>
+        </g>
+        <rect x="22" y="256" width="200" height="26" rx="6" fill="#fff3e0" stroke="#e89c3d" stroke-width="0.8"/>
+        <rect x="28" y="266" width="122" height="6" rx="3" fill="#e89c3d"/>
+        <rect x="28" y="266" width="74" height="6" rx="3" fill="#6fa86b"/>
+        <text x="192" y="273" font-size="8" fill="#e89c3d" font-family="Segoe UI, Inter, sans-serif" font-weight="700" text-anchor="end">3/5</text>
+        <rect x="22" y="300" width="200" height="70" rx="10" fill="#ffffff" stroke="#b8b0a2" stroke-width="0.9"/>
+        <text x="34" y="322" font-size="9.5" fill="#b8b0a2" font-family="Segoe UI, Inter, sans-serif" font-style="italic">Ask VisClaw to do something...</text>
+        <rect x="34" y="334" width="120" height="3" rx="1" fill="#b8b0a2"/>
+        <circle cx="202" cy="355" r="13" fill="#e89c3d"/>
+        <path d="M 196 348 L 210 355 L 196 362 Z" fill="#faf6ee"/>
+        <g fill="none" stroke="#1f3a5f" stroke-width="1.1">
+            <path d="M 232 30 Q 272 30 272 90" stroke-dasharray="3 3"/>
+            <circle cx="272" cy="30" r="2.2" fill="#1f3a5f"/>
+            <path d="M 232 155 Q 292 155 292 180" stroke-dasharray="3 3"/>
+            <circle cx="292" cy="155" r="2.2" fill="#1f3a5f"/>
+            <path d="M 232 269 Q 312 269 312 270" stroke-dasharray="3 3"/>
+            <circle cx="312" cy="269" r="2.2" fill="#1f3a5f"/>
+            <path d="M 232 335 Q 282 335 282 350" stroke-dasharray="3 3"/>
+            <circle cx="282" cy="335" r="2.2" fill="#1f3a5f"/>
+        </g>
+        <g font-family="Segoe UI, Inter, sans-serif" font-size="10" fill="#1f3a5f">
+            <rect x="272" y="82" width="172" height="20" rx="4" fill="#fdf4e1" stroke="#e8d9bc" stroke-width="0.8"/>
+            <text x="280" y="96" font-weight="700">Header &amp; gear (Settings)</text>
+            <rect x="292" y="172" width="152" height="20" rx="4" fill="#fdf4e1" stroke="#e8d9bc" stroke-width="0.8"/>
+            <text x="300" y="186" font-weight="700">Conversation</text>
+            <rect x="312" y="262" width="132" height="20" rx="4" fill="#fdf4e1" stroke="#e8d9bc" stroke-width="0.8"/>
+            <text x="320" y="276" font-weight="700">Progress &amp; status</text>
+            <rect x="282" y="342" width="162" height="20" rx="4" fill="#fdf4e1" stroke="#e8d9bc" stroke-width="0.8"/>
+            <text x="290" y="356" font-weight="700">Input &amp; Send (Ctrl+Enter)</text>
+        </g>
+    </svg>
+    <figcaption>The chat pane&#8217;s four regions: header with status and Settings, the conversation, the progress bar, and the input box.</figcaption>
+</figure>
+<h2>3.2 Ask for a simple diagram</h2>
+        <div class="quote">
+            Drop three rectangles on this page &mdash; one labelled "Input", one "Process" and one "Output" &mdash; and connect them in order with straight connectors.
+        </div>
+        <p>VisClaw calls <em>add_shape</em> three times (with the text set in each call), then <em>add_connector</em> twice to link them. You see each shape and connector appear live. If you don't like the result, <kbd>Ctrl</kbd>+<kbd>Z</kbd> backs the whole thing out.</p>
+<h2>3.3 Ask for something that uses the connection graph</h2>
+        <div class="quote">
+            List all shapes connected to the Process shape. Then set the fill colour of every one of them to pale blue.
+        </div>
+        <p>This is where VisClaw earns its keep. It calls <em>get_shape_neighbors</em> to find the connected shapes, then <em>set_shape_fill_color</em> on each one. A purely text-based assistant could not do this without VisClaw's graph-aware tools.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 3 &mdash; First run</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.4 Ask for a layout change</h2>
+        <div class="quote">
+            Lay out the page as a left-to-right flow chart, then fit the page to the shapes.
+        </div>
+        <p>VisClaw calls <em>layout_page</em> with the flow-chart style and <em>fit_page_to_shapes</em> so the page border closes up around the content.</p>
+<div class="info-box">
+            <strong>What just happened.</strong> You asked for three things in three different Visio subsystems &mdash; shape creation, graph-based formatting, automatic layout &mdash; and VisClaw routed each to the right purpose-built tool. That is the model: you describe the outcome; VisClaw picks the tools.
+        </div>
+<h2>3.5 Watch out for&hellip;</h2>
+        <ul>
+            <li><strong>Units.</strong> Visio pages can be in inches, millimetres, or pixels depending on the template. When VisClaw sets positions or sizes it uses the page's current units &mdash; if something lands in the wrong place, check the units on the <em>Design</em> tab.</li>
+            <li><strong>Stencils must be open.</strong> To drop a master by name, its stencil needs to be open. Use <em>open_stencil</em> or open the stencil in Visio first.</li>
+            <li><strong>Hidden shapes and layers.</strong> VisClaw sees every shape on a page. If you want certain shapes ignored, put them on a layer and ask VisClaw to filter.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 4 &mdash; Driving Visio</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="ch4"><span class="chapter-num">Chapter 4</span>Driving Visio</h1>
+
+        <div class="chapter-intro">
+            <p>This chapter walks through what VisClaw can actually do, organised by task. Each section gives a short description of the capability, a few example prompts you can paste into the chat panel, and notes on where Visio's own idioms matter.</p>
+        </div>
+
+        <h2>4.1 Pages</h2>
+        <p>Pages are the top-level container in any Visio drawing. VisClaw treats them as first-class objects you add, rename, resize, and lay out.</p>
+        <ul>
+            <li><strong>Add, delete, rename, list.</strong> "Add a page called 'Phase 2'" / "Rename the current page to 'Current state'" / "List every page in this drawing."</li>
+            <li><strong>Size and orientation.</strong> "Set this page to A3 portrait" / "Make the page US Letter, landscape."</li>
+            <li><strong>Fit to shapes.</strong> "Fit the page to the shapes" &mdash; tightens the page border around the actual content so there's no empty border.</li>
+            <li><strong>Lay out.</strong> "Lay out this page as a top-down tree" / "left-to-right flow" &mdash; VisClaw calls <em>layout_page</em> with the matching style.</li>
+        </ul>
+
+        <h2>4.2 Shapes</h2>
+        <p>Every Visio shape is an instance of a master &mdash; either a built-in master (rectangle, ellipse, connector) or one from an open stencil (network switch, BPMN activity, room divider). VisClaw works in both modes.</p>
+        <ul>
+            <li><strong>Add a shape.</strong> "Add a rectangle at (2, 2) with text 'Input'" &mdash; the default master is a rectangle; for anything else, see "Masters and stencils" below.</li>
+            <li><strong>Delete, duplicate, copy to another page.</strong> "Delete the shape named 'Draft'" / "Duplicate BoxA" / "Copy the process cluster to page 2."</li>
+            <li><strong>Group / ungroup.</strong> "Group these three shapes together" / "Ungroup the header group."</li>
+            <li><strong>Position, size, rotate, z-order.</strong> "Move BoxA to (3, 1)" / "Make every 'decision' shape 40&times;40 mm" / "Rotate the arrow 90&deg; clockwise" / "Bring the callout to the front."</li>
+            <li><strong>Align and distribute.</strong> "Align these four shapes to the left" / "Distribute the boxes evenly horizontally."</li>
+        </ul>
+
+        <h2>4.3 Formatting</h2>
+        <ul>
+            <li><strong>Fill colour.</strong> "Make every 'bottleneck' shape red."</li>
+            <li><strong>Line colour, weight, pattern.</strong> "Set the connector line weight to 2pt" / "Make the border of every decision shape dashed."</li>
+            <li><strong>Arrows.</strong> "Put open-arrow heads on both ends of every connector."</li>
+        </ul>
+
+        <h2>4.4 Shape text</h2>
+        <p>Every Visio shape has a text block. VisClaw can set the text and format it independently.</p>
+        <ul>
+            <li><strong>Set text.</strong> "Set the text on BoxA to 'Customer places order'."</li>
+            <li><strong>Font, size, colour.</strong> "Use Calibri 10pt white text on every dark-filled shape."</li>
+            <li><strong>Style and alignment.</strong> "Bold the text on every title shape, centre-align it." Styles include bold, italic, underline.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<!-- Chapter 4 continues -->
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 4 &mdash; Driving Visio</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>4.5 Masters and stencils</h2>
+        <p>A <em>stencil</em> is a collection of <em>masters</em> you can drop onto a page. Visio ships dozens of built-in stencils (Flowchart, Network, BPMN, Basic, &hellip;); you can also author your own.</p>
+        <ul>
+            <li><strong>List masters.</strong> "What masters are available right now?" &mdash; VisClaw reports every master from every open stencil.</li>
+            <li><strong>Open a stencil.</strong> "Open the BPMN Basic Shapes stencil." After this, its masters become available.</li>
+            <li><strong>Drop a master by name.</strong> "Drop a 'Decision' from the Flowchart Shapes stencil at (4, 3)." Names are matched case-insensitively.</li>
+        </ul>
+<div class="tip-box">
+            <strong>If you don't know the master name.</strong> Ask "list the masters in the Network stencil" first. VisClaw returns the full list; you then reference them by exact name.
+        </div>
+<h2>4.6 ShapeSheet access</h2>
+        <p>Every Visio shape is backed by a <em>ShapeSheet</em> of raw cells &mdash; positions, formulas, custom properties, geometry. Most of the time you don't need to touch the ShapeSheet; the typed tools cover what people actually do. But when you need something unusual, VisClaw exposes direct cell access:</p>
+        <ul>
+            <li><strong>Read a cell.</strong> "What is the value of Geometry1.X1 on BoxA?" &mdash; VisClaw calls <em>get_shape_cell</em>.</li>
+            <li><strong>Write a cell.</strong> "Set Prop.Status to 'Completed' on every shape in the first row" &mdash; <em>set_shape_cell</em>.</li>
+        </ul>
+<div class="info-box">
+            <strong>Reach for this when the typed tools run out.</strong> Examples: setting a user-defined cell, writing a formula that references another shape, forcing a non-standard geometry vertex.
+        </div>
+<h2>4.7 Shape data</h2>
+        <p>"Shape Data" is the Visio term for the named-property bag on each shape (Prop.Status, Prop.Cost, Prop.Owner, &hellip;). VisClaw lists and sets them:</p>
+        <ul>
+            <li><strong>List.</strong> "What shape data does BoxA have?"</li>
+            <li><strong>Set.</strong> "Set Prop.Owner to 'Finance' on every shape in the Finance lane."</li>
+        </ul>
+<h2>4.8 Finding shapes</h2>
+        <ul>
+            <li><strong>By master.</strong> "Find every shape that uses the 'Decision' master."</li>
+            <li><strong>By text.</strong> "Find every shape containing the word 'bottleneck'."</li>
+            <li><strong>List on a page.</strong> "List all shapes on this page with their positions."</li>
+            <li><strong>Detail.</strong> "Tell me everything you can about BoxA" &mdash; name, master, position, size, rotation, text, shape data, connected shapes.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 4 &mdash; Driving Visio</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>4.9 Connectors and connection graphs</h2>
+        <p>Connectors are a Visio specialty. They carry typed endpoint references back to the shapes they connect, so moving either end moves the connector with it. VisClaw treats the connection graph as a first-class object you can query.</p>
+        <ul>
+            <li><strong>Add a connector.</strong> "Connect BoxA to BoxB with an elbow connector."</li>
+            <li><strong>Enumerate endpoints.</strong> "Which shapes does connector 'C1' link?" &mdash; VisClaw calls <em>get_connector_endpoints</em>.</li>
+            <li><strong>List connections on a page.</strong> "Give me every connection on this page." Returns the list of (connector, begin shape, end shape) triples.</li>
+            <li><strong>Walk the graph.</strong> "Walk the connection graph starting from BoxA" &mdash; <em>walk_connection_graph</em> does a breadth-first walk.</li>
+            <li><strong>Get neighbours.</strong> "What shapes are directly connected to BoxA?" &mdash; <em>get_shape_neighbors</em>.</li>
+        </ul>
+<div class="tip-box">
+            <strong>Use case that needs this.</strong> "Highlight every shape downstream of the 'Approval' step in red." VisClaw walks the graph from Approval, then recolours everything it reaches.
+        </div>
+<h2>4.10 Hyperlinks</h2>
+        <p>"Add a hyperlink on BoxA pointing to the design document." Hyperlinks are attached per shape; clicking the shape in a saved drawing navigates to the target.</p>
+<h2>4.11 Export and save</h2>
+        <ul>
+            <li><strong>Export a page as PNG.</strong> "Export the current page to C:\Exports\flow.png."</li>
+            <li><strong>Export the whole document as PDF.</strong> "Save this as PDF at C:\Reports\architecture.pdf."</li>
+            <li><strong>Save the document.</strong> "Save."</li>
+        </ul>
+<h2>4.12 Undo scopes</h2>
+        <p>When VisClaw makes a multi-step edit &mdash; say, dropping fifteen shapes and wiring them up &mdash; it wraps the whole sequence in a single undo scope so <kbd>Ctrl</kbd>+<kbd>Z</kbd> backs the whole thing out, not the last click. You usually don't have to think about this; VisClaw does it for non-trivial actions automatically.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 4 &mdash; Example recipes</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h2>4.13 Example recipes</h2>
+
+        <h3>Build a flow chart from a description</h3>
+        <div class="quote">
+            Make a flow chart on a new page called "Order flow" with these steps: Customer places order &rarr; Check stock &rarr; (branch: in stock &rarr; Ship; out of stock &rarr; Backorder) &rarr; Send confirmation. Use the Flowchart Shapes stencil &mdash; terminator for start and end, decision diamond for "Check stock", process rectangles for the others. Connect them with elbow connectors.
+        </div>
+
+        <h3>Audit a diagram someone else built</h3>
+        <div class="quote">
+            On this page, list every shape that has no connections to anything else. Then for every 'Decision' shape with more than two outgoing connectors, tell me which one.
+        </div>
+
+        <h3>Recolour a subgraph</h3>
+        <div class="quote">
+            Walk the connection graph from BoxA. Colour every shape you can reach with accent blue; colour the rest of the page with pale grey.
+        </div>
+
+        <h3>Batch-update shape data</h3>
+        <div class="quote">
+            For every shape on this page whose Prop.Owner is "Finance", set Prop.Status to "Under review" and change its line colour to orange.
+        </div>
+
+        <h3>Prepare for print</h3>
+        <div class="quote">
+            Set this page to A3 landscape, fit the page to the shapes, then export to PDF at C:\Reports\process-map.pdf.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+
+<!-- Chapter 5 — Settings -->
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 5 &mdash; Settings</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="ch5"><span class="chapter-num">Chapter 5</span>Settings</h1>
+
+        <div class="chapter-intro">
+            <p>VisClaw's settings window is reached from the gear icon in the chat panel header. Fields are deliberately minimal.</p>
+        </div>
+
+        <h2>5.1 API key</h2>
+        <p>Your Anthropic API key, encrypted with Windows DPAPI and stored under <code>%APPDATA%\VisClaw\</code>. Click <em>Show</em> to reveal it temporarily.</p>
+
+        <div class="warn-box">
+    <strong>Rotate your key if you share a machine.</strong> DPAPI protects keys from other Windows accounts on the same machine, but if you allow another person to use your Windows session, they can use your API key. Generate a new key in the Anthropic console and paste it here.
+</div>
+
+
+        <h2>5.2 Model</h2>
+        <p>Chooses which Claude model answers your messages.</p>
+
+        <table class="data">
+    <thead><tr><th>Model</th><th>When to use</th></tr></thead>
+    <tbody>
+        <tr><td>Haiku</td><td>Fast and cheap. Good for routine tasks with small inputs and short replies.</td></tr>
+        <tr><td>Sonnet</td><td>Balanced default. Handles summarisation, multi-step reasoning and longer drafts.</td></tr>
+        <tr><td>Opus</td><td>Highest quality, slower and more expensive. Use for nuanced tone, sensitive material or hard judgement calls.</td></tr>
+    </tbody>
+</table>
+
+
+        <h2>5.3 Logging</h2>
+        <p>Controls the local log file used for diagnostics.</p>
+
+<ul>
+    <li><strong>Off</strong> &mdash; no log written.</li>
+    <li><strong>Errors only</strong> (default) &mdash; only failures are recorded.</li>
+    <li><strong>Verbose</strong> &mdash; every tool call, input and result is written to the log.</li>
+</ul>
+
+<p>Log file location: <code>%APPDATA%\VisClaw\visclaw.log</code>. It is a plain text file you can open in Notepad. Document, mailbox or workbook contents are <strong>not</strong> logged at any verbosity level.</p>
+
+
+        <h2>5.4 Panel position</h2>
+        <p>By default the chat panel docks on the right of the main Visio window. You can float it or dock it on the left. The position is remembered per Windows profile.</p>
+
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+
+<!-- Chapter 6 — Tips and troubleshooting -->
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 6 &mdash; Tips &amp; troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch6"><span class="chapter-num">Chapter 6</span>Tips &amp; troubleshooting</h1>
+<h2>6.1 Getting the most out of VisClaw</h2>
+        <ul>
+            <li><strong>Name shapes that matter.</strong> VisClaw identifies shapes by name. The default names Visio assigns ("Sheet.17") are not memorable &mdash; rename important shapes early so you can refer to them naturally: "connect the Approval shape to the Dispatch shape."</li>
+            <li><strong>Open the stencils you want masters from first.</strong> VisClaw cannot drop a master from a stencil that is not open. Say "open the Flowchart Shapes stencil" before asking for flowchart-specific shapes.</li>
+            <li><strong>Let VisClaw walk the graph.</strong> For anything that depends on "what is connected to what", prefer a graph-walking prompt ("colour everything reachable from X") over an enumerate-by-hand prompt. The graph tools are faster and far less error-prone.</li>
+            <li><strong>Use undo liberally.</strong> Every VisClaw action is a normal Visio edit. <kbd>Ctrl</kbd>+<kbd>Z</kbd> works. Multi-step actions are wrapped in single undo scopes so one undo backs the whole operation out.</li>
+        </ul>
+<h2>6.2 Common pitfalls</h2>
+<table class="data">
+            <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+            <tbody>
+                <tr><td>"Master not found"</td><td>The stencil with that master is not open.</td><td>Open the stencil first ("open the BPMN stencil"), or ask VisClaw to list available masters.</td></tr>
+                <tr><td>Shape positions look wrong</td><td>Page units differ from what you assumed.</td><td>Check page units on the <em>Design</em> tab. Ask VisClaw to set the size in the unit you want.</td></tr>
+                <tr><td>Connector stuck on the wrong end</td><td>Connector was attached by coordinates, not by shape name.</td><td>Ask VisClaw to reconnect it by shape name &mdash; endpoint connections stay attached when shapes move.</td></tr>
+                <tr><td>ShapeSheet write rejected</td><td>Cell name wrong or cell is read-only in that shape type.</td><td>Ask VisClaw to read the cell first to see if it exists.</td></tr>
+            </tbody>
+        </table>
+<h2>6.3 Cost and token tips</h2>
+        <ul>
+            <li>Adding shapes and connectors is cheap. Walking a 500-shape connection graph is not &mdash; scope the walk with a depth limit when the diagram is large.</li>
+            <li>Haiku is usually sufficient for routine editing. Reach for Sonnet when you want the AI to reason about the diagram as a whole (auditing, restructuring, describing).</li>
+        </ul>
+<h2>6.4 Bug-report helpers</h2>
+        <p>Two built-in tools make it easy to gather the build fingerprint and capability surface when you need to report an issue:</p>
+        <ul>
+            <li><strong><code>get_version_info</code></strong> &mdash; ask &quot;what version of VisClaw am I running?&quot; and VisClaw replies with add-in name, auto-refreshed build version, the Visio host version, OS, and .NET runtime. The same version number is always visible in the top-right corner of the Settings dialog, so you can grab it without sending a chat turn.</li>
+            <li><strong><code>list_tools</code></strong> &mdash; ask &quot;which VisClaw tools mention &#39;layer&#39;?&quot; and it filters the full tool catalogue by any substring of the name or description. Useful when you&#39;re not sure whether a capability exists, or when you want to compare what&#39;s available against the online docs.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 6 &mdash; Tips &amp; troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>6.5 Where to get help</h2>
+        <ul>
+            <li><strong>Log file</strong> &mdash; <code>%APPDATA%\VisClaw\visclaw.log</code>. Set logging to Verbose before reproducing the issue.</li>
+            <li><strong>kalmstrom.com support</strong> &mdash; send the log excerpt with your API key redacted and a short description of what you asked and what happened.</li>
+            <li><strong>Feature requests</strong> &mdash; tell kalmstrom.com which Visio capabilities matter most for your workflow. Future releases will be driven by real user requests.</li>
+        </ul>
+<div class="tip-box">
+    <strong>The chat panel is a client.</strong> VisClaw does not have a backend of its own. Every reply comes straight from Anthropic, and every action happens in Visio&#39;s process on your machine. Your data never visits kalmstrom.com.
+</div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+
+</body>
+</html>

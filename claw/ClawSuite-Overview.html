@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Claw Suite — Overview</title>
+    <style>
+/* PointClaw user manual — kalmstrom.com brand */
+:root {
+    --brand-navy: #154363;
+    --brand-blue: #095495;
+    --brand-soft-blue: #a2bfd6;
+    --brand-text: #454545;
+    --brand-red: #FF0000;
+    --brand-green: #4F8035;
+    --brand-bg-subtle: #F9F9F9;
+    --brand-border: #CCCCCC;
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Verdana', 'Segoe UI', 'Calibri', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--brand-text);
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+.page-content { padding: 22mm 28mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col              { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.screenshot           { break-inside: avoid; }
+img                   { break-inside: avoid; }
+
+/* Cover page */
+.cover-page {
+    background: var(--brand-navy);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 297mm;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-accent-bar {
+    height: 8px;
+    background: linear-gradient(90deg, var(--brand-blue), var(--brand-soft-blue));
+}
+.cover-logo-wrap {
+    padding: 18mm 28mm 0;
+    display: flex;
+    justify-content: flex-start;
+}
+.cover-logo-wrap img {
+    height: 22mm;
+    width: auto;
+    background: white;
+    padding: 4mm 6mm;
+    border-radius: 3px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12mm 28mm 24mm;
+}
+.cover-eyebrow {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand-soft-blue);
+    margin-bottom: 8mm;
+}
+.cover-title {
+    font-size: 40pt;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+}
+.cover-subtitle {
+    font-size: 15pt;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 6mm;
+    max-width: 140mm;
+}
+.cover-lead {
+    font-size: 11pt;
+    line-height: 1.7;
+    margin-top: 14mm;
+    max-width: 140mm;
+    opacity: 0.88;
+}
+.cover-footer {
+    padding: 8mm 28mm;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.75);
+}
+.cover-footer .brand {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: white;
+}
+
+/* Page header */
+.page-header {
+    padding: 8mm 28mm 4mm;
+    margin-bottom: 8mm;
+    border-bottom: 2px solid var(--brand-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8pt;
+    color: var(--brand-blue);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.page-header .page-left {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+}
+.page-header .page-left::before {
+    content: '';
+    display: inline-block;
+    width: 22mm;
+    height: 5mm;
+    background: url(data:image/png;base64,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) left center/contain no-repeat;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Page footer */
+.page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 5mm 28mm;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #888;
+}
+.page-footer .brand-mark {
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+
+/* Typography */
+h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 6mm;
+    letter-spacing: -0.01em;
+}
+h1 .chapter-num {
+    display: block;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 3mm;
+}
+h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-top: 9mm;
+    margin-bottom: 3mm;
+    border-bottom: 1px solid #dde4ec;
+    padding-bottom: 1.5mm;
+}
+h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--brand-text);
+    margin-top: 5mm;
+    margin-bottom: 2mm;
+}
+h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 1.5mm;
+}
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--brand-blue); text-decoration: none; }
+a:hover { color: var(--brand-red); }
+
+strong { color: var(--brand-navy); }
+
+/* Chapter intro banner */
+.chapter-intro {
+    background: #eef4fa;
+    border-left: 4px solid var(--brand-blue);
+    padding: 4mm 6mm;
+    margin-bottom: 7mm;
+    border-radius: 0 4px 4px 0;
+}
+.chapter-intro p { margin: 0; font-size: 10.5pt; }
+
+/* Callout boxes */
+.note-box {
+    background: #fff8e1;
+    border-left: 3px solid #f9a825;
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.tip-box {
+    background: #eef6ea;
+    border-left: 3px solid var(--brand-green);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.info-box {
+    background: #eef4fa;
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.warn-box {
+    background: #fce4ec;
+    border-left: 3px solid var(--brand-red);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+
+/* Step list */
+.step-list {
+    counter-reset: step-counter;
+    list-style: none;
+    padding-left: 0;
+    margin: 3mm 0;
+}
+.step-list li {
+    counter-increment: step-counter;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3mm;
+    padding-left: 0;
+}
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--brand-blue);
+    color: white;
+    font-size: 8pt;
+    font-weight: 700;
+    min-width: 6mm;
+    height: 6mm;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4mm;
+    margin-top: 0.5mm;
+    flex-shrink: 0;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Two-column cards */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6mm;
+    margin: 4mm 0;
+}
+.three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5mm;
+    margin: 4mm 0;
+}
+.feature-card {
+    background: var(--brand-bg-subtle);
+    border: 1px solid #e3e8ee;
+    border-top: 3px solid var(--brand-blue);
+    border-radius: 4px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 {
+    color: var(--brand-navy);
+    margin-bottom: 2mm;
+    font-size: 10pt;
+}
+.feature-card p {
+    margin: 0;
+    font-size: 9.5pt;
+    line-height: 1.55;
+}
+
+/* Tables */
+table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+}
+table.data th {
+    background: var(--brand-navy);
+    color: white;
+    text-align: left;
+    padding: 2.5mm 3mm;
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: 0.03em;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+table.data td {
+    padding: 2mm 3mm;
+    border-bottom: 1px solid #e3e8ee;
+    vertical-align: top;
+}
+table.data tr:nth-child(even) td {
+    background: var(--brand-bg-subtle);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 0.5mm 2mm;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.badge-blue    { background: #e6f0f9; color: var(--brand-blue); }
+.badge-green   { background: #e8f5e9; color: var(--brand-green); }
+.badge-orange  { background: #fff3e0; color: #e65100; }
+.badge-red     { background: #fce4ec; color: #c62828; }
+
+/* Severity cells used in the audit report tables */
+table.data td.sev-error { color: #c62828; }
+table.data td.sev-warn  { color: #e65100; }
+table.data td.sev-info  { color: var(--brand-blue); }
+
+/* Inline SVG illustrations */
+figure.illo {
+    margin: 5mm auto 6mm auto;
+    text-align: center;
+    max-width: 140mm;
+    break-inside: avoid;
+}
+figure.illo svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+figure.illo figcaption {
+    font-size: 9pt;
+    color: var(--brand-text);
+    font-style: italic;
+    margin-top: 2mm;
+    line-height: 1.4;
+}
+
+/* Code / keyboard */
+code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    background: var(--brand-bg-subtle);
+    padding: 0.3mm 1.5mm;
+    border-radius: 2px;
+    color: var(--brand-navy);
+}
+kbd {
+    font-family: 'Segoe UI', 'Verdana', sans-serif;
+    font-size: 9pt;
+    background: #fff;
+    border: 1px solid var(--brand-border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0.3mm 2mm;
+    color: var(--brand-text);
+}
+
+/* TOC */
+.toc-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 10mm;
+    border-bottom: 2px solid var(--brand-blue);
+    padding-bottom: 3mm;
+}
+.toc-entry {
+    display: flex;
+    align-items: baseline;
+    padding: 1.5mm 0;
+}
+.toc-entry.toc-h1 {
+    font-weight: 700;
+    margin-top: 3mm;
+    color: var(--brand-navy);
+    font-size: 11pt;
+}
+.toc-entry.toc-h2 {
+    padding-left: 6mm;
+    font-size: 10pt;
+    color: var(--brand-text);
+    font-weight: 400;
+}
+.toc-num {
+    min-width: 14mm;
+    flex-shrink: 0;
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+.toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--brand-border);
+    margin: 0 2mm 1.5mm;
+}
+.toc-page {
+    color: var(--brand-blue);
+    font-size: 9.5pt;
+    font-weight: 700;
+}
+.toc-entry a {
+    color: inherit;
+}
+
+/* Quote / testimonial */
+.quote {
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 6mm;
+    margin: 5mm 0;
+    font-style: italic;
+    color: var(--brand-text);
+    background: var(--brand-bg-subtle);
+}
+
+    </style>
+</head>
+<body>
+
+<!-- Cover page -->
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-logo-wrap">
+        <img src="data:image/png;base64,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" alt="kalmstrom.com Business Solutions">
+    </div>
+    <div class="cover-body">
+        <div class="cover-eyebrow">kalmstrom.com Business Solutions</div>
+        <div class="cover-title">The Claw Suite</div>
+        <div class="cover-subtitle">AI assistants that live inside your Microsoft Office apps.</div>
+        <div class="cover-lead">
+            The Claw Suite is six sibling add-ins for Microsoft Office &mdash; PointClaw, ExClaw, WorClaw, OutClaw, VisClaw and ProjClaw. Each one opens a chat panel next to your file and lets you drive it in plain English, backed by Anthropic Claude or Google Gemini. They share a codebase, a philosophy and a tool-building pattern &mdash; but each is tuned to the quirks of its host.
+        </div>
+    </div>
+    <div class="cover-footer">
+        <div><span class="brand">kalmstrom.com</span> &nbsp;&middot;&nbsp; Business Solutions</div>
+        <div>Suite Overview &middot; Edition 1</div>
+    </div>
+</div>
+
+
+<!-- Placeholder: auto-generated by build-chapters.py with --auto-toc -->
+<div class="page">
+    <div class="page-header">
+        <div>The Claw Suite</div>
+        <div>Contents</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <div class="toc-entry toc-h1"><span class="toc-num">1</span>What the Claw Suite is<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>The products<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>What they have in common<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>Tool surface at a glance<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>Who the suite is for<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Shared architecture<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>The seven-piece skeleton<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>The shared libraries under Admin/<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>The chat pane is one WPF control<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.4</span>The tool pattern<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.5</span>The backend is pluggable<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.6</span>Self-test harnesses<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.7</span>The deploy story<div class="toc-dots"></div><span class="toc-page">7</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>The products<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>PointClaw &mdash; for PowerPoint<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>ExClaw &mdash; for Excel<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>WorClaw &mdash; for Word<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.4</span>OutClaw &mdash; for Outlook<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.5</span>VisClaw &mdash; for Visio<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.6</span>ProjClaw &mdash; for Project<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.7</span>How they work together<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.8</span>Ribbon footprint<div class="toc-dots"></div><span class="toc-page">11</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>How the Claw Suite compares<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>Versus Anthropic's Claude add-ins<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Versus community Model Context Protocol (MCP) servers<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Versus Microsoft Copilot and Agent 365<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Where each option wins<div class="toc-dots"></div><span class="toc-page">14</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Roadmap<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Near-term priorities<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Medium-term: the shared infrastructure tier<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Long-term: enterprise governance integration<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>How to influence the roadmap<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; Contents</div>
+    </div>
+</div>
+
+
+<!-- Chapter 1 — What the Claw Suite is -->
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch1"><span class="chapter-num">Chapter 1</span>What the Claw Suite is</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is six Microsoft Office add-ins from kalmstrom.com Business Solutions. They share a codebase and a philosophy: let you drive your file in plain English, backed by a modern language model, without leaving the app you already have open.</p>
+        </div>
+<h2>1.1 The products</h2>
+<table class="data">
+            <thead>
+                <tr><th>Product</th><th>Host</th><th>What it drives</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>PointClaw</strong></td><td>PowerPoint</td><td>Slides, shapes, animations, media, themes, speaker notes, deck audits.</td></tr>
+                <tr><td><strong>ExClaw</strong></td><td>Excel</td><td>Ranges, formulas, tables, pivot tables, charts, formatting, imports and exports.</td></tr>
+                <tr><td><strong>WorClaw</strong></td><td>Word</td><td>Paragraphs, styles, headings, tables, TOC, revisions, mail merge, content controls.</td></tr>
+                <tr><td><strong>OutClaw</strong></td><td>Outlook</td><td>Mail, calendar, contacts, rules, search, archive &mdash; driven through Outlook Redemption.</td></tr>
+                <tr><td><strong>VisClaw</strong></td><td>Visio</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection graphs, layout automation.</td></tr>
+                <tr><td><strong>ProjClaw</strong></td><td>Project</td><td>Tasks, resources, assignments, dependencies, baselines, earned value, critical path, calendars.</td></tr>
+            </tbody>
+        </table>
+
+        <p>Each one ships independently. You install only the Claws you need, and each adds a button to its host's ribbon that opens a chat panel.</p>
+<h2>1.2 What they have in common</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Real edits, not suggestions</h4>
+                <p>Every Claw drives the live object model of its host. Changes appear in your document as they happen and can be undone with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.</p>
+            </div>
+<div class="feature-card">
+                <h4>Plain language, specialist tools</h4>
+                <p>You do not learn command syntax. The AI picks the right purpose-built tool &mdash; the suite ships more than six hundred of them.</p>
+            </div>
+<div class="feature-card">
+                <h4>Bring your own API key</h4>
+                <p>Anthropic Claude for conversation; Google Gemini for image and video generation (PointClaw only). Keys are stored locally with Windows DPAPI.</p>
+            </div>
+<div class="feature-card">
+                <h4>One shared code spine</h4>
+                <p>A single chat pane, a single settings window, a single tool-dispatch plumbing layer. A fix in the shared code lands in all six add-ins on the next build.</p>
+            </div>
+        </div>
+<h2>1.3 Tool surface at a glance</h2>
+        <p>The six Claws expose more than six hundred purpose-built tools between them. Exact counts change with every release; current approximate figures:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>Product</th><th>Approximate tool count</th><th>Flagship capabilities</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>OutClaw</td><td>~112</td><td>Redemption-backed mail, calendar, rules, search, archive, attachment handling, Outlook Object Model Guard bypass.</td></tr>
+                <tr><td>WorClaw</td><td>~111</td><td>Full styles, headings, TOC, cross-references, captions, revisions, mail merge, content controls, building blocks.</td></tr>
+                <tr><td>PointClaw</td><td>~107</td><td>AI image &amp; video generation, triggered animations, motion paths, SmartArt, deck audits, PDF / video export, template inspection.</td></tr>
+                <tr><td>ExClaw</td><td>~100</td><td>Ranges, formulas, tables, pivots, charts, conditional formats, sort / filter, named ranges, template inspection, macro execution.</td></tr>
+                <tr><td>ProjClaw</td><td>~97</td><td>Tasks, dependencies, indent/outdent, resources, assignments, baselines, variance, earned value, critical path, calendars, levelling, multi-project.</td></tr>
+                <tr><td>VisClaw</td><td>~82</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection-graph walking, layers, masters, layout automation, PNG / PDF export.</td></tr>
+            </tbody>
+        </table>
+<div class="tip-box">
+            <strong>Why so many?</strong> Because generic "let the AI guess with HTML" approaches miss the quirks of each host. A purpose-built tool for, say, <em>add_trigger_animation</em> or <em>update_chart_data</em> is far more reliable than asking an LLM to script the COM call itself.
+        </div>
+<h2>1.4 Who the suite is for</h2>
+        <ul>
+            <li><strong>Knowledge workers</strong> who live inside Office and want an assistant that actually works on their files, not just beside them.</li>
+            <li><strong>Consultants and analysts</strong> producing decks, reports, spreadsheets and client emails under time pressure.</li>
+            <li><strong>Teachers, trainers, and presenters</strong> who iterate on the same material often.</li>
+            <li><strong>Power users</strong> who want reliable COM-level operations without writing VBA.</li>
+        </ul>
+<div class="info-box">
+            <strong>Not a Microsoft product.</strong> The Claw Suite is not built on or licensed from Microsoft. It uses only publicly documented Office object models and Outlook Redemption for Outlook-specific depth. You pay Anthropic and (optionally) Google directly for the API calls.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch2"><span class="chapter-num">Chapter 2</span>Shared architecture</h1>
+
+        <div class="chapter-intro">
+            <p>All six Claws are VSTO desktop add-ins written in C#, targeting .NET Framework 4.7.2 and AnyCPU. They are not independent products sharing a marketing name &mdash; they are one codebase with six host-specific front ends.</p>
+        </div>
+<h2>2.1 The seven-piece skeleton</h2>
+        <p>Each Claw follows the same seven-piece layout. If you can read one, you can read any of them:</p>
+<table class="data">
+            <thead>
+                <tr><th>Piece</th><th>Lives in</th><th>Responsibility</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>ThisAddIn.cs</strong></td><td>Each Claw</td><td>VSTO entry point; registers the pane per host-window.</td></tr>
+                <tr><td><strong>Ribbon.cs + Ribbon.xml</strong></td><td>Each Claw</td><td>Ribbon button(s) that toggle the chat pane.</td></tr>
+                <tr><td><strong>Api/{Host}Context.cs</strong></td><td>Each Claw</td><td>Typed accessors for the active Presentation / Document / Workbook / Inspector.</td></tr>
+                <tr><td><strong>Api/{Host}AgentToolBase.cs</strong></td><td>Each Claw</td><td>Base class for tools; UI-thread marshalling, error surfacing.</td></tr>
+                <tr><td><strong>Api/{Host}ToolDispatcher.cs</strong></td><td>Each Claw</td><td>Registers every tool, routes tool calls, injects context.</td></tr>
+                <tr><td><strong>Api/{Host}SystemPromptBuilder.cs</strong></td><td>Each Claw</td><td>Host-specific system prompt describing the environment.</td></tr>
+                <tr><td><strong>UI/ChatHostBindings.cs</strong></td><td>Each Claw</td><td>Per-host glue: history storage, context block builder, settings window.</td></tr>
+            </tbody>
+        </table>
+<h2>2.2 The shared libraries under Admin/</h2>
+        <p>Everything that is not host-specific lives in <code>X:\Source\Admin\</code> and is <em>linked</em> (not copied) into each Claw's csproj. A fix in shared code lands in every add-in on the next build.</p>
+<table class="data">
+            <thead>
+                <tr><th>Library</th><th>What it contributes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>kSharedCSharp</code></td><td>Core error-handling primitives (<code>kS.kErrorMode</code>, <code>kS.kGlobalErrorHandler</code>), null-safety helpers, DPAPI key store.</td></tr>
+                <tr><td><code>kSharedCSharpUI</code></td><td>The chat pane (<em>ChatPane.xaml</em>), the settings window, WPF theming, the markdown renderer, the choice prompter. Host-agnostic &mdash; parameterised through <code>IChatHostBindings</code>.</td></tr>
+                <tr><td><code>kSharedCSharpAgent</code></td><td>The LLM plumbing: <code>ClaudeClient</code>, <code>GeminiChatClient</code>, <code>OpenAIChatClient</code>, tool-dispatch interfaces, self-test engine, JSON helpers, COM reflection helpers, the shared <code>TemporaryComDocumentScope</code> and <code>BuiltInPropertyHelper</code>.</td></tr>
+                <tr><td><code>Redemption</code></td><td>Outlook Redemption binaries and loader (used by OutClaw only).</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>The reuse-first rule.</strong> When a fix is needed in shared code, it is fixed <em>in shared code</em>. Project-local workarounds are never an acceptable answer. Every fix benefits all six Claws.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>2.3 The chat pane is one WPF control</h2>
+        <p>Every Claw renders the same <code>ChatPane.xaml</code> control from <code>kSharedCSharpUI</code>. The per-host glue is thin &mdash; a couple of dozen lines implementing <code>IChatHostBindings</code> &mdash; but the chat loop, streaming renderer, usage stats, settings access, markdown rendering and choice prompting are all in the shared library.</p>
+
+        <p>What the chat pane cares about from its host:</p>
+        <ul>
+            <li>How to store chat history (<code>CustomXMLParts</code> for PointClaw / ExClaw / WorClaw; JSON on disk for OutClaw, because Outlook items do not have custom XML parts).</li>
+            <li>How to build a <em>context block</em> (the current state of the document, stapled to the system prompt on every turn).</li>
+            <li>Which tool dispatcher to use.</li>
+            <li>Which system prompt to issue.</li>
+        </ul>
+<h2>2.4 The tool pattern</h2>
+        <p>Every tool is a C# class inheriting from the Claw's host-specific <code>*AgentToolBase</code>. It declares four things:</p>
+
+        <ol>
+            <li><strong>Name</strong> &mdash; the tool identifier the LLM uses (e.g. <code>add_slide</code>, <code>create_table</code>).</li>
+            <li><strong>Description</strong> &mdash; a one-to-three sentence description the LLM reads to decide when to call.</li>
+            <li><strong>InputSchema</strong> &mdash; a JSON Schema fragment describing the parameters.</li>
+            <li><strong>Execute</strong> &mdash; the work. Typically a <em>Reader</em> or <em>Runner</em> inner class that the base class marshals to the UI thread.</li>
+        </ol>
+
+        <p>Optionally the tool implements <code>IToolSelfTest.BuildTestCases()</code> to supply headless self-test cases. Those run through the shared <code>ToolSelfTestEngine</code> with a standard driver script per host (see section&nbsp;2.6).</p>
+<h2>2.5 The backend is pluggable</h2>
+        <p>Conversation runs through <code>IAgentClient</code>. Three implementations ship today:</p>
+<table class="data">
+            <thead>
+                <tr><th>Backend</th><th>Endpoint</th><th>Tool calls</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>ClaudeClient</code></td><td>Anthropic Messages API</td><td><em>tool_use</em> + prompt caching</td></tr>
+                <tr><td><code>GeminiChatClient</code></td><td><code>streamGenerateContent?alt=sse</code></td><td><em>functionCall</em></td></tr>
+                <tr><td><code>OpenAIChatClient</code></td><td>Chat Completions</td><td><em>tool_calls</em></td></tr>
+            </tbody>
+        </table>
+
+        <p>Image and video generation (PointClaw only) go through a separate <code>GeminiClient</code> that wraps Imagen and Veo. <code>AgentClientFactory.Create</code> picks the right backend from the persisted user setting; users switch between them from the <em>Chat Backend</em> dropdown in Settings.</p>
+<h2>2.6 Self-test harnesses</h2>
+        <p>Every Claw ships a headless self-test runner under <code>Tests/</code>:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>Claw</th><th>Runner</th><th>Environment prefix</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>PointClaw</td><td><code>Run-SelfTest.ps1</code></td><td><code>POINTCLAW_*</code></td></tr>
+                <tr><td>OutClaw</td><td><code>Run-SelfTest-OutClaw.ps1</code></td><td><code>OUTCLAW_*</code></td></tr>
+                <tr><td>ExClaw</td><td><code>Run-SelfTest-ExClaw.ps1</code></td><td><code>EXCLAW_*</code></td></tr>
+                <tr><td>WorClaw</td><td><code>Run-SelfTest-WorClaw.ps1</code></td><td><code>WORCLAW_*</code></td></tr>
+                <tr><td>VisClaw</td><td><code>Run-SelfTest-VisClaw.ps1</code></td><td><code>VISCLAW_*</code></td></tr>
+                <tr><td>ProjClaw</td><td><code>Run-SelfTest-ProjClaw.ps1</code></td><td><code>PROJCLAW_*</code></td></tr>
+            </tbody>
+        </table>
+
+        <p>Each runner kills stale Office processes, sets the auto-selftest environment variable, launches the host via COM, tails the log for the <em>SELFTEST DONE</em> sentinel, and exits with a status code.</p>
+<h2>2.7 The deploy story</h2>
+        <ul>
+            <li><strong>Development:</strong> F5 in Visual Studio. VSTO launches the host with the add-in registered under <code>HKCU\Software\Microsoft\Office\&lt;App&gt;\Addins\</code>.</li>
+            <li><strong>Release:</strong> ClickOnce publish from Visual Studio, signed with <code>_TemporaryKey.pfx</code> (until a real code-signing cert is wired up).</li>
+            <li><strong>All six Claws share PointClaw's <code>packages/</code> folder</strong> &mdash; NuGet versions are bumped in one place and the others inherit.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch3"><span class="chapter-num">Chapter 3</span>The products</h1>
+
+        <div class="chapter-intro">
+            <p>Each Claw has its own detailed user manual. This chapter is the one-page summary of each &mdash; what they feel like to use, what they are especially good at, and where their individual manuals go next.</p>
+        </div>
+<h2>3.1 PointClaw &mdash; for PowerPoint</h2>
+        <p>PointClaw is the original, and the one with the deepest "generative" surface. It generates images with Google Imagen and short video clips with Google Veo and drops them straight onto the slide. It drives the full animation stack: triggered animations, motion paths, chart-series animation, slide transitions. It runs a built-in deck audit that scores slides against a house design opinion and fixes what it finds.</p>
+        <ul>
+            <li>Create and open presentations; start from a template; save and export PDF / video.</li>
+            <li>Every shape type: text boxes, tables, SmartArt, charts, pictures, word art, action buttons, countdown timers, YouTube embeds.</li>
+            <li>Full theme control: colours, fonts, effects, slide masters, handout and notes masters.</li>
+            <li>Accessibility checks; screen capture; live slide thumbnails for visual feedback.</li>
+        </ul>
+        <p><em>See the PointClaw User Manual for details.</em></p>
+<h2>3.2 ExClaw &mdash; for Excel</h2>
+        <p>ExClaw treats structured objects &mdash; tables, pivot tables, named ranges &mdash; as first-class citizens. They are easier for the AI to reason about than bare A1:F500 addresses, and ExClaw leans on them heavily.</p>
+        <ul>
+            <li>Read and write values, formulas, and array formulas; fill series; import / export CSV.</li>
+            <li>Create and manage tables, named ranges, pivot tables, and pivot calculated fields.</li>
+            <li>Insert and modify charts, shapes, pictures, hyperlinks.</li>
+            <li>Conditional formats, data validation, sort and filter, freeze panes, protection.</li>
+            <li>Run existing macros; switch calculation mode; refresh data connections.</li>
+            <li>Template inspection: silently open an <code>.xltx</code> to report its sheet inventory, named ranges and tables before you commit to using it.</li>
+        </ul>
+        <p><em>See the ExClaw User Manual for details.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.3 WorClaw &mdash; for Word</h2>
+        <p>WorClaw is the most structurally aware Claw. It works with paragraphs, headings, styles, sections, bookmarks, cross-references, fields, footnotes, and content controls &mdash; the scaffolding of real documents, not just strings of text.</p>
+        <ul>
+            <li>Read paragraphs, headings, selection; find by text, style, or field.</li>
+            <li>Full style lifecycle: create, modify, list, apply, find-by-style.</li>
+            <li>TOC, table of figures, cross-references, captions, indexes, footnotes, endnotes.</li>
+            <li>Track changes, revisions, comments, compare documents.</li>
+            <li>Mail merge (simple and multi-file), content controls, building blocks, templates.</li>
+            <li>Headers, footers, page setup, section starts, columns, page numbering.</li>
+            <li>Font analysis across an entire document; template file inspection.</li>
+        </ul>
+        <p><em>See the WorClaw User Manual for details.</em></p>
+<h2>3.4 OutClaw &mdash; for Outlook</h2>
+        <p>OutClaw is the odd one out. Outlook's security model aggressively blocks normal COM access to mail items &mdash; the "Outlook Object Model Guard" fires a user prompt every time an add-in tries to read the body of a message or send mail. OutClaw sidesteps this entirely by using <strong>Outlook Redemption</strong>: RDO / Safe*Item objects that bypass the guard, run on secondary threads, and expose raw MAPI properties.</p>
+        <ul>
+            <li>Mail: read, send, reply, forward, archive, categorise, flag, move, delete.</li>
+            <li>Calendar: create, update, list meetings and appointments; free/busy lookup.</li>
+            <li>Contacts: create, update, list, search.</li>
+            <li>Rules: create, modify, enable/disable; search and summarise.</li>
+            <li>Attachments: inspect, save, add, remove.</li>
+            <li>Folders: enumerate, move items, count messages.</li>
+            <li>Search across all mailboxes and stores.</li>
+        </ul>
+<div class="info-box">
+            <strong>A per-user session is required.</strong> Outlook enforces a singleton model per Windows profile &mdash; a foreign-session Outlook will block OutClaw's driver. See the OutClaw manual for specifics.
+        </div>
+        <p><em>See the OutClaw User Manual for details.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.5 VisClaw &mdash; for Visio</h2>
+        <p>VisClaw is the diagram-and-shape Claw. Visio's object model is deep but idiosyncratic: shapes are backed by stencil masters, every shape has a ShapeSheet of raw cells, connectors carry endpoint references back to the shapes they connect, and pages form a small network of their own. VisClaw exposes that surface rather than hiding it, then gives the AI enough layout primitives to do the boring work.</p>
+        <ul>
+            <li><strong>Pages.</strong> Add, delete, rename, list, set size, set orientation, fit-to-shapes.</li>
+            <li><strong>Shapes.</strong> Add, delete, duplicate, copy to another page, group, ungroup, rotate, z-order, align, distribute.</li>
+            <li><strong>Formatting.</strong> Fill colour, line colour, line weight, line arrows, line pattern.</li>
+            <li><strong>Text on shapes.</strong> Set text, font, size, colour, style, alignment.</li>
+            <li><strong>ShapeSheet access.</strong> Get / set individual ShapeSheet cells for the cases a high-level API cannot express.</li>
+            <li><strong>Shape data properties.</strong> List and set the name/value pairs Visio calls "shape data".</li>
+            <li><strong>Masters and stencils.</strong> List masters, open a stencil, drop a named master onto a page.</li>
+            <li><strong>Finding.</strong> Search by master, by text; fetch full shape detail; list all shapes on a page.</li>
+            <li><strong>Connectors and connection graphs.</strong> Add a connector, enumerate endpoints, list all connections on a page, walk the graph from any shape, fetch a shape's neighbours.</li>
+            <li><strong>Export and save.</strong> Page PNG, whole-document PDF, save.</li>
+            <li><strong>Undo scopes.</strong> Begin / end an undo scope so the AI can treat a multi-step edit as a single undo step.</li>
+        </ul>
+        <p><em>See the VisClaw User Manual for details.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.6 ProjClaw &mdash; for Project</h2>
+        <p>ProjClaw is the only Claw whose primary data is a schedule rather than a document. Tasks, resources, assignments, dependencies, calendars, baselines, and earned value are all first-class objects. ProjClaw does not try to replace Project's own scheduling engine &mdash; it drives it through the native COM object model.</p>
+        <ul>
+            <li><strong>Tasks &mdash; full lifecycle.</strong> Add (single + bulk), delete, list, find by name, get detail, set any field, indent / outdent, move through the hierarchy tree.</li>
+            <li><strong>Dependencies.</strong> Add, remove, chain-link, fetch predecessors / successors, get slack, identify the critical path.</li>
+            <li><strong>Task properties.</strong> Milestone, task type, notes, priority, constraint, deadline.</li>
+            <li><strong>Progress tracking.</strong> Set percent complete, actual start, actual finish, actual work.</li>
+            <li><strong>Resources.</strong> Add, delete, list, set fields, set max units, set cost rate, set type, level resources, find over-allocated ones.</li>
+            <li><strong>Assignments.</strong> Assign, bulk assign, remove; set units or work; list per task.</li>
+            <li><strong>Calendars.</strong> List, set working / non-working time, set the project calendar.</li>
+            <li><strong>Baselines and variance.</strong> Save a baseline, compare to baseline, get variance, get earned value.</li>
+            <li><strong>Costs.</strong> Per-task cost, fixed cost, project cost.</li>
+            <li><strong>Status reporting.</strong> Set the status date, generate a status report.</li>
+            <li><strong>Views, filters, custom fields.</strong> Switch views, apply filters, read / write custom field values.</li>
+            <li><strong>Export.</strong> PDF and Excel.</li>
+            <li><strong>Undo scopes.</strong> Same pattern as VisClaw &mdash; wrap multi-step edits in a single undo step.</li>
+        </ul>
+        <p><em>See the ProjClaw User Manual for details.</em></p>
+<h2>3.7 How they work together</h2>
+        <p>Each Claw is a separate add-in, so they install and run independently. But they are built to play nicely:</p>
+        <ul>
+            <li><strong>Consistent chat experience.</strong> The chat panel looks and feels identical across all six hosts. Once you know how to drive one Claw, you know how to drive the others.</li>
+            <li><strong>Shared settings window.</strong> Same API key fields, same model picker, same backend dropdown. Same partials in the user manuals.</li>
+            <li><strong>One API key, many uses.</strong> An Anthropic key works across all six Claws. You do not pay per-add-in.</li>
+            <li><strong>Cross-host workflows are manual for now.</strong> ExClaw does not talk to WorClaw today. If you want to flow data between hosts, Windows clipboard or saved intermediate files are the current bridge.</li>
+        </ul>
+<h2>3.8 Ribbon footprint</h2>
+        <p>Each Claw adds a minimal ribbon footprint:</p>
+        <ul>
+            <li><strong>PointClaw / ExClaw / WorClaw / VisClaw / ProjClaw:</strong> one toggle button on the Home ribbon that opens or closes the chat pane.</li>
+            <li><strong>OutClaw:</strong> eight buttons &mdash; mail, calendar, contacts, rules, search, archive, attachments, settings &mdash; each opens the chat pane pre-scoped to that task.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch4"><span class="chapter-num">Chapter 4</span>How the Claw Suite compares</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is not the only way to get an AI into Office. Three categories of alternative exist today &mdash; Microsoft's own Copilot and partner add-ins, Anthropic's Claude add-ins, and the open-source Model Context Protocol (MCP) servers that expose Office operations to external AI clients. Each trades something off; knowing where they differ helps you pick the right tool for each job.</p>
+        </div>
+<h2>4.1 Versus Anthropic's Claude add-ins</h2>
+        <p>Anthropic publishes its own <strong>Claude for PowerPoint / Excel / Word</strong> add-ins through Microsoft AppSource. They also put Claude inside Office, but the underlying technology is very different.</p>
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Claude for Office (Anthropic)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Add-in type</td><td>VSTO desktop add-in &mdash; runs inside the Office process via COM</td><td>Office Add-in (Office.js) &mdash; runs in a sandboxed web view</td></tr>
+                <tr><td>Reach into Office</td><td>Full native object model: triggered animations, motion paths, SmartArt, pivot tables, content controls, mail merge, Redemption-level Outlook access, deck audits, PDF / video export</td><td>Limited to what Office.js exposes &mdash; mainly generating, rewriting and summarising content</td></tr>
+                <tr><td>Specialist tools</td><td>~620 purpose-built tools across six hosts</td><td>Primarily conversational assistance on top of document text</td></tr>
+                <tr><td>Media generation</td><td>Google Imagen (images) and Veo (short video), inserted in place &mdash; PointClaw</td><td>Not supported in the add-in</td></tr>
+                <tr><td>Authentication</td><td>Your own Anthropic API key, stored locally with DPAPI (pay-as-you-go)</td><td>Your Claude subscription</td></tr>
+                <tr><td>Platforms</td><td>Windows desktop Office only</td><td>Windows, Mac, Office for the web</td></tr>
+                <tr><td>Cost model</td><td>Per-token API usage on your own key &mdash; no subscription</td><td>Included in a Claude subscription</td></tr>
+            </tbody>
+        </table>
+<div class="tip-box">
+            <strong>Rule of thumb.</strong> Claude for Office is broader and runs everywhere, but stays on the surface. The Claw Suite trades cross-platform reach for depth &mdash; it can drive internals that a web-sandboxed add-in cannot touch.
+        </div>
+<h2>4.2 Versus community Model Context Protocol (MCP) servers</h2>
+        <p>There is a growing ecosystem of open-source MCP servers that expose Office operations to external AI clients &mdash; the <code>python-pptx</code>-backed <em>Office-PowerPoint-MCP-Server</em>, <code>openpyxl</code>-based Excel servers, <code>python-docx</code>-based Word servers, and so on. They are a different shape:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Community MCP servers</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>What they edit</td><td>The <em>live presentation / workbook / document</em> you have on screen</td><td>A <em>file on disk</em> &mdash; you see the result when you reopen it</td></tr>
+                <tr><td>Where they run</td><td>Inside the Office process via COM</td><td>Standalone Python server; uses a file-format library</td></tr>
+                <tr><td>Reach</td><td>Everything COM exposes &mdash; animations, live selection, deck audits, Outlook Redemption, macros, calc mode, track changes</td><td>Whatever the underlying file-format library supports &mdash; typically a subset</td></tr>
+                <tr><td>Tool surface (per host)</td><td>~100&ndash;112</td><td>Typically 30&ndash;50</td></tr>
+                <tr><td>Best for</td><td>Interactive, iterative work on a file you are looking at</td><td>Scripted, pipeline-style authoring &mdash; "generate ten reports overnight"</td></tr>
+            </tbody>
+        </table>
+
+        <p>The Claw Suite covers every capability the most fully featured PowerPoint MCP server exposes, plus around seventy more tools that only an in-process add-in can reach. See each Claw's own manual for the per-host parity breakdown.</p>
+<h2>4.3 Versus Microsoft Copilot and Agent 365</h2>
+        <p>Microsoft's own strategy is different from anything described above. It has two distinct layers worth understanding.</p>
+<h3>Microsoft 365 Copilot</h3>
+        <p>Copilot is Microsoft's consumer-facing agent. It lives inside every Microsoft 365 app, works against your tenant's data, and is subject to your tenant's compliance boundaries. For most enterprise users this is the obvious starting point. Its reach is broad but shallow: like Claude for Office, it operates through the Office.js-era APIs and cannot touch features that require COM-level control.</p>
+<h3>Microsoft Agent 365</h3>
+        <p>Agent 365, announced in November 2025 and generally available from May 2026, is a very different thing. It is <strong>not an agent</strong> &mdash; it is the <em>control plane</em> for agents running in a Microsoft 365 tenant. Its job is to govern, identify, and observe the agents that Copilot, partners, and in-house developers bring into the organisation.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Microsoft Agent 365</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Category</td><td>Working agents &mdash; the thing that does the work</td><td>Governance / control plane &mdash; the thing that supervises other agents</td></tr>
+                <tr><td>Layer</td><td>Application</td><td>Infrastructure</td></tr>
+                <tr><td>Audience</td><td>Individual Office users, small teams</td><td>Enterprise IT governing agent fleets</td></tr>
+                <tr><td>Identity</td><td>Windows user + DPAPI-encrypted personal API keys</td><td>Microsoft Entra agent ID; risk-based conditional access</td></tr>
+                <tr><td>Licensing</td><td>Free; bring-your-own API key</td><td>Bundled into Microsoft 365 E7 (premium tier)</td></tr>
+                <tr><td>AI model</td><td>Anthropic Claude / Google Gemini</td><td>Governs any registered agent, including Copilot + MCP + custom</td></tr>
+                <tr><td>Data boundary</td><td>Content sent to Anthropic / Google</td><td>Agents kept within the M365 tenant with policy enforcement</td></tr>
+                <tr><td>Tool surface</td><td>~400 specialist Office tools</td><td>Near zero &mdash; it is plumbing, not application</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>They are complementary, not competitive.</strong> Agent 365 is designed to bring agents under management &mdash; it will identify the Claws as "shadow agents" in a tenant that has it enabled. From Microsoft's point of view that is a feature, not a bug: you deploy Agent 365 precisely because you want to see (and optionally limit) what agents are doing.
+        </div>
+<h3>What this means for the Claw Suite</h3>
+        <ol>
+            <li><strong>For individual and small-team users today, the model does not change.</strong> Agent 365 is an M365 E7 SKU aimed at large enterprises. A consultant, teacher or analyst using the Claws is not its audience.</li>
+            <li><strong>For future enterprise adoption, integration will matter.</strong> A Claw add-in that registers itself as an Entra agent, emits telemetry via the Observability SDK, and respects tenant policy would be a governable agent in an Agent-365-enabled tenant. Without that, it is a shadow agent that IT may block. See Chapter 5 for the roadmap.</li>
+            <li><strong>Capability still matters.</strong> Microsoft's bet is that <em>governance</em> will dominate the enterprise buying decision. The Claw Suite's bet is that <em>capability</em> &mdash; a tool surface north of five hundred &mdash; dominates the individual-user decision. Both can be correct simultaneously at different market tiers.</li>
+        </ol>
+<h2>4.4 Where each option wins</h2>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>If you want&hellip;</th><th>Pick&hellip;</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Deep COM-level control inside one or more Office apps on your Windows desktop</td><td>The Claw Suite</td></tr>
+                <tr><td>AI in Office across Mac / web / Windows</td><td>Claude for Office (Anthropic)</td></tr>
+                <tr><td>Tenant-wide assistant for everyone on M365</td><td>Microsoft 365 Copilot</td></tr>
+                <tr><td>Scripted / batch generation of Office files from a pipeline</td><td>A community MCP server</td></tr>
+                <tr><td>Visibility and policy control over all agents in an enterprise</td><td>Microsoft Agent 365 (plus any of the above)</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 5 &mdash; Roadmap</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch5"><span class="chapter-num">Chapter 5</span>Roadmap</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is a living codebase. New tools land often; occasionally an architectural piece gets promoted into shared infrastructure. This chapter sketches the current direction &mdash; what is on the near-term radar, and what the Agent 365 landscape implies for longer-term positioning.</p>
+        </div>
+<h2>5.1 Near-term priorities</h2>
+        <ul>
+            <li><strong>Runtime verification.</strong> Many new tools are shipped in waves, compile-verified but not yet self-tested against live Office. Running the per-host <code>Run-SelfTest*.ps1</code> harnesses regularly catches COM signature surprises the C# compiler cannot.</li>
+            <li><strong>Consistency sweep.</strong> The style rules (use <code>ToolArgs.RequireX</code> for required inputs, <code>ToolTestCase.ErrorPathCall</code> for empty-input guards, action-verb descriptions) are applied to every new tool, and older tools are being retrofitted as they are touched.</li>
+            <li><strong>Per-Claw manuals.</strong> All six Claws ship full user manuals built from the shared chapter template; duplicated boilerplate (install steps, key-entry steps, button-missing note, chat pane anatomy, tool-call loop diagram) lives in <code>Documentation\Human\_shared\partials\</code> and is rendered into each manual at build time.</li>
+        </ul>
+<h2>5.2 Medium-term: the shared infrastructure tier</h2>
+        <p>The suite's reuse-first rule keeps pulling per-Claw code into the shared libraries. Current shared helpers worth knowing about:</p>
+<table class="data">
+            <thead>
+                <tr><th>Shared helper</th><th>What it abstracts</th><th>Used by</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>TemporaryComDocumentScope</code></td><td>Open-inspect-close pattern for external files (templates, read-only opens)</td><td>Every Claw</td></tr>
+                <tr><td><code>BuiltInPropertyHelper</code></td><td>Late-bound read/write of <code>BuiltInDocumentProperties</code> and <code>CustomDocumentProperties</code></td><td>PointClaw, WorClaw (and eligible for ExClaw if needed)</td></tr>
+                <tr><td><code>ChatPane</code> + <code>SettingsPanel</code></td><td>The entire chat and settings UI</td><td>Every Claw</td></tr>
+                <tr><td><code>IChatHostBindings</code></td><td>The contract between the chat pane and each host</td><td>Every Claw</td></tr>
+                <tr><td><code>AgentClientFactory</code></td><td>Backend selection across Claude, Gemini, OpenAI</td><td>Every Claw</td></tr>
+            </tbody>
+        </table>
+
+        <p>More will follow as duplication appears. The rule is simple: <em>fix in shared, never in a project-local workaround</em>.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 5 &mdash; Roadmap</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>5.3 Long-term: enterprise governance integration</h2>
+        <p>The emergence of Microsoft Agent 365 (see Chapter&nbsp;4) changes the enterprise conversation. An agent that wants to run inside a regulated, Agent-365-managed tenant needs three things:</p>
+
+        <ol>
+            <li><strong>An Entra agent ID</strong> &mdash; registration with Microsoft Entra so IT can see the agent exists, scope its access, and apply conditional access policies.</li>
+            <li><strong>Observability SDK integration</strong> &mdash; emit telemetry so the tenant's Agent 365 dashboards can track what each agent is doing.</li>
+            <li><strong>Policy-compatible identity and key management</strong> &mdash; move away from DPAPI-stored personal keys toward Entra-managed secrets or a centrally-approved key rotation scheme.</li>
+        </ol>
+
+        <p>None of that is free. It changes the deployment shape from "install a VSTO add-in, paste your API key" to "onboard an agent into your tenant, wait for IT sign-off, accept the policies." The Claw Suite's current audience &mdash; individuals, small teams, and consultants &mdash; does not pay for that complexity; it is still better for them to pay Anthropic directly.</p>
+
+        <p>But if a large enterprise ever wants to deploy the Claws under Agent 365 governance, the work above is the path. It is a deliberate deferral, not an accidental gap.</p>
+<div class="info-box">
+            <strong>Two audiences, two products?</strong> It is possible the right answer is to keep today's Claws as the consumer / SMB offering and fork an "Enterprise Edition" that accepts the Agent 365 constraints in exchange for being deployable at scale. Both bets can be right simultaneously: capability dominates the individual-user decision; governance dominates the enterprise-IT decision.
+        </div>
+<h2>5.4 How to influence the roadmap</h2>
+        <ul>
+            <li><strong>Send a feature request.</strong> Each per-Claw manual lists the support contact. The roadmap is driven by real user requests, not speculative planning.</li>
+            <li><strong>Log evidence.</strong> When a tool misbehaves, set logging to Verbose (Settings &rarr; Logging) and send the <code>%APPDATA%\&lt;Claw&gt;\&lt;claw&gt;.log</code> excerpt with your API key redacted. Runtime evidence is worth more than a symptom description.</li>
+            <li><strong>Tell kalmstrom.com which hosts matter to you.</strong> If your workflow is Excel-first, the roadmap should reflect that.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+
+</body>
+</html>

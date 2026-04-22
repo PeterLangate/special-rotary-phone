@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SharePoint List Schema Designer</title>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Toolbar -->
+        <div class="toolbar" role="banner">
+            <div class="toolbar-title">📋 PNP Tool</div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-right: 12px;">
+                <label for="appCodeInput" style="font-size: 12px; color: var(--text-secondary);">App Code:</label>
+                <input type="text" class="form-input app-code-input" id="appCodeInput" value="TC" maxlength="2" placeholder="XX" aria-label="Application code prefix">
+            </div>
+            <button class="toolbar-btn" data-action="add-list" aria-label="Create a new list (Ctrl+N)">
+                <span aria-hidden="true">+</span> Add List
+            </button>
+            <button class="toolbar-btn secondary" data-action="show-json" aria-label="View JSON schema">
+                <span aria-hidden="true">📄</span> JSON
+            </button>
+            <button class="toolbar-btn secondary" data-action="show-powershell" aria-label="View PnP PowerShell script">
+                <span aria-hidden="true">⚡</span> PS1
+            </button>
+            <button class="toolbar-btn secondary" data-action="show-sitescript" aria-label="View SharePoint Site Script">
+                <span aria-hidden="true">🌐</span> Site Script
+            </button>
+            <button class="toolbar-btn secondary" data-action="show-pnp-xml" aria-label="View PnP Provisioning XML">
+                <span aria-hidden="true">📝</span> PnP XML
+            </button>
+            <button class="toolbar-btn secondary" data-action="show-power-automate" aria-label="View Power Automate flow">
+                <span aria-hidden="true">⚡</span> Flow
+            </button>
+            <button class="toolbar-btn secondary" data-action="clear-all" aria-label="Clear all lists">
+                <span aria-hidden="true">🗑️</span> Clear
+            </button>
+            <button class="toolbar-btn secondary" data-action="import-schema" aria-label="Import schema from file">
+                <span aria-hidden="true">📂</span> Import
+            </button>
+            <button class="toolbar-btn secondary" data-action="import-rest-api" aria-label="Import from SharePoint REST API">
+                <span aria-hidden="true">🔗</span> REST Import
+            </button>
+            <button class="toolbar-btn secondary" data-action="save-template" aria-label="Save current schema as template">
+                <span aria-hidden="true">💾</span> Save Template
+            </button>
+            <button class="toolbar-btn secondary" data-action="load-template" aria-label="Load from templates">
+                <span aria-hidden="true">📑</span> Templates
+            </button>
+            <div style="width: 1px; height: 32px; background: var(--border-color); margin: 0 8px;"></div>
+            <button class="toolbar-btn secondary" id="undoBtn" data-action="undo" aria-label="Undo last action (Ctrl+Z)" disabled title="Undo (Ctrl+Z)">
+                <span aria-hidden="true">↶</span>
+            </button>
+            <button class="toolbar-btn secondary" id="redoBtn" data-action="redo" aria-label="Redo last action (Ctrl+Y)" disabled title="Redo (Ctrl+Y)">
+                <span aria-hidden="true">↷</span>
+            </button>
+            <div style="width: 1px; height: 32px; background: var(--border-color); margin: 0 8px;"></div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="text" id="listSearchInput" placeholder="🔍 Search lists..." style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); font-size: 13px; width: 180px;" aria-label="Search lists">
+                <button class="toolbar-btn secondary" data-action="show-keyboard-shortcuts" aria-label="Show keyboard shortcuts (Shift+?)" title="Keyboard Shortcuts">
+                    <span aria-hidden="true">⌨️</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Column Types</div>
+                <div class="field-type-list" id="fieldTypeList">
+                    <div class="field-type-item" draggable="true" data-type="text">
+                        <div class="field-type-icon type-text">Ab</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Text</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Short text input</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="note">
+                        <div class="field-type-icon type-text">¶</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Note</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Multiline text</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="rich-text">
+                        <div class="field-type-icon type-text">RT</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Rich Text</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Formatted content</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="integer">
+                        <div class="field-type-icon type-integer">123</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Integer</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Whole numbers</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="number">
+                        <div class="field-type-icon type-number">1.5</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Number</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Decimal numbers</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="currency">
+                        <div class="field-type-icon type-currency">£</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Currency</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Monetary value</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="boolean">
+                        <div class="field-type-icon type-boolean">✓</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Yes/No</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">True or false</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="date-time">
+                        <div class="field-type-icon type-date">📅</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Date & Time</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Date/time value</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="choice">
+                        <div class="field-type-icon type-choice">▼</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Choice</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Single select</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="multi-choice">
+                        <div class="field-type-icon type-choice">☑</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Multi-Choice</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Multiple selections</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="lookup">
+                        <div class="field-type-icon type-lookup">↗</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Lookup</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Reference to list</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="url">
+                        <div class="field-type-icon type-url">🔗</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Hyperlink</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">URL link</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="user">
+                        <div class="field-type-icon type-lookup">👤</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">User</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">Person or group</div>
+                        </div>
+                    </div>
+                    <div class="field-type-item" draggable="true" data-type="geolocation">
+                        <div class="field-type-icon type-url">📍</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; font-size: 13px;">Geolocation</div>
+                            <div style="font-size: 10px; color: var(--text-secondary);">GPS coordinates</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">Tips</div>
+                <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.7;">
+                    <p>• <strong>Drag</strong> list headers to reposition</p>
+                    <p>• <strong>Double-click</strong> list titles to rename</p>
+                    <p>• <strong>Drag</strong> column types onto lists</p>
+                    <p>• Click <strong>↕</strong> to collapse lists</p>
+                    <p>• Lookup columns create connections</p>
+                    <p>• All lists have ID & Title auto-columns</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="main-content">
+            <div class="canvas-panel" id="canvasPanel">
+                <div class="canvas-toolbar">
+                    <button class="canvas-tool-btn" data-action="auto-arrange" title="Auto-arrange lists in grid">
+                        <span>⚡</span> Auto-Arrange
+                    </button>
+                    <button class="canvas-tool-btn" data-action="zoom-in" title="Zoom in (Ctrl++)">
+                        <span>🔍</span>+
+                    </button>
+                    <button class="canvas-tool-btn" data-action="zoom-out" title="Zoom out (Ctrl+-)">
+                        <span>🔍</span>−
+                    </button>
+                    <button class="canvas-tool-btn" data-action="zoom-reset" title="Reset zoom (Ctrl+0)">
+                        <span>↺</span> 100%
+                    </button>
+                </div>
+                <div class="canvas-grid"></div>
+                <svg class="relationships-canvas" id="relationshipsCanvas"></svg>
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">Start Building Your SharePoint Schema</div>
+                    <div class="empty-state-desc">
+                        Create lists, add fields, and generate PowerShell scripts to deploy your SharePoint schema.
+                    </div>
+                    <div class="empty-state-actions">
+                        <button class="toolbar-btn" data-action="add-list" style="font-size: 14px; padding: 12px 24px;">
+                            <span aria-hidden="true">+</span> Create First List
+                        </button>
+                        <button class="toolbar-btn secondary" data-action="load-template" style="font-size: 14px; padding: 12px 24px;">
+                            <span aria-hidden="true">📑</span> Load Template
+                        </button>
+                    </div>
+                    <div class="empty-state-tips">
+                        <div class="tip-item">
+                            <span class="tip-icon">💡</span>
+                            <span><strong>Quick Start:</strong> Drag field types from the sidebar onto your lists</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">⌨️</span>
+                            <span><strong>Keyboard Shortcuts:</strong> Press <kbd>Ctrl+N</kbd> to add a list, <kbd>Ctrl+Z</kbd> to undo</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">🎨</span>
+                            <span><strong>Customize:</strong> Double-click list titles to rename, drag to reposition</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="listsContainer"></div>
+            </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Hint -->
+        <div class="shortcuts-hint">
+            <strong>Shortcuts:</strong><br>
+            <kbd>Ctrl+N</kbd> New List<br>
+            <kbd>Ctrl+Z</kbd> Undo<br>
+            <kbd>Ctrl+Y</kbd> Redo<br>
+            <kbd>Ctrl+S</kbd> Save<br>
+            <kbd>Ctrl+J</kbd> View JSON<br>
+            <kbd>Esc</kbd> Close Modal
+        </div>
+
+        <!-- Output Sidebar -->
+        <div class="output-sidebar" id="outputSidebar">
+            <div class="output-sidebar-header">
+                <div class="output-sidebar-title" id="outputSidebarTitle">Output</div>
+                <button class="output-sidebar-close" data-action="close-output-sidebar">×</button>
+            </div>
+            <div class="output-sidebar-content" id="outputSidebarSingle">
+                <pre class="output-code" id="outputCode"></pre>
+            </div>
+            <!-- Multi-file view (site script split) -->
+            <div class="output-sidebar-multi" id="outputSidebarMulti" style="display:none"></div>
+            <!-- Unsupported notes (site script limitations) -->
+            <div class="output-sidebar-notes" id="outputSidebarNotes" style="display:none">
+                <div class="output-notes-title">&#x26A0; Site Script Limitations</div>
+                <ul class="output-notes-list" id="outputNotesList"></ul>
+            </div>
+            <div class="output-sidebar-actions">
+                <button class="toolbar-btn secondary" id="outputDownloadAllBtn"
+                        data-action="download-all-outputs" style="display:none">
+                    <span>&#x1F4E6;</span> Download All
+                </button>
+                <button class="toolbar-btn secondary" data-action="copy-output" id="outputCopyBtn">
+                    <span>📋</span> Copy
+                </button>
+                <button class="toolbar-btn success" data-action="export-output" id="outputExportBtn">
+                    <span>💾</span> Export
+                </button>
+                <!-- Power Automate dual-format export (shown only for flow content) -->
+                <button class="toolbar-btn secondary" data-action="export-output" id="outputFlowSaveJsonBtn" style="display:none">
+                    <span>📄</span> Save JSON
+                </button>
+                <button class="toolbar-btn success" data-action="export-flow-zip" id="outputFlowSaveZipBtn" style="display:none">
+                    <span>📦</span> Save ZIP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Column Modal -->
+    <div class="modal-overlay" id="fieldModal" role="dialog" aria-modal="true" aria-labelledby="fieldModalTitle">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="fieldModalTitle">Add Column</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="fieldModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="fieldDisplayName">Display Name</label>
+                    <input type="text" class="form-input" id="fieldDisplayName" placeholder="e.g., Project Status" aria-required="true">
+                    <div class="form-hint">This is what users will see</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fieldInternalName">Internal Name</label>
+                    <input type="text" class="form-input" id="fieldInternalName" placeholder="e.g., TCProjectStatus" readonly aria-readonly="true">
+                    <div class="form-hint">Auto-generated with app code prefix</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="fieldDescription">Description</label>
+                    <textarea class="form-textarea" id="fieldDescription" placeholder="What this column is used for..."></textarea>
+                </div>
+
+                <!-- Choice Options -->
+                <div class="form-group" id="choiceOptionsGroup" style="display: none;">
+                    <label class="form-label">Options</label>
+                    <div class="options-list" id="optionsList"></div>
+                    <button class="add-option-btn" data-action="add-option" type="button">+ Add Option</button>
+                </div>
+
+                <!-- Lookup Options -->
+                <div class="form-group" id="lookupOptionsGroup" style="display: none;">
+                    <label class="form-label" for="lookupListSelect">Target List</label>
+                    <select class="form-select" id="lookupListSelect" aria-label="Select target list for lookup">
+                        <option value="">Select a list...</option>
+                    </select>
+                    <div class="form-hint">The list to lookup values from</div>
+                </div>
+
+                <!-- Field Constraints -->
+                <div class="form-group">
+                    <label class="form-label">Constraints</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <input type="checkbox" id="fieldRequired" style="margin: 0;">
+                            <span>Required field</span>
+                        </label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label class="form-label" for="fieldMinLength" style="font-size: 12px;">Min Length</label>
+                                <input type="number" class="form-input" id="fieldMinLength" placeholder="0" min="0" style="font-size: 13px;">
+                            </div>
+                            <div>
+                                <label class="form-label" for="fieldMaxLength" style="font-size: 12px;">Max Length</label>
+                                <input type="number" class="form-input" id="fieldMaxLength" placeholder="255" min="0" style="font-size: 13px;">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label" for="fieldDefaultValue" style="font-size: 12px;">Default Value</label>
+                            <input type="text" class="form-input" id="fieldDefaultValue" placeholder="Optional default value" style="font-size: 13px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="fieldModal">Cancel</button>
+                <button class="toolbar-btn" data-action="save-field">Save Column</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JSON Modal -->
+    <div class="modal-overlay" id="jsonModal">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <div class="modal-title">Generated JSON Schema</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="jsonModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="json-output" id="jsonOutput"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="copy-json">Copy to Clipboard</button>
+                <button class="toolbar-btn" data-action="close-modal" data-modal-id="jsonModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Import Schema</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="importModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Paste JSON Schema</label>
+                    <textarea class="form-textarea" id="importInput" rows="15" placeholder='{"lists": [...]}'></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="importModal">Cancel</button>
+                <button class="toolbar-btn" data-action="process-import">Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REST API Import Modal -->
+    <div class="modal-overlay" id="restApiModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <div class="modal-title">Import from SharePoint REST API</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="restApiModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 10px 14px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; margin-bottom: 16px; color: #1e40af; font-size: 13px;">
+                    <strong>Before you begin:</strong> Log into your SharePoint site in the browser first using the normal login procedure. This ensures you are already authenticated before making the API call.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">1. Enter your SharePoint Site URL</label>
+                    <input type="text" class="form-input" id="restApiSiteUrl" placeholder="https://contoso.sharepoint.com/sites/yoursite" style="font-family: 'Courier New', monospace;">
+                    <small style="color: var(--text-secondary); display: block; margin-top: 4px;">Example: https://contoso.sharepoint.com/sites/team</small>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">2. Copy this URL and paste it in your browser's address bar</label>
+                    <div style="position: relative;">
+                        <textarea class="form-textarea" id="restApiFullUrl" rows="6" readonly style="font-family: 'Courier New', monospace; font-size: 11px; background: var(--bg-secondary); resize: vertical;"></textarea>
+                        <button class="toolbar-btn secondary" data-action="copy-rest-api-url" style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 11px;">
+                            <span>📋</span> Copy
+                        </button>
+                    </div>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+                        💡 Since you're already logged in, the browser will return the JSON response directly. Select all (Ctrl+A) and copy (Ctrl+C).
+                    </small>
+                </div>
+
+                <div class="form-group" style="margin-top: 16px;">
+                    <label class="form-label">3. Paste the JSON response here</label>
+                    <textarea class="form-textarea" id="restApiJsonInput" rows="12" placeholder='{"d":{"results":[...]}}'  style="font-family: 'Courier New', monospace; font-size: 11px;"></textarea>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 4px;">
+                        Paste the complete JSON response from the browser
+                    </small>
+                </div>
+
+                <div id="restApiPreview" style="display: none; margin-top: 16px; padding: 12px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="font-weight: 500; margin-bottom: 8px; color: var(--text-primary);">Preview:</div>
+                    <div id="restApiPreviewContent" style="color: var(--text-secondary); font-size: 13px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="restApiModal">Cancel</button>
+                <button class="toolbar-btn" data-action="import-rest-api-data">Import Lists</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Management Modal -->
+    <div class="modal-overlay" id="dataModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <div class="modal-title" id="dataModalTitle">Manage Data</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="dataModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="data-toolbar">
+                    <button class="toolbar-btn secondary" data-action="add-data-row" title="Add new row">
+                        <span>➕</span> Add Row
+                    </button>
+                    <button class="toolbar-btn secondary" data-action="import-csv" title="Import from CSV file">
+                        <span>📁</span> Import CSV
+                    </button>
+                    <button class="toolbar-btn secondary" data-action="paste-data" title="Paste from clipboard">
+                        <span>📋</span> Paste Data
+                    </button>
+                    <button class="toolbar-btn secondary" data-action="open-rest-api-data-modal" title="Import data from SharePoint REST API">
+                        <span>🔗</span> REST Import
+                    </button>
+                    <button class="toolbar-btn secondary" data-action="clear-all-data" title="Clear all data">
+                        <span>🗑️</span> Clear All
+                    </button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;">
+                    <div style="flex: 1;"></div>
+                    <div class="data-count" id="dataCount">0 rows</div>
+                </div>
+                <div class="data-grid-help">
+                    💡 <strong>Tip:</strong> Paste from Excel (Ctrl+V), use arrow keys to navigate, double-click to edit. Right-click rows for options.
+                </div>
+                <div class="data-grid-container" id="dataGridContainer">
+                    <div id="dataGridTableContainer"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="dataModal">Cancel</button>
+                <button class="toolbar-btn" data-action="save-data">Save Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Field Editor Modal -->
+    <div class="modal-overlay" id="fieldEditorModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <div class="modal-title" id="fieldEditorModalTitle">Field Editor</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="fieldEditorModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="data-grid-help">
+                    💡 Edit display names, required flags, max lengths, and default values directly in the grid.
+                    Use the <strong>gear icon</strong> on the card for type changes and advanced settings.
+                </div>
+                <div id="fieldEditorGridContainer" style="overflow-x: auto;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="fieldEditorModal">Cancel</button>
+                <button class="toolbar-btn success" data-action="save-field-editor">Save Fields</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title" id="confirmModalTitle">Confirm Action</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="confirmModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                    <div style="font-size: 48px; color: var(--accent-warning);">⚠️</div>
+                    <div style="flex: 1;">
+                        <div id="confirmMessage" style="font-size: 15px; line-height: 1.6; color: var(--text-primary); margin-bottom: 12px;"></div>
+                        <div id="confirmDetails" style="font-size: 13px; color: var(--text-secondary); padding: 12px; background: var(--bg-tertiary); border-radius: 6px; margin-bottom: 12px;"></div>
+                        <div id="confirmInputGroup" style="display: none;">
+                            <label class="form-label" for="confirmInput" id="confirmInputLabel">Type to confirm:</label>
+                            <input type="text" class="form-input" id="confirmInput" placeholder="Type here to confirm" autocomplete="off">
+                            <div class="form-hint" id="confirmInputHint"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="confirmModal">Cancel</button>
+                <button class="toolbar-btn" id="confirmActionBtn" style="background: var(--accent-danger);" disabled>Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="keyboardShortcutsModal" role="dialog" aria-modal="true" aria-labelledby="keyboardShortcutsTitle">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title" id="keyboardShortcutsTitle">⌨️ Keyboard Shortcuts</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="keyboardShortcutsModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; gap: 24px;">
+                    <!-- General Section -->
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">General</h3>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Show this help</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">?</kbd>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Search lists</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Ctrl+F</kbd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editing Section -->
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">Editing</h3>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Undo</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Ctrl+Z</kbd>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Redo</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Ctrl+Shift+Z</kbd>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Redo (alternative)</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Ctrl+Y</kbd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Grid Section -->
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">Data Grid</h3>
+                        <div style="display: grid; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Navigate cells</span>
+                                <div style="display: flex; gap: 8px;">
+                                    <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Tab</kbd>
+                                    <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Enter</kbd>
+                                    <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">↑↓←→</kbd>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0;">
+                                <span style="color: var(--text-secondary);">Paste data</span>
+                                <kbd style="background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-family: monospace; border: 1px solid var(--border-color);">Ctrl+V</kbd>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tips Section -->
+                    <div style="background: var(--bg-tertiary); padding: 16px; border-radius: 8px; border-left: 4px solid var(--accent-primary);">
+                        <div style="display: flex; gap: 12px;">
+                            <span style="font-size: 24px;">💡</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 4px;">Pro Tips</div>
+                                <ul style="margin: 0; padding-left: 20px; color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
+                                    <li>Drag field types from the sidebar onto lists</li>
+                                    <li>Drag lists around the canvas to organize your schema</li>
+                                    <li>Click the data badge on a list to manage data rows</li>
+                                    <li>Paste Excel data directly into the data grid</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn" data-action="close-modal" data-modal-id="keyboardShortcutsModal">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Browser Modal -->
+    <div class="modal-overlay" id="templateModal" role="dialog" aria-modal="true" aria-labelledby="templateModalTitle">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <div class="modal-title" id="templateModalTitle">📑 Templates</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="templateModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 16px;">
+                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">Built-in Templates</h3>
+                    <div id="builtInTemplates" style="display: grid; gap: 12px;"></div>
+                </div>
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">My Templates</h3>
+                    <div id="userTemplates" style="display: grid; gap: 12px;">
+                        <div style="padding: 24px; text-align: center; color: var(--text-secondary); font-size: 13px; background: var(--bg-tertiary); border-radius: 8px;">
+                            No saved templates yet. Use "Save Template" to create one.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="templateModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add List/Library Modal -->
+    <div class="modal-overlay" id="addListModal" role="dialog" aria-modal="true" aria-labelledby="addListModalTitle">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title" id="addListModalTitle">Create New List or Library</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="addListModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <!-- Lists Section -->
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">📋 Lists</h3>
+                        <div style="display: grid; gap: 8px;">
+                            <button class="list-type-option" data-action="create-list" data-list-type="list" data-library-type="Generic List">
+                                <div style="font-weight: 600; margin-bottom: 4px;">Generic List</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Custom list with fields</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Libraries Section -->
+                    <div>
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">📚 Libraries</h3>
+                        <div style="display: grid; gap: 8px;">
+                            <button class="list-type-option" data-action="create-list" data-list-type="library" data-library-type="Document Library">
+                                <div style="font-weight: 600; margin-bottom: 4px;">📄 Document Library</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Store and manage files</div>
+                            </button>
+                            <button class="list-type-option" data-action="create-list" data-list-type="library" data-library-type="Picture Library">
+                                <div style="font-weight: 600; margin-bottom: 4px;">🖼️ Picture Library</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Image gallery</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="addListModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Template Modal -->
+    <div class="modal-overlay" id="saveTemplateModal" role="dialog" aria-modal="true" aria-labelledby="saveTemplateModalTitle">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title" id="saveTemplateModalTitle">💾 Save Template</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="saveTemplateModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="templateName">Template Name</label>
+                    <input type="text" class="form-input" id="templateName" placeholder="e.g., Project Management Schema" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="templateDescription">Description (Optional)</label>
+                    <textarea class="form-input" id="templateDescription" rows="3" placeholder="Brief description of this template..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="saveTemplateModal">Cancel</button>
+                <button class="toolbar-btn" data-action="confirm-save-template">Save Template</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- List Settings Modal -->
+    <div class="modal-overlay" id="listSettingsModal" role="dialog" aria-modal="true" aria-labelledby="listSettingsModalTitle">
+        <div class="modal" style="max-width: 650px;">
+            <div class="modal-header">
+                <div class="modal-title" id="listSettingsModalTitle">List Settings</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="listSettingsModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body" style="max-height: 65vh;">
+                <div style="padding: 6px 10px; background: var(--bg-tertiary, #f5f5f5); border: 1px solid var(--border-color, #ddd); border-radius: 6px; margin-bottom: 12px; font-size: 11px; color: var(--text-secondary, #666);">
+                    <span class="ps1-xml">PS1 + XML</span> = PowerShell &amp; PnP XML (not in Site Script) &nbsp;
+                    <span class="ps1-only">PS1</span> = PowerShell only
+                </div>
+                <div class="settings-grid">
+                    <div class="settings-group">
+                        <div class="settings-group-title">Versioning</div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsEnableVersioning"> Enable versioning</label>
+                        </div>
+                        <div class="settings-row">
+                            <label>Max major versions <span class="ps1-xml" title="Included in PowerShell and PnP XML output, not supported by Site Script">PS1 + XML</span></label>
+                            <input type="number" id="lsMajorVersionLimit" value="500" min="1" max="50000">
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsEnableMinorVersions"> Minor versions (drafts)</label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsEnableModeration"> Content approval</label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">General</div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsOnQuickLaunch"> Show on Quick Launch <span class="ps1-xml" title="Included in PowerShell and PnP XML output, not supported by Site Script">PS1 + XML</span></label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsEnableAttachments" checked> Enable attachments</label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsEnableFolderCreation"> Enable folders</label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsContentTypesEnabled"> Content types</label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">Content Type <span class="ps1-xml" title="Content types with site columns are included in PowerShell and PnP XML output. Site Script creates site columns only.">PS1 + XML</span></div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsUseContentType"> Use Content Type</label>
+                            <div class="settings-hint">Deploy fields as site columns bundled in a content type</div>
+                        </div>
+                        <div id="lsContentTypeFields" style="display: none;">
+                            <div class="settings-row">
+                                <label>Content Type Name</label>
+                                <input type="text" id="lsContentTypeName" placeholder="Auto: CTProduct" style="width: 200px;">
+                            </div>
+                            <div class="settings-row">
+                                <label>Content Type Group</label>
+                                <input type="text" id="lsContentTypeGroup" value="Custom Content Types" style="width: 200px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">Editing</div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsDisableGridEditing"> Disable grid editing <span class="ps1-xml" title="Included in PowerShell and PnP XML output, not supported by Site Script">PS1 + XML</span></label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsForceCheckout"> Require check-out</label>
+                        </div>
+                        <div class="settings-row">
+                            <label><input type="checkbox" id="lsHidden"> Hidden list</label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">Security <span class="ps1-xml" title="Security settings are included in PowerShell and PnP XML output, not supported by Site Script">PS1 + XML</span></div>
+                        <div class="settings-row">
+                            <label>Read access</label>
+                            <select id="lsReadSecurity">
+                                <option value="1">All items</option>
+                                <option value="2">Only their own</option>
+                            </select>
+                        </div>
+                        <div class="settings-row">
+                            <label>Write access</label>
+                            <select id="lsWriteSecurity">
+                                <option value="1">All items</option>
+                                <option value="2">Only their own</option>
+                                <option value="4">None</option>
+                            </select>
+                        </div>
+                        <div class="settings-row">
+                            <label>Experience</label>
+                            <select id="lsListExperience">
+                                <option value="0">Auto</option>
+                                <option value="1">Classic</option>
+                                <option value="2">Modern</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="listSettingsModal">Cancel</button>
+                <button class="toolbar-btn" data-action="save-list-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Field Settings Modal -->
+    <div class="modal-overlay" id="fieldSettingsModal" role="dialog" aria-modal="true" aria-labelledby="fieldSettingsModalTitle">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title" id="fieldSettingsModalTitle">Field Settings</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="fieldSettingsModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body" style="max-height: 65vh;">
+                <div id="fieldSettingsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="fieldSettingsModal">Cancel</button>
+                <button class="toolbar-btn" data-action="save-field-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Views Modal -->
+    <div class="modal-overlay" id="manageViewsModal" role="dialog" aria-modal="true" aria-labelledby="manageViewsModalTitle">
+        <div class="modal" style="max-width: 550px;">
+            <div class="modal-header">
+                <div class="modal-title" id="manageViewsModalTitle">Manage Views</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="manageViewsModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <div id="manageViewsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="manageViewsModal">Close</button>
+                <button class="toolbar-btn" id="manageViewsAddBtn" data-action="add-view" data-list-id="">+ Add View</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Editor Modal -->
+    <div class="modal-overlay" id="viewEditorModal" role="dialog" aria-modal="true" aria-labelledby="viewEditorModalTitle">
+        <div class="modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <div class="modal-title" id="viewEditorModalTitle">Add View</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="viewEditorModal" aria-label="Close dialog"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh;">
+                <div id="viewEditorContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="viewEditorModal">Cancel</button>
+                <button class="toolbar-btn" data-action="save-view">Save View</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- CSV Import Preview Modal -->
+    <div class="modal-overlay" id="csvPreviewModal" role="dialog" aria-modal="true" aria-labelledby="csvPreviewModalTitle">
+        <div class="modal" style="max-width: 900px; max-height: 80vh;">
+            <div class="modal-header">
+                <div class="modal-title" id="csvPreviewModalTitle">📁 CSV Import Preview</div>
+                <button class="modal-close" data-action="close-modal" data-modal-id="csvPreviewModal" aria-label="Close dialog"><span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <!-- Import Info -->
+                <div style="padding: 16px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 4px;">Import to: <span id="csvPreviewListName" style="color: var(--accent-primary);"></span></div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">
+                                <span id="csvPreviewRowCount">0</span> rows detected •
+                                <span id="csvPreviewColCount">0</span> columns
+                            </div>
+                        </div>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="csvHasHeaderCheckbox" checked>
+                            <span style="font-size: 13px;">First row is header</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Column Mapping -->
+                <div style="padding: 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
+                    <div style="font-weight: 600; margin-bottom: 12px;">Column Mapping</div>
+                    <div id="columnMappingContainer" style="display: grid; gap: 12px; max-height: 200px; overflow-y: auto;"></div>
+                </div>
+
+                <!-- Data Preview -->
+                <div style="padding: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 12px;">Data Preview (first 5 rows)</div>
+                    <div style="overflow: auto; max-height: 300px; border: 1px solid var(--border-color); border-radius: 6px;">
+                        <div id="csvPreviewTableContainer"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="toolbar-btn secondary" data-action="close-modal" data-modal-id="csvPreviewModal">Cancel</button>
+                <button class="toolbar-btn" id="confirmImportBtn" data-action="confirm-csv-import">Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" data-action="open-data-modal-ctx">
+            <span>📊</span> Manage Data
+        </div>
+        <div class="context-menu-item" data-action="list-settings-ctx">
+            <span>⚙</span> List Settings
+        </div>
+        <div class="context-menu-item" data-action="manage-views-ctx">
+            <span>👁</span> Manage Views
+        </div>
+        <div class="context-menu-item" data-action="duplicate-list-ctx">
+            <span>⎘</span> Duplicate List
+        </div>
+        <div class="context-menu-item" data-action="toggle-collapse-ctx">
+            <span>↕</span> Toggle Collapse
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="export-list-json">
+            <span>📄</span> Export as JSON
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" data-action="delete-list-ctx">
+            <span>🗑️</span> Delete List
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-message" id="loadingMessage">Loading...</div>
+            <div class="loading-progress" id="loadingProgress" style="display: none;">
+                <div class="loading-progress-bar">
+                    <div class="loading-progress-fill" id="loadingProgressFill"></div>
+                </div>
+                <div class="loading-progress-text" id="loadingProgressText">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dist/dbbuilder.js"></script>
+</body>
+</html>

@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Mermaid Webpart — User Guide</title>
+    <style>
+/* MM Mermaid Webpart — User Guide Stylesheet */
+/* kalmstrom.com branding: #154363 navy, #095495 blue, #a2bfd6 light blue, #454545 text */
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Verdana', 'Segoe UI', 'Calibri', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: #454545;
+    background: #e8edf2;
+}
+
+/* ── Page shell ── */
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+.page-content { padding: 18mm 24mm 22mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* ── Page-break control ── */
+h1, h2, h3             { break-after: avoid; }
+p, li, tr              { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box   { break-inside: avoid; }
+.feature-card          { break-inside: avoid; }
+.two-col               { break-inside: avoid; }
+table                  { break-inside: avoid; }
+.screenshot            { break-inside: avoid; }
+img                    { break-inside: avoid; }
+
+/* ── Cover page ── */
+.cover-page {
+    background: #154363;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 297mm;
+}
+
+.cover-accent-bar {
+    height: 6px;
+    background: linear-gradient(90deg, #095495, #a2bfd6);
+}
+
+.cover-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20mm 28mm;
+}
+
+.cover-eyebrow {
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a2bfd6;
+    margin-bottom: 6mm;
+}
+
+.cover-title {
+    font-size: 34pt;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 4mm;
+}
+
+.cover-subtitle {
+    font-size: 14pt;
+    font-weight: 300;
+    opacity: 0.75;
+    margin-bottom: 12mm;
+}
+
+.cover-version {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.5);
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 5mm;
+    display: inline-block;
+}
+
+.cover-footer {
+    padding: 8mm 28mm;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: rgba(255,255,255,0.45);
+}
+
+/* ── Page header / footer ── */
+.page-header {
+    padding: 7mm 24mm 0;
+    border-bottom: 2px solid #095495;
+    padding-bottom: 3mm;
+    margin-bottom: 6mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #095495;
+    font-family: 'Verdana', Arial, sans-serif;
+}
+
+.page-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5mm 24mm;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: #aaa;
+}
+
+/* ── Typography ── */
+h1 {
+    font-size: 21pt;
+    font-weight: 700;
+    color: #154363;
+    margin-bottom: 5mm;
+    line-height: 1.2;
+}
+
+h1 .chapter-num {
+    display: block;
+    font-size: 9pt;
+    font-weight: 600;
+    color: #095495;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 2mm;
+}
+
+h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #154363;
+    margin-top: 8mm;
+    margin-bottom: 3mm;
+    border-bottom: 1px solid #dde4ec;
+    padding-bottom: 1.5mm;
+}
+
+h3 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #454545;
+    margin-top: 5mm;
+    margin-bottom: 2mm;
+}
+
+h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #454545;
+    margin-top: 3mm;
+    margin-bottom: 1.5mm;
+}
+
+p  { margin-bottom: 3mm; text-align: justify; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: #095495; text-decoration: none; }
+code { font-family: 'Consolas', 'Courier New', monospace; font-size: 9pt; background: #f0f4f8; padding: 0.5mm 2mm; border-radius: 3px; }
+
+/* ── Chapter intro banner ── */
+.chapter-intro {
+    background: #eef4fb;
+    border-left: 4px solid #095495;
+    padding: 4mm 6mm;
+    margin-bottom: 6mm;
+    border-radius: 0 4px 4px 0;
+}
+
+/* ── Callout boxes ── */
+.note-box { background: #fff8e1; border-left: 3px solid #f9a825; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+.tip-box  { background: #e8f5e9; border-left: 3px solid #43a047; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+.info-box { background: #e3f2fd; border-left: 3px solid #1976d2; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+
+/* ── Step list ── */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    background: #095495; color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5mm; height: 5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.5mm; flex-shrink: 0;
+}
+
+/* ── Two-column cards ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin: 3mm 0; }
+
+.feature-card {
+    background: #f7f9fc;
+    border: 1px solid #dde4ec;
+    border-radius: 5px;
+    padding: 4mm 5mm;
+}
+
+.feature-card h4 { margin-top: 0; color: #095495; font-size: 9.5pt; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt; }
+th { background: #154363; color: white; padding: 2mm 4mm; text-align: left; font-weight: 700; font-size: 9pt; }
+td { padding: 2mm 4mm; border-bottom: 1px solid #e8ecf0; vertical-align: top; }
+tr:nth-child(even) td { background: #f7f9fc; }
+tr:last-child td { border-bottom: none; }
+
+/* ── TOC ── */
+.toc-title { font-size: 22pt; font-weight: 700; color: #154363; margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.5mm 0; }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.5pt; color: #555; }
+.toc-num  { min-width: 12mm; flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1px dotted #ccc; margin: 0 2mm 1.5mm; }
+.toc-page { color: #095495; font-size: 9pt; }
+
+/* ── Diagram type badge ── */
+.type-badge {
+    display: inline-block;
+    background: #095495;
+    color: white;
+    font-size: 7.5pt;
+    font-weight: 700;
+    padding: 0.5mm 2.5mm;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-right: 2mm;
+}
+
+/* ── Keyboard shortcut ── */
+kbd {
+    display: inline-block;
+    background: #f0f4f8;
+    border: 1px solid #c8d4e0;
+    border-radius: 3px;
+    padding: 0 2mm;
+    font-family: 'Consolas', monospace;
+    font-size: 9pt;
+    box-shadow: 0 1px 0 #b0bec5;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-body">
+        <div class="cover-eyebrow">kalmstrom.com Business Solutions</div>
+        <div class="cover-title">Mermaid<br>Webpart</div>
+        <div class="cover-subtitle">User Guide</div>
+        <div class="cover-version">Version 0.1.4.5 &nbsp;&middot;&nbsp; SharePoint Classic</div>
+    </div>
+    <div class="cover-footer">
+        <div>kalmstrom.com Business Solutions</div>
+        <div>User Guide</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Contents</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <div class="toc-entry toc-h1"><span class="toc-num">1</span>Introduction<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>What is Mermaid?<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>Why text-based diagrams?<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>When NOT to use Mermaid<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>The Mermaid ecosystem<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.5</span>What the Mermaid Webpart adds<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.6</span>Webpart features summary<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.7</span>Supported diagram types<div class="toc-dots"></div><span class="toc-page">7</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Getting started<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>Adding the webpart to a page<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>The default diagram<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>How diagrams are saved<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.4</span>Editing an existing diagram<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.5</span>Permissions<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.6</span>Mobile and tablet use<div class="toc-dots"></div><span class="toc-page">10</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>The code editor<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>Editor layout<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>Writing Mermaid code<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>Live preview behaviour<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.4</span>Keyboard shortcuts in the editor<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.5</span>Saving and discarding changes<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.6</span>Version and instance information<div class="toc-dots"></div><span class="toc-page">12</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>Tools<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>Edit in Live<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Snippets<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Right-click context menu (preview panel)<div class="toc-dots"></div><span class="toc-page">15</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Example library<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Opening the examples section<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Featured examples<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Additional examples by type<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>Solution showcase<div class="toc-dots"></div><span class="toc-page">18</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">6</span>Diagram type reference<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.1</span>Flow and process diagrams<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.2</span>Data and relationship diagrams<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Architecture diagrams<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Project planning diagrams<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Data visualisation<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.6</span>Other types<div class="toc-dots"></div><span class="toc-page">22</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Troubleshooting<div class="toc-dots"></div><span class="toc-page">23</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>Common issues and solutions<div class="toc-dots"></div><span class="toc-page">23</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Permissions<div class="toc-dots"></div><span class="toc-page">25</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>Known limitations<div class="toc-dots"></div><span class="toc-page">25</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Mobile and tablet use<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 1</span>Introduction</h1>
+
+        <div class="chapter-intro">
+            <p>The Mermaid Webpart brings professional, text-based diagramming to SharePoint classic pages. Before exploring the webpart itself, this chapter explains what Mermaid is, why text-based diagrams outperform drawing tools for most organisational use cases, and what the webpart adds on top of the Mermaid engine.</p>
+        </div>
+<h2>1.1 What is Mermaid?</h2>
+        <p>Mermaid is an open-source JavaScript library that converts plain text into SVG diagrams directly in the browser. It was created in 2014 by Knut Sveidqvist and has since grown into one of the most widely adopted diagramming systems in the software industry. Major platforms — GitHub, GitLab, Confluence, Notion, and Azure DevOps — all render Mermaid natively in their Markdown editors.</p>
+
+        <p>The core idea is simple: instead of drawing a diagram by dragging boxes and arrows, you <em>describe</em> the diagram in a concise notation, and Mermaid renders it. A flowchart that would take ten minutes to arrange by hand can be written in seconds:</p>
+<div class="info-box">
+            <code>graph TD</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;A[Customer Request] --&gt; B{In Stock?}</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|Yes| C[Process Order]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|No| D[Back Order]</code>
+        </div>
+
+        <p>This notation is instantly readable by a human, can be stored in any text file, and produces a clean, consistently styled vector diagram every time it is rendered.</p>
+
+        <!-- Mermaid rendering pipeline -->
+<svg viewBox="0 0 560 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mermaid rendering pipeline: text code becomes a diagram in four stages"
+             style="width:100%;display:block;margin:5mm 0">
+            <defs>
+                <marker id="ch1-arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                    <path d="M0,0 L6,3.5 L0,7 Z" fill="#a2bfd6"/>
+                </marker>
+            </defs>
+
+            <!-- Stage 1: Text code -->
+            <rect x="8" y="10" width="120" height="66" rx="6" fill="#f7f9fc" stroke="#095495" stroke-width="1.5"/>
+            <text x="68" y="27" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#095495" font-weight="bold">Mermaid text</text>
+            <rect x="16" y="33" width="96" height="5" rx="2" fill="#095495" opacity="0.35"/>
+            <rect x="24" y="42" width="72" height="4" rx="2" fill="#454545" opacity="0.2"/>
+            <rect x="24" y="50" width="84" height="4" rx="2" fill="#454545" opacity="0.2"/>
+            <rect x="24" y="58" width="60" height="4" rx="2" fill="#454545" opacity="0.2"/>
+            <rect x="16" y="66" width="80" height="5" rx="2" fill="#a2bfd6" opacity="0.4"/>
+
+            <!-- Arrow 1 → 2 -->
+            <line x1="128" y1="43" x2="148" y2="43" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch1-arr)"/>
+            <text x="138" y="38" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">parse</text>
+
+            <!-- Stage 2: Mermaid Engine -->
+            <rect x="150" y="10" width="120" height="66" rx="6" fill="#095495"/>
+            <text x="210" y="37" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">Mermaid</text>
+            <text x="210" y="50" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">Engine</text>
+            <text x="210" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#a2bfd6">JavaScript library</text>
+
+            <!-- Arrow 2 → 3 -->
+            <line x1="270" y1="43" x2="290" y2="43" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch1-arr)"/>
+            <text x="280" y="38" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">render</text>
+
+            <!-- Stage 3: SVG output -->
+            <rect x="292" y="10" width="120" height="66" rx="6" fill="#f7f9fc" stroke="#43a047" stroke-width="1.5"/>
+            <text x="352" y="27" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047" font-weight="bold">SVG output</text>
+            <!-- Mini diagram -->
+            <rect x="320" y="34" width="36" height="15" rx="3" fill="#095495" opacity="0.7"/>
+            <text x="338" y="44" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="white">Start</text>
+            <line x1="338" y1="49" x2="338" y2="54" stroke="#454545" stroke-width="1"/>
+            <polygon points="338,55 328,66 348,66" fill="#f59e0b" opacity="0.8"/>
+            <text x="338" y="64" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="#454545">OK?</text>
+
+            <!-- Arrow 3 → 4 -->
+            <line x1="412" y1="43" x2="432" y2="43" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch1-arr)"/>
+            <text x="422" y="38" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">display</text>
+
+            <!-- Stage 4: Browser / SharePoint -->
+            <rect x="434" y="10" width="118" height="66" rx="6" fill="#154363"/>
+            <text x="493" y="32" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="white" font-weight="bold">SharePoint</text>
+            <text x="493" y="45" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="white" font-weight="bold">page</text>
+            <text x="493" y="62" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#a2bfd6">visible to all users</text>
+        </svg>
+<h2>1.2 Why text-based diagrams?</h2>
+        <p>Most organisations still use visual drawing tools &mdash; Microsoft Visio, PowerPoint SmartArt, Lucidchart, or browser-based alternatives &mdash; to create diagrams. These tools have well-known limitations that text-based approaches solve directly.</p>
+<div class="two-col">
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<div class="feature-card">
+                <h4>Consistent style, automatically</h4>
+                <p>In drawing tools, every person who edits a diagram can change fonts, colours, box sizes, and spacing. Mermaid applies a consistent visual theme to every diagram, every time, with no manual alignment effort.</p>
+            </div>
+<div class="feature-card">
+                <h4>Easy to update</h4>
+                <p>Adding a new step to a Visio flowchart requires moving every downstream box to make room. In Mermaid you add one line of text and the layout recalculates automatically.</p>
+            </div>
+<div class="feature-card">
+                <h4>Version control friendly</h4>
+                <p>Because Mermaid diagrams are plain text, they can be stored in source control, diffed line by line, and reviewed in pull requests &mdash; impossible with binary drawing files.</p>
+            </div>
+<div class="feature-card">
+                <h4>No software licence required</h4>
+                <p>Mermaid runs in any browser, free of charge. Viewers do not need Visio, Lucidchart, or any other installed tool to see a rendered diagram.</p>
+            </div>
+<div class="feature-card">
+                <h4>Lives where the content lives</h4>
+                <p>A Mermaid diagram is stored as text alongside the page it illustrates. It does not require export, file attachment, or a separate link to an external system.</p>
+            </div>
+<div class="feature-card">
+                <h4>Accessible output</h4>
+                <p>Mermaid renders SVG, which is natively accessible. Accessibility titles and descriptions can be added directly in the code with <code>accTitle</code> and <code>accDescr</code> directives.</p>
+            </div>
+        </div>
+
+        <!-- Text-based vs drawing-tool comparison -->
+<svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparison of traditional drawing tools versus Mermaid text-based approach"
+             style="width:100%;display:block;margin:5mm 0">
+            <defs>
+                <marker id="ch1b-arr-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L5,3 L0,6 Z" fill="#d32f2f"/>
+                </marker>
+                <marker id="ch1b-arr-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L5,3 L0,6 Z" fill="#43a047"/>
+                </marker>
+            </defs>
+
+            <!-- Left column header: Traditional tools -->
+            <rect x="8" y="8" width="262" height="22" rx="4" fill="#d32f2f" opacity="0.85"/>
+            <text x="139" y="22" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">Traditional drawing tools</text>
+
+            <!-- Right column header: Mermaid -->
+            <rect x="290" y="8" width="262" height="22" rx="4" fill="#43a047" opacity="0.85"/>
+            <text x="421" y="22" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">Mermaid text-based</text>
+
+            <!-- Divider line -->
+            <line x1="280" y1="8" x2="280" y2="122" stroke="#dde4ec" stroke-width="1.5"/>
+
+            <!-- Row 1 -->
+            <text x="14" y="46" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#d32f2f">&#10007;</text>
+            <text x="26" y="46" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Manual layout — drag every box and arrow</text>
+            <text x="296" y="46" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047">&#10003;</text>
+            <text x="308" y="46" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Auto-layout — engine positions all elements</text>
+
+            <!-- Row 2 -->
+            <text x="14" y="62" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#d32f2f">&#10007;</text>
+            <text x="26" y="62" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Inconsistent styles per author</text>
+            <text x="296" y="62" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047">&#10003;</text>
+            <text x="308" y="62" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Uniform theme applied automatically</text>
+
+            <!-- Row 3 -->
+            <text x="14" y="78" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#d32f2f">&#10007;</text>
+            <text x="26" y="78" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Binary files — no diff, no version control</text>
+            <text x="296" y="78" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047">&#10003;</text>
+            <text x="308" y="78" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Plain text — diffable, stored with content</text>
+
+            <!-- Row 4 -->
+            <text x="14" y="94" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#d32f2f">&#10007;</text>
+            <text x="26" y="94" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Requires Visio / Lucidchart licence</text>
+            <text x="296" y="94" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047">&#10003;</text>
+            <text x="308" y="94" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Free, open-source, runs in any browser</text>
+
+            <!-- Row 5 -->
+            <text x="14" y="110" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#d32f2f">&#10007;</text>
+            <text x="26" y="110" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Adding a step = rearrange everything</text>
+            <text x="296" y="110" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#43a047">&#10003;</text>
+            <text x="308" y="110" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">Adding a step = add one line of text</text>
+        </svg>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>1.3 When NOT to use Mermaid</h2>
+        <p>Mermaid is excellent for structured, logic-driven diagrams. It is a less natural fit when:</p>
+        <ul>
+            <li><strong>Precise visual layout matters.</strong> Mermaid controls the layout algorithmically. If you need exact pixel placement &mdash; floor plans, hardware schematics, custom infographics &mdash; a drawing tool is more appropriate.</li>
+            <li><strong>Non-technical authors create diagrams.</strong> Mermaid requires learning a small syntax. The built-in examples and snippets reduce this barrier significantly, but some users will still prefer a visual tool.</li>
+            <li><strong>Diagrams change constantly in real time.</strong> If the underlying data changes daily (e.g. a live org chart), a data-connected diagramming solution or auto-generated chart is more maintainable.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>1.4 The Mermaid ecosystem</h2>
+        <p>Because Mermaid is open-source and widely adopted, a large ecosystem has grown around it:</p>
+<table>
+            <tr><th>Resource</th><th>Description</th></tr>
+            <tr>
+                <td><strong>Mermaid Live Editor</strong><br><code>mermaid.live</code></td>
+                <td>Official online editor with instant preview, theme selector, PNG/SVG export, and shareable diagram URLs. The Mermaid Webpart has a built-in link to open any diagram there.</td>
+            </tr>
+            <tr>
+                <td><strong>GitHub</strong></td>
+                <td>Mermaid code blocks in Markdown files, issues, and pull request descriptions are rendered automatically. Writing a diagram in the webpart produces code that is immediately usable in GitHub documentation.</td>
+            </tr>
+            <tr>
+                <td><strong>Confluence</strong></td>
+                <td>Atlassian Confluence supports Mermaid natively in the Confluence Cloud editor. Teams who use both SharePoint and Confluence can share the same diagram code between platforms.</td>
+            </tr>
+            <tr>
+                <td><strong>VS Code</strong></td>
+                <td>Multiple Mermaid extensions for Visual Studio Code provide live preview in the editor sidebar. Developers can write diagrams in their IDE and paste them directly into the webpart.</td>
+            </tr>
+            <tr>
+                <td><strong>Documentation tools</strong></td>
+                <td>MkDocs, Docusaurus, Hugo, and Jekyll all have Mermaid plugins. Diagrams written for these tools work unchanged in the Mermaid Webpart.</td>
+            </tr>
+        </table>
+<h2>1.5 What the Mermaid Webpart adds</h2>
+        <p>The Mermaid engine is a JavaScript library. Integrating it into a SharePoint classic webpart requires solving several additional problems that the raw library does not address:</p>
+
+        <ul>
+            <li><strong>Persistence.</strong> The Mermaid code must be saved and reloaded with the page. The webpart stores code in the SharePoint webpart property bag, so diagrams survive page saves, deployments, and browser refreshes.</li>
+            <li><strong>Edit workflow.</strong> Classic SharePoint has no native code editor. The webpart provides a full-screen modal dialog with code editor, live preview, and save/cancel controls.</li>
+            <li><strong>Discovery.</strong> New users do not know Mermaid syntax. The built-in example library (40&plus; ready-made diagrams) and snippet menu let users produce useful diagrams immediately without reading the Mermaid documentation.</li>
+            <li><strong>Click handler authoring.</strong> The Mermaid <code>click</code> syntax is not obvious to non-developers. The Add Click Handler tool generates correct click syntax from a form, making interactive diagrams accessible to all authors.</li>
+            <li><strong>Multi-instance support.</strong> Multiple diagrams can exist on the same page. Each webpart instance maintains its own code independently.</li>
+        </ul>
+<h2>1.6 Webpart features summary</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Live code editor</h4>
+                <p>Side-by-side editor and live preview. Changes are reflected within 500&thinsp;ms of typing.</p>
+            </div>
+<div class="feature-card">
+                <h4>40+ example diagrams</h4>
+                <p>Ready-made examples across all supported types. One click loads any example into the editor.</p>
+            </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<div class="feature-card">
+                <h4>Code snippets</h4>
+                <p>Insert shapes, link styles, themes, and click handlers at the cursor from a categorised menu.</p>
+            </div>
+<div class="feature-card">
+                <h4>Click-through nodes</h4>
+                <p>A guided form generates Mermaid click syntax for any diagram node with no manual coding.</p>
+            </div>
+<div class="feature-card">
+                <h4>Mermaid Live integration</h4>
+                <p>Open any diagram in the official Live Editor for advanced editing, then paste code back.</p>
+            </div>
+<div class="feature-card">
+                <h4>Right-click context menu</h4>
+                <p>Right-click any preview node to add a link or jump to its definition in the code editor.</p>
+            </div>
+        </div>
+<h2>1.7 Supported diagram types</h2>
+        <p>The webpart supports all 20 diagram types provided by the Mermaid engine:</p>
+<div class="two-col">
+            <div>
+<table>
+                    <tr><th>Type</th><th>Keyword</th></tr>
+                    <tr><td>Flowchart</td><td><code>graph TD</code> / <code>flowchart</code></td></tr>
+                    <tr><td>Sequence diagram</td><td><code>sequenceDiagram</code></td></tr>
+                    <tr><td>Class diagram</td><td><code>classDiagram</code></td></tr>
+                    <tr><td>State diagram</td><td><code>stateDiagram-v2</code></td></tr>
+                    <tr><td>Entity Relationship</td><td><code>erDiagram</code></td></tr>
+                    <tr><td>Gantt chart</td><td><code>gantt</code></td></tr>
+                    <tr><td>Git graph</td><td><code>gitGraph</code></td></tr>
+                    <tr><td>Mindmap</td><td><code>mindmap</code></td></tr>
+                    <tr><td>Timeline</td><td><code>timeline</code></td></tr>
+                    <tr><td>User journey</td><td><code>journey</code></td></tr>
+                </table>
+            </div>
+            <div>
+<table>
+                    <tr><th>Type</th><th>Keyword</th></tr>
+                    <tr><td>Architecture diagram</td><td><code>architecture-beta</code></td></tr>
+                    <tr><td>C4 diagram</td><td><code>C4Context</code></td></tr>
+                    <tr><td>Pie chart</td><td><code>pie</code></td></tr>
+                    <tr><td>Sankey diagram</td><td><code>sankey-beta</code></td></tr>
+                    <tr><td>XY chart</td><td><code>xychart-beta</code></td></tr>
+                    <tr><td>Quadrant chart</td><td><code>quadrantChart</code></td></tr>
+                    <tr><td>Kanban board</td><td><code>kanban</code></td></tr>
+                    <tr><td>Treemap</td><td><code>treemap-beta</code></td></tr>
+                    <tr><td>Requirement diagram</td><td><code>requirementDiagram</code></td></tr>
+                    <tr><td>Block diagram</td><td><code>block-beta</code></td></tr>
+                </table>
+            </div>
+        </div>
+<div class="note-box">
+            <strong>Note:</strong> Types marked <em>-beta</em> are provided by the Mermaid engine in preview status and may change in future versions of the library.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 2 &mdash; Getting started</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 2</span>Getting started</h1>
+
+        <div class="chapter-intro">
+            <p>This chapter explains how to add the Mermaid Webpart to a SharePoint page and what you see when it first loads.</p>
+        </div>
+<h2>2.1 Adding the webpart to a page</h2>
+        <p>The webpart is deployed to SharePoint by an administrator and appears in the classic webpart gallery. To add it to a page:</p>
+
+        <ol class="step-list">
+            <li>Open the target SharePoint page in edit mode (click <strong>Edit</strong> in the page ribbon or <em>Site Actions &gt; Edit Page</em>).</li>
+            <li>Click inside the webpart zone where you want the diagram to appear.</li>
+            <li>From the <strong>Insert</strong> tab in the ribbon, choose <strong>Web Part</strong>.</li>
+            <li>In the gallery, find <strong>Mermaid Webpart</strong> under the appropriate category and click <strong>Add</strong>.</li>
+            <li>The webpart is inserted and shows a default diagram immediately.</li>
+            <li>Save the page. The diagram is now visible to all visitors.</li>
+        </ol>
+<div class="tip-box">
+            <strong>Tip:</strong> You can add more than one Mermaid Webpart to the same page. Each instance stores its own diagram code independently.
+        </div>
+<h2>2.2 The default diagram</h2>
+        <p>When the webpart is first placed on a page, it displays a built-in example that demonstrates several Mermaid features in one diagram: coloured nodes, styled links, and clickable nodes that open URLs in a new tab.</p>
+
+        <p>The default diagram is a site architecture chart showing:</p>
+        <ul>
+            <li>A <strong>Home</strong> node linking to Projects and Admin Center</li>
+            <li>Two project leaf nodes (Project 1, Project 2)</li>
+            <li>Custom colours applied via <code>classDef</code> declarations</li>
+            <li>Styled arrows (solid and dashed) via <code>linkStyle</code></li>
+            <li>Clickable nodes using Mermaid <code>click</code> syntax</li>
+        </ul>
+
+        <p>You can replace this diagram at any time by opening the code editor (see Chapter 3).</p>
+<h2>2.3 How diagrams are saved</h2>
+        <p>The Mermaid code for each webpart instance is saved in the SharePoint page itself using the standard webpart property bag. No external lists or databases are required. The diagram travels with the page and is immediately available after saving.</p>
+<div class="info-box">
+            <strong>For administrators:</strong> The webpart uses the SharePoint webpart storage mechanism. Backup and restore of diagrams follows normal page backup procedures. There is no separate data store to manage.
+        </div>
+<h2>2.4 Editing an existing diagram</h2>
+        <p>To change a diagram that is already on the page:</p>
+
+        <!-- Edit workflow illustration -->
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 2 &mdash; Getting started</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<svg viewBox="0 0 520 88" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five-step edit workflow diagram"
+             style="width:100%;display:block;margin:5mm 0">
+            <defs>
+                <marker id="ch2-arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                    <path d="M0,0 L6,3.5 L0,7 Z" fill="#a2bfd6"/>
+                </marker>
+            </defs>
+            <!-- Step 1 -->
+            <rect x="8" y="12" width="86" height="44" rx="6" fill="#095495"/>
+            <text x="51" y="31" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">1. Edit mode</text>
+            <text x="51" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">put page in</text>
+            <text x="51" y="56" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">edit mode</text>
+            <!-- Arrow 1→2 -->
+            <line x1="94" y1="34" x2="104" y2="34" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch2-arr)"/>
+            <!-- Step 2 -->
+            <rect x="106" y="12" width="86" height="44" rx="6" fill="#095495"/>
+            <text x="149" y="31" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">2. Open</text>
+            <text x="149" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">click Edit</text>
+            <text x="149" y="56" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">Web Part</text>
+            <!-- Arrow 2→3 -->
+            <line x1="192" y1="34" x2="202" y2="34" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch2-arr)"/>
+            <!-- Step 3 -->
+            <rect x="204" y="12" width="86" height="44" rx="6" fill="#095495"/>
+            <text x="247" y="31" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">3. Edit code</text>
+            <text x="247" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">write Mermaid</text>
+            <text x="247" y="56" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">syntax</text>
+            <!-- Arrow 3→4 -->
+            <line x1="290" y1="34" x2="300" y2="34" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch2-arr)"/>
+            <!-- Step 4 -->
+            <rect x="302" y="12" width="86" height="44" rx="6" fill="#095495"/>
+            <text x="345" y="31" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">4. Click OK</text>
+            <text x="345" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">diagram</text>
+            <text x="345" y="56" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">re-renders</text>
+            <!-- Arrow 4→5 -->
+            <line x1="388" y1="34" x2="398" y2="34" stroke="#a2bfd6" stroke-width="1.5" marker-end="url(#ch2-arr)"/>
+            <!-- Step 5 -->
+            <rect x="400" y="12" width="112" height="44" rx="6" fill="#154363"/>
+            <text x="456" y="31" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="white" font-weight="bold">5. Save page</text>
+            <text x="456" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">changes visible</text>
+            <text x="456" y="56" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">to all users</text>
+        </svg>
+
+        <ol class="step-list">
+            <li>Put the page in edit mode.</li>
+            <li>Click the webpart edit handle (the small arrow that appears when hovering the webpart in edit mode) and choose <strong>Edit Web Part</strong>, <em>or</em> click the <strong>Edit</strong> button that appears in the webpart toolbar.</li>
+            <li>The Mermaid Code Editor dialog opens (see Chapter 3).</li>
+            <li>Make your changes and click <strong>OK</strong> to save and re-render.</li>
+            <li>Save the page as normal.</li>
+        </ol>
+<h2>2.5 Permissions</h2>
+        <p>Access to the Mermaid Webpart is controlled entirely by SharePoint's standard page permissions. No special webpart-level permissions exist.</p>
+<table>
+            <tr><th>Role</th><th>Required permission</th><th>Can do</th></tr>
+            <tr>
+                <td><strong>Administrator</strong></td>
+                <td>Farm Admin / Full Control</td>
+                <td>Deploy the webpart package to the farm solution gallery and activate the site feature. Inherits all editor capabilities.</td>
+            </tr>
+            <tr>
+                <td><strong>Page editor</strong></td>
+                <td>Contribute or Design</td>
+                <td>Add the webpart to a page, open the code editor, write and save diagrams, publish changes.</td>
+            </tr>
+            <tr>
+                <td><strong>Visitor</strong></td>
+                <td>Read</td>
+                <td>View the rendered diagram and click any interactive nodes. Cannot open the editor.</td>
+            </tr>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 2 &mdash; Getting started</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>2.6 Mobile and tablet use</h2>
+        <p>The webpart behaves differently in view mode compared to edit mode on small screens:</p>
+
+        <ul>
+            <li><strong>View mode:</strong> The rendered SVG diagram scales to fill the full width of the webpart zone. It is readable on any screen size. Interactive (clickable) nodes respond to taps on touch devices.</li>
+            <li><strong>Edit mode:</strong> The code editor is a fixed-size dialog (900&thinsp;&times;&thinsp;600&thinsp;px). On small screens or with an on-screen keyboard active, the dialog may be partially obscured. Authoring diagrams is best done on a desktop browser with a physical keyboard.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 3 &mdash; The code editor</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 3</span>The code editor</h1>
+
+        <div class="chapter-intro">
+            <p>The Mermaid Code Editor is the main dialog for writing and previewing diagram code. It opens as a modal window (900&thinsp;&times;&thinsp;600 px, resizable) with the code panel on the left and a live preview on the right.</p>
+        </div>
+<h2>3.1 Editor layout</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Code panel (left)</h4>
+                <p>A text editor pre-loaded with the current diagram code. Supports <kbd>Tab</kbd> for indentation (inserts two spaces). Spell-check is disabled so Mermaid keywords are not highlighted as errors.</p>
+            </div>
+<div class="feature-card">
+                <h4>Live preview (right)</h4>
+                <p>Automatically re-renders the diagram 500&thinsp;ms after you stop typing. If the code contains a syntax error the preview area shows the error message in red instead of a diagram.</p>
+            </div>
+        </div>
+
+        <p>A splitter bar between the two panels can be dragged left or right. Each panel has a minimum width of 250&thinsp;px.</p>
+
+        <!-- Editor layout illustration -->
+<svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic of the Mermaid Code Editor dialog"
+             style="width:100%;display:block;margin:5mm 0">
+            <defs>
+                <marker id="ch3-node-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L5,3 L0,6 Z" fill="#454545"/>
+                </marker>
+            </defs>
+            <!-- Dialog title bar -->
+            <rect x="8" y="8" width="544" height="22" rx="4" fill="#154363"/>
+            <text x="284" y="22" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">Mermaid Code Editor</text>
+            <rect x="531" y="12" width="14" height="14" rx="2" fill="rgba(255,255,255,0.2)"/>
+            <text x="538" y="22.5" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white">×</text>
+
+            <!-- Left panel (code) -->
+            <rect x="8" y="30" width="258" height="118" fill="#f8f9fa" stroke="#ddd" stroke-width="1"/>
+            <text x="18" y="44" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#666" font-weight="bold">CODE PANEL</text>
+            <!-- Fake code lines -->
+            <rect x="18" y="52" width="110" height="5" rx="2" fill="#095495" opacity="0.4"/>
+            <rect x="28" y="62" width="85" height="4" rx="2" fill="#454545" opacity="0.18"/>
+            <rect x="28" y="71" width="108" height="4" rx="2" fill="#454545" opacity="0.18"/>
+            <rect x="28" y="80" width="70" height="4" rx="2" fill="#454545" opacity="0.18"/>
+            <rect x="18" y="92" width="55" height="4" rx="2" fill="#454545" opacity="0.12"/>
+            <rect x="18" y="101" width="95" height="4" rx="2" fill="#454545" opacity="0.12"/>
+            <rect x="18" y="110" width="68" height="4" rx="2" fill="#454545" opacity="0.12"/>
+            <rect x="18" y="122" width="88" height="5" rx="2" fill="#a2bfd6" opacity="0.5"/>
+            <rect x="18" y="131" width="70" height="5" rx="2" fill="#a2bfd6" opacity="0.5"/>
+
+            <!-- Splitter bar -->
+            <rect x="266" y="30" width="8" height="118" fill="#dde4ec"/>
+            <rect x="268" y="85" width="4" height="18" rx="2" fill="#a2bfd6"/>
+            <text x="270" y="107" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">⇔</text>
+
+            <!-- Right panel (preview) -->
+            <rect x="274" y="30" width="278" height="118" fill="white" stroke="#ddd" stroke-width="1"/>
+            <!-- Preview label bar -->
+            <rect x="274" y="30" width="278" height="16" fill="#f8f9fa" stroke-bottom="1px solid #ddd"/>
+            <text x="284" y="41" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#666" font-weight="bold">LIVE PREVIEW</text>
+            <text x="420" y="41" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#888" font-style="italic">updates 500ms after typing</text>
+            <!-- Fake rendered diagram -->
+            <rect x="340" y="54" width="54" height="20" rx="4" fill="#095495" opacity="0.75"/>
+            <text x="367" y="67" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="white">Start</text>
+            <line x1="367" y1="74" x2="367" y2="83" stroke="#454545" stroke-width="1.5" marker-end="url(#ch3-node-arr)"/>
+            <polygon points="367,84 352,102 382,102" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="367" y="97" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#454545">Ready?</text>
+            <line x1="352" y1="93" x2="310" y2="93" stroke="#454545" stroke-width="1" marker-end="url(#ch3-node-arr)"/>
+            <text x="331" y="89" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">No</text>
+            <rect x="284" y="100" width="40" height="18" rx="3" fill="#888" opacity="0.4"/>
+            <text x="304" y="112" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="white">Wait</text>
+            <line x1="367" y1="102" x2="367" y2="111" stroke="#454545" stroke-width="1" marker-end="url(#ch3-node-arr)"/>
+            <text x="382" y="107" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">Yes</text>
+            <rect x="340" y="112" width="54" height="20" rx="4" fill="#43a047" opacity="0.75"/>
+            <text x="367" y="125" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="white">Continue</text>
+
+            <!-- Toolbar row -->
+            <rect x="8" y="148" width="544" height="26" fill="#f0f4f8" stroke="#ddd" stroke-width="1"/>
+            <rect x="16" y="154" width="76" height="14" rx="3" fill="white" stroke="#ddd" stroke-width="1"/>
+            <text x="54" y="163.5" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#095495">&#x270F; Edit in Live</text>
+            <rect x="98" y="154" width="62" height="14" rx="3" fill="white" stroke="#ddd" stroke-width="1"/>
+            <text x="129" y="163.5" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#454545">&#x1F4CB; Snippets</text>
+            <rect x="166" y="154" width="64" height="14" rx="3" fill="white" stroke="#ddd" stroke-width="1"/>
+            <text x="198" y="163.5" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#454545">&#x1F517; Add Click</text>
+            <rect x="462" y="152" width="82" height="18" rx="4" fill="#095495"/>
+            <text x="503" y="164" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">OK</text>
+
+            <!-- Examples + Info rows -->
+            <rect x="8" y="174" width="544" height="14" fill="#fffde7" stroke="#ddd" stroke-width="1"/>
+            <text x="18" y="184" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">&#9654; Example data &nbsp;(click to expand)</text>
+            <rect x="8" y="188" width="544" height="12" fill="white" stroke="#ddd" stroke-width="1"/>
+            <text x="18" y="197" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#bbb">Mermaid Webpart 0.1.4.5</text>
+            <text x="544" y="197" text-anchor="end" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#bbb">instance-guid</text>
+        </svg>
+<h2>3.2 Writing Mermaid code</h2>
+        <p>Mermaid code starts with a diagram type declaration, followed by the content specific to that type. For example, a basic flowchart:</p>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 3 &mdash; The code editor</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<div class="info-box">
+            <code>graph TD</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;A[Start] --&gt; B{Ready?}</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|Yes| C[Continue]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|No| D[Wait]</code>
+        </div>
+
+        <p>Each diagram type has its own syntax. The built-in examples (Chapter 5) demonstrate the most common patterns. For a full language reference visit the official Mermaid documentation at <a href="https://mermaid.js.org/intro/">mermaid.js.org</a>.</p>
+<h2>3.3 Live preview behaviour</h2>
+        <p>The preview updates automatically while you type. There is a 500&thinsp;ms debounce delay, so the engine waits until you pause before re-rendering. This prevents unnecessary re-renders on every keystroke.</p>
+
+        <p>When the code panel is empty, the preview displays the placeholder text <em>"Enter Mermaid code to see preview…"</em></p>
+
+        <p>When the code contains a syntax error, the preview shows a red error box with the engine's error message. The error does not affect the saved diagram — the previous valid diagram remains on the page until you save a new valid one.</p>
+<h2>3.4 Keyboard shortcuts in the editor</h2>
+<table>
+            <tr><th>Key</th><th>Action</th></tr>
+            <tr><td><kbd>Tab</kbd></td><td>Insert two spaces at the cursor (does not change keyboard focus)</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo (browser native)</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Redo (browser native)</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Select all code (browser native)</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>V</kbd></td><td>Copy / Paste (browser native)</td></tr>
+        </table>
+<h2>3.5 Saving and discarding changes</h2>
+        <p>The toolbar at the bottom of the editor contains two controls:</p>
+        <ul>
+            <li><strong>OK</strong> &mdash; closes the dialog, saves the new Mermaid code, and re-renders the diagram on the page. The page still needs to be saved via the SharePoint ribbon to persist the change.</li>
+            <li><strong>Closing the dialog</strong> (window &times; button) &mdash; discards all changes made in this editor session. The diagram on the page is unchanged.</li>
+        </ul>
+<div class="note-box">
+            <strong>Remember:</strong> Clicking <strong>OK</strong> saves the code to the webpart but does not save the SharePoint page. Always save the page afterwards using the ribbon or page controls, otherwise the change is lost on the next page load.
+        </div>
+<h2>3.6 Version and instance information</h2>
+        <p>A grey information row at the bottom of the editor shows:</p>
+        <ul>
+            <li>The webpart version number (e.g. <em>Mermaid Webpart 0.1.4.5</em>).</li>
+            <li>The unique instance ID of the webpart on the right. Hovering over this shows the tooltip <em>"This is the unique ID of this webpart"</em>. This ID is useful when reporting issues to an administrator.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 4 &mdash; Tools</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 4</span>Tools</h1>
+
+        <div class="chapter-intro">
+            <p>The editor toolbar contains three tools that help you write Mermaid code faster and add interactivity to diagrams. A right-click context menu on the preview panel provides additional node-level actions.</p>
+        </div>
+
+        <!-- Tools data-flow illustration -->
+<svg viewBox="0 0 560 205" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Data flow diagram showing how each tool connects to the code editor and live preview"
+             style="width:100%;display:block;margin:5mm 0">
+            <defs>
+                <marker id="ch4-blue" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                    <path d="M0,0 L6,3.5 L0,7 Z" fill="#095495"/>
+                </marker>
+                <marker id="ch4-green" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                    <path d="M0,0 L6,3.5 L0,7 Z" fill="#43a047"/>
+                </marker>
+                <marker id="ch4-grey" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                    <path d="M0,0 L6,3.5 L0,7 Z" fill="#888"/>
+                </marker>
+                <marker id="ch4-dark" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L5,3 L0,6 Z" fill="#454545"/>
+                </marker>
+            </defs>
+
+            <!-- === External: Mermaid Live Editor (top right) === -->
+            <rect x="376" y="5" width="176" height="38" rx="6" fill="#f0f4f8" stroke="#a2bfd6" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="464" y="21" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="#095495" font-weight="bold">Mermaid Live Editor</text>
+            <text x="464" y="35" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#666">mermaid.live &nbsp;(browser tab)</text>
+
+            <!-- Arrow: toolbar → Mermaid Live (dashed, outgoing) -->
+            <path d="M 232 52 Q 232 24 376 24" stroke="#095495" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#ch4-blue)"/>
+            <text x="295" y="21" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#095495">&#x270F; Edit in Live — opens code in browser</text>
+
+            <!-- === Left: Snippets tool === -->
+            <rect x="8" y="56" width="112" height="36" rx="6" fill="#095495"/>
+            <text x="64" y="72" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">&#x1F4CB; Snippets</text>
+            <text x="64" y="85" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">click → inserts at cursor</text>
+            <!-- Arrow → Code Editor -->
+            <line x1="120" y1="74" x2="138" y2="74" stroke="#095495" stroke-width="1.5" marker-end="url(#ch4-blue)"/>
+
+            <!-- === Left: Add Click tool === -->
+            <rect x="8" y="106" width="112" height="36" rx="6" fill="#095495"/>
+            <text x="64" y="122" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">&#x1F517; Add Click</text>
+            <text x="64" y="135" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">generates click syntax</text>
+            <!-- Arrow → Code Editor -->
+            <line x1="120" y1="124" x2="138" y2="124" stroke="#095495" stroke-width="1.5" marker-end="url(#ch4-blue)"/>
+
+            <!-- === Code Editor (centre-left) === -->
+            <rect x="140" y="46" width="160" height="122" rx="6" fill="#154363"/>
+            <text x="220" y="66" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9.5" fill="white" font-weight="bold">Code Editor</text>
+            <!-- Fake code -->
+            <rect x="152" y="74" width="90" height="5" rx="2" fill="white" opacity="0.3"/>
+            <rect x="160" y="84" width="68" height="4" rx="2" fill="white" opacity="0.2"/>
+            <rect x="160" y="93" width="80" height="4" rx="2" fill="white" opacity="0.2"/>
+            <rect x="160" y="102" width="55" height="4" rx="2" fill="white" opacity="0.2"/>
+            <rect x="152" y="114" width="78" height="5" rx="2" fill="#a2bfd6" opacity="0.45"/>
+            <rect x="152" y="123" width="65" height="5" rx="2" fill="#a2bfd6" opacity="0.45"/>
+            <rect x="152" y="132" width="88" height="5" rx="2" fill="#a2bfd6" opacity="0.45"/>
+            <text x="220" y="158" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="rgba(255,255,255,0.5)">Tab = 2 spaces · Ctrl+Z undo</text>
+
+            <!-- Arrow: Code Editor → Live Preview (auto-render) -->
+            <path d="M 300 107 L 326 107" stroke="#43a047" stroke-width="2" marker-end="url(#ch4-green)"/>
+            <text x="313" y="100" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#43a047" font-weight="bold">auto-renders</text>
+            <text x="313" y="110" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#43a047">after 500 ms</text>
+
+            <!-- === Live Preview (centre-right) === -->
+            <rect x="328" y="46" width="224" height="122" rx="6" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="440" y="66" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9.5" fill="#154363" font-weight="bold">Live Preview</text>
+            <!-- Mini rendered diagram -->
+            <rect x="392" y="74" width="46" height="18" rx="3" fill="#095495" opacity="0.7"/>
+            <text x="415" y="86" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white">Node A</text>
+            <line x1="415" y1="92" x2="415" y2="100" stroke="#454545" stroke-width="1.5" marker-end="url(#ch4-dark)"/>
+            <rect x="392" y="101" width="46" height="18" rx="3" fill="#43a047" opacity="0.7"/>
+            <text x="415" y="113" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white">Node B</text>
+            <line x1="415" y1="119" x2="415" y2="127" stroke="#454545" stroke-width="1.5" marker-end="url(#ch4-dark)"/>
+            <rect x="392" y="128" width="46" height="18" rx="3" fill="#154363" opacity="0.8"/>
+            <text x="415" y="140" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white">Node C</text>
+            <text x="507" y="100" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#888" font-style="italic">right-click a</text>
+            <text x="507" y="110" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#888" font-style="italic">node to open</text>
+            <text x="507" y="120" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#888" font-style="italic">context menu</text>
+
+            <!-- Arrow: Live Preview → Context Menu -->
+            <line x1="440" y1="168" x2="440" y2="178" stroke="#888" stroke-width="1.5" marker-end="url(#ch4-grey)"/>
+
+            <!-- === Context Menu (bottom right) === -->
+            <rect x="328" y="179" width="224" height="22" rx="5" fill="white" stroke="#dde4ec" stroke-width="1.5"/>
+            <line x1="440" y1="179" x2="440" y2="201" stroke="#eee" stroke-width="1"/>
+            <rect x="330" y="181" width="108" height="18" rx="4" fill="#f3f4f6"/>
+            <text x="384" y="193" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#454545">&#x1F517; Add Link</text>
+            <text x="496" y="193" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#454545">&#x1F4DD; Select Code</text>
+        </svg>
+<h2>4.1 Edit in Live</h2>
+        <p>The <strong>&#x270F;&#xFE0F; Edit in Live</strong> link opens the current diagram code in the <a href="https://mermaid.live/">Mermaid Live Editor</a> in a new browser tab. The Mermaid Live Editor is the official online tool provided by the Mermaid project and offers additional features such as:</p>
+        <ul>
+            <li>Diagram configuration panels</li>
+            <li>PNG and SVG export</li>
+            <li>Shareable diagram URLs</li>
+            <li>Alternative rendering engines</li>
+        </ul>
+        <p>After editing in the Live Editor, copy the code from there and paste it back into the webpart editor. Changes made in the Live Editor are not automatically synchronised back to SharePoint.</p>
+<h2>4.2 Snippets</h2>
+        <p>The <strong>&#x1F4CB; Snippets</strong> button opens a categorised drop-down menu of reusable code fragments. Clicking a snippet inserts it at the current cursor position in the editor.</p>
+
+        <p>Snippet categories:</p>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 4 &mdash; Tools</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table>
+            <tr><th>Category</th><th>Contents</th></tr>
+            <tr><td><strong>Quick Start</strong></td><td>Complete starter templates for Flowchart, Sequence, Gantt, Class, and State diagrams</td></tr>
+            <tr><td><strong>Node Shapes</strong></td><td>Individual shape declarations: Rectangle, Rounded, Circle, Diamond, Hexagon, Database, Subprocess, Trapezoid</td></tr>
+            <tr><td><strong>Link Styles</strong></td><td>Arrow variants: Solid, Dashed, Thick, Labeled, Bidirectional, No Arrow</td></tr>
+            <tr><td><strong>Styling</strong></td><td>Class definitions, link style rules, inline node styles, subgraph wrapper</td></tr>
+            <tr><td><strong>Interactive</strong></td><td>Click handler, callback function, sequence actor link, accessibility labels</td></tr>
+            <tr><td><strong>Themes</strong></td><td>YAML front-matter blocks for Custom Colors, Hand-Drawn, Dark, and Forest themes</td></tr>
+        </table>
+
+        <!-- Snippets drop-down illustration -->
+<svg viewBox="0 0 560 168" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Snippets drop-down menu showing six categories each with sample items"
+             style="width:100%;display:block;margin:5mm 0">
+
+            <!-- Toolbar button -->
+            <rect x="8" y="8" width="76" height="20" rx="4" fill="#f0f4f8" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="46" y="21" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">&#x1F4CB; Snippets &#9660;</text>
+
+            <!-- Drop-down panel shadow -->
+            <rect x="9" y="32" width="283" height="134" rx="4" fill="#0001" transform="translate(2,2)"/>
+            <!-- Drop-down panel -->
+            <rect x="9" y="32" width="283" height="134" rx="4" fill="white" stroke="#dde4ec" stroke-width="1.5"/>
+
+            <!-- Category 1 -->
+            <rect x="10" y="33" width="281" height="18" rx="3" fill="#f7f9fc"/>
+            <text x="20" y="45" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#095495" font-weight="bold">&#9654; Quick Start</text>
+            <text x="200" y="45" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">Flowchart · Sequence · Gantt · Class · State</text>
+
+            <!-- Category 2 -->
+            <rect x="10" y="53" width="281" height="18" rx="3" fill="white"/>
+            <text x="20" y="65" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545" font-weight="bold">&#9654; Node Shapes</text>
+            <text x="200" y="65" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">Rect · Rounded · Circle · Diamond · Hex &hellip;</text>
+
+            <!-- Category 3 -->
+            <rect x="10" y="73" width="281" height="18" rx="3" fill="#f7f9fc"/>
+            <text x="20" y="85" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545" font-weight="bold">&#9654; Link Styles</text>
+            <text x="200" y="85" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">Solid · Dashed · Thick · Labeled · Bidir &hellip;</text>
+
+            <!-- Category 4 -->
+            <rect x="10" y="93" width="281" height="18" rx="3" fill="white"/>
+            <text x="20" y="105" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545" font-weight="bold">&#9654; Styling</text>
+            <text x="200" y="105" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">classDef · linkStyle · style · subgraph</text>
+
+            <!-- Category 5 — expanded to show items -->
+            <rect x="10" y="113" width="281" height="18" rx="3" fill="#095495"/>
+            <text x="20" y="125" font-family="Verdana,Arial,sans-serif" font-size="8" fill="white" font-weight="bold">&#9660; Interactive</text>
+            <text x="200" y="125" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">click · callback · actor link · accTitle</text>
+
+            <!-- Category 6 -->
+            <rect x="10" y="133" width="281" height="18" rx="3" fill="#f7f9fc"/>
+            <text x="20" y="145" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545" font-weight="bold">&#9654; Themes</text>
+            <text x="200" y="145" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">Custom colors · Hand-Drawn · Dark · Forest</text>
+
+            <!-- Expanded items for Interactive (right panel) -->
+            <rect x="293" y="32" width="260" height="134" rx="4" fill="white" stroke="#dde4ec" stroke-width="1.5"/>
+            <rect x="294" y="33" width="258" height="18" rx="3" fill="#e8f0fb"/>
+            <text x="304" y="45" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Interactive</text>
+
+            <!-- Items -->
+            <rect x="294" y="53" width="258" height="18" fill="#f0f7ff"/>
+            <text x="304" y="65" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#095495">click NodeID "url" "tooltip" _blank</text>
+
+            <rect x="294" y="73" width="258" height="18" fill="white"/>
+            <text x="304" y="85" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">click NodeID callback functionName</text>
+
+            <rect x="294" y="93" width="258" height="18" fill="#f7f9fc"/>
+            <text x="304" y="105" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">link ParticipantName "url" "tooltip"</text>
+
+            <rect x="294" y="113" width="258" height="18" fill="white"/>
+            <text x="304" y="125" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#454545">accTitle: My diagram title</text>
+
+            <rect x="294" y="133" width="258" height="18" fill="#f7f9fc"/>
+            <text x="304" y="145" font-family="Verdana,Arial,sans-serif" font-size="8" fill="#888">accDescr: Accessibility description</text>
+
+            <!-- Cursor arrow pointing at click item -->
+            <text x="542" y="65" font-family="Verdana,Arial,sans-serif" font-size="9" fill="#095495">&#x2190;</text>
+            <text x="544" y="65" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888"> cursor</text>
+        </svg>
+<div class="tip-box">
+            <strong>Tip:</strong> Place the cursor at the end of the diagram before opening Snippets &mdash; the snippet is inserted exactly at the cursor position, so you control where it appears in the code.
+        </div>
+<h2>4.3 Add Click Handler</h2>
+        <p>The <strong>&#x1F517; Add Click</strong> button opens a dialog that generates the Mermaid <code>click</code> syntax for making a diagram node into a hyperlink.</p>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 4 &mdash; Tools</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h3>Fields in the dialog</h3>
+<table>
+            <tr><th>Field</th><th>Description</th></tr>
+            <tr><td><strong>Node ID</strong></td><td>Drop-down list of all node IDs detected in the current diagram. Select the node you want to make clickable.</td></tr>
+            <tr><td><strong>Target URL</strong></td><td>The destination URL. Click <strong>&#x1F4CC; Use Current Site URL</strong> to prefill with the current SharePoint site URL.</td></tr>
+            <tr><td><strong>Tooltip</strong></td><td>Text shown when the user hovers over the node. Defaults to <em>"Click to open"</em> if left empty.</td></tr>
+            <tr><td><strong>Open in New Tab</strong></td><td>When checked (default), the link opens in a new browser tab (<code>_blank</code>). Uncheck for same-tab navigation.</td></tr>
+        </table>
+
+        <p>The <strong>Preview</strong> area at the bottom of the dialog shows the exact Mermaid syntax that will be inserted, updating live as you fill in the fields. Clicking <strong>Insert Click Handler</strong> appends the generated line to the editor at the cursor position and closes the dialog.</p>
+
+        <p>Generated syntax example:</p>
+<div class="info-box">
+            <code>click A "https://intranet.example.com/projects" "Go to Projects" _blank</code>
+        </div>
+<h2>4.4 Right-click context menu (preview panel)</h2>
+        <p>Right-clicking a node in the live preview panel opens a small context menu with two actions:</p>
+<table>
+            <tr><th>Action</th><th>What it does</th></tr>
+            <tr>
+                <td><strong>&#x1F517; Add Link</strong></td>
+                <td>Opens the Add Click Handler dialog (section 4.3) with the right-clicked node pre-selected in the Node ID drop-down.</td>
+            </tr>
+            <tr>
+                <td><strong>&#x1F4DD; Select Code</strong></td>
+                <td>Locates the first occurrence of the node's definition in the code editor and selects the matching text, making it easy to jump to and edit that node.</td>
+            </tr>
+        </table>
+<div class="note-box">
+            <strong>Note:</strong> The context menu only appears when right-clicking directly on a diagram node. Right-clicking on the background of the preview panel has no effect.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 15</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 5 &mdash; Example library</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 5</span>Example library</h1>
+
+        <div class="chapter-intro">
+            <p>The webpart ships with an extensive library of ready-made diagrams. Loading an example replaces the current code in the editor and immediately re-renders the preview, giving you a working starting point that you can customise.</p>
+        </div>
+<h2>5.1 Opening the examples section</h2>
+        <ol class="step-list">
+            <li>Open the code editor (see Chapter 2, section 2.4).</li>
+            <li>Below the toolbar, find the collapsed <strong>Example data</strong> panel and click its header to expand it.</li>
+            <li>The panel shows pill buttons for all featured examples. Click any pill to load that example.</li>
+            <li>The editor window automatically grows to 800&thinsp;px height when the examples panel is expanded.</li>
+        </ol>
+<div class="tip-box">
+            <strong>Tip:</strong> Load an example that matches the type of diagram you need, then edit the code to use your own data. This is faster than writing from scratch.
+        </div>
+
+        <!-- Diagram category previews -->
+<svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Visual preview of six diagram categories available in the example library"
+             style="width:100%;display:block;margin:5mm 0">
+
+            <!-- Flowchart preview -->
+            <rect x="8" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="50" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Flowchart</text>
+            <rect x="24" y="30" width="52" height="14" rx="3" fill="#095495" opacity="0.8"/>
+            <text x="50" y="40" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="white">Start</text>
+            <line x1="50" y1="44" x2="50" y2="52" stroke="#454545" stroke-width="1"/>
+            <polygon points="50,53 40,66 60,66" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="50" y="63" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#454545">OK?</text>
+            <line x1="40" y1="60" x2="20" y2="60" stroke="#454545" stroke-width="1"/>
+            <line x1="20" y1="60" x2="20" y2="90" stroke="#454545" stroke-width="1"/>
+            <line x1="20" y1="90" x2="32" y2="90" stroke="#454545" stroke-width="1"/>
+            <rect x="32" y="84" width="36" height="12" rx="3" fill="#888" opacity="0.5"/>
+            <text x="50" y="93" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">Wait</text>
+            <line x1="50" y1="66" x2="50" y2="74" stroke="#454545" stroke-width="1"/>
+            <rect x="24" y="74" width="52" height="14" rx="3" fill="#43a047" opacity="0.8"/>
+            <text x="50" y="84" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7" fill="white">Done</text>
+            <text x="50" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">15+ examples</text>
+
+            <!-- Sequence preview -->
+            <rect x="100" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="142" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Sequence</text>
+            <line x1="120" y1="30" x2="120" y2="128" stroke="#095495" stroke-width="1" stroke-dasharray="3 2" opacity="0.4"/>
+            <line x1="164" y1="30" x2="164" y2="128" stroke="#095495" stroke-width="1" stroke-dasharray="3 2" opacity="0.4"/>
+            <rect x="112" y="26" width="16" height="10" rx="2" fill="#095495" opacity="0.8"/>
+            <text x="120" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">A</text>
+            <rect x="156" y="26" width="16" height="10" rx="2" fill="#154363" opacity="0.8"/>
+            <text x="164" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">B</text>
+            <line x1="120" y1="46" x2="158" y2="46" stroke="#454545" stroke-width="1" marker-end="url(#)"/>
+            <text x="142" y="43" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Request</text>
+            <line x1="164" y1="60" x2="126" y2="60" stroke="#454545" stroke-width="1" stroke-dasharray="3 2"/>
+            <text x="142" y="57" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Response</text>
+            <rect x="112" y="64" width="16" height="36" rx="2" fill="#a2bfd6" opacity="0.5"/>
+            <line x1="120" y1="72" x2="158" y2="72" stroke="#454545" stroke-width="1"/>
+            <text x="142" y="69" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Process</text>
+            <text x="142" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">4+ examples</text>
+
+            <!-- Gantt preview -->
+            <rect x="192" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="234" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Gantt</text>
+            <rect x="200" y="30" width="68" height="6" rx="2" fill="#095495" opacity="0.7"/>
+            <text x="234" y="37" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Design</text>
+            <rect x="200" y="40" width="44" height="6" rx="2" fill="#43a047" opacity="0.7"/>
+            <text x="222" y="47" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Build</text>
+            <rect x="244" y="40" width="24" height="6" rx="2" fill="#f59e0b" opacity="0.7"/>
+            <text x="256" y="47" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Test</text>
+            <rect x="220" y="50" width="48" height="6" rx="2" fill="#888" opacity="0.5"/>
+            <text x="244" y="57" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Deploy</text>
+            <line x1="200" y1="62" x2="268" y2="62" stroke="#dde4ec" stroke-width="1"/>
+            <text x="200" y="72" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Jan</text>
+            <text x="224" y="72" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Feb</text>
+            <text x="248" y="72" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">Mar</text>
+            <text x="234" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">3+ examples</text>
+
+            <!-- ER preview -->
+            <rect x="284" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="326" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">ER Diagram</text>
+            <rect x="292" y="30" width="32" height="44" rx="3" fill="#095495" opacity="0.75"/>
+            <text x="308" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">Order</text>
+            <line x1="308" y1="42" x2="308" y2="50" stroke="white" stroke-width="0.5" opacity="0.4"/>
+            <text x="308" y="58" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="#a2bfd6">id</text>
+            <text x="308" y="66" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="#a2bfd6">date</text>
+            <line x1="324" y1="52" x2="344" y2="52" stroke="#454545" stroke-width="1"/>
+            <rect x="344" y="30" width="32" height="44" rx="3" fill="#154363" opacity="0.8"/>
+            <text x="360" y="46" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">Product</text>
+            <line x1="360" y1="42" x2="360" y2="50" stroke="white" stroke-width="0.5" opacity="0.4"/>
+            <text x="360" y="58" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="#a2bfd6">id</text>
+            <text x="360" y="66" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="#a2bfd6">name</text>
+            <text x="326" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">2+ examples</text>
+
+            <!-- Mindmap preview -->
+            <rect x="376" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="418" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Mindmap</text>
+            <circle cx="418" cy="72" r="16" fill="#095495" opacity="0.8"/>
+            <text x="418" y="76" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="white">Root</text>
+            <line x1="406" y1="62" x2="392" y2="46" stroke="#a2bfd6" stroke-width="1.5"/>
+            <circle cx="390" cy="44" r="10" fill="#43a047" opacity="0.7"/>
+            <text x="390" y="47" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Dev</text>
+            <line x1="430" y1="62" x2="444" y2="46" stroke="#a2bfd6" stroke-width="1.5"/>
+            <circle cx="446" cy="44" r="10" fill="#f59e0b" opacity="0.7"/>
+            <text x="446" y="47" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">UX</text>
+            <line x1="406" y1="82" x2="392" y2="98" stroke="#a2bfd6" stroke-width="1.5"/>
+            <circle cx="390" cy="100" r="10" fill="#888" opacity="0.6"/>
+            <text x="390" y="103" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">Ops</text>
+            <line x1="430" y1="82" x2="444" y2="98" stroke="#a2bfd6" stroke-width="1.5"/>
+            <circle cx="446" cy="100" r="10" fill="#d32f2f" opacity="0.6"/>
+            <text x="446" y="103" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="5.5" fill="white">QA</text>
+            <text x="418" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">2+ examples</text>
+
+            <!-- Charts preview -->
+            <rect x="468" y="8" width="84" height="134" rx="5" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="510" y="24" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495" font-weight="bold">Charts</text>
+            <!-- Pie -->
+            <path d="M510,68 L510,44 A24,24 0 0,1 530,62 Z" fill="#095495" opacity="0.8"/>
+            <path d="M510,68 L530,62 A24,24 0 0,1 516,92 Z" fill="#43a047" opacity="0.8"/>
+            <path d="M510,68 L516,92 A24,24 0 0,1 486,76 Z" fill="#f59e0b" opacity="0.8"/>
+            <path d="M510,68 L486,76 A24,24 0 0,1 510,44 Z" fill="#888" opacity="0.6"/>
+            <text x="510" y="104" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6" fill="#888">pie · sankey · xy · quadrant</text>
+            <text x="510" y="138" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="6.5" fill="#888">5+ examples</text>
+        </svg>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 16</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 5 &mdash; Example library</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>5.2 Featured examples</h2>
+        <p>The featured set contains 14 high-quality, real-world demonstrations covering the most commonly used diagram types:</p>
+<table>
+            <tr><th>Example</th><th>Type</th><th>Demonstrates</th></tr>
+            <tr><td>Clickable Server Architecture</td><td>Flowchart</td><td>Coloured nodes, styled links, clickable nodes</td></tr>
+            <tr><td>Software Development Workflow</td><td>Flowchart</td><td>Subgraphs, decision shapes, emoji labels</td></tr>
+            <tr><td>Microservices Payment Flow</td><td>Sequence</td><td>Actors, <code>alt</code>/<code>else</code>, <code>par</code> blocks, autonumber</td></tr>
+            <tr><td>Enterprise System Context</td><td>C4</td><td>C4Context, enterprise boundaries, relationships</td></tr>
+            <tr><td>AWS Three-Tier Architecture</td><td>Architecture</td><td>Groups, service icons, directional connectors</td></tr>
+            <tr><td>CI/CD Deployment Pipeline</td><td>Flowchart</td><td>Multiple subgraphs, conditional routing</td></tr>
+            <tr><td>Sprint Kanban Board</td><td>Kanban</td><td>Swimlane columns, card items</td></tr>
+            <tr><td>Sales Revenue Analytics</td><td>XY Chart</td><td>Bar + line series, axis labels</td></tr>
+            <tr><td>Campaign Performance Matrix</td><td>Quadrant</td><td>Four-quadrant scatter with labeled axes</td></tr>
+            <tr><td>Project Timeline with Milestones</td><td>Gantt</td><td>Sections, task states, milestone markers</td></tr>
+            <tr><td>Energy Flow Distribution</td><td>Sankey</td><td>Flow values between sources and sinks</td></tr>
+            <tr><td>Product Strategy Mindmap</td><td>Mindmap</td><td>Nested branches, Font Awesome icons</td></tr>
+            <tr><td>Git Feature Branch Workflow</td><td>Git Graph</td><td>Branches, merges, release tags</td></tr>
+            <tr><td>E-Commerce Database Schema</td><td>ER Diagram</td><td>Entities, attributes, cardinality notations</td></tr>
+            <tr><td>Application State Machine</td><td>State</td><td>States, transitions, notes</td></tr>
+        </table>
+<h2>5.3 Additional examples by type</h2>
+        <p>Beyond the featured set, the library contains many more examples organised by diagram type. These include more specialised patterns:</p>
+<div class="two-col">
+            <div>
+<table>
+                    <tr><th>Category</th><th>Examples</th></tr>
+                    <tr><td>Flowchart</td><td>Shape library, user authentication flow, incident response, data pipeline</td></tr>
+                    <tr><td>Sequence</td><td>OAuth 2.0 flow, cache-aside pattern, Saga distributed transaction</td></tr>
+                    <tr><td>Class diagram</td><td>Observer pattern, e-commerce domain model, repository pattern with generics</td></tr>
+                    <tr><td>Gantt</td><td>Agile sprint planning, construction project schedule</td></tr>
+                    <tr><td>Git Graph</td><td>Gitflow workflow</td></tr>
+                    <tr><td>Mindmap</td><td>Technology stack selection</td></tr>
+                </table>
+            </div>
+            <div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 17</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 5 &mdash; Example library</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table>
+                    <tr><th>Category</th><th>Examples</th></tr>
+                    <tr><td>ER Diagram</td><td>Library management system</td></tr>
+                    <tr><td>State</td><td>Order lifecycle</td></tr>
+                    <tr><td>Journey</td><td>Customer purchase journey</td></tr>
+                    <tr><td>Timeline</td><td>Company milestones</td></tr>
+                    <tr><td>Architecture</td><td>Microservices architecture</td></tr>
+                    <tr><td>Charts</td><td>Budget pie, storage treemap, requirements, budget Sankey</td></tr>
+                    <tr><td>Config</td><td>Custom theme, hand-drawn style</td></tr>
+                    <tr><td>Utility</td><td>Linked actors, accessibility, ELK layout, math formulas</td></tr>
+                </table>
+            </div>
+        </div>
+<h2>5.4 Solution showcase</h2>
+        <p>Three examples under the <em>E-Commerce</em> heading demonstrate how the same system can be documented from multiple perspectives using different diagram types:</p>
+        <ul>
+            <li><strong>E-Commerce: System Context</strong> &mdash; C4 diagram showing external actors and system boundaries</li>
+            <li><strong>E-Commerce: Order Process</strong> &mdash; Sequence diagram of the checkout flow</li>
+            <li><strong>E-Commerce: Database Model</strong> &mdash; ER diagram of the data schema</li>
+        </ul>
+        <p>This set illustrates how a single business domain can be communicated through complementary views.</p>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 18</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 6 &mdash; Diagram type reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 6</span>Diagram type reference</h1>
+
+        <div class="chapter-intro">
+            <p>Each Mermaid diagram type is declared by a keyword on the first line of the code block. This chapter describes all supported types, their starting keyword, a minimal code example, and their primary use case.</p>
+        </div>
+
+        <!-- Diagram type taxonomy -->
+<svg viewBox="0 0 560 156" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Taxonomy of the 20 Mermaid diagram types grouped into five categories"
+             style="width:100%;display:block;margin:5mm 0">
+
+            <!-- Title -->
+            <text x="280" y="14" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="8.5" fill="#154363" font-weight="bold">20 diagram types — grouped by purpose</text>
+
+            <!-- Group 1: Flow & Process -->
+            <rect x="8" y="22" width="100" height="130" rx="5" fill="#e8f0fb" stroke="#095495" stroke-width="1.5"/>
+            <rect x="8" y="22" width="100" height="18" rx="5" fill="#095495"/>
+            <text x="58" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white" font-weight="bold">Flow &amp; Process</text>
+            <text x="58" y="52" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495">Flowchart</text>
+            <text x="58" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495">Sequence</text>
+            <text x="58" y="78" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495">State</text>
+            <text x="58" y="91" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#095495">User Journey</text>
+
+            <!-- Group 2: Data & Relationships -->
+            <rect x="116" y="22" width="100" height="130" rx="5" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+            <rect x="116" y="22" width="100" height="18" rx="5" fill="#43a047"/>
+            <text x="166" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white" font-weight="bold">Data &amp; Relationships</text>
+            <text x="166" y="52" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#2e7d32">ER Diagram</text>
+            <text x="166" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#2e7d32">Class Diagram</text>
+            <text x="166" y="78" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#2e7d32">Requirement</text>
+
+            <!-- Group 3: Architecture -->
+            <rect x="224" y="22" width="100" height="130" rx="5" fill="#fce8d5" stroke="#e65100" stroke-width="1.5"/>
+            <rect x="224" y="22" width="100" height="18" rx="5" fill="#e65100"/>
+            <text x="274" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white" font-weight="bold">Architecture</text>
+            <text x="274" y="52" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#bf360c">Architecture-beta</text>
+            <text x="274" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#bf360c">C4 Context</text>
+            <text x="274" y="78" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#bf360c">C4 Container</text>
+            <text x="274" y="91" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#bf360c">C4 Component</text>
+
+            <!-- Group 4: Project Planning -->
+            <rect x="332" y="22" width="100" height="130" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+            <rect x="332" y="22" width="100" height="18" rx="5" fill="#7b1fa2"/>
+            <text x="382" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white" font-weight="bold">Project Planning</text>
+            <text x="382" y="52" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#4a148c">Gantt</text>
+            <text x="382" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#4a148c">Timeline</text>
+            <text x="382" y="78" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#4a148c">Git Graph</text>
+            <text x="382" y="91" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#4a148c">Kanban-beta</text>
+            <text x="382" y="104" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#4a148c">Mindmap</text>
+
+            <!-- Group 5: Data Visualisation -->
+            <rect x="440" y="22" width="112" height="130" rx="5" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+            <rect x="440" y="22" width="112" height="18" rx="5" fill="#f9a825"/>
+            <text x="496" y="34" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="white" font-weight="bold">Data Visualisation</text>
+            <text x="496" y="52" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">Pie Chart</text>
+            <text x="496" y="65" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">XY Chart-beta</text>
+            <text x="496" y="78" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">Quadrant</text>
+            <text x="496" y="91" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">Sankey-beta</text>
+            <text x="496" y="104" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">Treemap-beta</text>
+            <text x="496" y="117" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#e65100">Block-beta</text>
+        </svg>
+<h2>6.1 Flow and process diagrams</h2>
+<h3>Flowchart</h3>
+        <p><strong>Keywords:</strong> <code>graph TD</code> &nbsp;/&nbsp; <code>graph LR</code> &nbsp;/&nbsp; <code>flowchart TD</code></p>
+        <p>The most versatile diagram type. Nodes connected by arrows represent decisions, steps, and data flows. Direction is set after the keyword: <code>TD</code> (top-down), <code>LR</code> (left-right), <code>TB</code> (top-bottom), <code>BT</code> (bottom-top), <code>RL</code> (right-left). Supports subgraphs, custom node shapes, class-based styling, link styles, and clickable nodes.</p>
+<div class="info-box">
+            <code>graph TD</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;A[Start] --&gt; B{Ready?}</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|Yes| C[Continue]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;B --&gt;|No| D[Wait]</code>
+        </div>
+<h3>Sequence diagram</h3>
+        <p><strong>Keyword:</strong> <code>sequenceDiagram</code></p>
+        <p>Shows the chronological order of messages between participants (people, services, systems). Supports actors, alternative blocks (<code>alt</code>/<code>else</code>), parallel execution (<code>par</code>), loops, and notes. Participants can have clickable links via the <code>link</code> directive.</p>
+<div class="info-box">
+            <code>sequenceDiagram</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Client-&gt;&gt;Server: GET /data</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Server--&gt;&gt;Client: 200 OK</code>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 19</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 6 &mdash; Diagram type reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h3>State diagram</h3>
+        <p><strong>Keyword:</strong> <code>stateDiagram-v2</code></p>
+        <p>Models the states an object or system can be in and the transitions between them. Useful for documenting order lifecycles, UI screen flows, or any process with distinct states.</p>
+<div class="info-box">
+            <code>stateDiagram-v2</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;[*] --&gt; Pending</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Pending --&gt; Shipped : confirm</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Shipped --&gt; [*]</code>
+        </div>
+<h3>User journey</h3>
+        <p><strong>Keyword:</strong> <code>journey</code></p>
+        <p>Plots a user experience across sections and steps, with a satisfaction score (1&ndash;5) and the actors involved at each step. Good for UX analysis and customer journey mapping.</p>
+<div class="info-box">
+            <code>journey</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;title Checkout flow</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;section Browse</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Search: 5: Customer</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add to cart: 4: Customer</code>
+        </div>
+<h2>6.2 Data and relationship diagrams</h2>
+<h3>Entity Relationship diagram</h3>
+        <p><strong>Keyword:</strong> <code>erDiagram</code></p>
+        <p>Describes database tables (entities), their attributes, and the relationships and cardinalities between them. Uses standard ER notation: <code>||--o{</code> (one-to-many), <code>}|..|{</code> (many-to-many), etc.</p>
+<div class="info-box">
+            <code>erDiagram</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;ORDER ||--o{ ITEM : contains</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;ORDER { int id string status }</code>
+        </div>
+<h3>Class diagram</h3>
+        <p><strong>Keyword:</strong> <code>classDiagram</code></p>
+        <p>Documents object-oriented class structures, interfaces, inheritance hierarchies, and associations. Supports method signatures, access modifiers (<code>+</code>/<code>-</code>/<code>#</code>), and generics notation.</p>
+<div class="info-box">
+            <code>classDiagram</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Animal &lt;|-- Dog</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Animal : +String name</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Animal : +speak()</code>
+        </div>
+<h3>Requirement diagram</h3>
+        <p><strong>Keyword:</strong> <code>requirementDiagram</code></p>
+        <p>Traces system requirements to implementing components. Each requirement has an ID, description, risk level, and verification method. Components are linked to requirements they satisfy.</p>
+<div class="info-box">
+            <code>requirementDiagram</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;requirement REQ_01 {</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id: 1</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text: "System must log all actions"</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;risk: medium</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;}</code>
+        </div>
+<h2>6.3 Architecture diagrams</h2>
+<h3>Architecture diagram <span class="type-badge">beta</span></h3>
+        <p><strong>Keyword:</strong> <code>architecture-beta</code></p>
+        <p>Renders infrastructure and service architecture using named icons (server, database, internet, cloud). Services are grouped into subnets or regions and connected with directional connectors.</p>
+<div class="info-box">
+            <code>architecture-beta</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;group cloud(cloud)[Cloud]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;service db(database)[Database] in cloud</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;service api(server)[API] in cloud</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;api:R --&gt; L:db</code>
+        </div>
+<h3>C4 diagram</h3>
+        <p><strong>Keyword:</strong> <code>C4Context</code> / <code>C4Container</code> / <code>C4Component</code></p>
+        <p>Implements the C4 model for software architecture documentation. <code>C4Context</code> shows system context (people, systems, boundaries). Relationships include communication descriptions.</p>
+<div class="info-box">
+            <code>C4Context</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Person(user, "User")</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;System(app, "Web App")</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Rel(user, app, "Uses", "HTTPS")</code>
+        </div>
+<h2>6.4 Project planning diagrams</h2>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 20</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 6 &mdash; Diagram type reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h3>Gantt chart</h3>
+        <p><strong>Keyword:</strong> <code>gantt</code></p>
+        <p>Horizontal bar chart for project schedules. Tasks are arranged in sections with start dates (absolute or relative), durations, and statuses (<code>done</code>, <code>active</code>). Milestone markers have zero duration.</p>
+<div class="info-box">
+            <code>gantt</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;dateFormat YYYY-MM-DD</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;section Design</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Wireframes : done, 2025-01-01, 7d</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Review : active, 2025-01-08, 3d</code>
+        </div>
+<h3>Timeline</h3>
+        <p><strong>Keyword:</strong> <code>timeline</code></p>
+        <p>Displays events on a horizontal or vertical axis grouped by time period. Each period lists one or more events. Simpler than Gantt but useful for historical overviews and roadmaps.</p>
+<div class="info-box">
+            <code>timeline</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;title Company history</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;2018 : Founded</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;2021 : Series A : 10 employees</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;2025 : IPO</code>
+        </div>
+<h3>Git graph</h3>
+        <p><strong>Keyword:</strong> <code>gitGraph</code></p>
+        <p>Visualises Git branch and commit history. Shows branches, commits with IDs, merges, and tags. Useful for documenting branching strategies such as Gitflow.</p>
+<div class="info-box">
+            <code>gitGraph</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;commit id: "init"</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;branch feature</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;commit id: "add login"</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;checkout main</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;merge feature tag: "v1.0"</code>
+        </div>
+<h3>Kanban board <span class="type-badge">beta</span></h3>
+        <p><strong>Keyword:</strong> <code>kanban</code></p>
+        <p>Renders a Kanban board with named swimlane columns (To Do, In Progress, Review, Done) and card items within each column.</p>
+<div class="info-box">
+            <code>kanban</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;column1[To Do]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;task1[Write tests]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;column2[In Progress]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;task2[Build API]</code>
+        </div>
+<h2>6.5 Data visualisation</h2>
+<h3>Pie chart</h3>
+        <p><strong>Keyword:</strong> <code>pie</code></p>
+        <p>Simple proportional chart. Each slice is defined by a label and a numeric value. A title can be provided after the keyword.</p>
+<div class="info-box">
+            <code>pie title Browser share</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;"Chrome" : 65</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;"Edge" : 18</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;"Firefox" : 10</code>
+        </div>
+<h3>XY chart <span class="type-badge">beta</span></h3>
+        <p><strong>Keyword:</strong> <code>xychart-beta</code></p>
+        <p>Renders bar and line series on a common X/Y axis. Axes are explicitly defined with labels and value ranges. Multiple series types can appear on one chart.</p>
+<div class="info-box">
+            <code>xychart-beta</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;title "Monthly Revenue"</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;x-axis [Jan, Feb, Mar, Apr]</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;y-axis "USD (k)" 0 --&gt; 100</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;bar [42, 58, 73, 91]</code>
+        </div>
+<h3>Quadrant chart</h3>
+        <p><strong>Keyword:</strong> <code>quadrantChart</code></p>
+        <p>Four-quadrant scatter plot where each quadrant is named. Items are placed by X and Y coordinates (0.0&ndash;1.0). Good for priority matrices and BCG-style analysis.</p>
+<div class="info-box">
+            <code>quadrantChart</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;x-axis Low Impact --&gt; High Impact</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;y-axis Low Effort --&gt; High Effort</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Feature A: [0.8, 0.3]</code>
+        </div>
+<h3>Sankey diagram <span class="type-badge">beta</span></h3>
+        <p><strong>Keyword:</strong> <code>sankey-beta</code></p>
+        <p>Flow diagram where the width of each arrow is proportional to the flow value. Each line defines: Source, Target, Value. Useful for energy flows, budget allocations, and material flows.</p>
+<div class="info-box">
+            <code>sankey-beta</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Solar,Electricity,80</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Wind,Electricity,40</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Electricity,Homes,70</code>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 21</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 6 &mdash; Diagram type reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h3>Treemap <span class="type-badge">beta</span></h3>
+        <p><strong>Keyword:</strong> <code>treemap-beta</code></p>
+        <p>Hierarchical proportional chart where nested rectangles represent values at each level of a tree. Good for storage breakdowns, organisational sizes, or market share.</p>
+<div class="info-box">
+            <code>treemap-beta</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;title Disk usage</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;Documents</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PDFs : 40</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Images : 25</code>
+        </div>
+<h2>6.6 Other types</h2>
+<h3>Mindmap</h3>
+        <p><strong>Keyword:</strong> <code>mindmap</code></p>
+        <p>Radial branching structure rooted at a central concept. Child nodes are indented relative to their parent. Supports Font Awesome icon annotations (<code>::icon(fa fa-...)</code>).</p>
+<div class="info-box">
+            <code>mindmap</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;root((Strategy))</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Growth</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Marketing</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Operations</code>
+        </div>
+<h3>Diagram configuration (YAML front matter)</h3>
+        <p><strong>Syntax:</strong> <code>---</code> block before the diagram keyword</p>
+        <p>Any Mermaid diagram can include a YAML front-matter block to override the rendering theme, look, and individual theme variables. Common options:</p>
+<div class="info-box">
+            <code>---</code><br>
+            <code>config:</code><br>
+            <code>&nbsp;&nbsp;theme: dark</code><br>
+            <code>&nbsp;&nbsp;look: handDrawn</code><br>
+            <code>---</code><br>
+            <code>graph LR</code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;A --&gt; B</code>
+        </div>
+        <ul>
+            <li><code>theme: base | default | dark | forest | neutral</code></li>
+            <li><code>look: handDrawn</code> &mdash; sketch-style rendering</li>
+            <li><code>layout: elk</code> &mdash; alternative graph layout engine</li>
+            <li><code>themeVariables:</code> &mdash; override individual colours</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 22</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 7 &mdash; Troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num">Chapter 7</span>Troubleshooting</h1>
+
+        <div class="chapter-intro">
+            <p>This chapter covers the most common issues encountered when using the Mermaid Webpart, the permissions required for each action, known limitations, and behaviour on mobile devices.</p>
+        </div>
+<h2>7.1 Common issues and solutions</h2>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 23</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 7 &mdash; Troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table>
+            <tr><th>Symptom</th><th>Likely cause</th><th>Solution</th></tr>
+            <tr>
+                <td><strong>Preview shows a red error box</strong></td>
+                <td>Syntax error in the Mermaid code.</td>
+                <td>Read the error message — it usually names the line or token that failed. Check spelling of the diagram keyword, unclosed brackets, or an invalid arrow style. The previous valid diagram is preserved on the page.</td>
+            </tr>
+            <tr>
+                <td><strong>Diagram disappeared after saving</strong></td>
+                <td>The SharePoint page was not saved after clicking OK.</td>
+                <td>Clicking OK saves code to the webpart in memory, but the SharePoint page must also be saved via the ribbon (<strong>Save</strong> or <strong>Stop Editing</strong>). Reload the page to confirm the change persists.</td>
+            </tr>
+            <tr>
+                <td><strong>Edit button / editor does not open</strong></td>
+                <td>The page is not in edit mode.</td>
+                <td>Click <strong>Edit</strong> in the SharePoint ribbon or choose <em>Site Actions &rsaquo; Edit Page</em> first, then click the webpart edit handle and choose <strong>Edit Web Part</strong>.</td>
+            </tr>
+            <tr>
+                <td><strong>Click handlers do not navigate</strong></td>
+                <td>Browser popup blocker is active, or the URL is malformed.</td>
+                <td>Allow popups from the SharePoint site in the browser. Verify the URL in the click syntax is absolute (starts with <code>https://</code>). Relative URLs are not supported.</td>
+            </tr>
+            <tr>
+                <td><strong>Node ID list in Add Click is empty</strong></td>
+                <td>The editor could not parse node IDs from the current code.</td>
+                <td>The parser only recognises standard Mermaid node declarations (<code>A[label]</code>, <code>A(label)</code>, etc.). Ensure the code is valid and that at least one node is declared before opening the dialog.</td>
+            </tr>
+            <tr>
+                <td><strong>Edit in Live opens a blank page</strong></td>
+                <td>Browser popup blocker prevented the new tab from opening.</td>
+                <td>Allow popups from the SharePoint site, or right-click the <em>Edit in Live</em> button and choose <em>Open link in new tab</em> manually.</td>
+            </tr>
+            <tr>
+                <td><strong>Old diagram still shows after redeployment</strong></td>
+                <td>Browser cache is serving the previous JavaScript bundle.</td>
+                <td>Perform a hard refresh: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Chrome/Edge) or <kbd>Ctrl</kbd>+<kbd>F5</kbd> (Firefox). If the issue persists for all users, ask an administrator to clear the SharePoint blob cache.</td>
+            </tr>
+            <tr>
+                <td><strong>Diagram is cut off or too small</strong></td>
+                <td>The webpart zone is narrower than the rendered SVG.</td>
+                <td>Mermaid SVG scales to fill available width. Use a wider webpart zone, or reduce diagram complexity. For wide diagrams, switch to left-right layout: replace <code>TD</code> with <code>LR</code> in the diagram keyword.</td>
+            </tr>
+            <tr>
+                <td><strong>Right-click context menu does not appear</strong></td>
+                <td>Right-click was on the background, not on a diagram node.</td>
+                <td>Right-click directly on a coloured node shape. The context menu only appears on Mermaid nodes, not on the empty area around the diagram.</td>
+            </tr>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 24</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 7 &mdash; Troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>7.2 Permissions</h2>
+        <p>Different roles in SharePoint have different levels of access to the Mermaid Webpart:</p>
+
+        <!-- Permissions flow illustration -->
+<svg viewBox="0 0 560 108" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Permissions by role: Administrator, Editor, and Visitor capabilities"
+             style="width:100%;display:block;margin:5mm 0">
+            <!-- Admin -->
+            <rect x="8" y="8" width="164" height="90" rx="6" fill="#154363"/>
+            <text x="90" y="26" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">&#x1F512; Administrator</text>
+            <text x="20" y="42" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; Deploy webpart package</text>
+            <text x="20" y="56" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; Activate site feature</text>
+            <text x="20" y="70" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; All editor permissions</text>
+            <text x="20" y="88" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#666">Requires: Full Control / Farm Admin</text>
+
+            <!-- Editor -->
+            <rect x="198" y="8" width="164" height="90" rx="6" fill="#095495"/>
+            <text x="280" y="26" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="white" font-weight="bold">&#x270F; Page Editor</text>
+            <text x="210" y="42" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; Add webpart to a page</text>
+            <text x="210" y="56" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; Open code editor</text>
+            <text x="210" y="70" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#a2bfd6">&#10003; Save and publish diagrams</text>
+            <text x="210" y="88" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#cce">Requires: Contribute / Design</text>
+
+            <!-- Visitor -->
+            <rect x="388" y="8" width="164" height="90" rx="6" fill="#f7f9fc" stroke="#dde4ec" stroke-width="1.5"/>
+            <text x="470" y="26" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="9" fill="#154363" font-weight="bold">&#x1F441; Visitor</text>
+            <text x="400" y="42" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#454545">&#10003; View rendered diagram</text>
+            <text x="400" y="56" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#454545">&#10003; Click interactive nodes</text>
+            <text x="400" y="70" font-family="Verdana,Arial,sans-serif" font-size="7.5" fill="#888">&#10007; Cannot open editor</text>
+            <text x="400" y="88" font-family="Verdana,Arial,sans-serif" font-size="7" fill="#888">Requires: Read</text>
+        </svg>
+<div class="note-box">
+            <strong>Note:</strong> The webpart itself does not enforce permissions — SharePoint's standard page edit permissions apply. A user who can edit the page can edit any webpart on it, including Mermaid Webpart instances.
+        </div>
+<h2>7.3 Known limitations</h2>
+        <p>The following limitations apply to all versions of the Mermaid Webpart:</p>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 25</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Chapter 7 &mdash; Troubleshooting</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table>
+            <tr><th>Limitation</th><th>Detail</th></tr>
+            <tr>
+                <td><strong>No layout control</strong></td>
+                <td>Mermaid positions all nodes algorithmically. You cannot drag nodes to custom positions. For diagrams requiring exact placement, use Visio or PowerPoint instead.</td>
+            </tr>
+            <tr>
+                <td><strong>Static data only</strong></td>
+                <td>Diagrams are hand-authored text. They do not update automatically when underlying data changes. For live org charts or data-driven visuals, a different solution is needed.</td>
+            </tr>
+            <tr>
+                <td><strong>No embedded images</strong></td>
+                <td>Mermaid does not support embedding raster images inside diagram nodes. Only text labels, Font Awesome icons, and shapes are available.</td>
+            </tr>
+            <tr>
+                <td><strong>Large diagrams can be slow</strong></td>
+                <td>Diagrams with 50+ nodes may take a noticeable time to render. If the preview is slow, reduce the number of nodes or split the diagram into smaller pieces.</td>
+            </tr>
+            <tr>
+                <td><strong>Changes lost without page save</strong></td>
+                <td>Clicking OK saves to webpart memory only. If the browser is closed or the session expires before the SharePoint page is saved, the change is lost.</td>
+            </tr>
+            <tr>
+                <td><strong>Beta diagram types may change</strong></td>
+                <td>Types marked <em>-beta</em> (<code>kanban</code>, <code>xychart-beta</code>, <code>sankey-beta</code>, <code>treemap-beta</code>, <code>architecture-beta</code>) may have their syntax changed or removed in future Mermaid engine updates.</td>
+            </tr>
+        </table>
+<h2>7.4 Mobile and tablet use</h2>
+        <p>The Mermaid Webpart has two distinct behaviours depending on whether the page is in view mode or edit mode:</p>
+<div class="two-col">
+<div class="feature-card">
+                <h4>View mode (all devices)</h4>
+                <p>The rendered SVG diagram scales to fill the full width of the webpart zone. It is responsive and readable on phones and tablets. Interactive nodes respond to taps. No editor is available in view mode regardless of device.</p>
+            </div>
+<div class="feature-card">
+                <h4>Edit mode (desktop recommended)</h4>
+                <p>The code editor dialog is a fixed-size modal (900&thinsp;&times;&thinsp;600&thinsp;px). On small screens it may overflow or be partially hidden behind the keyboard. Editing is best performed on a desktop browser with a physical keyboard.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 26</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Quick Reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1><span class="chapter-num"></span>Quick Reference</h1>
+
+        <div class="chapter-intro">
+            <p>A single-page summary of keyboard shortcuts, toolbar actions, snippet categories, common diagram starters, and click handler syntax.</p>
+        </div>
+<div class="two-col">
+
+            <!-- Left column -->
+            <div>
+<h3 style="margin-top:0">Keyboard shortcuts (in editor)</h3>
+<table>
+                    <tr><th>Key</th><th>Action</th></tr>
+                    <tr><td><kbd>Tab</kbd></td><td>Insert 2 spaces</td></tr>
+                    <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+                    <tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Redo</td></tr>
+                    <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd></td><td>Select all</td></tr>
+                    <tr><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td>Copy</td></tr>
+                    <tr><td><kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>Paste</td></tr>
+                </table>
+<h3>Toolbar buttons</h3>
+<table>
+                    <tr><th>Button</th><th>Action</th></tr>
+                    <tr><td>&#x270F; Edit in Live</td><td>Open diagram in mermaid.live</td></tr>
+                    <tr><td>&#x1F4CB; Snippets</td><td>Insert code at cursor</td></tr>
+                    <tr><td>&#x1F517; Add Click</td><td>Generate click handler</td></tr>
+                    <tr><td>OK</td><td>Save and re-render</td></tr>
+                    <tr><td>&times; (close)</td><td>Discard changes</td></tr>
+                </table>
+<h3>Right-click context menu</h3>
+<table>
+                    <tr><th>Action</th><th>Effect</th></tr>
+                    <tr><td>&#x1F517; Add Link</td><td>Opens Add Click dialog with node pre-selected</td></tr>
+                    <tr><td>&#x1F4DD; Select Code</td><td>Selects node definition in editor</td></tr>
+                </table>
+<h3>Snippet categories</h3>
+<table>
+                    <tr><th>Category</th><th>Contents</th></tr>
+                    <tr><td>Quick Start</td><td>Flowchart, Sequence, Gantt, Class, State starters</td></tr>
+                    <tr><td>Node Shapes</td><td>Rect, Rounded, Circle, Diamond, Hex, DB&hellip;</td></tr>
+                    <tr><td>Link Styles</td><td>Solid, Dashed, Thick, Labeled, Bidir, No Arrow</td></tr>
+                    <tr><td>Styling</td><td>classDef, linkStyle, style, subgraph</td></tr>
+                    <tr><td>Interactive</td><td>click, callback, actor link, accTitle/accDescr</td></tr>
+                    <tr><td>Themes</td><td>Custom colors, Hand-Drawn, Dark, Forest YAML</td></tr>
+                </table>
+            </div>
+
+            <!-- Right column -->
+            <div>
+<h3 style="margin-top:0">Click handler syntax</h3>
+<div class="info-box" style="font-size:0.85em">
+                    <code>click &lt;NodeID&gt; "&lt;URL&gt;" "&lt;Tooltip&gt;" _blank</code><br><br>
+                    <strong>Example:</strong><br>
+                    <code>click A "https://intranet.example.com" "Go" _blank</code><br><br>
+                    <strong>Same tab:</strong> omit <code>_blank</code>
+                </div>
+<h3>Common diagram starters</h3>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 27</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>Mermaid Webpart</div>
+        <div>Quick Reference</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table>
+                    <tr><th>Type</th><th>First line</th></tr>
+                    <tr><td>Flowchart (↓)</td><td><code>graph TD</code></td></tr>
+                    <tr><td>Flowchart (→)</td><td><code>graph LR</code></td></tr>
+                    <tr><td>Sequence</td><td><code>sequenceDiagram</code></td></tr>
+                    <tr><td>Class</td><td><code>classDiagram</code></td></tr>
+                    <tr><td>State</td><td><code>stateDiagram-v2</code></td></tr>
+                    <tr><td>ER diagram</td><td><code>erDiagram</code></td></tr>
+                    <tr><td>Gantt</td><td><code>gantt</code></td></tr>
+                    <tr><td>Git graph</td><td><code>gitGraph</code></td></tr>
+                    <tr><td>Mindmap</td><td><code>mindmap</code></td></tr>
+                    <tr><td>Timeline</td><td><code>timeline</code></td></tr>
+                    <tr><td>Journey</td><td><code>journey</code></td></tr>
+                    <tr><td>Pie chart</td><td><code>pie title My Chart</code></td></tr>
+                    <tr><td>Kanban</td><td><code>kanban</code></td></tr>
+                    <tr><td>Quadrant</td><td><code>quadrantChart</code></td></tr>
+                    <tr><td>C4 Context</td><td><code>C4Context</code></td></tr>
+                    <tr><td>Architecture</td><td><code>architecture-beta</code></td></tr>
+                    <tr><td>XY Chart</td><td><code>xychart-beta</code></td></tr>
+                    <tr><td>Sankey</td><td><code>sankey-beta</code></td></tr>
+                    <tr><td>Treemap</td><td><code>treemap-beta</code></td></tr>
+                    <tr><td>Requirements</td><td><code>requirementDiagram</code></td></tr>
+                </table>
+<h3>Theme front matter</h3>
+<div class="info-box" style="font-size:0.85em">
+                    <code>---</code><br>
+                    <code>config:</code><br>
+                    <code>&nbsp;&nbsp;theme: dark</code><br>
+                    <code>---</code><br>
+                    <code>graph TD</code><br>
+                    <code>&nbsp;&nbsp;&nbsp;&nbsp;A --&gt; B</code>
+                </div>
+                <p style="font-size:0.85em;color:#666">Themes: <code>base</code> &bull; <code>default</code> &bull; <code>dark</code> &bull; <code>forest</code> &bull; <code>neutral</code><br>
+                Add <code>look: handDrawn</code> for sketch style.</p>
+            </div>
+
+        </div>
+<div class="note-box" style="margin-top:8px">
+            <strong>Remember:</strong> Clicking <strong>OK</strong> saves to the webpart but does NOT save the SharePoint page. Always save the page afterwards to make changes visible to other users.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div>Mermaid Webpart — User Guide</div>
+        <div>kalmstrom.com &nbsp;&middot;&nbsp; 28</div>
+    </div>
+</div>
+
+
+</body>
+</html>
