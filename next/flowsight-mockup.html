@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowSight – Projekthantering · Langate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',Avenir,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#323130;background:#f3f2f1;min-height:100vh;}
+:root{
+  --primary:#00517e;--primary-teal:#537780;--accent-green:#02B896;
+  --accent-gold:#F5A623;--accent-red:#B55852;
+  --bg:#fff;--bg-subtle:#ebf2f5;--bg-grey:#f3f2f1;
+  --text:#323130;--text-muted:#605e5c;--text-light:#a19f9d;
+  --border:#edebe9;--border-med:#d2d0ce;
+}
+
+/* ── M365 Suite Bar ── */
+.suite-bar{height:48px;background:#1b1a19;display:flex;align-items:center;padding:0 16px;gap:8px;position:sticky;top:0;z-index:1000;}
+.sb-waffle{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:2px;cursor:pointer;color:white;font-size:20px;}
+.sb-waffle:hover{background:rgba(255,255,255,.1);}
+.sb-brand{color:white;font-size:15px;font-weight:600;padding:0 8px;}
+.sb-search{flex:1;max-width:440px;height:32px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:2px;display:flex;align-items:center;padding:0 12px;gap:8px;color:rgba(255,255,255,.55);font-size:13px;margin-left:16px;}
+.sb-right{margin-left:auto;display:flex;align-items:center;gap:4px;}
+.sb-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;}
+.sb-icon:hover{background:rgba(255,255,255,.1);}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:#0078d4;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* ── Site Header ── */
+.site-header{height:52px;background:var(--primary);display:flex;align-items:center;padding:0;position:sticky;top:48px;z-index:999;}
+.sh-name{color:white;font-size:17px;font-weight:700;letter-spacing:-0.02em;padding:0 20px;white-space:nowrap;border-right:1px solid rgba(255,255,255,.15);}
+.sh-nav{display:flex;align-items:stretch;height:100%;padding-left:4px;}
+.sh-nav-item{display:flex;align-items:center;padding:0 16px;color:rgba(255,255,255,.75);font-size:13.5px;font-weight:500;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:background .1s;}
+.sh-nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.sh-nav-item.active{color:white;border-bottom-color:var(--accent-green);background:rgba(255,255,255,.08);}
+.sh-badge{margin-left:auto;margin-right:16px;background:var(--accent-green);color:white;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:12px;}
+
+/* ── Layout ── */
+.main-layout{display:flex;min-height:calc(100vh - 100px);}
+
+/* ── Left Nav ── */
+.left-nav{width:228px;background:white;border-right:1px solid var(--border);flex-shrink:0;padding:8px 0;position:sticky;top:100px;height:calc(100vh - 100px);overflow-y:auto;}
+.nav-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);padding:12px 20px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;color:var(--text-muted);font-size:14px;cursor:pointer;border-radius:4px;margin:1px 8px;transition:background .1s;}
+.nav-item:hover{background:#f3f2f1;color:var(--text);}
+.nav-item.active{background:#edebe9;color:var(--primary);font-weight:600;}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--accent-red);color:white;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;}
+.nav-cnt{margin-left:auto;background:var(--bg-grey);color:var(--text-muted);font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;}
+.nav-divider{height:1px;background:var(--border);margin:8px 20px;}
+.nav-back{display:flex;align-items:center;gap:8px;padding:9px 20px;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer;background:var(--bg-subtle);margin:4px 8px 8px;border-radius:4px;}
+.nav-back:hover{background:#d4e9f3;}
+
+/* ── Content ── */
+.content{flex:1;padding:24px 28px;overflow-x:hidden;}
+
+/* ── Breadcrumb ── */
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);margin-bottom:20px;}
+.bc-sep{color:var(--text-light);}
+.bc-link{color:var(--primary-teal);cursor:pointer;}
+.bc-link:hover{text-decoration:underline;}
+.bc-cur{color:var(--text);font-weight:500;}
+
+/* ── Page title ── */
+.page-title{font-size:24px;font-weight:700;color:var(--primary);line-height:1.2;margin-bottom:4px;}
+.page-subtitle{font-size:14px;color:var(--text-muted);margin-bottom:20px;}
+
+/* ── Toolbar ── */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;font-size:14px;font-weight:500;border:none;border-radius:4px;cursor:pointer;font-family:inherit;transition:background .1s;white-space:nowrap;}
+.btn-primary{background:var(--primary);color:white;}
+.btn-primary:hover{background:#004065;}
+.btn-secondary{background:white;color:var(--text);border:1px solid var(--border-med);}
+.btn-secondary:hover{background:var(--bg-grey);}
+.filter-tabs{display:flex;background:white;border:1px solid var(--border-med);border-radius:4px;overflow:hidden;}
+.ftab{padding:6px 14px;font-size:13px;cursor:pointer;color:var(--text-muted);transition:background .1s;white-space:nowrap;border-right:1px solid var(--border-med);}
+.ftab:last-child{border-right:none;}
+.ftab:hover{background:var(--bg-grey);}
+.ftab.active{background:var(--primary);color:white;font-weight:600;}
+.toolbar-sep{width:1px;height:28px;background:var(--border-med);margin:0 4px;}
+
+/* ── Cards ── */
+.card{background:white;border:1px solid var(--border);border-radius:6px;padding:20px;}
+.card-sm{padding:14px 16px;}
+.card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:12px;}
+
+/* ── KPI cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.kpi-card{background:white;border:1px solid var(--border);border-radius:6px;padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.green::before{background:var(--accent-green);}
+.kpi-card.gold::before{background:var(--accent-gold);}
+.kpi-card.red::before{background:var(--accent-red);}
+.kpi-card.blue::before{background:var(--primary);}
+.kpi-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:800;color:var(--primary);line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:12px;color:var(--text-muted);}
+.kpi-icon{position:absolute;top:14px;right:14px;font-size:22px;opacity:.15;}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;white-space:nowrap;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;}
+.badge-active{background:#e6faf6;color:#017a64;} .badge-active::before{background:#02B896;}
+.badge-pending{background:#fff8e6;color:#c07800;} .badge-pending::before{background:#F5A623;}
+.badge-done{background:#e6f4f3;color:#537780;} .badge-done::before{background:#537780;}
+.badge-error{background:#fbeeed;color:#B55852;} .badge-error::before{background:#B55852;}
+.badge-info{background:#ebf2f5;color:#00517e;} .badge-info::before{background:#00517e;}
+.badge-neutral{background:#f3f2f1;color:#605e5c;} .badge-neutral::before{background:#a19f9d;}
+
+/* ── Tables ── */
+.table-wrap{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.data-table th{text-align:left;padding:10px 14px;background:var(--bg-grey);color:var(--text-muted);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border-med);white-space:nowrap;}
+.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+.data-table tr:hover td{background:#faf9f8;}
+.data-table tr:last-child td{border-bottom:none;}
+
+/* ── Progress ── */
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;}
+.prog-green{background:var(--accent-green);}
+.prog-gold{background:var(--accent-gold);}
+.prog-red{background:var(--accent-red);}
+.prog-blue{background:var(--primary);}
+
+/* ── Project cards (hub) ── */
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-bottom:24px;}
+.proj-card{background:white;border:1px solid var(--border);border-radius:8px;padding:20px;cursor:pointer;transition:box-shadow .15s,transform .15s;position:relative;overflow:hidden;}
+.proj-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.proj-card.s-active::before{background:var(--accent-green);}
+.proj-card.s-planning::before{background:var(--accent-gold);}
+.proj-card.s-done::before{background:var(--primary-teal);}
+.proj-card:hover{box-shadow:0 4px 16px rgba(0,81,126,.1);transform:translateY(-1px);}
+.proj-num{font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:.06em;margin-bottom:4px;}
+.proj-name{font-size:16px;font-weight:700;color:var(--primary);line-height:1.2;margin-bottom:3px;}
+.proj-client{font-size:13px;color:var(--text-muted);margin-bottom:10px;}
+.proj-meta{display:flex;gap:14px;font-size:12px;color:var(--text-muted);padding-top:12px;border-top:1px solid var(--border);}
+.pm-item{display:flex;flex-direction:column;gap:1px;}
+.pm-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);}
+.pm-val{font-weight:600;color:var(--text);}
+
+/* ── Hub stats ── */
+.hub-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.hs-card{background:white;border:1px solid var(--border);border-radius:6px;padding:16px 20px;display:flex;align-items:center;gap:14px;}
+.hs-icon{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.hs-icon-a{background:#e6faf6;} .hs-icon-p{background:#fff8e6;} .hs-icon-d{background:#e6f4f3;} .hs-icon-t{background:#ebf2f5;}
+.hs-val{font-size:26px;font-weight:800;color:var(--primary);}
+.hs-label{font-size:12px;color:var(--text-muted);}
+
+/* ── Donut (SVG) ── */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.donut{position:relative;width:120px;height:120px;}
+.donut svg{transform:rotate(-90deg);}
+.donut-lbl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.donut-pct{font-size:22px;font-weight:800;color:var(--primary);line-height:1;}
+.donut-sub{font-size:10px;color:var(--text-muted);}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:4px;}
+.dl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dl-val{margin-left:auto;font-weight:600;color:var(--text);}
+
+/* ── Activity feed ── */
+.activity-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.av{width:32px;height:32px;border-radius:50%;background:var(--bg-subtle);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--primary);flex-shrink:0;}
+.act-text{font-size:13px;color:var(--text);line-height:1.4;}
+.act-meta{font-size:11px;color:var(--text-light);margin-top:2px;}
+
+/* ── Timesheet ── */
+.ts-table{width:100%;border-collapse:collapse;}
+.ts-table th{padding:10px 14px;background:var(--bg-grey);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);text-align:center;border:1px solid var(--border-med);}
+.ts-table th.name-col{text-align:left;}
+.ts-table th.today-col{background:var(--bg-subtle);color:var(--primary);}
+.ts-table td{padding:10px 14px;text-align:center;border:1px solid var(--border);font-size:14px;}
+.ts-table td.nc{text-align:left;font-weight:600;color:var(--text);}
+.ts-table td.hc{color:var(--primary);font-weight:600;}
+.ts-table td.tc{background:var(--bg-subtle);font-weight:700;color:var(--primary);}
+.ts-table td.zero{color:var(--text-light);}
+.ts-table tr.total-row td{font-weight:700;background:var(--bg-grey);border-top:2px solid var(--border-med);}
+
+/* ── Kanban ── */
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start;}
+.kcol-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:white;border:1px solid var(--border);border-radius:6px 6px 0 0;border-bottom:none;font-size:13px;font-weight:700;color:var(--text-muted);}
+.kcol-cnt{background:var(--bg-grey);border-radius:10px;padding:2px 8px;font-size:12px;}
+.kcol-body{background:#f8f7f6;border:1px solid var(--border);border-radius:0 0 6px 6px;padding:8px;min-height:100px;display:flex;flex-direction:column;gap:8px;}
+.kcard{background:white;border:1px solid var(--border);border-radius:6px;padding:12px;cursor:pointer;}
+.kcard:hover{border-color:var(--primary-teal);}
+.kcard-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.kcard-meta{font-size:11px;color:var(--text-muted);display:flex;flex-direction:column;gap:4px;}
+.kcard-row{display:flex;align-items:center;gap:6px;}
+.prio{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;}
+.prio-1{background:#fff8e6;color:#c07800;}
+.prio-2{background:#ffe9c4;color:#9e5c00;}
+.prio-3{background:#fbeeed;color:#B55852;}
+.prio-4{background:#4a0000;color:white;}
+
+/* ── Budget bars ── */
+.brow{display:grid;grid-template-columns:190px 1fr 85px 85px 80px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.brow:last-child{border-bottom:none;}
+.brow-label{font-size:13px;font-weight:500;color:var(--text);}
+.brow-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.brow-fill{height:100%;border-radius:4px;}
+.brow-pct{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.bnum{font-size:13px;font-weight:600;color:var(--text);text-align:right;}
+.bnum-sm{font-size:11px;color:var(--text-muted);text-align:right;}
+
+/* ── Diary ── */
+.diary-entry{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
+.diary-entry:last-child{border-bottom:none;}
+.diary-date{width:72px;flex-shrink:0;text-align:center;}
+.diary-day{font-size:26px;font-weight:800;color:var(--primary);line-height:1;}
+.diary-mon{font-size:12px;color:var(--text-muted);font-weight:500;}
+.diary-body{flex:1;}
+.diary-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.diary-weather{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
+.diary-text{font-size:13px;color:var(--text);line-height:1.5;}
+.diary-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.dtag{background:var(--bg-subtle);color:var(--primary);font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;}
+
+/* ── Gantt ── */
+.gantt-wrap{background:white;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.gantt-head{display:flex;border-bottom:1px solid var(--border-med);}
+.glabel-col{width:200px;flex-shrink:0;padding:10px 14px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;background:var(--bg-grey);border-right:1px solid var(--border-med);}
+.gwks{flex:1;display:flex;background:var(--bg-grey);}
+.gwk{flex:1;padding:10px 4px;font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;border-right:1px solid var(--border);}
+.gwk.now{color:var(--primary);font-weight:800;background:#ebf2f5;}
+.grow{display:flex;border-bottom:1px solid var(--border);}
+.grow:last-child{border-bottom:none;}
+.grow:hover{background:#faf9f8;}
+.grow-label{width:200px;flex-shrink:0;padding:11px 14px;border-right:1px solid var(--border-med);display:flex;flex-direction:column;gap:2px;}
+.grow-name{font-size:13px;font-weight:500;color:var(--text);}
+.grow-sub{font-size:11px;color:var(--text-light);}
+.grow-grid{flex:1;display:flex;position:relative;padding:10px 0;align-items:center;}
+.gcell{flex:1;border-right:1px solid var(--border);height:100%;}
+.gbar{position:absolute;height:22px;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gbar-done{background:#537780;}
+.gbar-active{background:var(--accent-green);}
+.gbar-future{background:#c2d9df;}
+.gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--accent-red);opacity:.6;}
+
+/* ── ÄTA cards ── */
+.ata-card{background:white;border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px;}
+.ata-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.ata-num{font-size:11px;font-weight:700;color:var(--text-light);}
+.ata-name{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:4px;}
+.ata-desc{font-size:13px;color:var(--text-muted);margin-bottom:10px;}
+.ata-meta{display:flex;gap:16px;font-size:12px;color:var(--text-muted);flex-wrap:wrap;}
+.am-item{display:flex;flex-direction:column;gap:1px;}
+.am-label{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);}
+.am-val{font-weight:600;color:var(--text);}
+
+/* ── Layout helpers ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.main-side{display:grid;grid-template-columns:1fr 280px;gap:16px;}
+.mt-sm{margin-top:12px;} .mt-md{margin-top:20px;} .mb-sm{margin-bottom:12px;} .mb-md{margin-bottom:20px;}
+.flex{display:flex;} .items-center{align-items:center;} .gap-sm{gap:8px;} .gap-md{gap:16px;} .justify-between{justify-content:space-between;}
+.text-muted{color:var(--text-muted);} .text-sm{font-size:12px;} .font-bold{font-weight:700;}
+
+/* ── Views toggle ── */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ── Modal / right panel ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:none;justify-content:flex-end;}
+#modal-overlay.open{display:flex;}
+#modal-panel{background:white;width:560px;max-width:96vw;height:100vh;display:flex;flex-direction:column;box-shadow:-4px 0 32px rgba(0,0,0,.2);}
+#modal-panel.wide{width:720px;}
+.mhead{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-subtle);flex-shrink:0;}
+#modal-title{font-size:15px;font-weight:700;color:var(--primary);}
+.mclose{border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-muted);line-height:1;padding:2px 6px;border-radius:3px;}
+.mclose:hover{background:var(--border);color:var(--text);}
+#modal-body{flex:1;overflow-y:auto;padding:20px;}
+.mfooter{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+/* ── Confirm dialog (centered) ── */
+#confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:2100;display:none;align-items:center;justify-content:center;}
+#confirm-overlay.open{display:flex;}
+.confirm-box{background:white;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.22);padding:24px 28px;width:380px;max-width:92vw;}
+.confirm-ico{font-size:30px;margin-bottom:10px;}
+.confirm-ttl{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.confirm-txt{font-size:13px;color:var(--text-muted);margin-bottom:18px;line-height:1.5;}
+.confirm-acts{display:flex;gap:8px;justify-content:flex-end;}
+
+/* ── Form elements ── */
+.ff{margin-bottom:14px;}
+.fl{display:block;font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:5px;}
+.fi,.fs,.ft{width:100%;padding:8px 11px;border:1px solid var(--border-med);border-radius:4px;font-family:inherit;font-size:13.5px;color:var(--text);background:white;box-sizing:border-box;}
+.fi:focus,.fs:focus,.ft:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(0,81,126,.12);}
+.ft{resize:vertical;min-height:72px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.fsec{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);padding:12px 0 8px;border-bottom:1px solid var(--border);margin-bottom:12px;margin-top:6px;}
+
+/* ── Detail rows (inside modals) ── */
+.dr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.dr:last-child{border-bottom:none;}
+.dk{color:var(--text-muted);flex-shrink:0;min-width:120px;}
+.dv{font-weight:500;color:var(--text);}
+.dl-sec{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);padding:14px 0 6px;margin-top:4px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+
+/* ── Toast ── */
+#toasts{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:3000;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:6px;font-size:13px;font-weight:500;color:white;box-shadow:0 3px 14px rgba(0,0,0,.2);animation:tin .2s ease;}
+.t-info{background:var(--primary);}
+.t-ok{background:#017a64;}
+.t-err{background:var(--accent-red);}
+.t-warn{background:#c07800;}
+@keyframes tin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Stub views ── */
+.stub{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:280px;text-align:center;padding:40px 20px;}
+.stub-ico{font-size:52px;opacity:.25;margin-bottom:16px;}
+.stub-hd{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+.stub-bd{font-size:13.5px;color:var(--text-muted);max-width:400px;line-height:1.6;margin-bottom:16px;}
+.stub-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg-subtle);border:1px solid var(--border-med);border-radius:4px;padding:6px 14px;font-size:12px;color:var(--text-muted);}
+
+/* ── Avvikelser: kanban/list toggle ── */
+#avv-kanban{display:block;}
+#avv-list{display:none;}
+
+/* ── ÄTA inline decision ── */
+.ata-decision{display:none;margin-top:10px;padding:11px 14px;border-radius:4px;font-size:13px;font-weight:600;align-items:center;gap:8px;}
+.ata-decision.show{display:flex;}
+.ata-dec-ok{background:#e6faf6;color:#017a64;border:1px solid #02B896;}
+.ata-dec-no{background:#fbeeed;color:#B55852;border:1px solid #B55852;}
+.ata-dec-req{background:#fff8e6;color:#c07800;border:1px solid #F5A623;}
+
+/* ── Resurser table ── */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px;}
+.res-card{background:white;border:1px solid var(--border);border-radius:6px;padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer;}
+.res-card:hover{border-color:var(--primary-teal);box-shadow:0 2px 8px rgba(0,81,126,.08);}
+.res-info{flex:1;}
+.res-name{font-size:14px;font-weight:600;color:var(--text);}
+.res-role{font-size:12px;color:var(--text-muted);}
+.res-meta{font-size:11px;color:var(--text-light);margin-top:2px;}
+
+/* ── Stat summary bar ── */
+.stat-bar{display:flex;gap:24px;background:white;border:1px solid var(--border);border-radius:6px;padding:14px 20px;margin-bottom:20px;flex-wrap:wrap;}
+.sb-item{display:flex;flex-direction:column;gap:2px;}
+.sb-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);}
+.sb-val{font-size:20px;font-weight:700;color:var(--primary);}
+.sb-sub{font-size:12px;color:var(--text-muted);}
+.sb-div{width:1px;background:var(--border);}
+</style>
+</head>
+<body>
+
+<!-- ══ M365 Suite Bar ══ -->
+<div class="suite-bar">
+  <div class="sb-waffle">⊞</div>
+  <span class="sb-brand">Microsoft 365</span>
+  <div class="sb-search">🔍 Sök i FlowSight...</div>
+  <div class="sb-right">
+    <div class="sb-icon">🔔</div>
+    <div class="sb-icon">⚙</div>
+    <div class="sb-icon">?</div>
+    <div class="sb-avatar">AL</div>
+  </div>
+</div>
+
+<!-- ══ Site Header ══ -->
+<div class="site-header">
+  <div class="sh-name">FlowSight · Langate</div>
+  <nav class="sh-nav">
+    <div class="sh-nav-item active" data-nav="hub" onclick="navigate('hub')">Projektöversikt</div>
+    <div class="sh-nav-item" data-nav="resources">Resurser</div>
+    <div class="sh-nav-item" data-nav="reports">Rapporter</div>
+    <div class="sh-nav-item" data-nav="settings">Inställningar</div>
+  </nav>
+  <span class="sh-badge">MOCKUP</span>
+</div>
+
+<!-- ══ Main Layout ══ -->
+<div class="main-layout">
+
+  <!-- Left Navigation -->
+  <nav class="left-nav">
+
+    <!-- Hub nav (visible on hub view) -->
+    <div id="nav-hub">
+      <div class="nav-section-label">Hub · Globalt</div>
+      <div class="nav-item active" data-view="hub" onclick="navigate('hub')">
+        <span class="nav-icon">🏗</span> Alla projekt
+        <span class="nav-cnt">4</span>
+      </div>
+      <div class="nav-item" data-view="resources" onclick="navigate('hub')">
+        <span class="nav-icon">👥</span> Resurser / Personal
+      </div>
+      <div class="nav-item" data-view="suppliers" onclick="navigate('hub')">
+        <span class="nav-icon">🏭</span> Leverantörer
+      </div>
+      <div class="nav-item" onclick="navigate('hub')">
+        <span class="nav-icon">📋</span> Checklistmallar
+      </div>
+      <div class="nav-item" onclick="navigate('hub')">
+        <span class="nav-icon">📊</span> BI-rapporter
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Administration</div>
+      <div class="nav-item" onclick="navigate('hub')">
+        <span class="nav-icon">⚙</span> Systeminställningar
+      </div>
+    </div>
+
+    <!-- Project nav (visible on project views) -->
+    <div id="nav-project" style="display:none">
+      <div class="nav-back" onclick="navigate('hub')">← Alla projekt</div>
+      <div class="nav-section-label">Renovering Centrumhuset</div>
+      <div class="nav-item" data-view="dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">📈</span> Dashboard
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Fält</div>
+      <div class="nav-item" data-view="arbetsorder" onclick="navigate('arbetsorder')">
+        <span class="nav-icon">🔧</span> Arbetsorder
+        <span class="nav-cnt">5</span>
+      </div>
+      <div class="nav-item" data-view="tidrapport" onclick="navigate('tidrapport')">
+        <span class="nav-icon">⏱</span> Tidsrapportering
+      </div>
+      <div class="nav-item" data-view="dagbok" onclick="navigate('dagbok')">
+        <span class="nav-icon">📔</span> Dagbok
+      </div>
+      <div class="nav-item" data-view="ata" onclick="navigate('ata')">
+        <span class="nav-icon">🔄</span> ÄTA-hantering
+        <span class="nav-cnt">2</span>
+      </div>
+      <div class="nav-item" data-view="avvikelser" onclick="navigate('avvikelser')">
+        <span class="nav-icon">⚠</span> Avvikelser
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Planering</div>
+      <div class="nav-item" data-view="gantt" onclick="navigate('gantt')">
+        <span class="nav-icon">📅</span> Gantt / Tidslinje
+      </div>
+      <div class="nav-item" onclick="navigate('dashboard')">
+        <span class="nav-icon">📐</span> Ritningsvisare
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-section-label">Ekonomi</div>
+      <div class="nav-item" data-view="budget" onclick="navigate('budget')">
+        <span class="nav-icon">💰</span> Budgetöversikt
+      </div>
+      <div class="nav-item" onclick="navigate('dashboard')">
+        <span class="nav-icon">🧾</span> Kundfakturor
+      </div>
+      <div class="nav-item" onclick="navigate('dashboard')">
+        <span class="nav-icon">📥</span> Leverantörsfakturor
+      </div>
+    </div>
+  </nav>
+
+  <!-- Content Area -->
+  <main class="content">
+
+    <!-- ════════════════════════════ VIEW: HUB ════ -->
+    <section id="view-hub" class="view active">
+      <div class="breadcrumb"><span class="bc-cur">FlowSight Hub · Projektöversikt</span></div>
+      <div class="page-title">Projektöversikt</div>
+      <div class="page-subtitle">Alla aktiva och planerade byggprojekt · Uppdaterad 14 apr 2026</div>
+
+      <div class="hub-stats">
+        <div class="hs-card">
+          <div class="hs-icon hs-icon-t">🏗</div>
+          <div><div class="hs-val">4</div><div class="hs-label">Totalt projekt</div></div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-icon hs-icon-a">✅</div>
+          <div><div class="hs-val">2</div><div class="hs-label">Aktiva</div></div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-icon hs-icon-p">📝</div>
+          <div><div class="hs-val">1</div><div class="hs-label">Planering</div></div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-icon hs-icon-d">🏁</div>
+          <div><div class="hs-val">1</div><div class="hs-label">Avslutade</div></div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="navigate('hub')">＋ Nytt projekt</button>
+        <div class="toolbar-sep"></div>
+        <div class="filter-tabs">
+          <div class="ftab active">Alla (4)</div>
+          <div class="ftab">Aktiva (2)</div>
+          <div class="ftab">Planering (1)</div>
+          <div class="ftab">Avslutade (1)</div>
+        </div>
+        <button class="btn btn-secondary" style="margin-left:auto">⊞ Listvy</button>
+      </div>
+
+      <div class="proj-grid">
+
+        <!-- Project 1 -->
+        <div class="proj-card s-active" onclick="navigate('dashboard')">
+          <div class="proj-num">FlowSight-2024-001</div>
+          <div class="proj-name">Renovering Centrumhuset</div>
+          <div class="proj-client">Fastighets AB Centrum · Örebro</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="badge badge-active">Aktiv</span>
+            <span style="font-size:12px;color:var(--text-muted)">Fas: Genomförande</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Budget förbrukat &nbsp;<strong style="color:var(--primary)">66%</strong></div>
+          <div class="prog-bar"><div class="prog-fill prog-gold" style="width:66%"></div></div>
+          <div class="proj-meta">
+            <div class="pm-item"><div class="pm-label">Kontraktsvärde</div><div class="pm-val">3 200 000 kr</div></div>
+            <div class="pm-item"><div class="pm-label">Projektledare</div><div class="pm-val">Anna L.</div></div>
+            <div class="pm-item"><div class="pm-label">Slutdatum</div><div class="pm-val">2026-08-31</div></div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="proj-card s-active" onclick="navigate('dashboard')">
+          <div class="proj-num">FlowSight-2024-003</div>
+          <div class="proj-name">Industribyggnad Hallsberg</div>
+          <div class="proj-client">Hallsberg Industri AB · Hallsberg</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="badge badge-active">Aktiv</span>
+            <span style="font-size:12px;color:var(--text-muted)">Fas: Grundläggning</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Budget förbrukat &nbsp;<strong style="color:var(--primary)">22%</strong></div>
+          <div class="prog-bar"><div class="prog-fill prog-green" style="width:22%"></div></div>
+          <div class="proj-meta">
+            <div class="pm-item"><div class="pm-label">Kontraktsvärde</div><div class="pm-val">7 500 000 kr</div></div>
+            <div class="pm-item"><div class="pm-label">Projektledare</div><div class="pm-val">Anna L.</div></div>
+            <div class="pm-item"><div class="pm-label">Slutdatum</div><div class="pm-val">2027-03-15</div></div>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="proj-card s-planning" onclick="navigate('dashboard')">
+          <div class="proj-num">FlowSight-2024-002</div>
+          <div class="proj-name">Kontorslokal Hamngatan 12</div>
+          <div class="proj-client">Svensson Fastigheter AB · Stockholm</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="badge badge-pending">Planering</span>
+            <span style="font-size:12px;color:var(--text-muted)">Fas: Upphandling</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Budget förbrukat &nbsp;<strong style="color:var(--primary)">0%</strong></div>
+          <div class="prog-bar"><div class="prog-fill prog-blue" style="width:0%"></div></div>
+          <div class="proj-meta">
+            <div class="pm-item"><div class="pm-label">Kontraktsvärde</div><div class="pm-val">1 800 000 kr</div></div>
+            <div class="pm-item"><div class="pm-label">Projektledare</div><div class="pm-val">Marcus B.</div></div>
+            <div class="pm-item"><div class="pm-label">Start</div><div class="pm-val">2026-06-01</div></div>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="proj-card s-done" onclick="navigate('dashboard')">
+          <div class="proj-num">FlowSight-2023-004</div>
+          <div class="proj-name">Bostadsrenovering Södra Strand</div>
+          <div class="proj-client">BRF Södra Strand · Västerås</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span class="badge badge-done">Avslutad</span>
+            <span style="font-size:12px;color:var(--text-muted)">Fas: Stängd</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Budget förbrukat &nbsp;<strong style="color:var(--primary)">98%</strong></div>
+          <div class="prog-bar"><div class="prog-fill prog-blue" style="width:98%"></div></div>
+          <div class="proj-meta">
+            <div class="pm-item"><div class="pm-label">Kontraktsvärde</div><div class="pm-val">2 100 000 kr</div></div>
+            <div class="pm-item"><div class="pm-label">Projektledare</div><div class="pm-val">Lars E.</div></div>
+            <div class="pm-item"><div class="pm-label">Avslutad</div><div class="pm-val">2025-12-18</div></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: DASHBOARD ════ -->
+    <section id="view-dashboard" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-cur">Renovering Centrumhuset</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+        <div>
+          <div class="page-title">Renovering Centrumhuset</div>
+          <div class="page-subtitle">FlowSight-2024-001 · Fastighets AB Centrum · Örebro &nbsp;·&nbsp; PM: Anna Lindqvist</div>
+        </div>
+        <span class="badge badge-active" style="margin-top:6px">Aktiv · Genomförande</span>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="kpi-grid">
+        <div class="kpi-card gold">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-label">Budget förbrukat</div>
+          <div class="kpi-value">66<span style="font-size:16px;font-weight:500">%</span></div>
+          <div class="kpi-sub">1 947 000 kr av 2 950 000 kr</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-icon">⚠</div>
+          <div class="kpi-label">Öppna avvikelser</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">1 hög · 1 medel · 1 låg</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-label">Uppgifter klara</div>
+          <div class="kpi-value">12<span style="font-size:16px;font-weight:500">/24</span></div>
+          <div class="kpi-sub">8 pågår · 4 ej startade</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-label">Dagar till slutdatum</div>
+          <div class="kpi-value">139</div>
+          <div class="kpi-sub">Slutdatum 2026-08-31</div>
+        </div>
+      </div>
+
+      <div class="main-side">
+        <!-- Left column: activity + team -->
+        <div>
+          <!-- Active work orders -->
+          <div class="card mb-md">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div class="card-title">Aktiva arbetsorder</div>
+              <span class="bc-link" style="font-size:13px" onclick="navigate('arbetsorder')">Visa alla →</span>
+            </div>
+            <table class="data-table" style="font-size:13px">
+              <thead><tr>
+                <th>Order</th><th>Beskrivning</th><th>Tilldelad</th><th>Status</th><th>Datum</th>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600;color:var(--primary-teal)">AO-001</td>
+                  <td>El-installation plan 2</td>
+                  <td>Sven P.</td>
+                  <td><span class="badge badge-active">Pågår</span></td>
+                  <td>10–25 apr</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--primary-teal)">AO-004</td>
+                  <td>Fönsterbyte plan 3</td>
+                  <td>Marcus B.</td>
+                  <td><span class="badge badge-active">Pågår</span></td>
+                  <td>1–20 apr</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--primary-teal)">AO-003</td>
+                  <td>Puts och målning</td>
+                  <td>–</td>
+                  <td><span class="badge badge-neutral">Ej startad</span></td>
+                  <td>28 apr–15 maj</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Recent activity -->
+          <div class="card">
+            <div class="card-title">Senaste aktivitet</div>
+            <div class="activity-item">
+              <div class="av">SP</div>
+              <div>
+                <div class="act-text"><strong>Sven Persson</strong> registrerade dagbokspost — El-arbete plan 2 slutfört till 80%</div>
+                <div class="act-meta">Idag 07:45</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="av">MJ</div>
+              <div>
+                <div class="act-text"><strong>Mia Johansson</strong> stängde avvikelse <em>AVV-003: Saknat material (el)</em></div>
+                <div class="act-meta">Igår 16:20</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="av">AL</div>
+              <div>
+                <div class="act-text"><strong>Anna Lindqvist</strong> godkände ÄTA-001 — Tilläggsarbete elinstallation (32 500 kr)</div>
+                <div class="act-meta">13 apr 14:05</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="av">MB</div>
+              <div>
+                <div class="act-text"><strong>Marcus Bergström</strong> laddade upp 3 ritningar i Fönster rev. B</div>
+                <div class="act-meta">11 apr 10:15</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: donut + project info -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <!-- Budget donut -->
+          <div class="card">
+            <div class="card-title">Budget</div>
+            <div class="donut-wrap">
+              <div class="donut">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle class="donut-bg" cx="60" cy="60" r="48" fill="none" stroke="#edebe9" stroke-width="14"/>
+                  <!-- circumference = 2*pi*48 = 301.6 -->
+                  <!-- green: förbrukat 66% = 199 of 301.6, starting after used portion -->
+                  <circle fill="none" cx="60" cy="60" r="48" stroke="#02B896" stroke-width="14" stroke-dasharray="199 102.6" stroke-dashoffset="0" stroke-linecap="round"/>
+                </svg>
+                <div class="donut-lbl">
+                  <div class="donut-pct">66%</div>
+                  <div class="donut-sub">förbrukat</div>
+                </div>
+              </div>
+              <div style="width:100%">
+                <div class="dl-item"><div class="dl-dot" style="background:#02B896"></div>Förbrukat<div class="dl-val">1 947 tkr</div></div>
+                <div class="dl-item"><div class="dl-dot" style="background:#edebe9"></div>Kvar<div class="dl-val">1 003 tkr</div></div>
+                <div class="dl-item"><div class="dl-dot" style="background:#F5A623"></div>Prognos utfall<div class="dl-val">3 020 tkr</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project info card -->
+          <div class="card card-sm">
+            <div class="card-title">Projektinfo</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+              <div style="display:flex;justify-content:space-between;"><span class="text-muted">Adress</span><span style="font-weight:500;text-align:right">Centrumgatan 14, Örebro</span></div>
+              <div style="display:flex;justify-content:space-between;"><span class="text-muted">Startdatum</span><span style="font-weight:500">2026-01-15</span></div>
+              <div style="display:flex;justify-content:space-between;"><span class="text-muted">Kontraktsvärde</span><span style="font-weight:500">3 200 000 kr</span></div>
+              <div style="display:flex;justify-content:space-between;"><span class="text-muted">Projekttyp</span><span style="font-weight:500">Totalentreprenad</span></div>
+            </div>
+          </div>
+
+          <!-- Team -->
+          <div class="card card-sm">
+            <div class="card-title">Team</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="av" style="background:#ebf2f5">AL</div>
+                <div><div style="font-weight:600">Anna Lindqvist</div><div style="font-size:11px;color:var(--text-muted)">Projektledare</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="av" style="background:#e6f4f3">MB</div>
+                <div><div style="font-weight:600">Marcus Bergström</div><div style="font-size:11px;color:var(--text-muted)">Projektingenjör</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="av" style="background:#e6faf6">SP</div>
+                <div><div style="font-weight:600">Sven Persson</div><div style="font-size:11px;color:var(--text-muted)">Fältarbetare</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="av" style="background:#fff8e6">MJ</div>
+                <div><div style="font-weight:600">Mia Johansson</div><div style="font-size:11px;color:var(--text-muted)">Fältarbetare</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div class="av" style="background:#fbeeed">LH</div>
+                <div><div style="font-weight:600">Lena Holm</div><div style="font-size:11px;color:var(--text-muted)">Ekonomiansvarig</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: ARBETSORDER ════ -->
+    <section id="view-arbetsorder" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Arbetsorder</span>
+      </div>
+      <div class="page-title">Arbetsorder</div>
+      <div class="page-subtitle">5 arbetsorder · 2 aktiva, 1 klar, 2 ej startade</div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary">＋ Ny arbetsorder</button>
+        <div class="toolbar-sep"></div>
+        <div class="filter-tabs">
+          <div class="ftab active">Alla (5)</div>
+          <div class="ftab">Pågår (2)</div>
+          <div class="ftab">Ej startad (2)</div>
+          <div class="ftab">Klar (1)</div>
+        </div>
+        <button class="btn btn-secondary" style="margin-left:auto">⬇ Exportera</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>Order #</th><th>Beskrivning</th><th>Tilldelad</th>
+            <th>Planerat datum</th><th>Status</th><th>Material</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:700;color:var(--primary-teal)">AO-001</td>
+              <td><strong>El-installation plan 2</strong><br><span style="font-size:11px;color:var(--text-muted)">Byte av elledningar och uttag, hela plan 2</span></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="av" style="width:24px;height:24px;font-size:10px;background:#e6faf6">SP</div> Sven Persson
+                </div>
+              </td>
+              <td>10–25 apr 2026</td>
+              <td><span class="badge badge-active">Pågår</span></td>
+              <td><span class="badge badge-info">3 rader</span></td>
+              <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Öppna</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--primary-teal)">AO-002</td>
+              <td><strong>VVS rör byte</strong><br><span style="font-size:11px;color:var(--text-muted)">Byte av avloppsrör plan 1 och 2</span></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="av" style="width:24px;height:24px;font-size:10px;background:#fff8e6">MJ</div> Mia Johansson
+                </div>
+              </td>
+              <td>15 mar–5 apr 2026</td>
+              <td><span class="badge badge-done">Klar</span></td>
+              <td><span class="text-muted text-sm">–</span></td>
+              <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Öppna</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--primary-teal)">AO-003</td>
+              <td><strong>Puts och målning</strong><br><span style="font-size:11px;color:var(--text-muted)">Putsning och målning av alla ytor plan 1–3</span></td>
+              <td><span class="text-muted text-sm">Ej tilldelad</span></td>
+              <td>28 apr–15 maj 2026</td>
+              <td><span class="badge badge-neutral">Ej startad</span></td>
+              <td><span class="text-muted text-sm">–</span></td>
+              <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Öppna</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--primary-teal)">AO-004</td>
+              <td><strong>Fönsterbyte plan 3</strong><br><span style="font-size:11px;color:var(--text-muted)">Byte av 12 fönster, plan 3, energieffektiva 3-glas</span></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="av" style="width:24px;height:24px;font-size:10px;background:#e6f4f3">MB</div> Marcus Bergström
+                </div>
+              </td>
+              <td>1–20 apr 2026</td>
+              <td><span class="badge badge-active">Pågår</span></td>
+              <td><span class="badge badge-info">12 rader</span></td>
+              <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Öppna</button></td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;color:var(--primary-teal)">AO-005</td>
+              <td><strong>Parkettläggning</strong><br><span style="font-size:11px;color:var(--text-muted)">Parkettläggning plan 1 och 2, ca 340 m²</span></td>
+              <td><span class="text-muted text-sm">Ej tilldelad</span></td>
+              <td>10–30 maj 2026</td>
+              <td><span class="badge badge-neutral">Ej startad</span></td>
+              <td><span class="text-muted text-sm">–</span></td>
+              <td><button class="btn btn-secondary" style="padding:4px 12px;font-size:12px">Öppna</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: TIDRAPPORT ════ -->
+    <section id="view-tidrapport" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Tidsrapportering</span>
+      </div>
+      <div class="page-title">Tidsrapportering</div>
+      <div class="page-subtitle">Veckovis tidsredovisning per medarbetare</div>
+
+      <div class="toolbar">
+        <button class="btn btn-secondary">‹ Föregående vecka</button>
+        <div style="padding:7px 16px;background:white;border:1px solid var(--border-med);border-radius:4px;font-weight:600;font-size:14px;">
+          Vecka 15 · 7–11 apr 2026
+        </div>
+        <button class="btn btn-secondary">Nästa vecka ›</button>
+        <div class="toolbar-sep"></div>
+        <button class="btn btn-primary">Lämna in vecka</button>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span class="badge badge-pending">Ej godkänd</span>
+          <span class="text-sm text-muted">Status för v.15</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="ts-table">
+          <thead><tr>
+            <th class="name-col" style="width:160px">Person</th>
+            <th>Mån 7/4</th>
+            <th>Tis 8/4</th>
+            <th>Ons 9/4</th>
+            <th>Tor 10/4</th>
+            <th>Fre 11/4</th>
+            <th style="background:var(--bg-subtle);color:var(--primary)">Totalt</th>
+            <th>Status</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="nc">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="av" style="width:26px;height:26px;font-size:11px;background:#e6faf6">SP</div> Sven Persson
+                </div>
+              </td>
+              <td class="hc">8h</td><td class="hc">8h</td><td class="hc">8h</td>
+              <td class="zero">–</td><td class="hc">8h</td>
+              <td class="tc">32h</td>
+              <td><span class="badge badge-done">Godkänd</span></td>
+            </tr>
+            <tr>
+              <td class="nc">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="av" style="width:26px;height:26px;font-size:11px;background:#fff8e6">MJ</div> Mia Johansson
+                </div>
+              </td>
+              <td class="hc">8h</td><td class="hc">8h</td><td class="hc">6h</td>
+              <td class="hc">8h</td><td class="hc">8h</td>
+              <td class="tc">38h</td>
+              <td><span class="badge badge-done">Godkänd</span></td>
+            </tr>
+            <tr>
+              <td class="nc">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="av" style="width:26px;height:26px;font-size:11px;background:#e6f4f3">MB</div> Marcus Bergström
+                </div>
+              </td>
+              <td class="hc">4h</td><td class="hc">4h</td><td class="hc">8h</td>
+              <td class="hc">8h</td><td class="hc">4h</td>
+              <td class="tc">28h</td>
+              <td><span class="badge badge-pending">Väntar godkännande</span></td>
+            </tr>
+            <tr class="total-row">
+              <td class="nc">Summa</td>
+              <td>20h</td><td>20h</td><td>22h</td>
+              <td>16h</td><td>20h</td>
+              <td class="tc">98h</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card mt-md">
+        <div class="card-title">Timmar per aktivitet — Vecka 15</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span>AO-001: El-installation</span><strong style="color:var(--primary)">48h</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span>AO-004: Fönsterbyte</span><strong style="color:var(--primary)">32h</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+            <span>Projektmöten / admin</span><strong style="color:var(--primary)">18h</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: DAGBOK ════ -->
+    <section id="view-dagbok" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Dagbok</span>
+      </div>
+      <div class="page-title">Byggdagbok</div>
+      <div class="page-subtitle">Fortlöpande dokumentation av arbete på arbetsplatsen</div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary">＋ Ny dagbokspost</button>
+        <div class="toolbar-sep"></div>
+        <button class="btn btn-secondary">⬇ Exportera PDF</button>
+        <div style="margin-left:auto;">
+          <select style="padding:6px 12px;border:1px solid var(--border-med);border-radius:4px;font-family:inherit;font-size:13px;background:white;">
+            <option>Alla poster (apr 2026)</option>
+            <option>Mars 2026</option>
+            <option>Februari 2026</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="diary-entry">
+          <div class="diary-date"><div class="diary-day">14</div><div class="diary-mon">APR</div></div>
+          <div class="diary-body">
+            <div class="diary-title">Måndag — Vecka 16</div>
+            <div class="diary-weather">☀ Sol, 8°C · Personal på plats: Sven Persson, Mia Johansson</div>
+            <div class="diary-text">El-arbete plan 2 fortgår enligt plan, uppskattat till 80% klart. Fönsterbyte plan 3 pågår — 6 av 12 fönster monterade. Materialleverans från Ahlsell kl. 09:15 mottagen och kontrollerad. Inga avvikelser noterade idag.</div>
+            <div class="diary-tags">
+              <span class="dtag">AO-001 El</span>
+              <span class="dtag">AO-004 Fönster</span>
+              <span class="dtag">Materialleverans</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="diary-entry">
+          <div class="diary-date"><div class="diary-day">13</div><div class="diary-mon">APR</div></div>
+          <div class="diary-body">
+            <div class="diary-title">Söndag — (Övertid)</div>
+            <div class="diary-weather">⛅ Halvmulet, 6°C · Personal på plats: Sven Persson, Marcus Bergström</div>
+            <div class="diary-text">Övertidsarbete för att hålla tidplanen för el-installationen. Ledningsdragning plan 2 färdigställd på rum 201–212. Marcus genomförde kontroll och dokumenterade med foton.</div>
+            <div class="diary-tags">
+              <span class="dtag">AO-001 El</span>
+              <span class="dtag">Övertid</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="diary-entry">
+          <div class="diary-date"><div class="diary-day">10</div><div class="diary-mon">APR</div></div>
+          <div class="diary-body">
+            <div class="diary-title">Torsdag</div>
+            <div class="diary-weather">🌧 Regn, 5°C · Personal på plats: Sven Persson, Mia Johansson</div>
+            <div class="diary-text">Inomhusarbete pga kraftigt regn. El-installation fortgick inomhus. Mia avslutade VVS-arbete AO-002 (dokumenterat som klart). Fuktkontroll utförd i källarplan — inga nya skador noterade utöver känd avvikelse AVV-001.</div>
+            <div class="diary-tags">
+              <span class="dtag">AO-002 Klar</span>
+              <span class="dtag">Fuktkontroll</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="diary-entry">
+          <div class="diary-date"><div class="diary-day">8</div><div class="diary-mon">APR</div></div>
+          <div class="diary-body">
+            <div class="diary-title">Tisdag</div>
+            <div class="diary-weather">☀ Sol, 9°C · Personal på plats: Sven Persson, Mia Johansson, Marcus Bergström</div>
+            <div class="diary-text">Fönsterbyte plan 3 påbörjades. Rivning av gamla fönster gick utan problem. Marcus dokumenterade befintliga mått och bekräftade beställda fönstermåtten stämmer. 3 fönster monterade på förmiddagen.</div>
+            <div class="diary-tags">
+              <span class="dtag">AO-004 Start</span>
+              <span class="dtag">Fönsterbyte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: ÄTA ════ -->
+    <section id="view-ata" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">ÄTA-hantering</span>
+      </div>
+      <div class="page-title">ÄTA-hantering</div>
+      <div class="page-subtitle">Ändrings- och tilläggsarbeten · 2 aktiva ärenden</div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary">＋ Nytt ÄTA-ärende</button>
+        <div class="toolbar-sep"></div>
+        <div class="filter-tabs">
+          <div class="ftab active">Alla (3)</div>
+          <div class="ftab">Väntande (1)</div>
+          <div class="ftab">Godkänd (2)</div>
+        </div>
+      </div>
+
+      <div class="ata-card">
+        <div class="ata-head">
+          <span class="ata-num">ÄTA-001</span>
+          <span class="badge badge-done">Godkänd</span>
+        </div>
+        <div class="ata-name">Tilläggsarbete elinstallation — extra vägguttag</div>
+        <div class="ata-desc">Kund önskade extra vägguttag i samtliga rum på plan 2, totalt 18 st tillkommande uttag ej i ursprunglig ritning.</div>
+        <div class="ata-meta">
+          <div class="am-item"><div class="am-label">ÄTA-typ</div><div class="am-val">Tilläggsarbete</div></div>
+          <div class="am-item"><div class="am-label">Begärd av</div><div class="am-val">Kund (Fastighets AB)</div></div>
+          <div class="am-item"><div class="am-label">Beräknad kostnad</div><div class="am-val">32 500 kr</div></div>
+          <div class="am-item"><div class="am-label">Godkänd kostnad</div><div class="am-val">32 500 kr</div></div>
+          <div class="am-item"><div class="am-label">Godkänd av</div><div class="am-val">Anna Lindqvist</div></div>
+          <div class="am-item"><div class="am-label">Datum</div><div class="am-val">13 apr 2026</div></div>
+        </div>
+      </div>
+
+      <div class="ata-card">
+        <div class="ata-head">
+          <span class="ata-num">ÄTA-002</span>
+          <span class="badge badge-pending">Väntande godkännande</span>
+        </div>
+        <div class="ata-name">Ändrat fönsterglastyp — 4-glas istf. 3-glas (nordväggar)</div>
+        <div class="ata-desc">Energikonsult rekommenderade uppgradering till 4-glassfönster på nordväggar för att nå energiklass A. Berör 6 av 12 fönster på plan 3.</div>
+        <div class="ata-meta">
+          <div class="am-item"><div class="am-label">ÄTA-typ</div><div class="am-val">Ändringsarbete</div></div>
+          <div class="am-item"><div class="am-label">Begärd av</div><div class="am-val">Marcus Bergström</div></div>
+          <div class="am-item"><div class="am-label">Beräknad kostnad</div><div class="am-val">18 750 kr</div></div>
+          <div class="am-item"><div class="am-label">Godkänd kostnad</div><div class="am-val">–</div></div>
+          <div class="am-item"><div class="am-label">Status</div><div class="am-val">Skickat 14 apr 2026</div></div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;">
+          <button class="btn btn-primary" style="background:var(--accent-green)">✓ Godkänn</button>
+          <button class="btn btn-secondary" style="color:var(--accent-red)">✕ Neka</button>
+          <button class="btn btn-secondary">Begär komplettering</button>
+        </div>
+      </div>
+
+      <div class="ata-card" style="opacity:.7">
+        <div class="ata-head">
+          <span class="ata-num">ÄTA-003</span>
+          <span class="badge badge-done">Godkänd</span>
+        </div>
+        <div class="ata-name">Borttagning av innervägg rum 108 — öppen planlösning</div>
+        <div class="ata-desc">Rivning av icke-bärande vägg mellan rum 108 och 109 för öppen planlösning. Konstruktören bekräftade ej bärande 2026-02-18.</div>
+        <div class="ata-meta">
+          <div class="am-item"><div class="am-label">ÄTA-typ</div><div class="am-val">Ändringsarbete</div></div>
+          <div class="am-item"><div class="am-label">Godkänd kostnad</div><div class="am-val">11 200 kr</div></div>
+          <div class="am-item"><div class="am-label">Datum</div><div class="am-val">19 feb 2026</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: AVVIKELSER ════ -->
+    <section id="view-avvikelser" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Avvikelser</span>
+      </div>
+      <div class="page-title">Avvikelsehantering</div>
+      <div class="page-subtitle">3 aktiva avvikelser · 1 hög allvarlighetsgrad</div>
+
+      <div class="toolbar">
+        <button class="btn btn-primary">＋ Ny avvikelse</button>
+        <div class="toolbar-sep"></div>
+        <div class="filter-tabs">
+          <div class="ftab active">Kanban</div>
+          <div class="ftab">Lista</div>
+        </div>
+      </div>
+
+      <div class="kanban">
+        <!-- Öppen -->
+        <div>
+          <div class="kcol-header" style="border-top:3px solid var(--accent-red);">
+            Öppen <span class="kcol-cnt">1</span>
+          </div>
+          <div class="kcol-body">
+            <div class="kcard">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:700;color:var(--text-light)">AVV-001</span>
+                <span class="prio prio-3">3</span>
+              </div>
+              <div class="kcard-title">Fuktskada i vägg plan 2 — rum 205</div>
+              <div class="kcard-meta">
+                <div class="kcard-row">👤 Ansvarig: Sven Persson</div>
+                <div class="kcard-row">📅 Rapporterad: 10 apr 2026</div>
+                <div class="kcard-row"><span class="badge badge-error" style="font-size:10px">Allvarlighet 3 — Hög</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pågår -->
+        <div>
+          <div class="kcol-header" style="border-top:3px solid var(--accent-gold);">
+            Åtgärd pågår <span class="kcol-cnt">1</span>
+          </div>
+          <div class="kcol-body">
+            <div class="kcard">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:700;color:var(--text-light)">AVV-002</span>
+                <span class="prio prio-2">2</span>
+              </div>
+              <div class="kcard-title">Felaktiga rördragningar i badrum 102</div>
+              <div class="kcard-meta">
+                <div class="kcard-row">👤 Ansvarig: Mia Johansson</div>
+                <div class="kcard-row">📅 Rapporterad: 5 apr 2026</div>
+                <div class="kcard-row"><span class="badge badge-pending" style="font-size:10px">Allvarlighet 2 — Medel</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Åtgärdad -->
+        <div>
+          <div class="kcol-header" style="border-top:3px solid var(--accent-green);">
+            Åtgärdad <span class="kcol-cnt">1</span>
+          </div>
+          <div class="kcol-body">
+            <div class="kcard">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span style="font-size:11px;font-weight:700;color:var(--text-light)">AVV-003</span>
+                <span class="prio prio-1">1</span>
+              </div>
+              <div class="kcard-title">Saknat material (el) — leveransfel Ahlsell</div>
+              <div class="kcard-meta">
+                <div class="kcard-row">👤 Stängd av: Mia Johansson</div>
+                <div class="kcard-row">📅 Stängd: 13 apr 2026</div>
+                <div class="kcard-row"><span class="badge badge-active" style="font-size:10px">Allvarlighet 1 — Låg</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stängd -->
+        <div>
+          <div class="kcol-header" style="border-top:3px solid var(--primary-teal);">
+            Stängd <span class="kcol-cnt">0</span>
+          </div>
+          <div class="kcol-body" style="min-height:80px;">
+            <div style="text-align:center;padding:20px;font-size:12px;color:var(--text-light)">Inga stängda avvikelser</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: BUDGET ════ -->
+    <section id="view-budget" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Budgetöversikt</span>
+      </div>
+      <div class="page-title">Budgetöversikt</div>
+      <div class="page-subtitle">Budget vs faktiskt utfall per kategori · Uppdaterad 14 apr 2026</div>
+
+      <div class="stat-bar">
+        <div class="sb-item"><div class="sb-lbl">Total budget</div><div class="sb-val">2 950 000</div><div class="sb-sub">kr exkl. moms</div></div>
+        <div class="sb-div"></div>
+        <div class="sb-item"><div class="sb-lbl">Förbrukat</div><div class="sb-val" style="color:var(--accent-gold)">1 947 000</div><div class="sb-sub">66% av budget</div></div>
+        <div class="sb-div"></div>
+        <div class="sb-item"><div class="sb-lbl">Kvar i budget</div><div class="sb-val" style="color:var(--accent-green)">1 003 000</div><div class="sb-sub">kr kvar</div></div>
+        <div class="sb-div"></div>
+        <div class="sb-item"><div class="sb-lbl">Prognos utfall</div><div class="sb-val">3 020 000</div><div class="sb-sub">+70 000 kr överskridning</div></div>
+        <div class="sb-div"></div>
+        <div class="sb-item"><div class="sb-lbl">Kontraktsvärde</div><div class="sb-val">3 200 000</div><div class="sb-sub">Täckningsbidrag: 180 000</div></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:0">Budget per kategori</div>
+          <div style="display:flex;gap:16px;font-size:11px;color:var(--text-muted);">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#02B896;border-radius:2px;display:inline-block"></span> Faktiskt</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#edebe9;border-radius:2px;display:inline-block"></span> Budget</span>
+          </div>
+        </div>
+
+        <!-- Header row -->
+        <div style="display:grid;grid-template-columns:190px 1fr 85px 85px 80px;gap:12px;padding-bottom:8px;border-bottom:2px solid var(--border-med);">
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">Kategori</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">Förbrukat</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;text-align:right">Budget</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;text-align:right">Faktiskt</div>
+          <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;text-align:right">%</div>
+        </div>
+
+        <!-- Budget rows -->
+        <div class="brow">
+          <div class="brow-label">Materialkostnader</div>
+          <div><div class="brow-track"><div class="brow-fill prog-gold" style="width:85%"></div></div><div class="brow-pct">85% · Prognos: 890 tkr</div></div>
+          <div class="bnum">850 000</div>
+          <div class="bnum">723 000</div>
+          <div class="bnum" style="color:var(--accent-gold)">85%</div>
+        </div>
+        <div class="brow">
+          <div class="brow-label">Underentreprenörer</div>
+          <div><div class="brow-track"><div class="brow-fill prog-green" style="width:66%"></div></div><div class="brow-pct">66% · Prognos: 780 tkr</div></div>
+          <div class="bnum">780 000</div>
+          <div class="bnum">512 000</div>
+          <div class="bnum" style="color:var(--accent-green)">66%</div>
+        </div>
+        <div class="brow">
+          <div class="brow-label">Egna timkostnader</div>
+          <div><div class="brow-track"><div class="brow-fill prog-green" style="width:72%"></div></div><div class="brow-pct">72% · Prognos: 630 tkr</div></div>
+          <div class="bnum">620 000</div>
+          <div class="bnum">445 000</div>
+          <div class="bnum" style="color:var(--accent-green)">72%</div>
+        </div>
+        <div class="brow">
+          <div class="brow-label">El-installation</div>
+          <div><div class="brow-track"><div class="brow-fill prog-gold" style="width:83%"></div></div><div class="brow-pct">83% · Prognos: 355 tkr</div></div>
+          <div class="bnum">320 000</div>
+          <div class="bnum">267 000</div>
+          <div class="bnum" style="color:var(--accent-gold)">83%</div>
+        </div>
+        <div class="brow">
+          <div class="brow-label">VVS-arbeten</div>
+          <div><div class="brow-track"><div class="brow-fill prog-red" style="width:100%"></div></div><div class="brow-pct">100% · Klar</div></div>
+          <div class="bnum">280 000</div>
+          <div class="bnum">280 000</div>
+          <div class="bnum" style="color:var(--accent-red)">100%</div>
+        </div>
+        <div class="brow">
+          <div class="brow-label">Maskin och transport</div>
+          <div><div class="brow-track"><div class="brow-fill prog-green" style="width:70%"></div></div><div class="brow-pct">70% · Prognos: 100 tkr</div></div>
+          <div class="bnum">100 000</div>
+          <div class="bnum">70 000</div>
+          <div class="bnum" style="color:var(--accent-green)">70%</div>
+        </div>
+        <div class="brow" style="background:var(--bg-subtle);margin:8px -20px -20px;padding:12px 20px;">
+          <div class="brow-label" style="font-weight:700">Totalt</div>
+          <div><div class="brow-track"><div class="brow-fill prog-gold" style="width:66%"></div></div></div>
+          <div class="bnum" style="font-weight:700">2 950 000</div>
+          <div class="bnum" style="font-weight:700">1 947 000</div>
+          <div class="bnum" style="font-weight:700;color:var(--accent-gold)">66%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════ VIEW: GANTT ════ -->
+    <section id="view-gantt" class="view">
+      <div class="breadcrumb">
+        <span class="bc-link" onclick="navigate('hub')">FlowSight Hub</span><span class="bc-sep">›</span>
+        <span class="bc-link" onclick="navigate('dashboard')">Centrumhuset</span><span class="bc-sep">›</span>
+        <span class="bc-cur">Gantt / Tidslinje</span>
+      </div>
+      <div class="page-title">Gantt · Tidslinje</div>
+      <div class="page-subtitle">Projektleverans apr–jun 2026 · Idag 14 apr markerat med röd linje</div>
+
+      <div class="toolbar">
+        <button class="btn btn-secondary">＋ Uppgift</button>
+        <button class="btn btn-secondary">⬇ Exportera</button>
+        <div class="toolbar-sep"></div>
+        <div class="filter-tabs">
+          <div class="ftab active">Apr–Jun 2026</div>
+          <div class="ftab">Full tidslinje</div>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);">
+          <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:6px;background:#537780;border-radius:2px;display:inline-block"></span> Klar</span>
+          <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:6px;background:#02B896;border-radius:2px;display:inline-block"></span> Pågår</span>
+          <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:6px;background:#c2d9df;border-radius:2px;display:inline-block"></span> Planerad</span>
+        </div>
+      </div>
+
+      <!-- Gantt: period Apr 1 – Jun 30 = 91 days. Column widths: 12 weeks (~7.7% each) -->
+      <!-- Today = Apr 14 = day 14 → 15.4% from left -->
+      <div class="gantt-wrap">
+        <div class="gantt-head">
+          <div class="glabel-col">Uppgift</div>
+          <div class="gwks">
+            <div class="gwk">V14<div style="font-size:9px;font-weight:400">1–6 apr</div></div>
+            <div class="gwk">V15<div style="font-size:9px;font-weight:400">7–13 apr</div></div>
+            <div class="gwk now">V16<div style="font-size:9px;font-weight:400">14–20 apr</div></div>
+            <div class="gwk">V17<div style="font-size:9px;font-weight:400">21–27 apr</div></div>
+            <div class="gwk">V18<div style="font-size:9px;font-weight:400">28 apr–4 maj</div></div>
+            <div class="gwk">V19<div style="font-size:9px;font-weight:400">5–11 maj</div></div>
+            <div class="gwk">V20<div style="font-size:9px;font-weight:400">12–18 maj</div></div>
+            <div class="gwk">V21<div style="font-size:9px;font-weight:400">19–25 maj</div></div>
+            <div class="gwk">V22<div style="font-size:9px;font-weight:400">26 maj–1 jun</div></div>
+            <div class="gwk">V23<div style="font-size:9px;font-weight:400">2–8 jun</div></div>
+            <div class="gwk">V24<div style="font-size:9px;font-weight:400">9–15 jun</div></div>
+            <div class="gwk">V25<div style="font-size:9px;font-weight:400">16–22 jun</div></div>
+          </div>
+        </div>
+
+        <!-- Row 1: Demontering Apr 1–10 → 0–11% DONE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">Demontering &amp; sanering</div><div class="grow-sub">Sven P. · AO-000</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-done" style="left:0%;width:10.4%">Apr 1–10</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 2: El-installation Apr 10–25 → 9.9–26.4% ACTIVE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">El-installation plan 2</div><div class="grow-sub">Sven P. · AO-001</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-active" style="left:9.9%;width:16.5%">10–25 apr</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 3: VVS Apr 1–5 → 0–4.4% DONE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">VVS rör byte</div><div class="grow-sub">Mia J. · AO-002</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-done" style="left:0%;width:4.4%">1–5 apr</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 4: Fönsterbyte Apr 1–20 → 0–20.9% ACTIVE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">Fönsterbyte plan 3</div><div class="grow-sub">Marcus B. · AO-004</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-active" style="left:0%;width:20.9%">1–20 apr</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 5: Puts Apr 28 – May 15 → 29.7–48.4% FUTURE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">Puts och målning</div><div class="grow-sub">AO-003 · Ej tilldelad</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-future" style="left:29.7%;width:18.7%;color:var(--primary-teal)">28 apr–15 maj</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 6: Parkett May 10–30 → 39.6–64.8% FUTURE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">Parkettläggning</div><div class="grow-sub">AO-005 · Ej tilldelad</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar gbar-future" style="left:39.6%;width:21.9%;color:var(--primary-teal)">10–30 maj</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+
+        <!-- Row 7: Besiktning Jun 1–5 → 60.4–65.9% FUTURE -->
+        <div class="grow">
+          <div class="grow-label"><div class="grow-name">Slutbesiktning (intern)</div><div class="grow-sub">Anna L. + Marcus B.</div></div>
+          <div class="grow-grid">
+            <div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div><div class="gcell"></div>
+            <div class="gbar" style="left:60.4%;width:5.5%;background:var(--primary);color:white">1–5 jun</div>
+            <div class="gtoday" style="left:15.4%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg-subtle);border-radius:6px;font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--accent-red);font-weight:700">|</span>
+        <strong>Idag: 14 apr 2026</strong> — Röd linje visar dagens datum i Gantt-diagrammet. Fas 2 (beroendepilar och kritisk linje) utvärderas med Bryntum Gantt.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const views = ['hub','dashboard','arbetsorder','tidrapport','dagbok','ata','avvikelser','budget','gantt'];
+
+function navigate(view) {
+  // Hide all views
+  views.forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.classList.remove('active');
+  });
+
+  // Show target
+  const target = document.getElementById('view-' + view);
+  if (target) target.classList.add('active');
+
+  // Toggle nav
+  const isHub = view === 'hub';
+  document.getElementById('nav-hub').style.display = isHub ? 'block' : 'none';
+  document.getElementById('nav-project').style.display = isHub ? 'none' : 'block';
+
+  // Projektöversikt is the only top-nav item that has an active state — it highlights
+  // when the user is at the hub. Inside a project the left sidebar owns navigation state.
+  document.querySelectorAll('.sh-nav-item').forEach(el => el.classList.remove('active'));
+  if (isHub) document.querySelector('.sh-nav-item[data-nav="hub"]').classList.add('active');
+
+  // Update left nav active items
+  document.querySelectorAll('.nav-item[data-view]').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === view);
+  });
+
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>

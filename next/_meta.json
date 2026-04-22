@@ -1,25 +1,13 @@
 {
-  "syncedAt": "2026-04-22T10:00:46Z",
+  "syncedAt": "2026-04-22T10:11:43Z",
   "files": {
-    "mockup/spfx-spec.html": {
+    "index.html": {
       "updated": "2026-04-22"
     },
-    "mockup/index.html": {
-      "updated": "2026-04-22"
-    },
-    "mockup/data.js": {
-      "updated": "2026-04-22"
-    },
-    "mockup/app.js": {
-      "updated": "2026-04-22"
-    },
-    "mockup/styles.css": {
+    "flowsight-mockup.html": {
       "updated": "2026-04-22"
     },
     "flowsight-plan.html": {
-      "updated": "2026-04-22"
-    },
-    "index.html": {
       "updated": "2026-04-22"
     }
   }
