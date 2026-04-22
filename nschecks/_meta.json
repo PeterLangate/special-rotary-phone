@@ -1,9 +1,9 @@
 {
   "files": {
-    "mockups/wiz2-step3.png": {
+    "mockups/wiz1-step2.png": {
       "updated": "2026-04-18"
     },
-    "mockups/wiz1-back.png": {
+    "mockups/wiz1-step1.png": {
       "updated": "2026-04-18"
     },
     "index.html": {
@@ -12,10 +12,31 @@
     "nschecks-plan.html": {
       "updated": "2026-04-21"
     },
+    "mockups/wiz3-step6.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz4-step1.png": {
+      "updated": "2026-04-18"
+    },
     "mockups/wiz2-step1.png": {
       "updated": "2026-04-18"
     },
+    "mockups/wiz2-step3.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz3-step1.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz2-step2.png": {
+      "updated": "2026-04-18"
+    },
     "mockups/wiz1-last.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz1-back.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/nschecks-app.html": {
       "updated": "2026-04-18"
     },
     "mockups/nschecks-shared.js": {
@@ -24,13 +45,7 @@
     "mockups/nschecks-shared.css": {
       "updated": "2026-04-18"
     },
-    "mockups/wiz2-step2.png": {
-      "updated": "2026-04-18"
-    },
-    "screenshots": {
-      "updated": "2026-04-18"
-    },
-    "mockups/nschecks-app.html": {
+    "mockups/nschecks-admin.html": {
       "updated": "2026-04-18"
     },
     "diagrams": {
@@ -39,24 +54,9 @@
     "mockups/wiz1-step3.png": {
       "updated": "2026-04-18"
     },
-    "mockups/wiz3-step6.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/nschecks-admin.html": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz1-step2.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz1-step1.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz3-step1.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz4-step1.png": {
+    "screenshots": {
       "updated": "2026-04-18"
     }
   },
-  "syncedAt": "2026-04-22T17:28:40Z"
+  "syncedAt": "2026-04-22T17:37:23Z"
 }

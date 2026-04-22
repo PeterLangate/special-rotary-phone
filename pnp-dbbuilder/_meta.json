@@ -1,14 +1,14 @@
 {
   "files": {
+    "index.html": {
+      "updated": "2026-02-25"
+    },
     "dist/dbbuilder.js": {
       "updated": "2026-02-25"
     },
     "dist/dbbuilder.js.LICENSE.txt": {
       "updated": "2026-02-18"
-    },
-    "index.html": {
-      "updated": "2026-02-25"
     }
   },
-  "syncedAt": "2026-04-22T17:28:40Z"
+  "syncedAt": "2026-04-22T17:37:23Z"
 }
