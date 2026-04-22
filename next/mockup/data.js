@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   NEXT · Projekthantering · Langate
+   FlowSight · Projekthantering · Langate
    data.js — all static data objects and shared state
 
    NOTE: Property names in this file are MOCKUP-ONLY camelCase
@@ -14,7 +14,7 @@
    ══════════════════════════════════════════════════════ */
 
 // ── Shared state ──────────────────────────────────────
-let currentProjectId = 'NEXT-2024-001';
+let currentProjectId = 'FlowSight-2024-001';
 let _searchResults   = [];
 let _searchFocusedIdx = -1;
 
@@ -200,7 +200,7 @@ const SUPPLIER_DATA = {
     name:'Ahlsell Sverige AB', orgnr:'556025-6809', category:'Elinstallationsmaterial',
     contact:'Fredrik Lindgren', email:'orderel@ahlsell.se', phone:'010-735 00 00',
     status:'Godkänd', statusClass:'badge-active', since:'2019', rating:'A',
-    activeProjects:['NEXT-2024-001 · Renovering Centrumhuset','NEXT-2024-003 · Industribyggnad Hallsberg'],
+    activeProjects:['FlowSight-2024-001 · Renovering Centrumhuset','FlowSight-2024-003 · Industribyggnad Hallsberg'],
     invoices:[
       {num:'AHL-2026-44821', date:'10 apr 2026', amount:'48 320 kr', status:'Väntar godkännande', cls:'badge-pending'},
       {num:'AHL-2026-38110', date:'18 mar 2026', amount:'31 870 kr', status:'Betald', cls:'badge-done'},
@@ -211,7 +211,7 @@ const SUPPLIER_DATA = {
     name:'Würth Sverige AB', orgnr:'556041-2321', category:'Byggmaterial / fästelement',
     contact:'Maria Svensson', email:'order@wurth.se', phone:'010-154 00 00',
     status:'Godkänd', statusClass:'badge-active', since:'2021', rating:'A',
-    activeProjects:['NEXT-2024-001 · Renovering Centrumhuset','NEXT-2024-003 · Industribyggnad Hallsberg','NEXT-2024-002 · Kontorslokal Hamngatan'],
+    activeProjects:['FlowSight-2024-001 · Renovering Centrumhuset','FlowSight-2024-003 · Industribyggnad Hallsberg','FlowSight-2024-002 · Kontorslokal Hamngatan'],
     invoices:[
       {num:'WU-789234', date:'8 apr 2026',  amount:'12 450 kr', status:'Godkänd', cls:'badge-active'},
       {num:'WU-776100', date:'15 mar 2026', amount:'9 870 kr',  status:'Betald',  cls:'badge-done'},
@@ -221,7 +221,7 @@ const SUPPLIER_DATA = {
     name:'Lindéns VVS AB', orgnr:'559123-4567', category:'Underentreprenör — VVS',
     contact:'Thomas Lindén', email:'info@lindens-vvs.se', phone:'019-22 44 66',
     status:'Godkänd', statusClass:'badge-active', since:'2022', rating:'B+',
-    activeProjects:['NEXT-2024-001 · Renovering Centrumhuset'],
+    activeProjects:['FlowSight-2024-001 · Renovering Centrumhuset'],
     invoices:[
       {num:'LV-2026-112', date:'5 apr 2026', amount:'89 750 kr', status:'Godkänd', cls:'badge-active'},
       {num:'LV-2026-098', date:'1 mar 2026', amount:'74 200 kr', status:'Betald',  cls:'badge-done'},
@@ -231,7 +231,7 @@ const SUPPLIER_DATA = {
     name:'Fönsterbolaget Öst AB', orgnr:'559234-5678', category:'Fönster och dörrar',
     contact:'Erik Nilsson', email:'offert@fonsterbolaget.se', phone:'016-55 88 00',
     status:'Granskning', statusClass:'badge-pending', since:'2026', rating:'—',
-    activeProjects:['NEXT-2024-001 · Renovering Centrumhuset'],
+    activeProjects:['FlowSight-2024-001 · Renovering Centrumhuset'],
     invoices:[]
   }
 };
@@ -295,8 +295,8 @@ const BUDGET_CATEGORY_DATA = {
 
 // ── Project data ───────────────────────────────────────
 const PROJECT_DATA = {
-  'NEXT-2024-001': {
-    id:'NEXT-2024-001', name:'Renovering Centrumhuset',
+  'FlowSight-2024-001': {
+    id:'FlowSight-2024-001', name:'Renovering Centrumhuset',
     client:'Fastighets AB Centrum · Örebro', pm:'Anna Lindqvist',
     status:'Aktiv', phase:'Genomförande', contract:'3 200 000 kr',
     budget:2950000, spent:1947000, endDate:'2026-08-31', daysLeft:139,
@@ -305,8 +305,8 @@ const PROJECT_DATA = {
     aoCount:5, ataCount:2, avvCount:3,
     fullDemo:true
   },
-  'NEXT-2024-003': {
-    id:'NEXT-2024-003', name:'Industribyggnad Hallsberg',
+  'FlowSight-2024-003': {
+    id:'FlowSight-2024-003', name:'Industribyggnad Hallsberg',
     client:'Hallsberg Industri AB · Hallsberg', pm:'Anna Lindqvist',
     status:'Aktiv', phase:'Grundläggning', contract:'7 500 000 kr',
     budget:7200000, spent:1584000, endDate:'2027-03-15', daysLeft:335,
@@ -315,8 +315,8 @@ const PROJECT_DATA = {
     aoCount:2, ataCount:0, avvCount:1,
     fullDemo:false
   },
-  'NEXT-2024-002': {
-    id:'NEXT-2024-002', name:'Kontorslokal Hamngatan 12',
+  'FlowSight-2024-002': {
+    id:'FlowSight-2024-002', name:'Kontorslokal Hamngatan 12',
     client:'Svensson Fastigheter AB · Stockholm', pm:'Marcus Bergström',
     status:'Planering', phase:'Upphandling', contract:'1 800 000 kr',
     budget:1700000, spent:0, endDate:'2026-12-31', daysLeft:261,
@@ -325,8 +325,8 @@ const PROJECT_DATA = {
     aoCount:0, ataCount:0, avvCount:0,
     fullDemo:false
   },
-  'NEXT-2023-004': {
-    id:'NEXT-2023-004', name:'Bostadsrenovering Södra Strand',
+  'FlowSight-2023-004': {
+    id:'FlowSight-2023-004', name:'Bostadsrenovering Södra Strand',
     client:'BRF Södra Strand · Västerås', pm:'Lars Eriksson',
     status:'Avslutad', phase:'Stängd', contract:'2 100 000 kr',
     budget:2100000, spent:2058000, endDate:'2025-12-18', daysLeft:0,
@@ -495,10 +495,10 @@ const LF_DATA = {
 
 // ── Search items ───────────────────────────────────────
 const SEARCH_ITEMS = [
-  {icon:'🏗', title:'Renovering Centrumhuset',        sub:'NEXT-2024-001 · Aktiv · Örebro',         action:()=>openProject('NEXT-2024-001')},
-  {icon:'🏗', title:'Industribyggnad Hallsberg',       sub:'NEXT-2024-003 · Aktiv · Hallsberg',      action:()=>openProject('NEXT-2024-003')},
-  {icon:'🏗', title:'Kontorslokal Hamngatan 12',       sub:'NEXT-2024-002 · Planering · Stockholm',  action:()=>openProject('NEXT-2024-002')},
-  {icon:'🏗', title:'Bostadsrenovering Södra Strand',  sub:'NEXT-2023-004 · Avslutad · Västerås',    action:()=>openProject('NEXT-2023-004')},
+  {icon:'🏗', title:'Renovering Centrumhuset',        sub:'FlowSight-2024-001 · Aktiv · Örebro',         action:()=>openProject('FlowSight-2024-001')},
+  {icon:'🏗', title:'Industribyggnad Hallsberg',       sub:'FlowSight-2024-003 · Aktiv · Hallsberg',      action:()=>openProject('FlowSight-2024-003')},
+  {icon:'🏗', title:'Kontorslokal Hamngatan 12',       sub:'FlowSight-2024-002 · Planering · Stockholm',  action:()=>openProject('FlowSight-2024-002')},
+  {icon:'🏗', title:'Bostadsrenovering Södra Strand',  sub:'FlowSight-2023-004 · Avslutad · Västerås',    action:()=>openProject('FlowSight-2023-004')},
   {icon:'🔧', title:'AO-001 — El-installation plan 2', sub:'Arbetsorder · Pågår · Sven Persson',    action:()=>openAO('AO-001')},
   {icon:'🔧', title:'AO-004 — Fönsterbyte plan 3',    sub:'Arbetsorder · Pågår · Marcus B.',         action:()=>openAO('AO-004')},
   {icon:'🔧', title:'AO-002 — VVS rör byte',           sub:'Arbetsorder · Klar · Mia Johansson',    action:()=>openAO('AO-002')},

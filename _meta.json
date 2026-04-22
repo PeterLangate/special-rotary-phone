@@ -1,14 +1,14 @@
 {
+  "syncedAt": "2026-04-22T10:00:45Z",
   "files": {
-    "tailgate.css": {
+    "tailgate.js": {
       "updated": "2026-04-22"
     },
-    "tailgate.js": {
-      "updated": "2026-04-21"
+    "tailgate.css": {
+      "updated": "2026-04-22"
     },
     "index.html": {
       "updated": "2026-04-22"
     }
-  },
-  "syncedAt": "2026-04-22T06:21:46Z"
+  }
 }

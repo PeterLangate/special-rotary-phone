@@ -1,26 +1,26 @@
 {
+  "syncedAt": "2026-04-22T10:00:46Z",
   "files": {
+    "mockup/spfx-spec.html": {
+      "updated": "2026-04-22"
+    },
     "mockup/index.html": {
-      "updated": "2026-04-15"
-    },
-    "next-plan.html": {
-      "updated": "2026-04-15"
-    },
-    "mockup/styles.css": {
-      "updated": "2026-04-15"
+      "updated": "2026-04-22"
     },
     "mockup/data.js": {
-      "updated": "2026-04-15"
-    },
-    "mockup/spfx-spec.html": {
-      "updated": "2026-04-15"
-    },
-    "index.html": {
-      "updated": "2026-04-21"
+      "updated": "2026-04-22"
     },
     "mockup/app.js": {
-      "updated": "2026-04-15"
+      "updated": "2026-04-22"
+    },
+    "mockup/styles.css": {
+      "updated": "2026-04-22"
+    },
+    "flowsight-plan.html": {
+      "updated": "2026-04-22"
+    },
+    "index.html": {
+      "updated": "2026-04-22"
     }
-  },
-  "syncedAt": "2026-04-22T06:21:46Z"
+  }
 }

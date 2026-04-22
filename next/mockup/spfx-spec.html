@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXT — SPFx Architecture Spec · Langate</title>
+<title>FlowSight — SPFx Architecture Spec · Langate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
@@ -87,7 +87,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
 <div class="page-header">
   <div class="page-header-accent"></div>
   <div class="page-header-inner">
-    <div class="page-header-brand">Langate · NEXT</div>
+    <div class="page-header-brand">Langate · FlowSight</div>
     <div class="page-header-dot"></div>
     <div class="page-header-line"></div>
     <div class="page-header-section">SPFx Architecture Specification · v0.1</div>
@@ -96,11 +96,11 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
 
 <div class="wrap">
 
-  <div class="doc-title">NEXT · SPFx Architecture Specification</div>
+  <div class="doc-title">FlowSight · SPFx Architecture Specification</div>
   <div class="doc-sub">Mapping: Mockup views → SharePoint web parts, lists, Azure Functions &amp; external APIs · Uppdaterad 14 apr 2026</div>
 
   <div class="info-box">
-    <strong>Syfte:</strong> Det här dokumentet mappar varje vy i NEXT-mockupen till konkreta SPFx-komponenter,
+    <strong>Syfte:</strong> Det här dokumentet mappar varje vy i FlowSight-mockupen till konkreta SPFx-komponenter,
     SharePoint-listor, Azure Functions och externa API-anrop. Används som underlag för fas 1–3 av SPFx-utvecklingen.
   </div>
 
@@ -110,7 +110,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
   <div class="card-grid">
     <div class="card">
       <div class="card-num">Hub Site</div>
-      <div class="card-name">NEXT Hub</div>
+      <div class="card-name">FlowSight Hub</div>
       <div class="card-desc">Rotsajten. Innehåller globala listor (projekt, resurser, leverantörer, mallar), nav-menyn och Power BI-integrationen.</div>
       <div class="card-meta"><span class="badge badge-blue">Hub site</span></div>
     </div>
@@ -270,7 +270,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
   <!-- ═══ 3. SharePoint Lists ═══ -->
   <h2>3. SharePoint-listor</h2>
 
-  <h3>Hub-listor (globalt på NEXT Hub)</h3>
+  <h3>Hub-listor (globalt på FlowSight Hub)</h3>
   <table class="spec-table">
     <thead><tr><th>Lista</th><th>Interna namn</th><th>Nyckelkolumner</th></tr></thead>
     <tbody>
@@ -503,23 +503,23 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
     <thead><tr><th>Paket</th><th>Sökväg</th><th>Innehåll</th></tr></thead>
     <tbody>
       <tr>
-        <td><strong>next-hub</strong></td>
-        <td><code>src/next-hub/</code></td>
+        <td><strong>flowsight-hub</strong></td>
+        <td><code>src/flowsight-hub/</code></td>
         <td>Hub-specifika web parts: ProjectHub, Resources, Suppliers, Checklists, Reports, Settings</td>
       </tr>
       <tr>
-        <td><strong>next-project</strong></td>
-        <td><code>src/next-project/</code></td>
+        <td><strong>flowsight-project</strong></td>
+        <td><code>src/flowsight-project/</code></td>
         <td>Projektyta-web parts: Dashboard, WorkOrder, Timesheet, Diary, ATA, Deviation, Budget, Invoices</td>
       </tr>
       <tr>
-        <td><strong>next-gantt</strong></td>
-        <td><code>src/next-gantt/</code></td>
+        <td><strong>flowsight-gantt</strong></td>
+        <td><code>src/flowsight-gantt/</code></td>
         <td>Separat paket för Gantt (Bryntum-licens isoleras)</td>
       </tr>
       <tr>
-        <td><strong>next-shared</strong></td>
-        <td><code>src/next-shared/</code></td>
+        <td><strong>flowsight-shared</strong></td>
+        <td><code>src/flowsight-shared/</code></td>
         <td>Delad SPFx-specifik kod: SPService (SP REST wrapper), theme tokens, modal manager, toast service</td>
       </tr>
     </tbody>
@@ -549,18 +549,18 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
         <tr style="background:var(--primary);color:white">
           <th style="padding:8px 12px;text-align:left;border-radius:4px 0 0 0;width:18%">Leverantör / E-post</th>
           <th style="padding:8px 12px;text-align:left;width:19%">InvoiceOcrParser (AF)</th>
-          <th style="padding:8px 12px;text-align:left;width:19%">NEXT-InvoiceProcessor (AF)</th>
+          <th style="padding:8px 12px;text-align:left;width:19%">FlowSight-InvoiceProcessor (AF)</th>
           <th style="padding:8px 12px;text-align:left;width:22%">SharePoint (SP Listor)</th>
           <th style="padding:8px 12px;text-align:left;border-radius:0 4px 0 0;width:22%">Projektledare (SPFx UI)</th>
         </tr>
       </thead>
       <tbody>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)">1. Skickar PDF-faktura till inkorgen</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ triggas via Logic App</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">2. OCR-tolkar faktura<br><span style="color:var(--accent-green);font-size:11px">leverantör, belopp, ref.</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ anropar NEXT-InvoiceProcessor</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">2. OCR-tolkar faktura<br><span style="color:var(--accent-green);font-size:11px">leverantör, belopp, ref.</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ anropar FlowSight-InvoiceProcessor</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">3. Matchar mot projekt<br>Skapar listpost</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ LevFakturor-lista<br><span style="color:var(--accent-green);font-size:11px">Status: "Väntar godkännande"</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">4. Skickar notifikation →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ Bell-notis i NEXT UI</td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">4. Skickar notifikation →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ Bell-notis i FlowSight UI</td></tr>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">5. PL granskar fakturan<br>Klickar <strong>"Godkänn faktura"</strong></td></tr>
-        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">← NEXT-ApprovalHandler triggas</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span style="color:var(--accent-green)">Status → "Godkänd"</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
+        <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">← FlowSight-ApprovalHandler triggas</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span style="color:var(--accent-green)">Status → "Godkänd"</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px"></td><td style="padding:8px 12px"></td><td style="padding:8px 12px">6. Skapar betalningsorder i Fortnox →</td><td style="padding:8px 12px"></td><td style="padding:8px 12px;color:var(--accent-green)">✓ Toast: "Skickad till Fortnox"</td></tr>
       </tbody>
     </table>
@@ -573,7 +573,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
       <thead>
         <tr style="background:var(--primary);color:white">
           <th style="padding:8px 12px;text-align:left;border-radius:4px 0 0 0;width:25%">Fältarbetare / Ingenjör</th>
-          <th style="padding:8px 12px;text-align:left;width:25%">NEXT SPFx (ÄTA-webpart)</th>
+          <th style="padding:8px 12px;text-align:left;width:25%">FlowSight SPFx (ÄTA-webpart)</th>
           <th style="padding:8px 12px;text-align:left;width:25%">SharePoint (ÄTA-lista)</th>
           <th style="padding:8px 12px;text-align:left;border-radius:0 4px 0 0;width:25%">Projektledare</th>
         </tr>
@@ -596,7 +596,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
       <thead>
         <tr style="background:var(--primary);color:white">
           <th style="padding:8px 12px;text-align:left;border-radius:4px 0 0 0;width:20%">Administratör (SPFx)</th>
-          <th style="padding:8px 12px;text-align:left;width:20%">NEXT-ProjectProvisioner (AF)</th>
+          <th style="padding:8px 12px;text-align:left;width:20%">FlowSight-ProjectProvisioner (AF)</th>
           <th style="padding:8px 12px;text-align:left;width:20%">Microsoft Graph API</th>
           <th style="padding:8px 12px;text-align:left;width:20%">SharePoint Hub</th>
           <th style="padding:8px 12px;text-align:left;border-radius:0 4px 0 0;width:20%">PnP Provisioning</th>
@@ -605,7 +605,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
       <tbody>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)">1. Fyller i "Nytt projekt"<br>Klickar <strong>"Skapa projekt"</strong></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-muted)">→ HTTP trigger</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
         <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">2. Skapar ny SP-kommunikationswebbplats →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--accent-green)">sites.Create<br>← site-URL</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
-        <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">3. Associerar med Hub →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--accent-green)">Projektyta synlig i NEXT Hub</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
+        <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">3. Associerar med Hub →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--accent-green)">Projektyta synlig i FlowSight Hub</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
         <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">4. Tillämpar PnP-mall →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">Skapar listor: AO, Tidrapport, Dagbok, ÄTA, Avvikelser, Budget, Fakturor + installerar web parts</td></tr>
         <tr style="background:var(--bg-subtle)"><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">5. Sätter behörigheter<br>Tilldelar PL som ägare →</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">groups.Members.add</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"></td></tr>
         <tr><td style="padding:8px 12px;color:var(--accent-green)">6. ✓ Toast: "Projektyta klar"<br>Projekt visas i Hub-listan</td><td style="padding:8px 12px;color:var(--text-muted)">← 200 OK</td><td style="padding:8px 12px"></td><td style="padding:8px 12px"></td><td style="padding:8px 12px"></td></tr>
@@ -754,7 +754,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
         </tr>
         <tr style="background:#f0f6f9;font-size:10.5px;color:var(--text-muted)">
           <td style="padding:5px 14px;border-bottom:1px solid var(--border-med)">Legende: ✦ Full &nbsp;·&nbsp; RW Läs+skriv &nbsp;·&nbsp; R Läs &nbsp;·&nbsp; — Ingen</td>
-          <td colspan="5" style="padding:5px 14px;border-bottom:1px solid var(--border-med)">SP-grupp: <strong>NEXT-&lt;ProjektID&gt;-Owners</strong> &nbsp;·&nbsp; <strong>-PL</strong> &nbsp;·&nbsp; <strong>-Ekonomi</strong> &nbsp;·&nbsp; <strong>-Falt</strong> &nbsp;·&nbsp; <strong>-Lasare</strong></td>
+          <td colspan="5" style="padding:5px 14px;border-bottom:1px solid var(--border-med)">SP-grupp: <strong>FlowSight-&lt;ProjektID&gt;-Owners</strong> &nbsp;·&nbsp; <strong>-PL</strong> &nbsp;·&nbsp; <strong>-Ekonomi</strong> &nbsp;·&nbsp; <strong>-Falt</strong> &nbsp;·&nbsp; <strong>-Lasare</strong></td>
         </tr>
       </thead>
       <tbody>
@@ -843,8 +843,8 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
   </div>
 
   <div class="tip-box">
-    <strong>Provisionering:</strong> Rollgrupperna <code>NEXT-&lt;ProjektID&gt;-Owners/Members/Visitors</code> skapas av
-    NEXT-ProjectProvisioner AF via Microsoft Graph API. PL tilldelas automatiskt Owners-rollen.
+    <strong>Provisionering:</strong> Rollgrupperna <code>FlowSight-&lt;ProjektID&gt;-Owners/Members/Visitors</code> skapas av
+    FlowSight-ProjectProvisioner AF via Microsoft Graph API. PL tilldelas automatiskt Owners-rollen.
     Ekonomi-rollen konfigureras via SPFx-administrationsgränssnittet efter projektskapande.
   </div>
 
@@ -853,7 +853,7 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
        ═══════════════════════════════════════════════════════ -->
   <h2 class="spec-h2" style="margin-top:28px">§ 11 — Deployment architecture</h2>
   <p class="spec-para">
-    NEXT består av tre lager: <strong>SharePoint Online</strong> (hub-site + ett projekt-subsite per projekt),
+    FlowSight består av tre lager: <strong>SharePoint Online</strong> (hub-site + ett projekt-subsite per projekt),
     ett paket med <strong>SPFx-webbdelar</strong> (ProjectHub, Dashboard, AO, ÄTA, Budget m.fl.) samt
     ett set <strong>Azure Functions</strong> som utför provisionering, OCR och Fortnox-integration.
     All persistens sker i SharePoint — Azure Functions är statslösa.
@@ -861,11 +861,11 @@ h3{font-size:14px;font-weight:700;color:var(--text);margin:20px 0 8px;}
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:18px 0 10px">11.1 Site-topologi</h3>
   <div style="font-family:monospace;font-size:11px;line-height:1.45;background:var(--bg-subtle);padding:16px 18px;border-radius:4px;border:1px solid var(--border-med);white-space:pre;overflow-x:auto">
-NEXT Hub Site  (/sites/next)
+FlowSight Hub Site  (/sites/flowsight)
 ├── Projektkatalog          (hub-template.xml)
 ├── Leverantörer            (hub-template.xml)
 └── Sub-sites per project   (created on demand by ProjectProvisioner AF)
-    └── /sites/next/NEXT-2024-001
+    └── /sites/flowsight/FlowSight-2024-001
         ├── Arbetsorder
         ├── ÄTA-hantering
         ├── Avvikelser
@@ -884,32 +884,32 @@ NEXT Hub Site  (/sites/next)
     </thead>
     <tbody>
       <tr>
-        <td><code>NEXT-HubBootstrap</code></td>
+        <td><code>FlowSight-HubBootstrap</code></td>
         <td>Manual (one-shot)</td>
         <td>Applicerar <code>hub-template.xml</code> på hub-siten. Körs en gång vid initial installation.</td>
       </tr>
       <tr>
-        <td><code>NEXT-ProjectProvisioner</code></td>
+        <td><code>FlowSight-ProjectProvisioner</code></td>
         <td>HTTP POST</td>
         <td>Skapar sub-site, applicerar <code>pnp-template.xml</code>, skapar SP-grupper (Owners/PL/Ekonomi/Fält/Läsare), lägger in rad i <code>Projektkatalog</code>. Se <code>src/functions/ProjectProvisioner/index.ts</code>.</td>
       </tr>
       <tr>
-        <td><code>NEXT-InvoiceOcrParser</code></td>
+        <td><code>FlowSight-InvoiceOcrParser</code></td>
         <td>Blob created (SharePoint drop-folder)</td>
         <td>Läser PDF-faktura, kör Azure Form Recognizer, skapar rad i <code>Leverantörsfakturor</code> med <code>OCRConfidence</code>-score. Låg confidence flaggar raden för manuell granskning.</td>
       </tr>
       <tr>
-        <td><code>NEXT-FortnoxSync</code></td>
+        <td><code>FlowSight-FortnoxSync</code></td>
         <td>Timer (var 30:e min) + HTTP</td>
         <td>Tvåvägssynk mot Fortnox. Skickar nya kundfakturor, hämtar betalstatus, uppdaterar <code>FortnoxID</code> och <code>InvoiceStatus</code>. HTTP-triggern används av "Synka Fortnox"-knappen i UI.</td>
       </tr>
       <tr>
-        <td><code>NEXT-DwgConverter</code></td>
+        <td><code>FlowSight-DwgConverter</code></td>
         <td>Blob created (Ritningar library)</td>
         <td>Konverterar uppladdade .dwg/.pdf-ritningar till SVG, skriver SVG-url till <code>SVGUrl</code>-fältet för inline-visning i Ritning-vyn.</td>
       </tr>
       <tr>
-        <td><code>NEXT-NotificationDispatcher</code></td>
+        <td><code>FlowSight-NotificationDispatcher</code></td>
         <td>Timer (daglig) + SP webhook</td>
         <td>Skickar Teams/e-post när: ÄTA väntar godkännande &gt; 3 dagar, avvikelse med Severity=Kritisk skapas, kundfaktura blir försenad, OCR-confidence &lt; 75%.</td>
       </tr>
@@ -928,7 +928,7 @@ ProjectProvisioner AF
      │
      ├─► Graph API: POST /sites/{hub}/sites           (create sub-site)
      ├─► pwsh: Invoke-PnPSiteTemplate pnp-template.xml  (create 9 lists)
-     ├─► Graph API: POST /groups                      (create NEXT-&lt;ID&gt;-Owners/PL/Ekonomi/Fält/Läsare)
+     ├─► Graph API: POST /groups                      (create FlowSight-&lt;ID&gt;-Owners/PL/Ekonomi/Fält/Läsare)
      ├─► SP REST: POST /Projektkatalog/items          (register in hub catalog)
      └─► HTTP 202 { SiteUrl, CorrelationId, Status:"Created" }
      │
@@ -940,7 +940,7 @@ SPFx UI refresh ─── new project card visible in Projektkatalog
   <div class="note-box">
     Azure Functions körs med <strong>system-assigned Managed Identity</strong>. MI har
     <code>Sites.FullControl.All</code> via Graph och <code>Sites.Manage.All</code> via SharePoint REST
-    enbart på <em>NEXT-hub-siten och dess sub-sites</em> (scoped via SP App Catalog). Fortnox-token
+    enbart på <em>FlowSight-hub-siten och dess sub-sites</em> (scoped via SP App Catalog). Fortnox-token
     lagras i Azure Key Vault och läses via referens i <code>local.settings.json</code>/App Settings
     (<code>@Microsoft.KeyVault(...)</code>). Inga hemligheter i källkod.
   </div>
@@ -948,8 +948,8 @@ SPFx UI refresh ─── new project card visible in Projektkatalog
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">11.5 CI/CD</h3>
   <div class="note-box">
     <strong>Azure DevOps pipelines:</strong>
-    <code>NEXT-SPFx-build</code> (gulp bundle + ship, publicerar <code>.sppkg</code> till App Catalog),
-    <code>NEXT-AzureFunctions-deploy</code> (tsc build + zip-deploy till Function App).
+    <code>FlowSight-SPFx-build</code> (gulp bundle + ship, publicerar <code>.sppkg</code> till App Catalog),
+    <code>FlowSight-AzureFunctions-deploy</code> (tsc build + zip-deploy till Function App).
     Provisioneringstemplates (<code>hub-template.xml</code>, <code>pnp-template.xml</code>)
     deployas som artefakter och läses av respektive AF via Blob Storage.
   </div>
@@ -959,10 +959,10 @@ SPFx UI refresh ─── new project card visible in Projektkatalog
        ═══════════════════════════════════════════════════════ -->
   <h2 class="spec-h2" style="margin-top:28px">§ 12 — Test strategy</h2>
   <p class="spec-para">
-    NEXT har fyra typer av test med tydliga ansvarsområden. Ingen kodändring får mergas
-    utan minst en grön körning på respektive nivå. CI-pipelinen <code>NEXT-CI</code>
+    FlowSight har fyra typer av test med tydliga ansvarsområden. Ingen kodändring får mergas
+    utan minst en grön körning på respektive nivå. CI-pipelinen <code>FlowSight-CI</code>
     kör enhets- och integrationstest på varje PR; Playwright-testen körs nattligen mot en
-    dedikerad test-hub <code>https://langate.sharepoint.com/sites/next-test</code>.
+    dedikerad test-hub <code>https://langate.sharepoint.com/sites/flowsight-test</code>.
   </p>
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:18px 0 10px">12.1 Testpyramid</h3>
@@ -993,21 +993,21 @@ SPFx UI refresh ─── new project card visible in Projektkatalog
         <td><strong>End-to-end</strong></td>
         <td><code>Playwright</code></td>
         <td>Hela SPFx-web­appen</td>
-        <td>Golden-path-flöden: skapa projekt (wizard → progress modal → ny rad i Projektkatalog), OCR-tolka faktura, godkänn ÄTA, Fortnox-synk. Kör nattligen. Regressionsmat­ris för IE/Edge/Chrome är medvetet <em>inte</em> inkluderad — NEXT levereras endast för Edge/Chrome.</td>
+        <td>Golden-path-flöden: skapa projekt (wizard → progress modal → ny rad i Projektkatalog), OCR-tolka faktura, godkänn ÄTA, Fortnox-synk. Kör nattligen. Regressionsmat­ris för IE/Edge/Chrome är medvetet <em>inte</em> inkluderad — FlowSight levereras endast för Edge/Chrome.</td>
       </tr>
     </tbody>
   </table>
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">12.2 Fixtur­data</h3>
   <div class="note-box">
-    Fixtur­skriptet <code>scripts/seed-test-hub.ps1</code> skapar ett referens-projekt <code>NEXT-TEST-001 "Fixturprojekt"</code>
+    Fixtur­skriptet <code>scripts/seed-test-hub.ps1</code> skapar ett referens-projekt <code>FlowSight-TEST-001 "Fixturprojekt"</code>
     med 4 arbetsordrar, 2 ÄTA, 3 avvikelser, 2 veckors tidrapport, 8 budgetposter och 4 leverantörsfakturor.
     Samma fixturset används av både Pester och Playwright — en enda sanningskälla för testdata.
   </div>
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">12.3 CI-pipeline</h3>
   <div style="font-family:monospace;font-size:11px;line-height:1.55;background:var(--bg-subtle);padding:16px 18px;border-radius:4px;border:1px solid var(--border-med);white-space:pre;overflow-x:auto">
-PR opened ───► NEXT-CI (Azure DevOps)
+PR opened ───► FlowSight-CI (Azure DevOps)
      │
      ├─► tsc --noEmit           (type check)
      ├─► eslint src/**/*.ts     (lint — no anonymous functions, no ternaries, etc.)
@@ -1015,7 +1015,7 @@ PR opened ───► NEXT-CI (Azure DevOps)
      ├─► vitest run             (AF unit + integration)
      └─► gate: all green → allow merge to main
 
-nightly ───► NEXT-E2E (nightly at 02:00)
+nightly ───► FlowSight-E2E (nightly at 02:00)
      │
      ├─► seed-test-hub.ps1      (reset + reseed fixture project)
      ├─► Invoke-Pester          (provisioning check)
@@ -1037,7 +1037,7 @@ nightly ───► NEXT-E2E (nightly at 02:00)
   <p class="spec-para">
     Langate har idag projekt­data spridd över Excel-filer på en fil­server
     (<code>\\langate-fs01\projekt\*</code>), delvis i Fortnox (fakturor),
-    och delvis i fysiska pärmar för äldre projekt. NEXT ersätter Excel-delen
+    och delvis i fysiska pärmar för äldre projekt. FlowSight ersätter Excel-delen
     helt och blir master för all icke-finansiell data framåt.
   </p>
 
@@ -1060,7 +1060,7 @@ nightly ───► NEXT-E2E (nightly at 02:00)
       <tr>
         <td>Fortnox</td>
         <td>Kund- och leverantörsfakturor</td>
-        <td><strong>Ingen migrering</strong> — Fortnox är redan master (ADR 0003). NEXT cachar efter cut-over.</td>
+        <td><strong>Ingen migrering</strong> — Fortnox är redan master (ADR 0003). FlowSight cachar efter cut-over.</td>
       </tr>
       <tr>
         <td>Pärmar (arkiv)</td>
@@ -1072,7 +1072,7 @@ nightly ───► NEXT-E2E (nightly at 02:00)
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">13.2 Mappnings­mall</h3>
   <p class="spec-para">
-    Varje projekt-PL får mallen <code>NEXT-Migration-Template.xlsx</code> med 9 flikar (en per lista).
+    Varje projekt-PL får mallen <code>FlowSight-Migration-Template.xlsx</code> med 9 flikar (en per lista).
     Första raden innehåller fält­namn som matchar <code>types.ts</code> exakt
     (<code>ProjectID</code>, <code>AONumber</code>, <code>Priority</code>, <code>StartDate</code>, osv.)
     Andra raden är fält­beskrivning. Rad 3 och nedåt är data.
@@ -1086,19 +1086,19 @@ nightly ───► NEXT-E2E (nightly at 02:00)
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">13.3 Staging-list-approach</h3>
   <div style="font-family:monospace;font-size:11px;line-height:1.55;background:var(--bg-subtle);padding:16px 18px;border-radius:4px;border:1px solid var(--border-med);white-space:pre;overflow-x:auto">
-PL fills  NEXT-Migration-Template.xlsx
+PL fills  FlowSight-Migration-Template.xlsx
    │
    ▼
-NEXT-HubBootstrap site has a temporary list "Migration-Staging" per project
+FlowSight-HubBootstrap site has a temporary list "Migration-Staging" per project
    │  (import via Invoke-PnPListItemImport from Excel)
    ▼
-NEXT-MigrationValidator AF runs rule checks:
+FlowSight-MigrationValidator AF runs rule checks:
    ├─► Field-level: required fields filled, choice values valid, dates parseable
    ├─► Cross-row:   ProjectID consistent, AO-numbers unique, budget rows sum correctly
    └─► Cross-list:  ÄTA references existing AO, Tidsrapportering references existing AO
    │
    ▼
-Validator output:  /sites/next/migration-reports/PROJECTID-validation.html
+Validator output:  /sites/flowsight/migration-reports/PROJECTID-validation.html
    ├─► GREEN rows: ready to commit
    └─► RED rows:   PL must fix in the Excel and re-import
    │
@@ -1106,7 +1106,7 @@ Validator output:  /sites/next/migration-reports/PROJECTID-validation.html
 PL reviews &amp; approves
    │
    ▼
-NEXT-MigrationCommit AF reads Migration-Staging and writes rows to the
+FlowSight-MigrationCommit AF reads Migration-Staging and writes rows to the
 real per-project sub-site lists (Arbetsorder, ÄTA, ...). Staging list
 is deleted on success.
   </div>
@@ -1122,22 +1122,22 @@ is deleted on success.
       <tr><td><strong>T-3</strong></td><td>Alla PL har grön validering. Stage committer körs i "preview-mode" (skriver till separat hub för verifiering).</td></tr>
       <tr><td><strong>T-1</strong></td><td>Sista Excel-redigeringar fryses. Final validator-körning.</td></tr>
       <tr><td><strong>T-0</strong> (fredag kväll)</td><td>Cut-over: MigrationCommit AF körs mot produktions-hub. SPFx-appen aktiveras måndag morgon.</td></tr>
-      <tr><td><strong>T+7</strong></td><td>Fil­serverns <code>projekt\</code>-mapp sätts till read-only. Ny data sker i NEXT framåt.</td></tr>
-      <tr><td><strong>T+30</strong></td><td><code>projekt\</code>-mappen arkiveras. NEXT är ensamt master.</td></tr>
+      <tr><td><strong>T+7</strong></td><td>Fil­serverns <code>projekt\</code>-mapp sätts till read-only. Ny data sker i FlowSight framåt.</td></tr>
+      <tr><td><strong>T+30</strong></td><td><code>projekt\</code>-mappen arkiveras. FlowSight är ensamt master.</td></tr>
     </tbody>
   </table>
 
   <h3 style="font-size:11pt;font-weight:700;color:var(--primary);margin:22px 0 10px">13.5 Rollback-plan</h3>
   <div class="tip-box">
     Om cut-over misslyckas (validator-fel, performance­problem, data­korruption):
-    NEXT-sub-sites bevaras men SPFx-appen döljs från landnings­sidan; PL fortsätter i
+    FlowSight-sub-sites bevaras men SPFx-appen döljs från landnings­sidan; PL fortsätter i
     Excel­mallarna. Root-cause-analys innan ny cut-over planeras. SharePoint-data
     tas <strong>inte</strong> bort — den ligger kvar som fallback för manuell åter­migrering.
   </div>
 
   <div class="doc-footer">
-    <span>NEXT · Langate AB · Konfidentiellt</span>
-    <span>v0.6 · 15 apr 2026 · Genererat från NEXT-mockup</span>
+    <span>FlowSight · Langate AB · Konfidentiellt</span>
+    <span>v0.6 · 15 apr 2026 · Genererat från FlowSight-mockup</span>
   </div>
 </div>
 

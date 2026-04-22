@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════
-   NEXT · Projekthantering · Langate
+   FlowSight · Projekthantering · Langate
    app.js — navigation, modals, filters, toast, actions
    Data objects live in data.js (loaded first)
    ══════════════════════════════════════════════════════ */
@@ -850,10 +850,10 @@ function doCreateDiary() {
 }
 
 // ── Project creation wizard (4 steps) ──
-let _wizState = { step:1, name:'', id:'NEXT-2026-005', type:'Totalentreprenad', customer:'', city:'', address:'', value:0, pm:'Anna Lindqvist', startDate:'', endDate:'' };
+let _wizState = { step:1, name:'', id:'FlowSight-2026-005', type:'Totalentreprenad', customer:'', city:'', address:'', value:0, pm:'Anna Lindqvist', startDate:'', endDate:'' };
 
 function openNewProject() {
-  _wizState = { step:1, name:'', id:'NEXT-2026-005', type:'Totalentreprenad', customer:'', city:'', address:'', value:0, pm:'Anna Lindqvist', startDate:'', endDate:'' };
+  _wizState = { step:1, name:'', id:'FlowSight-2026-005', type:'Totalentreprenad', customer:'', city:'', address:'', value:0, pm:'Anna Lindqvist', startDate:'', endDate:'' };
   _renderWizard();
 }
 
@@ -966,7 +966,7 @@ function _provisionStep(step) {
     { p:60, txt:'Skapar SP-grupper (Owners/PL/Ekonomi/Fält/Läsare)', log:'→ POST /groups · 5 grupper skapade' },
     { p:80, txt:'Lägger till rad i Projektkatalog...',               log:'→ POST /_api/web/lists/.../Projektkatalog/items · 200 OK' },
     { p:95, txt:'Synkar behörigheter...',                            log:'→ PL tilldelad Owners, Ekonomi tilldelad Ekonomi-grupp' },
-    { p:100, txt:'Klar!',                                             log:`✓ Projekt ${_wizState.id} skapat · siteUrl: /sites/next/${_wizState.id}` }
+    { p:100, txt:'Klar!',                                             log:`✓ Projekt ${_wizState.id} skapat · siteUrl: /sites/flowsight/${_wizState.id}` }
   ];
   if (step >= steps.length) {
     const btn = document.getElementById('pv-close');
@@ -2119,7 +2119,7 @@ function openDemoTour() {
       <button class="btn btn-secondary" style="font-size:12px;padding:4px 10px;flex-shrink:0;margin-top:2px"
         onclick="${it.nav ? `closeModal();navigate('${it.nav}')` : `closeModal();openSearch()`}">${it.label}</button>
     </div>`).join('');
-  openModal('🎯 Demo guide — NEXT mockup',
+  openModal('🎯 Demo guide — FlowSight mockup',
     `<p style="font-size:13px;color:var(--text-muted);margin-bottom:4px">Klicka på en knapp för att navigera direkt till funktionen.</p>
      <div style="margin:0 -20px;padding:0 20px">${rows}</div>`,
     `<button class="btn btn-primary" onclick="closeModal()">Stäng guide</button>`);

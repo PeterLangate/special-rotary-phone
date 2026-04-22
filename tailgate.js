@@ -42,7 +42,7 @@
 	async function loadRootMeta() {
 		const slugs = ['fortbridge', 'humanit', 'next', 'nschecks'];
 		const results = await Promise.allSettled(slugs.map(function (s) {
-			return fetch('/' + s + '/_meta.json', { cache: 'no-store' }).then(function (r) {
+			return fetch(s + '/_meta.json', { cache: 'no-store' }).then(function (r) {
 				return r.ok ? r.json() : null;
 			});
 		}));
