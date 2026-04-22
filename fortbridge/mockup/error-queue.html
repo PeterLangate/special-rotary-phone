@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Felkö</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .cat-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .cat-card {
+            background: white;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 8px;
+            padding: 13px 16px;
+            cursor: pointer;
+            transition: border-color 0.1s, box-shadow 0.1s;
+            border-left: 4px solid var(--lg-gray-200);
+        }
+        .cat-card:hover { box-shadow: 0 2px 6px rgba(0,81,126,0.08); }
+        .cat-card.active { border-color: var(--lg-blue); box-shadow: 0 0 0 3px rgba(0,81,126,0.08); }
+        .cat-card.red { border-left-color: var(--lg-red); }
+        .cat-card.gold { border-left-color: var(--lg-gold); }
+        .cat-card.blue { border-left-color: var(--lg-blue); }
+        .cat-card.teal { border-left-color: var(--lg-teal); }
+        .cat-card.green { border-left-color: var(--lg-green); }
+        .cat-card-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+        .cat-card-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cat-card-icon svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .cat-card.red .cat-card-icon { background: var(--lg-red-light); color: var(--lg-red); }
+        .cat-card.gold .cat-card-icon { background: #fff4de; color: var(--lg-gold-dark); }
+        .cat-card.blue .cat-card-icon { background: var(--lg-blue-light); color: var(--lg-blue); }
+        .cat-card.teal .cat-card-icon { background: var(--lg-gray-100); color: var(--lg-teal); }
+        .cat-card.green .cat-card-icon { background: var(--lg-green-light); color: var(--lg-green); }
+        .cat-card-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--lg-gray-900);
+        }
+        .cat-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--lg-gray-900);
+            letter-spacing: -0.3px;
+        }
+        .cat-card-meta {
+            font-size: 11px;
+            color: var(--lg-teal);
+            margin-top: 3px;
+        }
+
+        .err-row {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--lg-gray-200);
+            display: grid;
+            grid-template-columns: 28px 1fr auto;
+            gap: 16px;
+            align-items: flex-start;
+            transition: background 0.08s;
+        }
+        .err-row:hover { background: var(--lg-gray-50); }
+        .err-row.expanded { background: #fff9f8; }
+        .err-row:last-child { border-bottom: none; }
+
+        .err-main {
+            min-width: 0;
+        }
+        .err-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .err-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--lg-gray-900);
+        }
+        .err-meta {
+            font-size: 11.5px;
+            color: var(--lg-teal);
+            margin-top: 3px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .err-meta > span { display: inline-flex; align-items: center; gap: 4px; }
+        .err-desc {
+            font-size: 12.5px;
+            color: var(--lg-gray-700);
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+
+        .err-actions {
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+            flex-shrink: 0;
+        }
+        .err-actions .btn { padding: 6px 10px; font-size: 11.5px; }
+
+        .err-expanded {
+            display: none;
+            margin: 12px 0 0;
+            padding: 14px;
+            background: white;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 6px;
+            grid-column: 2;
+        }
+        .err-row.expanded .err-expanded { display: block; }
+
+        .err-suggest {
+            padding: 10px 12px;
+            background: var(--lg-blue-light);
+            border-left: 3px solid var(--lg-blue);
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+        .err-suggest strong { color: var(--lg-blue); display: block; margin-bottom: 3px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+        .err-section {
+            margin-bottom: 14px;
+        }
+        .err-section:last-child { margin-bottom: 0; }
+        .err-section-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--lg-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html" class="active">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Felkö</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök bland fel...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Felkö</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Felkö</h1>
+                    <p>Misslyckade synkroniseringar som kräver åtgärd. Kategoriserade efter orsak.</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Exportera felrapport
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        Kör om alla
+                    </button>
+                </div>
+            </div>
+
+            <div class="cat-strip">
+                <div class="cat-card red active">
+                    <div class="cat-card-head">
+                        <div class="cat-card-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <div class="cat-card-name">Aktiva</div>
+                    </div>
+                    <div class="cat-card-value">2</div>
+                    <div class="cat-card-meta">Äldsta: 14 min sedan</div>
+                </div>
+                <div class="cat-card gold">
+                    <div class="cat-card-head">
+                        <div class="cat-card-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg>
+                        </div>
+                        <div class="cat-card-name">Rate limit</div>
+                    </div>
+                    <div class="cat-card-value">1</div>
+                    <div class="cat-card-meta">HTTP 429</div>
+                </div>
+                <div class="cat-card gold">
+                    <div class="cat-card-head">
+                        <div class="cat-card-icon">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="cat-card-name">Mappningsfel</div>
+                    </div>
+                    <div class="cat-card-value">1</div>
+                    <div class="cat-card-meta">Verksamhetslogik</div>
+                </div>
+                <div class="cat-card teal">
+                    <div class="cat-card-head">
+                        <div class="cat-card-icon">
+                            <svg viewBox="0 0 24 24"><path d="M7 11V7a5 5 0 0110 0v4"/><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/></svg>
+                        </div>
+                        <div class="cat-card-name">Autentisering</div>
+                    </div>
+                    <div class="cat-card-value">0</div>
+                    <div class="cat-card-meta">Inga fel</div>
+                </div>
+                <div class="cat-card green">
+                    <div class="cat-card-head">
+                        <div class="cat-card-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div class="cat-card-name">Löst idag</div>
+                    </div>
+                    <div class="cat-card-value">7</div>
+                    <div class="cat-card-meta">+4 automatisk replay</div>
+                </div>
+            </div>
+
+            <div class="bulk-bar" style="display:none;" id="bulkBar">
+                <div class="ba-count"><span class="num">0</span> fel valda</div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-ghost" style="color:white;">Avmarkera alla</button>
+                    <button class="btn btn-secondary">Kör om valda</button>
+                    <button class="btn btn-secondary">Arkivera valda</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="tabs">
+                    <button class="active">Aktiva <span class="count">2</span></button>
+                    <button>Arkiverade <span class="count">12</span></button>
+                    <button>Automatiskt lösta <span class="count">186</span></button>
+                </div>
+
+                <div class="filter-bar" style="border-top:none;">
+                    <div class="filter-group">
+                        <button class="active">Alla kategorier</button>
+                        <button>Rate limit</button>
+                        <button>Mappning</button>
+                        <button>Autentisering</button>
+                        <button>Timeout</button>
+                    </div>
+                    <div class="filter-group">
+                        <button class="active">Alla entiteter</button>
+                        <button>Order</button>
+                        <button>Kund</button>
+                        <button>Offert</button>
+                    </div>
+                    <div style="margin-left:auto;font-size:12px;color:var(--lg-teal);">
+                        Gruppera efter:
+                        <select style="border:1px solid var(--lg-gray-200);border-radius:5px;padding:4px 8px;font-size:12px;background:white;font-family:inherit;">
+                            <option>Ingen</option>
+                            <option>Kategori</option>
+                            <option>Entitet</option>
+                            <option>Dag</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="err-row expanded" id="err1">
+                    <div><input class="check" type="checkbox" onchange="updateBulk()"></div>
+                    <div class="err-main">
+                        <div class="err-head">
+                            <span class="err-title">Order SO-2040 &mdash; rate limit överskriden</span>
+                            <span class="badge badge-red">HTTP 429</span>
+                            <span class="badge badge-gray">3/3 försök</span>
+                            <span class="badge badge-gold">P1 &middot; Hög</span>
+                        </div>
+                        <div class="err-meta">
+                            <span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 14 min sedan &middot; 14:28:05</span>
+                            <span>Riktning: D365 &rarr; Fortnox</span>
+                            <span>Kund: Vinterdal AB</span>
+                            <span>Belopp: 47 200 kr</span>
+                        </div>
+                        <div class="err-desc">
+                            Fortnox svarade HTTP 429 trots tre automatiska försök med exponentiell backoff
+                            (1 min, 5 min, 25 min). <code>Retry-After: 60</code>-header respekterades men
+                            gränsen var fortfarande nådd.
+                        </div>
+
+                        <div class="err-expanded">
+                            <div class="err-suggest">
+                                <strong>Föreslagen åtgärd</strong>
+                                Vänta 10 min och kör &quot;Kör om nu&quot;. Om felet upprepas: granska polling-frekvens i Inställningar och kontakta Fortnox support om rate limit bör höjas i avtalet.
+                            </div>
+
+                            <div class="err-section">
+                                <div class="err-section-title">Felhistorik</div>
+                                <div class="timeline">
+                                    <div class="timeline-item fail">
+                                        <div class="tl-time">14:28:05 &middot; försök 3/3</div>
+                                        <div class="tl-title">HTTP 429 Too Many Requests</div>
+                                        <div class="tl-body">Retry-After: 60 &middot; flyttad till felkö</div>
+                                    </div>
+                                    <div class="timeline-item fail">
+                                        <div class="tl-time">14:03:05 &middot; försök 2/3</div>
+                                        <div class="tl-title">HTTP 429</div>
+                                        <div class="tl-body">Backoff: 25 min</div>
+                                    </div>
+                                    <div class="timeline-item fail">
+                                        <div class="tl-time">13:58:05 &middot; försök 1/3</div>
+                                        <div class="tl-title">HTTP 429</div>
+                                        <div class="tl-body">Backoff: 5 min</div>
+                                    </div>
+                                    <div class="timeline-item fail">
+                                        <div class="tl-time">13:57:04 &middot; original</div>
+                                        <div class="tl-title">Dataverse webhook mottagen</div>
+                                        <div class="tl-body">SalesOrder.Update &middot; SO-2040</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="err-section">
+                                <div class="err-section-title">Event-payload (sammandrag)</div>
+                                <div class="code-block">POST /3/orders
+<span class="k">"CustomerNumber"</span>: <span class="s">"4712"</span>
+<span class="k">"OrderRows"</span>: [<span class="n">8</span> rader]
+<span class="k">"Total"</span>: <span class="n">47200</span>
+
+Response: <span class="s">"429 Too Many Requests"</span>
+<span class="k">"Retry-After"</span>: <span class="s">"60"</span></div>
+                            </div>
+
+                            <div class="err-section">
+                                <div class="err-section-title">Liknande fel senaste 7 dagar</div>
+                                <dl class="detail-kv" style="grid-template-columns:1fr auto;">
+                                    <dt>2026-04-19 10:14</dt><dd>Order SO-1988 &middot; Rate limit &middot; löst efter 15 min</dd>
+                                    <dt>2026-04-17 14:02</dt><dd>Offert Q-1912 &middot; Rate limit &middot; löst efter 30 min</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="err-actions">
+                        <button class="btn btn-ghost" onclick="toggleErr('err1')" title="Dölj detaljer">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                        </button>
+                        <button class="btn btn-primary">Kör om nu</button>
+                        <button class="btn btn-secondary">Arkivera</button>
+                    </div>
+                </div>
+
+                <div class="err-row" id="err2">
+                    <div><input class="check" type="checkbox" onchange="updateBulk()"></div>
+                    <div class="err-main">
+                        <div class="err-head">
+                            <span class="err-title">Kund Vinterdal AB &mdash; kreditgräns nådd</span>
+                            <span class="badge badge-gold">Mappningsfel</span>
+                            <span class="badge badge-gray">3/3 försök</span>
+                            <span class="badge badge-blue">P2 &middot; Medel</span>
+                        </div>
+                        <div class="err-meta">
+                            <span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 28 min sedan &middot; 14:14:22</span>
+                            <span>Riktning: D365 &rarr; Fortnox</span>
+                            <span>Fortnox kundnr: 4721</span>
+                        </div>
+                        <div class="err-desc">
+                            Fortnox avvisade order-skapande på grund av att kundens <code>CreditLimit</code>
+                            (50 000 kr) är nådd. Kräver manuell åtgärd av ekonomiavdelningen.
+                        </div>
+
+                        <div class="err-expanded">
+                            <div class="err-suggest">
+                                <strong>Föreslagen åtgärd</strong>
+                                Ekonomi höjer kreditgränsen i Fortnox eller markerar kunden som inaktiv. Efter åtgärd &mdash; klicka &quot;Kör om nu&quot; för att återförsöka. Alternativt: arkivera och hantera ordern manuellt.
+                            </div>
+
+                            <div class="err-section">
+                                <div class="err-section-title">Fortnox-svar</div>
+                                <div class="code-block">HTTP 400 Bad Request
+{
+  <span class="k">"ErrorInformation"</span>: {
+    <span class="k">"Code"</span>: <span class="n">2001392</span>,
+    <span class="k">"Message"</span>: <span class="s">"Kundens kreditgräns är överskriden"</span>,
+    <span class="k">"CreditLimit"</span>: <span class="n">50000</span>,
+    <span class="k">"CurrentBalance"</span>: <span class="n">51420</span>
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="err-actions">
+                        <button class="btn btn-ghost" onclick="toggleErr('err2')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <button class="btn btn-secondary">Öppna i Fortnox</button>
+                        <button class="btn btn-primary">Kör om nu</button>
+                    </div>
+                </div>
+
+                <div style="padding:14px 20px;text-align:center;font-size:12px;color:var(--lg-teal);">
+                    Äldre poster &middot; senaste rensning 2026-04-19 08:00 &middot; <a href="#" style="color:var(--lg-blue);">Visa arkiv &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleErr(id) {
+        const row = document.getElementById(id);
+        row.classList.toggle('expanded');
+        const arr = row.querySelector('.err-actions button svg polyline');
+        if (arr) arr.setAttribute('points', row.classList.contains('expanded') ? '18 15 12 9 6 15' : '6 9 12 15 18 9');
+    }
+    function updateBulk() {
+        const n = document.querySelectorAll('.err-row .check:checked').length;
+        const bar = document.getElementById('bulkBar');
+        bar.style.display = n > 0 ? 'flex' : 'none';
+        if (n > 0) bar.querySelector('.num').textContent = n;
+    }
+</script>
+</body>
+</html>

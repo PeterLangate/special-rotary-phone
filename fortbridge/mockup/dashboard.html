@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .kpi {
+            background: white;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 10px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--lg-green);
+        }
+        .kpi.blue::before { background: var(--lg-blue); }
+        .kpi.gold::before { background: var(--lg-gold); }
+        .kpi.red::before { background: var(--lg-red); }
+        .kpi-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--lg-gray-900);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .kpi-value .unit {
+            font-size: 14px;
+            color: var(--lg-teal);
+            font-weight: 500;
+            margin-left: 3px;
+        }
+        .kpi-delta {
+            font-size: 11.5px;
+            margin-top: 3px;
+            color: var(--lg-teal);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .kpi-delta.up { color: var(--lg-green); }
+        .kpi-delta.down { color: var(--lg-red); }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        .grid-bottom {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 18px;
+        }
+
+        .chart-wrap {
+            padding: 10px 4px 0;
+        }
+
+        .health-list > div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--lg-gray-200);
+        }
+        .health-list > div:last-child { border-bottom: none; padding-bottom: 0; }
+        .health-list > div:first-child { padding-top: 0; }
+        .health-name {
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--lg-gray-900);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .health-name small {
+            display: block;
+            color: var(--lg-teal);
+            font-size: 11.5px;
+            font-weight: 400;
+            margin-top: 1px;
+        }
+
+        table.syncs {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table.syncs th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            padding: 0 12px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--lg-gray-200);
+        }
+        table.syncs td {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--lg-gray-900);
+            border-bottom: 1px solid var(--lg-gray-100);
+        }
+        table.syncs tr:last-child td { border-bottom: none; }
+        table.syncs td .direction {
+            color: var(--lg-teal);
+            font-size: 11px;
+            margin-left: 4px;
+        }
+        table.syncs td code {
+            background: var(--lg-gray-100);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            color: var(--lg-blue);
+            font-family: 'Consolas', monospace;
+        }
+        .dur-bar {
+            display: inline-block;
+            vertical-align: middle;
+            height: 6px;
+            background: var(--lg-gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-right: 7px;
+            width: 52px;
+        }
+        .dur-bar > span {
+            display: block;
+            height: 100%;
+            background: var(--lg-green);
+        }
+        .dur-bar.slow > span { background: var(--lg-gold); }
+        .dur-bar.critical > span { background: var(--lg-red); }
+
+        .err-item {
+            padding: 12px 14px;
+            border: 1px solid var(--lg-red-light);
+            background: #fdf6f6;
+            border-left: 3px solid var(--lg-red);
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .err-item:last-child { margin-bottom: 0; }
+        .err-title {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--lg-red);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .err-title small {
+            color: var(--lg-teal);
+            font-weight: 400;
+            font-size: 11.5px;
+        }
+        .err-body {
+            font-size: 12px;
+            color: var(--lg-gray-700);
+            margin-top: 4px;
+            line-height: 1.45;
+        }
+        .err-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .err-actions .btn {
+            padding: 5px 10px;
+            font-size: 11.5px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-green);
+        }
+        .live-indicator .dot { animation: pulse 1.6s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="active">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Dashboard</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök efter kundnummer, order-ID, artikelnummer...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <div class="live-indicator">
+                    <span class="dot dot-green"></span>Live &middot; 2 sek
+                </div>
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Dashboard</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Operationell översikt</h1>
+                    <p>Status för pågående synkroniseringar mellan Dynamics 365 och Fortnox &mdash; uppdateras kontinuerligt.</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="filter-group">
+                        <button>1 tim</button>
+                        <button class="active">24 tim</button>
+                        <button>7 dag</button>
+                        <button>30 dag</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="kpi-row">
+                <a href="sync-log.html" class="kpi blue" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="kpi-label">Synkar senaste 24 tim</div>
+                    <div class="kpi-value">1&thinsp;247</div>
+                    <div class="kpi-delta up">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 2l4 5H1z"/></svg>
+                        +12 % mot igår
+                    </div>
+                </a>
+                <a href="sync-log.html" class="kpi" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="kpi-label">Framgångskvot</div>
+                    <div class="kpi-value">99.8<span class="unit">%</span></div>
+                    <div class="kpi-delta up">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M5 2l4 5H1z"/></svg>
+                        +0.2 pp mot snitt
+                    </div>
+                </a>
+                <a href="sync-log.html" class="kpi blue" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="kpi-label">Genomsnittlig tid</div>
+                    <div class="kpi-value">340<span class="unit">ms</span></div>
+                    <div class="kpi-delta">P95: 890 ms &middot; P99: 2.1 s</div>
+                </a>
+                <a href="error-queue.html" class="kpi red" style="text-decoration:none;color:inherit;display:block;">
+                    <div class="kpi-label">
+                        Felkö
+                        <span class="dot dot-red pulse"></span>
+                    </div>
+                    <div class="kpi-value">2</div>
+                    <div class="kpi-delta down">
+                        Äldsta: 14 min &middot; kräver åtgärd
+                    </div>
+                </a>
+            </div>
+
+            <div class="grid-main">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Synkroniseringar per timme</h2>
+                            <p>Senaste 24 timmar &middot; staplat per riktning</p>
+                        </div>
+                        <div style="display:flex;gap:12px;font-size:11.5px;color:var(--lg-teal);">
+                            <span><span class="dot" style="background:#00517e;"></span> D365 &rarr; Fortnox</span>
+                            <span><span class="dot" style="background:#02B896;"></span> Fortnox &rarr; D365</span>
+                        </div>
+                    </div>
+                    <div class="card-body chart-wrap">
+                        <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+                            <!-- Y-axis grid -->
+                            <g stroke="#f0f4f6" stroke-width="1">
+                                <line x1="40" y1="30" x2="700" y2="30"/>
+                                <line x1="40" y1="75" x2="700" y2="75"/>
+                                <line x1="40" y1="120" x2="700" y2="120"/>
+                                <line x1="40" y1="165" x2="700" y2="165"/>
+                            </g>
+                            <g font-family="'DM Sans',sans-serif" font-size="10" fill="#7b8a90">
+                                <text x="35" y="33" text-anchor="end">120</text>
+                                <text x="35" y="78" text-anchor="end">90</text>
+                                <text x="35" y="123" text-anchor="end">60</text>
+                                <text x="35" y="168" text-anchor="end">30</text>
+                                <text x="35" y="193" text-anchor="end">0</text>
+                            </g>
+                            <!-- Bars: 24 hours, width ~25 with 2 gap, starts x=48 -->
+                            <g>
+                                <!-- Each bar pair: bottom blue (D365->Fortnox), top green (Fortnox->D365) -->
+                                <!-- x y h values chosen to tell a realistic daily story: quiet night, morning ramp, lunch dip, afternoon peak, evening taper -->
+                                <g fill="#00517e">
+                                    <rect x="48"  y="178" width="22" height="12"/>
+                                    <rect x="75"  y="181" width="22" height="9"/>
+                                    <rect x="102" y="185" width="22" height="5"/>
+                                    <rect x="129" y="180" width="22" height="10"/>
+                                    <rect x="156" y="175" width="22" height="15"/>
+                                    <rect x="183" y="170" width="22" height="20"/>
+                                    <rect x="210" y="150" width="22" height="40"/>
+                                    <rect x="237" y="125" width="22" height="65"/>
+                                    <rect x="264" y="100" width="22" height="90"/>
+                                    <rect x="291" y="90"  width="22" height="100"/>
+                                    <rect x="318" y="80"  width="22" height="110"/>
+                                    <rect x="345" y="130" width="22" height="60"/>
+                                    <rect x="372" y="118" width="22" height="72"/>
+                                    <rect x="399" y="72"  width="22" height="118"/>
+                                    <rect x="426" y="60"  width="22" height="130"/>
+                                    <rect x="453" y="65"  width="22" height="125"/>
+                                    <rect x="480" y="75"  width="22" height="115"/>
+                                    <rect x="507" y="100" width="22" height="90"/>
+                                    <rect x="534" y="135" width="22" height="55"/>
+                                    <rect x="561" y="158" width="22" height="32"/>
+                                    <rect x="588" y="172" width="22" height="18"/>
+                                    <rect x="615" y="178" width="22" height="12"/>
+                                    <rect x="642" y="182" width="22" height="8"/>
+                                    <rect x="669" y="184" width="22" height="6"/>
+                                </g>
+                                <g fill="#02B896">
+                                    <rect x="48"  y="171" width="22" height="7"/>
+                                    <rect x="75"  y="176" width="22" height="5"/>
+                                    <rect x="102" y="180" width="22" height="5"/>
+                                    <rect x="129" y="174" width="22" height="6"/>
+                                    <rect x="156" y="165" width="22" height="10"/>
+                                    <rect x="183" y="158" width="22" height="12"/>
+                                    <rect x="210" y="135" width="22" height="15"/>
+                                    <rect x="237" y="108" width="22" height="17"/>
+                                    <rect x="264" y="82"  width="22" height="18"/>
+                                    <rect x="291" y="70"  width="22" height="20"/>
+                                    <rect x="318" y="58"  width="22" height="22"/>
+                                    <rect x="345" y="112" width="22" height="18"/>
+                                    <rect x="372" y="100" width="22" height="18"/>
+                                    <rect x="399" y="50"  width="22" height="22"/>
+                                    <rect x="426" y="36"  width="22" height="24"/>
+                                    <rect x="453" y="42"  width="22" height="23"/>
+                                    <rect x="480" y="53"  width="22" height="22"/>
+                                    <rect x="507" y="83"  width="22" height="17"/>
+                                    <rect x="534" y="120" width="22" height="15"/>
+                                    <rect x="561" y="146" width="22" height="12"/>
+                                    <rect x="588" y="164" width="22" height="8"/>
+                                    <rect x="615" y="170" width="22" height="8"/>
+                                    <rect x="642" y="175" width="22" height="7"/>
+                                    <rect x="669" y="178" width="22" height="6"/>
+                                </g>
+                            </g>
+                            <!-- X-axis labels -->
+                            <g font-family="'DM Sans',sans-serif" font-size="10" fill="#7b8a90">
+                                <text x="59" y="206" text-anchor="middle">00</text>
+                                <text x="167" y="206" text-anchor="middle">04</text>
+                                <text x="275" y="206" text-anchor="middle">08</text>
+                                <text x="383" y="206" text-anchor="middle">12</text>
+                                <text x="491" y="206" text-anchor="middle">16</text>
+                                <text x="599" y="206" text-anchor="middle">20</text>
+                                <text x="680" y="206" text-anchor="middle">23</text>
+                            </g>
+                            <!-- Peak callout -->
+                            <g>
+                                <line x1="437" y1="20" x2="437" y2="36" stroke="#B55852" stroke-width="1" stroke-dasharray="3,2"/>
+                                <rect x="410" y="6" width="54" height="15" rx="3" fill="#fbeeed" stroke="#B55852" stroke-width="1"/>
+                                <text x="437" y="16" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9.5" fill="#B55852" font-weight="600">Topp: 148</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Systemhälsa</h2>
+                            <p>Anslutningar och livscykel</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="health-list">
+                            <div>
+                                <div class="health-name">
+                                    <span class="dot dot-green"></span>
+                                    Fortnox API
+                                    <small style="margin-left:auto;">Senaste anrop för 1.2 s sedan</small>
+                                </div>
+                                <span class="badge badge-green">Frisk</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    <span class="dot dot-green"></span>
+                                    Dataverse (D365)
+                                    <small style="margin-left:auto;">Senaste anrop för 0.8 s sedan</small>
+                                </div>
+                                <span class="badge badge-green">Frisk</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    <span class="dot dot-green"></span>
+                                    Key Vault
+                                    <small style="margin-left:auto;">Managed Identity</small>
+                                </div>
+                                <span class="badge badge-green">Frisk</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    <span class="dot dot-green"></span>
+                                    Table Storage
+                                    <small style="margin-left:auto;">Felkö: 2 poster</small>
+                                </div>
+                                <span class="badge badge-green">Frisk</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    Refresh Token
+                                    <small style="margin-left:auto;">Löper ut 2026-06-18</small>
+                                </div>
+                                <span class="badge badge-blue">58 dagar</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    D365-certifikat
+                                    <small style="margin-left:auto;">Löper ut 2026-10-16</small>
+                                </div>
+                                <span class="badge badge-blue">178 dagar</span>
+                            </div>
+                            <div>
+                                <div class="health-name">
+                                    Webhook-secret
+                                    <small style="margin-left:auto;">Ingen rotation på 90 dagar</small>
+                                </div>
+                                <span class="badge badge-gold">Överväg rotation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-bottom">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Senaste synkroniseringar</h2>
+                            <p>10 nyaste &middot; klicka för detaljer</p>
+                        </div>
+                        <a href="sync-log.html" class="btn btn-ghost">Visa alla</a>
+                    </div>
+                    <div class="card-body" style="padding:6px 12px 14px;">
+                        <table class="syncs">
+                            <thead>
+                                <tr>
+                                    <th>Tid</th>
+                                    <th>Entitet</th>
+                                    <th>Resurs</th>
+                                    <th>Tid</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>14:42:11</td>
+                                    <td>Order <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>SO-2041</code></td>
+                                    <td><span class="dur-bar"><span style="width:30%"></span></span>280 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:41:58</td>
+                                    <td>Kund <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>Nordia AB</code></td>
+                                    <td><span class="dur-bar"><span style="width:22%"></span></span>210 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:41:44</td>
+                                    <td>Betalning <span class="direction">Fortnox &rarr; D365</span></td>
+                                    <td><code>INV-1188</code></td>
+                                    <td><span class="dur-bar"><span style="width:42%"></span></span>395 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:41:29</td>
+                                    <td>Offert <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>Q-2021</code></td>
+                                    <td><span class="dur-bar slow"><span style="width:78%"></span></span>740 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:41:15</td>
+                                    <td>Artikel <span class="direction">Fortnox &rarr; D365</span></td>
+                                    <td><code>ART-445</code></td>
+                                    <td><span class="dur-bar"><span style="width:18%"></span></span>170 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:40:52</td>
+                                    <td>Order <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>SO-2040</code></td>
+                                    <td><span class="dur-bar critical"><span style="width:100%"></span></span>2 140 ms</td>
+                                    <td><span class="badge badge-red">Retry 1/3</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:40:41</td>
+                                    <td>Kund <span class="direction">Fortnox &rarr; D365</span></td>
+                                    <td><code>Fn-00412</code></td>
+                                    <td><span class="dur-bar"><span style="width:32%"></span></span>305 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:40:22</td>
+                                    <td>Order <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>SO-2039</code></td>
+                                    <td><span class="dur-bar"><span style="width:28%"></span></span>265 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:40:08</td>
+                                    <td>Offert <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>Q-2020</code></td>
+                                    <td><span class="dur-bar"><span style="width:40%"></span></span>380 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14:39:55</td>
+                                    <td>Kund <span class="direction">D365 &rarr; Fortnox</span></td>
+                                    <td><code>Sydström &amp; Co</code></td>
+                                    <td><span class="dur-bar"><span style="width:26%"></span></span>250 ms</td>
+                                    <td><span class="badge badge-green">OK</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Felkö</h2>
+                            <p>Poster som kräver åtgärd</p>
+                        </div>
+                        <a href="error-queue.html" class="btn btn-secondary">Öppna felkö</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="err-item">
+                            <div class="err-title">
+                                Order SO-2040 &mdash; Fortnox 429
+                                <small>14:28:05 &middot; 3/3 försök</small>
+                            </div>
+                            <div class="err-body">
+                                Rate limit överskriden. <code>Retry-After: 60</code> respekterades men tredje försöket fick också 429. Manuell replay efter 10 min rekommenderas.
+                            </div>
+                            <div class="err-actions">
+                                <button class="btn btn-secondary">Kör om nu</button>
+                                <button class="btn btn-ghost">Visa payload</button>
+                            </div>
+                        </div>
+                        <div class="err-item">
+                            <div class="err-title">
+                                Kund &quot;Vinterdal AB&quot; &mdash; mappningsfel
+                                <small>14:14:22 &middot; 3/3 försök</small>
+                            </div>
+                            <div class="err-body">
+                                Fortnox avvisade kund &mdash; kreditgräns nådd. Ekonomi måste höja gränsen eller markera kunden inaktiv innan replay.
+                            </div>
+                            <div class="err-actions">
+                                <button class="btn btn-secondary">Öppna i Fortnox</button>
+                                <button class="btn btn-ghost">Arkivera</button>
+                            </div>
+                        </div>
+                        <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--lg-teal);">
+                            Inga äldre poster &middot; senaste rensning 2026-04-19 08:00
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

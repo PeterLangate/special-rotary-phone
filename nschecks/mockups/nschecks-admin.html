@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSChecks — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nschecks-shared.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --ns: #2E9E5F; --ns-dark: #237A49; --ns-light: #E9F2EC;
+    --black: #1A1A1A;
+    --bg: #FAFAFA; --bg-s: #F5F5F5; --bg2: #EBEBEB;
+    --b: #E4E4E7;
+    --ts: #18181B; --t: #3F3F46; --tm: #71717A;
+    --ok: #2E9E5F; --okb: #E0F2E7;
+    --w: #C07800; --wb: #FFF3D6;
+    --e: #C53030; --eb: #FDE8E8;
+    --ai: #6366F1; --ai-light: #EEF2FF;
+    --r: 8px; --rl: 12px;
+}
+body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--t); line-height:1.5; min-height:100vh; }
+
+/* ── Top Nav ── */
+.topnav { background:var(--black); color:#fff; height:56px; display:flex; align-items:center; padding:0 24px; gap:16px; position:sticky; top:0; z-index:100; }
+.topnav-brand { display:flex; align-items:center; gap:10px; font-size:16px; font-weight:600; }
+.topnav-tabs { display:flex; gap:4px; margin-left:32px; }
+.topnav-tab { padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; color:rgba(255,255,255,0.5); cursor:pointer; border:none; background:none; transition:all 0.2s; }
+.topnav-tab:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.08); }
+.topnav-tab.active { color:#fff; background:rgba(255,255,255,0.12); }
+.topnav-spacer { flex:1; }
+.topnav-user { font-size:13px; color:rgba(255,255,255,0.6); }
+
+.content { max-width:1200px; margin:0 auto; padding:24px; }
+.view { display:none; } .view.active { display:block; }
+.page-hdr { margin-bottom:24px; }
+.page-hdr h1 { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; color:var(--ts); margin-bottom:4px; }
+.page-hdr p { font-size:14px; color:var(--tm); max-width:600px; }
+
+/* ── Shared UI ── */
+.card { background:#fff; border:1px solid var(--b); border-radius:var(--rl); padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.04); }
+.card-title { font-size:15px; font-weight:700; color:var(--ts); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.btn { padding:10px 20px; border-radius:var(--r); border:none; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
+.btn-primary { background:var(--ns); color:#fff; } .btn-primary:hover { background:var(--ns-dark); }
+.btn-secondary { background:var(--bg2); color:var(--t); } .btn-secondary:hover { background:#DDD; }
+.btn-ai { background:var(--ai); color:#fff; } .btn-ai:hover { background:#4F46E5; }
+.btn-danger { background:var(--eb); color:var(--e); } .btn-danger:hover { background:#FDD; }
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-icon { padding:8px; min-width:36px; justify-content:center; }
+.btn:disabled { opacity:0.4; cursor:default; }
+.field { margin-bottom:16px; }
+.field-label { font-size:12px; font-weight:600; color:var(--tm); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
+.field-input { width:100%; padding:10px 12px; border:1.5px solid var(--b); border-radius:var(--r); font-family:'Inter',sans-serif; font-size:14px; color:var(--ts); background:#fff; outline:none; }
+.field-input:focus { border-color:var(--ns); }
+.field-select { width:100%; padding:10px 12px; border:1.5px solid var(--b); border-radius:var(--r); font-family:'Inter',sans-serif; font-size:14px; color:var(--ts); background:#fff; outline:none; -webkit-appearance:none; cursor:pointer; }
+.chip { display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:4px; font-size:11px; font-weight:600; text-transform:uppercase; }
+.chip-ns { background:var(--ns-light); color:var(--ns); }
+.chip-ai { background:var(--ai-light); color:var(--ai); }
+.chip-warn { background:var(--wb); color:var(--w); }
+.chip-err { background:var(--eb); color:var(--e); }
+.chip-ok { background:var(--okb); color:var(--ok); }
+.data-table { width:100%; border-collapse:collapse; font-size:13px; }
+.data-table th { text-align:left; padding:10px 12px; background:var(--bg-s); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--tm); border-bottom:1px solid var(--b); }
+.data-table td { padding:10px 12px; border-bottom:1px solid var(--b); color:var(--ts); }
+.data-table tr:hover td { background:var(--bg-s); }
+
+/* ── Modal ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; display:none; align-items:center; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:#fff; border-radius:16px; padding:24px; width:100%; max-width:520px; box-shadow:0 16px 48px rgba(0,0,0,0.2); animation:modalIn 0.2s ease; }
+.modal.modal-phone { max-width:480px; padding:20px; }
+@keyframes modalIn { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+.modal-title { font-size:18px; font-weight:700; color:var(--ts); margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; }
+.modal-close { width:32px; height:32px; border-radius:50%; background:var(--bg2); border:none; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+/* ── Toast ── */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--black); color:#fff; padding:12px 24px; border-radius:12px; font-size:14px; font-weight:500; box-shadow:0 8px 32px rgba(0,0,0,0.15); opacity:0; pointer-events:none; transition:all 0.3s; z-index:300; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── Admin Toggle ── */
+.admin-toggle { width:44px; height:24px; border-radius:12px; background:var(--bg2); position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; margin-bottom:4px; }
+.admin-toggle-knob { position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,0.15); transition:transform 0.2s; }
+.admin-toggle.on { background:var(--ns); }
+.admin-toggle.on .admin-toggle-knob { transform:translateX(20px); }
+
+/* ══════════════════════════════════
+   TEMPLATE DESIGNER
+   ══════════════════════════════════ */
+.tmpl-grid { display:grid; grid-template-columns:280px 1fr; gap:20px; }
+.tmpl-sidebar { background:#fff; border:1px solid var(--b); border-radius:var(--rl); overflow:hidden; }
+.tmpl-sidebar-hdr { padding:14px 16px; background:var(--bg-s); border-bottom:1px solid var(--b); display:flex; align-items:center; justify-content:space-between; }
+.tmpl-sidebar-hdr h3 { font-size:13px; font-weight:700; color:var(--ts); }
+.tmpl-item { padding:12px 16px; border-bottom:1px solid var(--b); cursor:pointer; transition:background 0.15s; }
+.tmpl-item:hover { background:var(--bg-s); }
+.tmpl-item.active { background:var(--ns-light); border-left:3px solid var(--ns); }
+.tmpl-item-name { font-size:13px; font-weight:600; color:var(--ts); }
+.tmpl-item-meta { font-size:11px; color:var(--tm); margin-top:2px; }
+
+.field-row { display:flex; align-items:center; gap:12px; padding:10px 14px; background:#fff; border:1px solid var(--b); border-radius:var(--r); margin-bottom:6px; cursor:grab; transition:all 0.15s; }
+.field-row:hover { border-color:var(--ns); }
+.field-row.drag-over { border-color:var(--ai); border-style:dashed; background:var(--ai-light); }
+.field-drag { color:var(--tm); font-size:16px; cursor:grab; flex-shrink:0; }
+.field-num { font-size:12px; font-weight:700; color:var(--ns); min-width:24px; text-align:center; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.field-body { flex:1; min-width:0; }
+.field-body-name { font-size:13px; font-weight:600; color:var(--ts); }
+.field-body-type { font-size:11px; color:var(--tm); }
+.field-flags { display:flex; gap:4px; flex-shrink:0; }
+.field-flag { font-size:10px; font-weight:700; padding:2px 6px; border-radius:3px; }
+.field-flag-req { background:var(--eb); color:var(--e); }
+.field-flag-photo { background:var(--ai-light); color:var(--ai); }
+.field-actions { display:flex; gap:4px; flex-shrink:0; }
+
+.tmpl-filter { display:flex; gap:4px; padding:8px 12px; border-bottom:1px solid var(--b); flex-wrap:wrap; }
+.tmpl-filter-chip {
+    padding:4px 10px; border-radius:12px; font-size:11px; font-weight:600;
+    cursor:pointer; border:1.5px solid var(--b); background:#fff; color:var(--tm);
+    transition:all 0.15s;
+}
+.tmpl-filter-chip:hover { border-color:var(--ns); }
+.tmpl-filter-chip.active { background:var(--ns); color:#fff; border-color:var(--ns); }
+.tmpl-sidebar-list { max-height:calc(100vh - 220px); overflow-y:auto; }
+.tmpl-sidebar-search {
+    width:100%; padding:8px 12px; border:none; border-bottom:1px solid var(--b);
+    font-family:'Inter',sans-serif; font-size:13px; color:var(--ts); outline:none;
+    background:var(--bg-s);
+}
+.tmpl-sidebar-search::placeholder { color:var(--tm); }
+.tmpl-sidebar-search:focus { background:#fff; }
+
+/* ══════════════════════════════════
+   AI EXCEL IMPORTER
+   ══════════════════════════════════ */
+.import-steps { display:flex; gap:0; margin-bottom:24px; background:#fff; border:1px solid var(--b); border-radius:var(--rl); overflow:hidden; }
+.import-step { flex:1; padding:14px 16px; text-align:center; border-right:1px solid var(--b); font-size:12px; font-weight:600; color:var(--tm); cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.import-step:last-child { border-right:none; }
+.import-step .step-num { width:24px; height:24px; border-radius:50%; background:var(--bg2); color:var(--tm); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; }
+.import-step.active { background:var(--ns-light); color:var(--ns); }
+.import-step.active .step-num { background:var(--ns); color:#fff; }
+.import-step.done { color:var(--ok); }
+.import-step.done .step-num { background:var(--ok); color:#fff; }
+
+.upload-zone { border:2px dashed var(--b); border-radius:var(--rl); padding:60px 40px; text-align:center; cursor:pointer; transition:all 0.2s; background:#fff; }
+.upload-zone:hover { border-color:var(--ns); background:var(--ns-light); }
+.upload-icon { font-size:48px; color:var(--b); margin-bottom:12px; }
+.upload-title { font-size:16px; font-weight:600; color:var(--ts); }
+.upload-sub { font-size:13px; color:var(--tm); margin-top:4px; }
+
+.ai-card { background:#fff; border:1.5px solid var(--ai); border-radius:var(--rl); overflow:hidden; margin-bottom:16px; }
+.ai-card-hdr { padding:14px 18px; background:var(--ai-light); display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(99,102,241,0.15); }
+.ai-card-hdr-icon { font-size:20px; }
+.ai-card-hdr-text { font-size:14px; font-weight:600; color:var(--ai); }
+.ai-card-body { padding:18px; }
+
+.mapping-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--b); }
+.mapping-row:last-child { border-bottom:none; }
+.mapping-excel { flex:1; font-size:13px; font-weight:600; color:var(--ts); }
+.mapping-arrow { color:var(--tm); font-size:16px; flex-shrink:0; }
+.mapping-target { flex:1; }
+.mapping-target select { width:100%; padding:6px 10px; border:1.5px solid var(--b); border-radius:var(--r); font-size:13px; color:var(--ts); background:var(--bg-s); outline:none; font-family:'Inter',sans-serif; }
+.mapping-target select:focus { border-color:var(--ns); }
+.mapping-conf { font-size:11px; font-weight:700; min-width:40px; text-align:center; font-variant-numeric:tabular-nums; }
+.mapping-conf.high { color:var(--ok); } .mapping-conf.med { color:var(--w); } .mapping-conf.low { color:var(--e); }
+
+.suggestion { display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--b); }
+.suggestion:last-child { border-bottom:none; }
+.suggestion-check { width:20px; height:20px; border:2px solid var(--b); border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; margin-top:2px; font-size:12px; color:transparent; transition:all 0.15s; }
+.suggestion-check.on { background:var(--ns); border-color:var(--ns); color:#fff; }
+.suggestion-title { font-size:13px; font-weight:600; color:var(--ts); }
+.suggestion-desc { font-size:12px; color:var(--tm); margin-top:2px; }
+
+.tmpl-chip { padding:10px 16px; border:2px solid var(--b); border-radius:var(--r); font-size:13px; font-weight:600; color:var(--t); cursor:pointer; transition:all 0.15s; background:#fff; display:flex; align-items:center; gap:8px; }
+.tmpl-chip:hover { border-color:var(--ns); }
+.tmpl-chip.selected { border-color:var(--ns); background:var(--ns-light); color:var(--ns); }
+.tmpl-chip-count { font-size:11px; color:var(--tm); }
+
+.val-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+.val-tile { padding:16px; border-radius:var(--r); text-align:center; background:#fff; border:1px solid var(--b); }
+.val-num { font-size:32px; font-weight:800; font-variant-numeric:tabular-nums; }
+.val-lbl { font-size:11px; font-weight:600; text-transform:uppercase; margin-top:2px; }
+
+.progress-bar { height:8px; background:var(--bg2); border-radius:4px; overflow:hidden; margin:12px 0; }
+.progress-fill { height:100%; border-radius:4px; transition:width 0.3s ease; background:var(--ns); }
+
+.ai-thinking { display:flex; align-items:center; gap:8px; padding:24px; color:var(--ai); font-size:14px; font-weight:600; justify-content:center; }
+.ai-dots span { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--ai); margin:0 2px; animation:aiDot 1.2s infinite; }
+.ai-dots span:nth-child(2) { animation-delay:0.2s; }
+.ai-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes aiDot { 0%,80%{opacity:0.2;} 40%{opacity:1;} }
+
+.step-panel { display:none; } .step-panel.active { display:block; }
+.import-nav { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
+
+/* Result row animation */
+.result-row { animation:resultIn 0.3s ease; }
+@keyframes resultIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="topnav">
+    <div class="topnav-brand">
+        <svg viewBox="0 0 15 20" width="14" height="18"><rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/><rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/><rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/><rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/></svg>
+        NSChecks
+    </div>
+    <div class="topnav-tabs">
+        <button class="topnav-tab" onclick="Nav.show('projects')">Projekt</button>
+        <button class="topnav-tab active" id="tabTemplates" onclick="Nav.show('templates')">Mallar</button>
+        <button class="topnav-tab" id="tabImport" onclick="Nav.show('import')">Excel-import</button>
+    </div>
+    <div class="topnav-spacer"></div>
+    <div class="topnav-user">Erik Lindgren &middot; Projektledare</div>
+</div>
+
+<div class="content">
+
+<!-- ══════════════════════════════════ TEMPLATES ══════════════════════════════════ -->
+<div class="view active" id="view-templates">
+    <div class="page-hdr">
+        <h1>Checklistemallar</h1>
+        <p>Skapa och redigera mallar som definierar vilka kontrollpunkter som ingår i varje checklista.</p>
+    </div>
+    <div class="tmpl-grid">
+        <div class="tmpl-sidebar">
+            <div class="tmpl-sidebar-hdr">
+                <h3 id="tmplCount">Mallar (46)</h3>
+                <button class="btn btn-primary btn-sm" onclick="TD.newTemplate()">+ Ny</button>
+            </div>
+            <input class="tmpl-sidebar-search" id="tmplSearch" placeholder="Sök mall..." oninput="TD.filterSidebar()" />
+            <div class="tmpl-filter" id="tmplFilter"></div>
+            <div class="tmpl-sidebar-list" id="tmplSidebar"></div>
+        </div>
+        <div id="tmplEditor"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ IMPORT ══════════════════════════════════ -->
+<div class="view" id="view-import">
+    <div class="page-hdr">
+        <h1>Excel-import</h1>
+        <p>Ladda upp en Excel-fil med installationer. AI:n analyserar och mappar kolumnerna automatiskt.</p>
+    </div>
+    <div class="import-steps" id="importSteps"></div>
+    <div id="importPanels"></div>
+</div>
+
+<!-- ══════════════════════════════════ PROJECTS ══════════════════════════════════ -->
+<div class="view" id="view-projects">
+    <div class="page-hdr"><h1>Projekt</h1><p>Hantera projekt, tilldela mallar och följ upp installationsframgång.</p></div>
+    <div class="card" style="text-align:center;padding:60px;">
+        <div style="font-size:48px;color:var(--b);margin-bottom:12px;">&#128204;</div>
+        <div style="font-size:16px;font-weight:600;color:var(--ts);">Projektvy under utveckling</div>
+        <div style="font-size:14px;color:var(--tm);margin-top:4px;">Använd Mallar eller Excel-import ovan.</div>
+    </div>
+</div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)Modal.close()">
+    <div class="modal" id="modalContent"></div>
+</div>
+<div class="toast" id="toastEl"></div>
+
+<script src="nschecks-shared.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════ */
+function toast(msg) {
+    var el = document.getElementById('toastEl');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function() { el.classList.remove('show'); }, 2200);
+}
+toast._t = null;
+
+var Modal = {
+    open: function(html) {
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('modalOverlay').classList.add('show');
+    },
+    close: function() {
+        document.getElementById('modalOverlay').classList.remove('show');
+    }
+};
+
+var Nav = {
+    show: function(viewId) {
+        document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+        document.querySelectorAll('.topnav-tab').forEach(function(t) { t.classList.remove('active'); });
+        document.getElementById('view-' + viewId).classList.add('active');
+        if (viewId === 'templates') document.getElementById('tabTemplates').classList.add('active');
+        else if (viewId === 'import') document.getElementById('tabImport').classList.add('active');
+        else document.querySelectorAll('.topnav-tab')[0].classList.add('active');
+    }
+};
+
+var CONTROL_TYPES = [
+    { value:'Choice', label:'Flerval (Godkänt / Ej godkänt / Ej relevant som standard)' },
+    { value:'Binary', label:'Ja / Nej' },
+    { value:'BinaryForced', label:'Tvingad kommentar vid Nej' },
+    { value:'Date', label:'Datumväljare' },
+    { value:'Text', label:'Textfält' },
+    { value:'Number', label:'Numeriskt värde med enhet' },
+    { value:'MultiText', label:'Fritext (stort fält)' },
+    { value:'Confirm', label:'Bekräftelsekryssruta' },
+    { value:'Repeater', label:'Upprepad datainmatning' },
+    { value:'Info', label:'Informationsblock (ej svar)' },
+    { value:'Signature', label:'Signaturruta' },
+    { value:'Header', label:'Sektionsrubrik' },
+];
+
+/* ═══════════════════════════════════════════════════
+   TEMPLATE DESIGNER
+   ═══════════════════════════════════════════════════ */
+var TD = {
+    templates: [
+        { name:"Daglig Tillsyn", cat:"Övrigt", doc:"2", ver:1, fields:[
+            {name:"MASKIN",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Ämne",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Olja kontrollerat?",type:"Choice",req:true,photo:false,unit:"",hint:"Godkänt/Inte godkänt/Inte relevant"},
+            {name:"Hjulbultar?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Centralsmörjningsfett?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Städad?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Tvättad?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Uppdatera timmar och km",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Timantal",type:"Number",req:true,photo:false,unit:"h",hint:""},
+            {name:"Km-ställning",type:"Number",req:true,photo:false,unit:"km",hint:""}
+        ]},
+        { name:"Kanalisation", cat:"Schakt", doc:"12", ver:1, fields:[
+            {name:"Ange veckonummer och delsträcka",type:"MultiText",req:true,photo:false,unit:"",hint:"Veckonummer och sträcka mellan brunnar"},
+            {name:"Är säkpeg/sökboll placerad vid samtliga rörskarvar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är bevisande foto taget?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Finns platsinformation på tagna foton?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns foto på att rörskarvarna är korrekt ihopsatta?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Ange skarvkopplingens fabrikat",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att angivna uppgifter stämmer",type:"Confirm",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Markarbeten", cat:"Schakt", doc:"11", ver:1, fields:[
+            {name:"Ange veckonummer och delsträcka",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Uppfylls fyllnadshöjden för rådande markförhållande?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Ange fraktion eller sort på ledningsbädd/kringfyllnad",type:"Text",req:true,photo:true,unit:"",hint:""},
+            {name:"Foto på öppen ledningsgrav",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Är markeringsnät förlagt enligt anvisning?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Är distanspåle placerad på berörd sträcka?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Är söktråden funktionstestad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att uppgifterna stämmer",type:"Confirm",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Nodsite", cat:"Fiber", doc:"19", ver:1, fields:[
+            {name:"Är markduk placerad enl. anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är ytan uppbyggd med minst 30cm bär- och slitlager?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Har markvibrator använts enl. AMA-tabell CE/4?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är betongplattorna placerade enligt bilaga?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är CU-Lina förlagd som skyddsjord?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns jordtagsmätning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är kanalisation för elnät förlagd i samråd med byggledare?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är fiberkanalisation förlagd enl. anvisningar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är kundstativ, kabeldragning och ODF monterat?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är bilder/dagböcker uppladdade i Teams?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att ovanstående uppgifter stämmer",type:"Confirm",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Brunnsättning", cat:"Schakt", doc:"13", ver:1, fields:[
+            {name:"Brunnens beteckning",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns dränerande grusmaterial under brunnen?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är foto taget där placeringen framgår?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Om täckt slingbrunn - vilket täckdjup?",type:"Text",req:false,photo:false,unit:"",hint:""},
+            {name:"Är brunnen låst enl. anvisning?",type:"Choice",req:true,photo:false,unit:"",hint:"Ja/Nej/Ej låsbar"},
+            {name:"Finns KUP monterad intill brunnen?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är söktråden till KUP funktionstestad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är säkpeg/sökboll placerad i brunn?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är sökboll funktionstestad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att angivna uppgifter stämmer",type:"Confirm",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll sättning skåp", cat:"Fiber", doc:"1002", ver:1, fields:[
+            {name:"Skåps-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skåp monterat enligt anvisning i våg och lod, på rätt djup med fullt utfällda stödben och markankare",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla rör och dukter förankrade i skåp",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Duktkappa perforerad/uppskuren och synlig över marknivå",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Marktätning utförd med lecakulor",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla rör och dukter ändtätade i skåp",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"KUP monterad och skarvad mot söktråd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Lås korrekt monterat",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Snökäpp monterad",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Foto där skåpets placering tydligt framgår",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotodokumentation finns för punkt 1-7",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll sättning Brunn", cat:"Fiber", doc:"1003", ver:1, fields:[
+            {name:"Brunns-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Brunn satt enligt anvisning på rätt djup och i våg",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Duktkappor synliga i brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla rör och dukter ändtätade i brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"KUP-stolpe monterad och skarvad mot söktråd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Sökboll placerad i botten på brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Översiktligt foto där brunnens placering framgår",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotodokumentation finns för punkt 1-6",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Skåp fibertekniskt", cat:"Fiber", doc:"1004", ver:1, fields:[
+            {name:"Skåps-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvning korrekt utförd enligt boxens anvisningar",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märkning av skarvkasett med fiberförbindelser",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Boxens kabelgenomföringar och dragavlastningar korrekt utförda",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla rör och dukter förankrade i skåp",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Duktkappa perforerad/uppskuren och synlig över marknivå",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Korrekt mängd kabelsling enligt anvisning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla rör och dukter ändtätade, kabeltätningar satta",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla stamkablar märkta med kabel-ID",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kundfiber och kunddukter märkta med ID-nummer",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"KUP monterad och söktrådar korrekt anslutna",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Skåp tätat mot mark med lecakulor eller markskiva",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Grönvit snökäpp monterad",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Lås korrekt monterat",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märke med varning för laser på skarvbox",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märke med beställarens logga och skåpets ID-nummer",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotografera skåpet med öppen och stängd lucka",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Foton finns på samtliga ovanstående punkter",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll schakt Rämmen", cat:"Schakt", doc:"001", ver:1, fields:[
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Tillstånd från myndigheter samt markavtal",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontakt med fastighetsägare innan påbörjat arbete",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"TA-plan samt uppskyltning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Förläggning och schaktdjup enligt anvisning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Sökpeg placerad vid kanalisationsslut/nolla",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Skarvning av kanalisation korrekt utförd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Ändtätning av kanalisation",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Sökband/markeringsband förlagt 10cm ovan kanalisation",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kundanslutning uppsläppt, ändtätad och markerad",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Återfyllnad och ledningsbädd enligt anvisning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotodokumentation finns för punkt 3-10",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll schakt", cat:"Schakt", doc:"1001", ver:1, fields:[
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Tillstånd finns och har följts vid förläggning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"TRV ärendenummer",type:"Text",req:false,photo:false,unit:"",hint:""},
+            {name:"Kontakt med fastighetsägare innan påbörjat arbete",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"TA-plan samt uppskyltning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Robust fiber avseende förläggning och schaktdjup",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Sökpeg placerad vid slutduktpunkt och skarvpunkt",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Skarvning av kanalisation korrekt utförd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Ändtätning av kanalisation",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Söknät eller markeringsband förlagt 10cm ovan kanalisation",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kundanslutning uppsläppt, ändtätad och markerad",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Återfyllnad och ledningsbädd enligt robust fiber",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotodokumentation finns för punkt 3-10",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Fiberarbete NOD", cat:"Fiber", doc:"1006", ver:1, fields:[
+            {name:"NOD-namn",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontrollpunkter",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Montage av ODF enligt anvisning?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Fiberarbete i ODF enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Inläggning av fiber i skarvkassetter/ODF",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabeltätning vid inkommande dukt",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Ändtätning av kanalisation, slang och dukter",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Intagstätning och brandväggsgenomföringar",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Märkning/signering av slangar, dukter, kablar, stativ samt ODF",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Lås monterat vid behov",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabelsling enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Förläggning av kabel i kabelkorg och på kabelstege",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Patchkablage förlagt enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Fotografering utförd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Fotografering",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Montage av ODF - signering synlig",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Inläggning av fiber i skarvkassett/ODF",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Dragavlastning i ODF",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Kabelsignering bakom ODF",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Kabeltätning",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Ändtätning",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Signering vid inkommande dukt",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Kabel i kabelkorg och på kabelstege",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Kabelsling",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Patchkablage",type:"Choice",req:true,photo:true,unit:"",hint:"1 bild per ODF"},
+            {name:"Foton finns på samtliga ovanstående punkter",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Övriga noteringar",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll brunn fibertekniskt", cat:"Fiber", doc:"1005", ver:1, fields:[
+            {name:"Brunns-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvning korrekt utförd enligt skarvboxens anvisningar",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märkning av skarvkasett med fiberförbindelser",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Boxens kabelgenomföringar och dragavlastningar",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Duktkappa synlig i brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kabelsling enligt anvisning på samtliga kablar",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla tomma rör och dukter ändtätade samt kabeltätningar satta",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla stamkablar märkta med kabel-ID och dukter märkta med dukt-ID",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"KUP-stolpe/markeringsstolpe monterad och söktrådar korrekt anslutna",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Sökboll placerad i botten på brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märke med varning för laser på skarvbox",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märke med beställarens logga och brunnens ID",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Täthetstest av skarvbox utfört",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Översiktsfoto taget på brunn",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Foton finns på samtliga ovanstående punkter",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Kundinstallation", cat:"Fiber", doc:"9", ver:1, fields:[
+            {name:"Adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"MAC-adress",type:"Text",req:true,photo:false,unit:"",hint:"CPE MAC-adress"},
+            {name:"Skarvning korrekt utförd enligt boxens förutsättningar",type:"Choice",req:true,photo:false,unit:"",hint:"Gäller vid fasadbox"},
+            {name:"Monterat kabelskydd, synlig bild på säktråd på skruv",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Är tomtschakt utförd enligt projektering, grov återställd",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabeltätning monterad, tätat ingångshål (Fireseal)",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Monterat fiberutag, förankrad dragavlastning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Bild på CPE där MAC- och laseretikett syns tydligt",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Överskådlig bild på montage där CPE och fiberuttag syns",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Är slutkund nöjd med levererat arbete",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Slutkunds signatur",type:"Signature",req:true,photo:false,unit:"",hint:"Kund godkänner arbete och återställning"},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Skåp fibertekniskt Gladhammar", cat:"Fiber", doc:"100", ver:1, fields:[
+            {name:"Skåps-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning eller närliggande adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Märke med beställarens logga, ID-nummer och varning för laser",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvning korrekt utförd enligt boxens anvisningar",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Märkning av skarvkasett med fiberförbindelser",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Boxens kabelgenomföringar och dragavlastningar",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Korrekt mängd kabelsling enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Grönvit snökäpp monterad",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Alla rör och dukter förankrade i skåp",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Duktkappa perforerad/uppskuren och synlig över marknivå",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Alla rör och dukter ändtätade, kabeltätningar satta",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Alla stamkablar märkta med kabel-ID och dukter märkta med dukt-ID",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kundfiber och kunddukter märkta med ID-nummer",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Fotografera stödben fullt utdraget",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Skåp tätat mot mark med lecakulor eller markskiva",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Lås korrekt monterat",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"KUP monterad och söktrådar korrekt anslutna",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Fotografera skåpet med öppen och stängd lucka",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Foton finns på samtliga ovanstående punkter",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Skyddsrond arbetsplats", cat:"Arbetsmiljö", doc:"2010", ver:1, fields:[
+            {name:"Ordning och säkerhet",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Är ordningen tillfredsställande i gemensamma utrymmen?",type:"Choice",req:true,photo:false,unit:"",hint:"Ja/Delvis/Nej"},
+            {name:"Finns det en uppsamlingsplats som är känd bland personalen?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Vet personalen var brandsläckare finns?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Skyddsutrustning",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns beredskap för första hjälpen?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns utrustning för första hjälpen och är den skyltad?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Får personalen den skyddsutrustning som de behöver?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Används tillgänglig skyddsutrustning i tillräcklig utsträckning?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Buller",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Är ljudnivåerna behagliga och inte störande?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Belysning",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns platsbelysningar där det behövs?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Arbetsplatsutformning",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns nödvändiga hjälpmedel vid tunga lyft?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Personalutrymme",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns personalrum med möjlighet att värma mat?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Utomhusmiljö",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Fungerar halkbekämpningen under vinterhalvåret?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kan transporter genomföras säkert och tryggt?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Övrigt",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns fungerande rutiner för systematiskt arbetsmiljöarbete?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Är lagar och föreskrifter kända och tillgängliga?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns uppdaterade rutiner för introduktion av ny personal?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Har tillbud, olycksfall och arbetssjukdomar rapporterats och åtgärdats?",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Projektets arbetsmiljöansvarige",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Utsedd person",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Tolkprotokoll", cat:"Schakt", doc:"1030", ver:1, fields:[
+            {name:"Dukt-ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Duktens diameter",type:"Number",req:true,photo:false,unit:"mm",hint:""},
+            {name:"Tolkens diameter",type:"Number",req:true,photo:false,unit:"mm",hint:""},
+            {name:"Tolkning utförd mellan punkter (A-B)",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Tolkningsresultat per rörnummer",type:"Repeater",req:true,photo:false,unit:"",hint:"Kolumner: Rörnummer, Resultat"},
+            {name:"Information om utförd tolkning",type:"MultiText",req:false,photo:true,unit:"",hint:"Stopp, resultat, åtgärder"}
+        ]},
+        { name:"Egenkontroll fiberarbeten BRUNN", cat:"Fiber", doc:"2030", ver:1, fields:[
+            {name:"Kontrollerat att kabelns mantel är hel?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Slingan ihoptejpad till skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontrollerat vilken skarvbox och genomföringar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvbox monterad enl anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kablar märkta med A och B-sida vid intag i brunn?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kablar märkta med anläggnings-id vid intag i skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabel avmantlad och rengjord ca 2m?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Dragavlastare fästa i skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Band/tuber märkta vid ingång till kassett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Blindpluggar monterade på tomma ingångar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvad fiber slingad i kassett 2,5 varv?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvhylsor märkta med fibernummer?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvbox täthetstestad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvboxen märkt med identitetsetikett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Eventuella avvikelser?",type:"BinaryForced",req:true,photo:false,unit:"",hint:"Ja kräver beskrivning"},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"LÄGESKONTROLLBEVIS", cat:"Schakt", doc:"1070", ver:1, fields:[
+            {name:"Fastighet",type:"Text",req:true,photo:false,unit:"",hint:"Fastighetsbeteckning"},
+            {name:"Mätning utförd",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Inmätningsläge",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Övrig information",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Bilagor",type:"Repeater",req:false,photo:false,unit:"",hint:"Bilaga, Benämning"},
+            {name:"Lägeskontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Kontroll markeringsnät", cat:"Schakt", doc:"1080", ver:1, fields:[
+            {name:"Grop 1 - Djup på sökband",type:"Number",req:true,photo:true,unit:"m",hint:""},
+            {name:"Grop 1 - Djup på dukt",type:"Number",req:true,photo:true,unit:"m",hint:""},
+            {name:"Grop 2 - Djup på sökband",type:"Number",req:true,photo:true,unit:"m",hint:""},
+            {name:"Grop 2 - Djup på dukt",type:"Number",req:true,photo:true,unit:"m",hint:""},
+            {name:"Förläggning godkänd?",type:"Binary",req:true,photo:false,unit:"",hint:"Om Nej, beskriv åtgärd"},
+            {name:"Beskriv åtgärd av ej godkänd förläggning",type:"MultiText",req:false,photo:true,unit:"",hint:""},
+            {name:"Är signalen godkänd på söktråden?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Förläggning godkänd (slutlig)",type:"Binary",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll fiberarbeten SKÅP", cat:"Fiber", doc:"2040", ver:1, fields:[
+            {name:"Kontrollerat att kabelns mantel är hel?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kablar märkta med anläggnings-id vid intag i skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabel avmantlad och rengjord ca 2m?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Dragavlastare fästa i skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Band/tuber märkta vid ingång till kassett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Ej uppskalade tuber slingade i botten på skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvad fiber slingad i kassett 2,5 varv?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvhylsor märkta med fibernummer?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"110 rör tätat med lock?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvboxen märkt med identitetsetikett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Eventuella avvikelser?",type:"BinaryForced",req:true,photo:false,unit:"",hint:"Ja kräver beskrivning"},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll SLINGBRUNN", cat:"Fiber", doc:"2050", ver:1, fields:[
+            {name:"Kabel hanterad enl tillverkarens anvisningar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabel slingad i brunn och buntad med buntband?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation med kabel kapad 20cm från brunnsvägg?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation tätad enl anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Märkning med tejp A och B-sida?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Slinga märkt med anläggningsnummer och slingnummer?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Märkning kanalisation enl anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Tillbud", cat:"Arbetsmiljö", doc:"2020", ver:1, fields:[
+            {name:"Vad hände? Beskriv händelsen",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"I vilket arbetsmoment?",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Tid och plats?",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Varför uppstod händelsen?",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Vad kunde händelsen resulterat i?",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Vad kan göras för att förhindra upprepning?",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Vad behöver göras direkt?",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Vem ansvarar för att det blir gjort?",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur",type:"Signature",req:true,photo:false,unit:"",hint:"Person med god kännedom av incidenten"}
+        ]},
+        { name:"Checklista för ditt fallskydd", cat:"Arbetsmiljö", doc:"1011", ver:1, fields:[
+            {name:"Utrustning",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Är det rätt utrustning för uppgiften?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är utrustningen årskontrollerad?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är selen kontrollerad (D-ring, spännen, remmar)?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är säkerhetslina kontrollerad?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är selen personligt kontrollerad?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Fallskyddsplanering",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Är infästningspunkt kontrollerad?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är bedömning gjord var man hamnar vid fall?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är bedömning av risk för svingfall gjord?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Räddningsplan",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Finns det någon som räddar mig?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns räddningsutrustning på plats?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Är räddning övad?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Borrprotokoll", cat:"Schakt", doc:"1010", ver:1, fields:[
+            {name:"Metod",type:"Text",req:true,photo:false,unit:"",hint:"Borrmetod"},
+            {name:"Plats",type:"Text",req:true,photo:false,unit:"",hint:"Närliggande adress"},
+            {name:"Status",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Dagboksanteckning",type:"MultiText",req:true,photo:false,unit:"",hint:""},
+            {name:"Dagbok författad av",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Antal borrförsök",type:"Number",req:true,photo:false,unit:"",hint:""},
+            {name:"Borrprotokoll (stång 1-15)",type:"Repeater",req:true,photo:false,unit:"",hint:"Kolumner: Stång, Djup (m), % avvikelse, Notering"},
+            {name:"Borrprotokoll (stång 16-20)",type:"Repeater",req:false,photo:false,unit:"",hint:"Kolumner: Stång, Djup (m), % avvikelse, Notering"},
+            {name:"Borrade meter",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Bergstillägg",type:"Number",req:false,photo:false,unit:"m",hint:""},
+            {name:"Typ av foderrör",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fotodokumentation",type:"Binary",req:true,photo:true,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll sättning brunn 2", cat:"Fiber", doc:"201", ver:1, fields:[
+            {name:"Egenkontroll utförd",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Makadambädd på 20cm utförd enligt anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Brunn placerad med rätt fyllnadshöjd, 30cm täckning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Intag av kanalisation utfört enligt anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Intagshål tätade med fogskum?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation som passerar genom brunn går hel genom?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation som slutar i brunn kapade 20cm från brunnsvägg?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation som slutar tätade med ändpluggar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation märkt med kanalisationsbeteckning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Söktråd förlagd enligt anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Sökboll monterad i brunnens lock eller överkant?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"KUP monterad enligt anvisning med 16/12 dukt?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Snökäpp monterad på KUP vid brunn?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Mark kring brunnen städad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Foton på öppen färdigmonterad brunn",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll packningsprotokoll", cat:"Schakt", doc:"1012", ver:1, fields:[
+            {name:"Benämning eller plats",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Djup ledningsgrav",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Längd ledningsgrav",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Typ av ledning",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skyddsrör",type:"BinaryForced",req:true,photo:false,unit:"",hint:"Om ja, ange typ och skyddsklass"},
+            {name:"Fraktion på kringfyllnad",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fraktion på bärlager",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fraktion på slitlager",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Sättning skåp (Övik)", cat:"Fiber", doc:"3002", ver:1, fields:[
+            {name:"Benämning på skåp",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Hänsyn tagits för snöröjning, trafik och miljö?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Skåpet monterat enl. tillverkarens anvisning?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Duktkamm monterad i skåpet enl. anvisning?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Dukterna placerade och märkta enl. skarvschema?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Snöpinne monterad?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Skåpets front märkt med aktuell beteckning?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Skåpet påfyllt med leca-kulor?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Alla dukter tätade med ändstopp eller kabeltätning?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Lås monterat på skåp?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Undertecknad intygar att ovan punkter stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Stickprov Schakt", cat:"Schakt", doc:"stick 1:1", ver:1, fields:[
+            {name:"Stickprov gällande",type:"Text",req:true,photo:false,unit:"",hint:"Fastighet eller stamsträcka"},
+            {name:"Återställning på plats OK",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Schaktdjup grop 1",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Schaktdjup grop 2",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Schaktdjup grop 3",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Funktion söktråd OK på plats",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Text",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll schakt (GC)", cat:"Schakt", doc:"1060", ver:1, fields:[
+            {name:"Veckonummer",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Ärendenummer",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Tillstånd finns och har följts?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontakt tagits med fastighetsägare?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"TA-plan samt skyltmaterial kontrollerat?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Robust fiber avseende förläggning och schaktdjup utfört?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Sökboll/sökpeg placerad vid skarvpunkt och brunnar?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Återställning av mark gjord?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Daglig fotodokumentation utförd?",type:"Confirm",req:true,photo:true,unit:"",hint:""}
+        ]},
+        { name:"Underhåll grävmaskin", cat:"Övrigt", doc:"3001", ver:1, fields:[
+            {name:"Ange vilken maskin kontrollen avser",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Datum för kontroll",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Antal gångtimmar",type:"Number",req:true,photo:false,unit:"h",hint:""},
+            {name:"Dagliga kontroller",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Motorolja",type:"Choice",req:true,photo:false,unit:"",hint:"Nivå OK / Påfyllt / Ej OK"},
+            {name:"Kylarvätska",type:"Choice",req:true,photo:false,unit:"",hint:"Nivå OK / Påfyllt / Ej OK"},
+            {name:"Hydraulolja",type:"Choice",req:true,photo:false,unit:"",hint:"Nivå OK / Påfyllt / Ej OK"},
+            {name:"Centralsmörjning",type:"BinaryForced",req:true,photo:false,unit:"",hint:"OK / Ej OK. Ange anledning"},
+            {name:"Visuell inspektion",type:"BinaryForced",req:true,photo:false,unit:"",hint:"Skador, läckage eller avvikelser"},
+            {name:"Veckobaserad kontroll",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Undervagn - kedjehjul, band, slitage",type:"BinaryForced",req:true,photo:false,unit:"",hint:""},
+            {name:"Svängkrans - smörjning",type:"BinaryForced",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontrollpanel - testa och notera felaktigheter",type:"BinaryForced",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Text",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"MARK ENTREPRENAD HOS ENSKILD VÄGHÅLLARE / MARKÄGARE", cat:"Övrigt", doc:"25:2", ver:1, fields:[
+            {name:"Ledningsägare bolagsnamn",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Entreprenör bolagsnamn",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Markägare / Väghållare",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Markavtal/Medgivandeavtal",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Namn - Väghållare/Markägare",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Namn - Nätägare",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Namn - Entreprenör",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Markavtal finns påskrivet",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Är schaktarbeten utförda enligt upprättade avtal",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Nöjdhetsintyg vid slutsyn",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Noteringar / Anmärkningar",type:"Repeater",req:false,photo:false,unit:"",hint:"Adress/Plats, Krävs åtgärd?, Övrigt"},
+            {name:"Markägare / Väghållare signatur",type:"Signature",req:true,photo:false,unit:"",hint:""},
+            {name:"Entreprenör / Ledningsägare signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Tomtprojektering", cat:"Schakt", doc:"2060", ver:1, fields:[
+            {name:"Fastighetsägare",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Anläggningsadress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsbeteckning",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Egna el-/tele-/dataledningar",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Egna vattenledningar",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Markvärmeledningar",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Slingor för robotgräsklippare",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Övriga nedgrävda hinder",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Synliga hinder (plattor, staket etc.)",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Ungefärlig längd tomtschaktstråk",type:"Number",req:true,photo:false,unit:"m",hint:"Från tomtgräns till byggnad"},
+            {name:"Orsak/kommentar vid längre än 30m",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Projektering godkänd i eHub",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Fastighetsägarens signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll schakt och förläggning", cat:"Schakt", doc:"200", ver:1, fields:[
+            {name:"Egenkontroll utförd",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontrollerad arbetshandling?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Finns godkänd TA-plan?",type:"Choice",req:true,photo:false,unit:"",hint:"Ja/Nej/Behövs ej"},
+            {name:"Ledningsanvisning utförd?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"TA-anordningar uppställda?",type:"Choice",req:true,photo:false,unit:"",hint:"Ja/Nej/Behövs ej"},
+            {name:"Material tillgängligt för vald sträcka?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Schakt utfört enligt bygghandling?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Fyllnadshöjd kontrollerad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kanalisation förlagd rakt och plant?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Multidukter av samma typ har olika färg?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Sökband förlagt enligt anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"All kanalisation tätad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvning utförd enl standard?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Optoändar lämnad, tätad och sökboll i ände?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Sökbollens funktion testad?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Sökboll fäst med buntband?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Markeringskäpp utplacerad och fotad?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Skyddsrör förlagda enl krav?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Packning av återfyllnad utförd?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Foton på korsande och längsgående ledningar?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Foton på stenblock större än 0,2m3?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Återställt, städat och kört bort sten?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Foton korrekt märkta och uppladdade med geotag?",type:"Binary",req:true,photo:true,unit:"",hint:""},
+            {name:"Avvikelser/Incidentrapport",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Kontrollerade moment Egenkontroll fiberarbeten SKÅP", cat:"Fiber", doc:"2070", ver:1, fields:[
+            {name:"Kontrollerat att kabelns mantel är hel?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Slingan ihoptejpad till skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontrollerat vilken skarvbox och genomföringar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvbox monterad enl anvisning?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kablar märkta med anläggnings-id samt A-, B- och gren-sida?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabel avmantlad och rengjord ca 2m?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Dragavlastare fästa i skarvbox?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Band/tuber märkta vid ingång till kassett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Blindpluggar monterade på tomma ingångar?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvad fiber slingad i kassett 2,5 varv?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Splitter märkt med id",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvhylsor märkta med fibernummer?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvboxen märkt med identitetsetikett?",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Eventuella avvikelser",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Övrig information",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Checklista installation (Öviks energi)", cat:"Fiber", doc:"2080", ver:1, fields:[
+            {name:"Anslutningens adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Anslutningens MAC-adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Tätat mellan dukt och borrhål?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Kabelskydd monterat tätt mot vägg och grund?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Tjänstefördelare monterad med nätverksuttag nedåt?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Reduceringsskarv och kabeltätning monterad?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Fiber svetsad mot Sc/apc kontakt, slingad medurs?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Speedtest-värden",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Rätt adress vald i verifieringsportal?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Söktråd uppdragen och lindad runt klammer?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Foton tagna för respektive moment?",type:"Confirm",req:true,photo:true,unit:"",hint:""},
+            {name:"Signatur",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Schakt 2", cat:"Schakt", doc:"1:2", ver:1, fields:[
+            {name:"Kontroll gällande",type:"Text",req:true,photo:false,unit:"",hint:"Fastighet eller stamsträcka"},
+            {name:"Återställning på plats OK",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Schaktdjup grop 1",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Schaktdjup grop 2",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Schaktdjup grop 3",type:"Number",req:true,photo:false,unit:"m",hint:""},
+            {name:"Funktion söktråd OK på plats",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Text",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Fasadbox", cat:"Fiber", doc:"222", ver:1, fields:[
+            {name:"Adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skarvning korrekt utförd enligt boxens förutsättningar inklusive sling",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabeltätning monterad enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Monterat kabelskydd, lock med skruv, synlig bild på säktråd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Foto taget på punkter ovan",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Rutin Bas-U", cat:"Arbetsmiljö", doc:"5100", ver:1, fields:[
+            {name:"Introduktion",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Upprätta projektanpassad checklista för säkerhetsinstruktioner",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Ge formellt klartecken för alla arbetare",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Samordna arbete och materialhantering",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Arbetsmiljöplanen uppdaterad, tillgänglig och signerad",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Löpande kontroll",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Regelbundna skyddsronder och stickprovskontroller",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Möten för att stämma av större elarbeten",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Dokumentera kommunikation, tillbud och avvikelser",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Hög risk",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Har personalen tillräcklig kompetens?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Arbetsområdet hålls säkert?",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur BAS-U",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Rutin Bas-P", cat:"Arbetsmiljö", doc:"5000", ver:1, fields:[
+            {name:"Förberedelser",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Samordna om flera projektörer arbetar i projektet",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Gör riskbedömning tidigt i projekteringen",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Planera materialhantering och avfallshantering",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Upprätta arbetsmiljöplan (AMP)",type:"Confirm",req:true,photo:false,unit:"",hint:""},
+            {name:"Överlämning (Bas-P/Bas-U)",type:"Header",req:false,photo:false,unit:"",hint:""},
+            {name:"Överlämning genomförd",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur Bas-P",type:"Signature",req:true,photo:false,unit:"",hint:""},
+            {name:"Signatur Bas-U",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Intyg", cat:"Övrigt", doc:"2090", ver:1, fields:[
+            {name:"Intyget berör följande",type:"MultiText",req:true,photo:false,unit:"",hint:"Beskrivning av vad intyget avser"},
+            {name:"Undertecknad intygar att ovanstående stämmer",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Brunn Sättning", cat:"Schakt", doc:"T3836-12 Mall 5", ver:1, fields:[
+            {name:"Brunns ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Förläggning av kanalisation, kabel och dukter",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Tätning av kanalisation",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Märkning och signering av kanalisation och kabel",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Vilken kanalisationspipa har använts",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Skåp Schakt", cat:"Schakt", doc:"T3836-12 Mall 6A", ver:1, fields:[
+            {name:"FOS ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Skåp monterat enligt anvisning, sockel utdragen",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Justering av skåp i lod och våg",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Snökäpp monterad",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Återfyllning och packning kring skåp",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Foto som styrker montage av hölje, sockel/ben",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Schakt utförande", cat:"Schakt", doc:"T3836-12 Mall 6C", ver:1, fields:[
+            {name:"Schaktsträcka enligt karta",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Arbete utfört enligt gällande tillstånd/TA-plan",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Arbete utfört enligt gällande schaktdjup",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Rätt fyllningsmaterial enligt normer/krav",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Foto som styrker schaktdjup och återställande",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll Installation i skåp, tätning, signering, märkning", cat:"Fiber", doc:"T3836-12 Mall 7", ver:1, fields:[
+            {name:"FOS ID",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Cert nr",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Giltigt till",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Installation av skarvenhet enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Inläggning av fiber i kassett enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Tätningar kanalisation, slang, dukter och ändtätningar",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Marktätning enligt anvisning",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Märkning/Signeringar i skåp, FOS nummer",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Dragavlastning monterad",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Lås monterat",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Inga kabelslingor i skåp",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Förankring av slang och dukter under markskiva",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Foto som styrker tätning, inläggning, märkning etc.",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Egenkontroll - Geodetisk inmätning", cat:"Schakt", doc:"T3839-16 Rev 1.2", ver:1, fields:[
+            {name:"Utbildning finns för den som utfört inmätningen",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Datum för instrumentkontroll",type:"Date",req:true,photo:false,unit:"",hint:""},
+            {name:"Instrumentkontroll utförd",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Inmätningen ansluter mot eventuell tidigare inmätning",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Koordinater satta på alla objekt",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Koordinater satta på kanalisationsavslut",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Angivet koordinatsystem",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Punktsammanbindning utförd enligt inmätningsprinciper",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Kodning utförd enligt kodlista",type:"Binary",req:true,photo:false,unit:"",hint:""},
+            {name:"Övriga kommentarer",type:"MultiText",req:false,photo:false,unit:"",hint:""},
+            {name:"Egenkontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]},
+        { name:"Efterkontroll Kundinstallation", cat:"Fiber", doc:"1:1", ver:1, fields:[
+            {name:"Adress",type:"Text",req:true,photo:false,unit:"",hint:""},
+            {name:"Tätning korrekt utförd (gäller vid fasadbox)",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Monterat kabelskydd, synlig bild på säktråd",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Tomtschakt utförd enligt projektering, provgrop utförs",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Kabeltätning monterad, tätat ingångshål (Fireseal)",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Monterat fiberutag, förankrad dragavlastning, tätat genomförning",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Är skruv monterad mellan CPE och bottenplatta",type:"Choice",req:true,photo:false,unit:"",hint:""},
+            {name:"Bild på CPE där MAC- och laseretikett syns",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Överskådlig bild på montage",type:"Choice",req:true,photo:true,unit:"",hint:""},
+            {name:"Kontroll utförd av",type:"Signature",req:true,photo:false,unit:"",hint:""}
+        ]}
+    ],
+    activeIdx: 0,
+    dragIdx: -1,
+    filterCat: '',
+    searchQuery: '',
+
+    init: function() {
+        this.renderFilter();
+        this.renderSidebar();
+        this.renderEditor();
+    },
+
+    renderFilter: function() {
+        var cats = {};
+        this.templates.forEach(function(t) { cats[t.cat] = (cats[t.cat] || 0) + 1; });
+        var html = '<div class="tmpl-filter-chip' + (this.filterCat === '' ? ' active' : '') + '" onclick="TD.setCat(\'\')">Alla (' + this.templates.length + ')</div>';
+        var order = ['Fiber', 'Schakt', 'Arbetsmiljö', 'Övrigt'];
+        order.forEach(function(c) {
+            if (cats[c]) {
+                html += '<div class="tmpl-filter-chip' + (TD.filterCat === c ? ' active' : '') + '" onclick="TD.setCat(\'' + c + '\')">' + c + ' (' + cats[c] + ')</div>';
+            }
+        });
+        document.getElementById('tmplFilter').innerHTML = html;
+    },
+
+    setCat: function(cat) {
+        this.filterCat = cat;
+        this.renderFilter();
+        this.renderSidebar();
+    },
+
+    filterSidebar: function() {
+        this.searchQuery = (document.getElementById('tmplSearch').value || '').toLowerCase();
+        this.renderSidebar();
+    },
+
+    getFilteredTemplates: function() {
+        var cat = this.filterCat;
+        var q = this.searchQuery;
+        return this.templates.filter(function(t, i) {
+            if (cat && t.cat !== cat) return false;
+            if (q && t.name.toLowerCase().indexOf(q) < 0 && t.doc.toLowerCase().indexOf(q) < 0) return false;
+            return true;
+        });
+    },
+
+    renderSidebar: function() {
+        var filtered = this.getFilteredTemplates();
+        var html = '';
+        var self = this;
+        filtered.forEach(function(t) {
+            var realIdx = self.templates.indexOf(t);
+            var cls = realIdx === self.activeIdx ? 'tmpl-item active' : 'tmpl-item';
+            html += '<div class="' + cls + '" onclick="TD.select(' + realIdx + ')">' +
+                '<div class="tmpl-item-name">' + t.name + '</div>' +
+                '<div class="tmpl-item-meta">' + t.cat + ' &middot; ' + t.doc + ' &middot; ' + t.fields.length + ' fält</div>' +
+            '</div>';
+        });
+        if (filtered.length === 0) {
+            html = '<div style="padding:24px;text-align:center;color:var(--tm);font-size:13px;">Inga mallar matchar</div>';
+        }
+        document.getElementById('tmplSidebar').innerHTML = html;
+        var countText = this.filterCat ? this.filterCat + ' (' + filtered.length + ')' : 'Mallar (' + this.templates.length + ')';
+        document.getElementById('tmplCount').textContent = countText;
+    },
+
+    select: function(idx) {
+        this.activeIdx = idx;
+        this.renderSidebar();
+        this.renderEditor();
+    },
+
+    renderEditor: function() {
+        var t = this.templates[this.activeIdx];
+        var fieldsHtml = '';
+        t.fields.forEach(function(f, i) {
+            var flags = '';
+            if (f.req) flags += '<span class="field-flag field-flag-req">Krävs</span>';
+            if (f.photo) flags += '<span class="field-flag field-flag-photo">Foto</span>';
+            var typeLabel = f.type;
+            if (f.unit) typeLabel += ' &middot; Enhet: ' + f.unit;
+            if (f.type === 'BinaryForced') typeLabel = 'BinaryForced &middot; Tvingad kommentar vid Nej';
+            if (f.type === 'Repeater' && f.hint) typeLabel = 'Repeater &middot; ' + f.hint;
+            fieldsHtml += '<div class="field-row" draggable="true" data-idx="' + i + '" ' +
+                'ondragstart="TD.onDragStart(event,' + i + ')" ondragover="TD.onDragOver(event)" ' +
+                'ondrop="TD.onDrop(event,' + i + ')" ondragend="TD.onDragEnd(event)">' +
+                '<div class="field-drag">&#9776;</div>' +
+                '<div class="field-num">' + (i+1) + '</div>' +
+                '<div class="field-body">' +
+                    '<div class="field-body-name">' + f.name + '</div>' +
+                    '<div class="field-body-type">' + typeLabel + '</div>' +
+                '</div>' +
+                '<div class="field-flags">' + flags + '</div>' +
+                '<div class="field-actions">' +
+                    '<button class="btn btn-secondary btn-icon btn-sm" onclick="TD.editField(' + i + ')" title="Redigera">&#9998;</button>' +
+                    '<button class="btn btn-danger btn-icon btn-sm" onclick="TD.deleteField(' + i + ')" title="Ta bort">&#10005;</button>' +
+                '</div>' +
+            '</div>';
+        });
+
+        var catOptions = TD.getCategories().map(function(c) {
+            return '<option' + (c === t.cat ? ' selected' : '') + '>' + c + '</option>';
+        }).join('');
+
+        document.getElementById('tmplEditor').innerHTML =
+            '<div class="card">' +
+                '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;">' +
+                    '<div>' +
+                        '<div class="card-title" style="margin-bottom:4px;">' + t.name + '</div>' +
+                        '<div style="display:flex;gap:8px;"><span class="chip chip-ns">' + t.cat + '</span>' +
+                        '<span style="font-size:12px;color:var(--tm);">' + t.doc + ' &middot; Version ' + t.ver + '</span></div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:8px;">' +
+                        '<button class="btn btn-secondary btn-sm" onclick="TD.preview()">Förhandsvisning</button>' +
+                        '<button class="btn btn-primary btn-sm" onclick="TD.save()">Spara mall</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">' +
+                    '<div class="field"><div class="field-label">Mallnamn</div>' +
+                        '<input class="field-input" value="' + t.name + '" onchange="TD.updateMeta(\'name\',this.value)" /></div>' +
+                    '<div class="field"><div class="field-label">Kategori</div>' +
+                        '<select class="field-select" onchange="TD.onCatChange(this)">' + catOptions + '<option value="__new__">+ Ny kategori...</option></select></div>' +
+                    '<div class="field"><div class="field-label">Dokumentnummer</div>' +
+                        '<input class="field-input" value="' + t.doc + '" onchange="TD.updateMeta(\'doc\',this.value)" /></div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="card">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+                    '<div class="card-title" style="margin-bottom:0;">Kontrollpunkter (' + t.fields.length + ')</div>' +
+                    '<button class="btn btn-primary btn-sm" onclick="TD.addField()">+ Lägg till fält</button>' +
+                '</div>' +
+                '<div id="fieldList">' + fieldsHtml + '</div>' +
+                '<div style="margin-top:12px;font-size:12px;color:var(--tm);">Dra fälten för att ändra ordning. Signatur och villkorsblock läggs till automatiskt vid publicering.</div>' +
+            '</div>';
+    },
+
+    onCatChange: function(selectEl) {
+        if (selectEl.value === '__new__') {
+            var newCat = prompt('Ange namn på ny kategori:');
+            if (newCat && newCat.trim()) {
+                this.updateMeta('cat', newCat.trim());
+                this.renderFilter();
+                this.renderEditor();
+            } else {
+                selectEl.value = this.templates[this.activeIdx].cat;
+            }
+        } else {
+            this.updateMeta('cat', selectEl.value);
+        }
+    },
+
+    updateMeta: function(key, val) {
+        this.templates[this.activeIdx][key] = val;
+        this.renderSidebar();
+        toast('Mall uppdaterad');
+    },
+
+    buildFieldModal: function(title, btnLabel, onConfirm, field) {
+        var f = field || { name: '', type: 'Choice', req: true, photo: false, unit: '', hint: '', choices: null };
+        var prefix = field ? 'edit' : 'new';
+        var typeOptions = CONTROL_TYPES.map(function(ct) {
+            return '<option value="' + ct.value + '"' + (ct.value === f.type ? ' selected' : '') + '>' + ct.label + '</option>';
+        }).join('');
+        var choices = f.choices || ['Godkänt', 'Ej godkänt', 'Ej relevant'];
+        var choicesVisible = (f.type === 'Choice') ? '' : ' style="display:none;"';
+        var choicesHtml = choices.map(function(c, i) {
+            return '<div class="choice-row" draggable="true" style="display:flex;gap:6px;margin-bottom:4px;align-items:center;">' +
+                '<span class="choice-drag" style="cursor:grab;color:var(--tm);font-size:14px;flex-shrink:0;user-select:none;">&#9776;</span>' +
+                '<input class="field-input choice-input" value="' + c.replace(/"/g, '&quot;') + '" style="flex:1;padding:6px 10px;font-size:13px;" />' +
+                '<button class="btn btn-icon btn-sm btn-danger" onclick="this.parentElement.remove()" title="Ta bort">&#10005;</button>' +
+            '</div>';
+        }).join('');
+        Modal.open(
+            '<div class="modal-title">' + title + ' <button class="modal-close" onclick="Modal.close()">&#10005;</button></div>' +
+            '<div class="field"><div class="field-label">Frågetext <span style="color:var(--e);font-size:16px;line-height:1;">*</span></div><input class="field-input" id="' + prefix + 'FieldName" value="' + f.name.replace(/"/g, '&quot;') + '" placeholder="T.ex. Kabelrör utlagda och skarvade" /></div>' +
+            '<div class="field"><div class="field-label">Kontrolltyp <span style="color:var(--e);font-size:16px;line-height:1;">*</span></div><select class="field-select" id="' + prefix + 'FieldType" onchange="TD.onTypeChange(\'' + prefix + '\')">' + typeOptions + '</select></div>' +
+            '<div class="field" id="' + prefix + 'ChoicesWrap"' + choicesVisible + '>' +
+                '<div class="field-label">Svarsalternativ</div>' +
+                '<div id="' + prefix + 'ChoicesList">' + choicesHtml + '</div>' +
+                '<button class="btn btn-secondary btn-sm" onclick="TD.addChoiceRow(\'' + prefix + '\')" style="margin-top:4px;">+ Lägg till alternativ</button>' +
+            '</div>' +
+            '<div style="display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:end;">' +
+                '<div class="field"><div class="field-label">Enhet (valfritt)</div><input class="field-input" id="' + prefix + 'FieldUnit" value="' + (f.unit || '') + '" placeholder="mm, m, dBm..." /></div>' +
+                '<div class="field"><div class="field-label">Obligatorisk</div><div class="admin-toggle' + (f.req ? ' on' : '') + '" id="' + prefix + 'FieldReq" onclick="this.classList.toggle(\'on\')"><div class="admin-toggle-knob"></div></div></div>' +
+                '<div class="field"><div class="field-label">Kräver foto</div><div class="admin-toggle' + (f.photo ? ' on' : '') + '" id="' + prefix + 'FieldPhoto" onclick="this.classList.toggle(\'on\')"><div class="admin-toggle-knob"></div></div></div>' +
+            '</div>' +
+            '<div class="field"><div class="field-label">Ledtext / hint (valfritt)</div><input class="field-input" id="' + prefix + 'FieldHint" value="' + (f.hint || '').replace(/"/g, '&quot;') + '" placeholder="Hjälptext som visas under frågan" /></div>' +
+            '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">' +
+                '<button class="btn btn-secondary" onclick="Modal.close()">Avbryt</button>' +
+                '<button class="btn btn-primary" onclick="' + onConfirm + '">' + btnLabel + '</button>' +
+            '</div>'
+        );
+        this.initChoiceDrag(prefix);
+    },
+
+    onTypeChange: function(prefix) {
+        var type = document.getElementById(prefix + 'FieldType').value;
+        var wrap = document.getElementById(prefix + 'ChoicesWrap');
+        wrap.style.display = type === 'Choice' ? '' : 'none';
+    },
+
+    addChoiceRow: function(prefix) {
+        var list = document.getElementById(prefix + 'ChoicesList');
+        var row = document.createElement('div');
+        row.className = 'choice-row';
+        row.draggable = true;
+        row.style.cssText = 'display:flex;gap:6px;margin-bottom:4px;align-items:center;';
+        row.innerHTML = '<span class="choice-drag" style="cursor:grab;color:var(--tm);font-size:14px;flex-shrink:0;user-select:none;">&#9776;</span>' +
+            '<input class="field-input choice-input" value="" placeholder="Nytt alternativ..." style="flex:1;padding:6px 10px;font-size:13px;" />' +
+            '<button class="btn btn-icon btn-sm btn-danger" onclick="this.parentElement.remove()" title="Ta bort">&#10005;</button>';
+        list.appendChild(row);
+        TD.initChoiceDrag(prefix);
+        row.querySelector('input').focus();
+    },
+
+    initChoiceDrag: function(prefix) {
+        var list = document.getElementById(prefix + 'ChoicesList');
+        var dragIdx = -1;
+        list.querySelectorAll('.choice-row').forEach(function(row, i) {
+            row.ondragstart = function(e) { dragIdx = i; row.style.opacity = '0.4'; e.dataTransfer.effectAllowed = 'move'; };
+            row.ondragend = function() { row.style.opacity = '1'; };
+            row.ondragover = function(e) { e.preventDefault(); };
+            row.ondrop = function(e) {
+                e.preventDefault();
+                var rows = Array.from(list.querySelectorAll('.choice-row'));
+                var targetIdx = rows.indexOf(row);
+                if (dragIdx !== targetIdx && dragIdx >= 0) {
+                    var moved = rows[dragIdx];
+                    if (dragIdx < targetIdx) row.after(moved);
+                    else row.before(moved);
+                }
+                dragIdx = -1;
+            };
+        });
+    },
+
+    readChoices: function(prefix) {
+        var inputs = document.querySelectorAll('#' + prefix + 'ChoicesList .choice-input');
+        var choices = [];
+        inputs.forEach(function(el) { var v = el.value.trim(); if (v) choices.push(v); });
+        return choices.length > 0 ? choices : null;
+    },
+
+    addField: function() {
+        this.buildFieldModal('Lägg till kontrollpunkt', 'Lägg till', 'TD.confirmAddField()');
+    },
+
+    confirmAddField: function() {
+        var nameEl = document.getElementById('newFieldName');
+        var name = nameEl.value.trim();
+        if (!name) {
+            nameEl.style.borderColor = 'var(--e)';
+            nameEl.focus();
+            nameEl.setAttribute('placeholder', 'Frågetext krävs');
+            toast('Ange frågetext');
+            return;
+        }
+        var type = document.getElementById('newFieldType').value;
+        var field = {
+            name: name,
+            type: type,
+            req: document.getElementById('newFieldReq').classList.contains('on'),
+            photo: document.getElementById('newFieldPhoto').classList.contains('on'),
+            unit: document.getElementById('newFieldUnit').value.trim(),
+            hint: document.getElementById('newFieldHint').value.trim(),
+        };
+        if (type === 'Choice') field.choices = this.readChoices('new');
+        var t = this.templates[this.activeIdx];
+        t.fields.push(field);
+        t.ver = (t.ver || 1) + 1;
+        Modal.close();
+        this.renderSidebar();
+        this.renderEditor();
+        toast('Fält tillagt: ' + name);
+    },
+
+    editField: function(idx) {
+        var f = this.templates[this.activeIdx].fields[idx];
+        this.buildFieldModal('Redigera kontrollpunkt', 'Spara', 'TD.confirmEditField(' + idx + ')', f);
+    },
+
+    confirmEditField: function(idx) {
+        var f = this.templates[this.activeIdx].fields[idx];
+        f.name = document.getElementById('editFieldName').value.trim();
+        f.type = document.getElementById('editFieldType').value;
+        f.req = document.getElementById('editFieldReq').classList.contains('on');
+        f.photo = document.getElementById('editFieldPhoto').classList.contains('on');
+        f.unit = document.getElementById('editFieldUnit').value.trim();
+        f.hint = document.getElementById('editFieldHint').value.trim();
+        if (f.type === 'Choice') f.choices = this.readChoices('edit');
+        else delete f.choices;
+        this.templates[this.activeIdx].ver = (this.templates[this.activeIdx].ver || 1) + 1;
+        Modal.close();
+        this.renderEditor();
+        toast('Fält uppdaterat');
+    },
+
+    deleteField: function(idx) {
+        var t = this.templates[this.activeIdx];
+        var removed = t.fields[idx];
+        var removedName = removed.name;
+        t.fields.splice(idx, 1);
+        t.ver = (t.ver || 1) + 1;
+        this.renderSidebar();
+        this.renderEditor();
+        // Undo toast
+        var undoEl = document.getElementById('undoToast');
+        if (!undoEl) {
+            var d = document.createElement('div');
+            d.id = 'undoToast';
+            d.className = 'toast';
+            d.style.cssText = 'display:flex;align-items:center;gap:12px;padding:10px 12px 10px 20px;';
+            document.body.appendChild(d);
+        }
+        undoEl = document.getElementById('undoToast');
+        undoEl.innerHTML = '"' + removedName + '" borttaget <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:#fff;border-radius:14px;padding:4px 14px;" onclick="TD.undoDelete()">Ångra</button>';
+        undoEl.classList.add('show');
+        this._undoField = { idx: idx, field: removed };
+        clearTimeout(this._undoTimer);
+        this._undoTimer = setTimeout(function() {
+            undoEl.classList.remove('show');
+            TD._undoField = null;
+        }, 5000);
+    },
+
+    undoDelete: function() {
+        if (!this._undoField) return;
+        var t = this.templates[this.activeIdx];
+        t.fields.splice(this._undoField.idx, 0, this._undoField.field);
+        t.ver = Math.max(1, (t.ver || 1) - 1);
+        this._undoField = null;
+        clearTimeout(this._undoTimer);
+        document.getElementById('undoToast').classList.remove('show');
+        this.renderSidebar();
+        this.renderEditor();
+        toast('Fält återställt');
+    },
+
+    newTemplate: function() {
+        Modal.open(
+            '<div class="modal-title">Ny mall <button class="modal-close" onclick="Modal.close()">&#10005;</button></div>' +
+            '<div class="field"><div class="field-label">Mallnamn</div><input class="field-input" id="newTmplName" placeholder="T.ex. Egenkontroll kabelförläggning" /></div>' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">' +
+                '<div class="field"><div class="field-label">Kategori</div><select class="field-select" id="newTmplCat">' + TD.getCategories().map(function(c) { return '<option>' + c + '</option>'; }).join('') + '<option value="__new__">+ Ny kategori...</option></select></div>' +
+                '<div class="field"><div class="field-label">Dokumentnummer</div><input class="field-input" id="newTmplDoc" placeholder="T.ex. T3836-20" /></div>' +
+            '</div>' +
+            '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px;">' +
+                '<button class="btn btn-secondary" onclick="Modal.close()">Avbryt</button>' +
+                '<button class="btn btn-primary" onclick="TD.confirmNewTemplate()">Skapa</button>' +
+            '</div>'
+        );
+    },
+
+    getCategories: function() {
+        var cats = {};
+        this.templates.forEach(function(t) { if (t.cat) cats[t.cat] = true; });
+        return Object.keys(cats).sort();
+    },
+
+    confirmNewTemplate: function() {
+        var name = document.getElementById('newTmplName').value.trim();
+        if (!name) { toast('Ange mallnamn'); return; }
+        var cat = document.getElementById('newTmplCat').value;
+        if (cat === '__new__') {
+            cat = prompt('Ange namn på ny kategori:');
+            if (!cat || !cat.trim()) { toast('Kategori krävs'); return; }
+            cat = cat.trim();
+        }
+        this.templates.push({
+            name: name, cat: cat,
+            doc: document.getElementById('newTmplDoc').value.trim() || 'DRAFT', ver: 1, fields: []
+        });
+        Modal.close();
+        this.filterCat = '';
+        this.searchQuery = '';
+        document.getElementById('tmplSearch').value = '';
+        this.renderFilter();
+        this.select(this.templates.length - 1);
+        toast('Mall skapad: ' + name);
+    },
+
+    save: function() { toast('Mall sparad: ' + this.templates[this.activeIdx].name); },
+
+    preview: function() {
+        var t = this.templates[this.activeIdx];
+        var phoneHtml = NSRender.wizardPreview(t);
+        Modal.open(
+            '<div class="modal-title">Förhandsvisning <button class="modal-close" onclick="Modal.close()">&#10005;</button></div>' +
+            phoneHtml
+        );
+        document.querySelector('.modal').classList.add('modal-phone');
+        // Initialize wizard navigation after DOM is ready
+        var phoneEl = document.querySelector('.modal .phone');
+        if (phoneEl) NSRender.initWizardNav(phoneEl);
+    },
+
+    // Drag & drop
+    onDragStart: function(e, idx) { this.dragIdx = idx; e.target.style.opacity = '0.4'; e.dataTransfer.effectAllowed = 'move'; },
+    onDragOver: function(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); },
+    onDrop: function(e, targetIdx) {
+        e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+        if (this.dragIdx === targetIdx) return;
+        var fields = this.templates[this.activeIdx].fields;
+        var moved = fields.splice(this.dragIdx, 1)[0];
+        fields.splice(targetIdx, 0, moved);
+        this.renderEditor();
+        toast('Fält flyttat till position ' + (targetIdx + 1));
+    },
+    onDragEnd: function(e) { e.target.style.opacity = '1'; document.querySelectorAll('.field-row').forEach(function(r) { r.classList.remove('drag-over'); }); },
+};
+
+/* ═══════════════════════════════════════════════════
+   AI EXCEL IMPORTER
+   ═══════════════════════════════════════════════════ */
+var IMP = {
+    step: 0,
+    stepNames: ['Ladda upp', 'AI-analys', 'Mallar', 'Validering', 'Import'],
+    selectedTemplates: {},
+    importDone: false,
+
+    init: function() {
+        // Pre-select all Fiber templates (this is a fiber project)
+        var self = this;
+        TD.templates.forEach(function(t, i) {
+            if (t.cat === 'Fiber') self.selectedTemplates[i] = true;
+        });
+        this.renderSteps(); this.renderPanel();
+    },
+
+    renderSteps: function() {
+        var html = '';
+        var self = this;
+        this.stepNames.forEach(function(name, i) {
+            var cls = 'import-step';
+            if (i < self.step) cls += ' done';
+            else if (i === self.step) cls += ' active';
+            var num = i < self.step ? '&#10003;' : (i + 1).toString();
+            html += '<div class="' + cls + '" onclick="IMP.goStep(' + i + ')"><div class="step-num">' + num + '</div> ' + name + '</div>';
+        });
+        document.getElementById('importSteps').innerHTML = html;
+    },
+
+    goStep: function(n) {
+        if (n > this.step + 1) return;
+        this.step = n;
+        this.renderSteps();
+        this.renderPanel();
+    },
+
+    renderPanel: function() {
+        var panels = [this.renderUpload, this.renderAI, this.renderTemplates, this.renderValidation, this.renderImport];
+        document.getElementById('importPanels').innerHTML = panels[this.step].call(this);
+    },
+
+    renderUpload: function() {
+        return '<div class="upload-zone" onclick="IMP.simulateUpload()">' +
+            '<div class="upload-icon">&#128196;</div>' +
+            '<div class="upload-title">Dra en Excel-fil hit eller klicka för att välja</div>' +
+            '<div class="upload-sub">.xlsx &middot; Max 10 000 rader</div>' +
+        '</div>';
+    },
+
+    simulateUpload: function() {
+        toast('Filen laddas...');
+        var self = this;
+        setTimeout(function() {
+            toast('installationer_knislinge.xlsx — 24 rader, 9 kolumner');
+            setTimeout(function() { self.goStep(1); }, 800);
+        }, 600);
+    },
+
+    renderAI: function() {
+        var targetFields = ['—','ObjectNumber','CustomerName','CustomerPhone','CustomerEmail','Address','PostalCode','City','PropertyDesignation','ObjectType','ApartmentNumber','FOS','Notes'];
+        var mappings = [
+            {excel:'Obj.Nr', target:'ObjectNumber', conf:98},
+            {excel:'Kundnamn', target:'CustomerName', conf:99},
+            {excel:'Telefon', target:'CustomerPhone', conf:97},
+            {excel:'Gatuadress', target:'Address', conf:96},
+            {excel:'Postnr + ort', target:'PostalCode + City', conf:82},
+            {excel:'Fastighet', target:'PropertyDesignation', conf:94},
+            {excel:'Typ', target:'ObjectType', conf:91},
+        ];
+
+        function makeSelect(selected) {
+            return '<select>' + targetFields.map(function(f) {
+                var s = f === selected ? ' selected' : '';
+                return '<option' + s + '>' + f + '</option>';
+            }).join('') + '</select>';
+        }
+
+        var mappingRows = mappings.map(function(m) {
+            var confCls = m.conf >= 90 ? 'high' : m.conf >= 80 ? 'med' : 'low';
+            return '<div class="mapping-row">' +
+                '<div class="mapping-excel">' + m.excel + '</div>' +
+                '<div class="mapping-arrow">&rarr;</div>' +
+                '<div class="mapping-target">' + makeSelect(m.target) + '</div>' +
+                '<div class="mapping-conf ' + confCls + '">' + m.conf + '%</div>' +
+            '</div>';
+        }).join('');
+
+        return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">' +
+            '<div>' +
+                '<div class="card"><div class="card-title">&#128196; installationer_knislinge.xlsx</div>' +
+                '<div style="font-size:12px;color:var(--tm);margin-bottom:12px;">Blad 1 &middot; 24 rader &middot; 9 kolumner</div>' +
+                '<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Obj.Nr</th><th>Kundnamn</th><th>Telefon</th><th>Gatuadress</th><th>Postnr + ort</th><th>Fastighet</th><th>Typ</th></tr></thead>' +
+                '<tbody>' +
+                    '<tr><td>I-11801</td><td>Sven Andersson</td><td>073-123 45 67</td><td>Ringvägen 4</td><td>289 33 Knislinge</td><td>Hjärsåslilla 7:3</td><td>Permanentboende</td></tr>' +
+                    '<tr><td>I-11802</td><td>Maria Johansson</td><td>070-234 56 78</td><td>Storgatan 12</td><td>289 33 Knislinge</td><td>Hjärsåslilla 8:1</td><td>Permanentboende</td></tr>' +
+                    '<tr><td>I-11803</td><td>Erik Nilsson</td><td>076-345 67 89</td><td>Industrivägen 8</td><td>289 33 Knislinge</td><td>Backaskog 2:4</td><td>Företag</td></tr>' +
+                    '<tr style="color:var(--tm);font-style:italic;"><td colspan="7">… 21 rader till</td></tr>' +
+                '</tbody></table></div></div>' +
+            '</div>' +
+            '<div>' +
+                '<div class="ai-card"><div class="ai-card-hdr"><div class="ai-card-hdr-icon">&#129302;</div><div class="ai-card-hdr-text">AI-kolumnmappning</div><div style="margin-left:auto;"><span class="chip chip-ai">Azure OpenAI</span></div></div>' +
+                '<div class="ai-card-body">' + mappingRows + '</div></div>' +
+
+                '<div class="ai-card"><div class="ai-card-hdr"><div class="ai-card-hdr-icon">&#128161;</div><div class="ai-card-hdr-text">AI-förslag</div></div>' +
+                '<div class="ai-card-body">' +
+                    '<div class="suggestion"><div class="suggestion-check on" onclick="this.classList.toggle(\'on\')">&#10003;</div><div><div class="suggestion-title">Lägg till landskod på telefonnummer</div><div class="suggestion-desc">"073-123 45 67" &rarr; "+4673-123 45 67". 24 av 24 nummer saknar +46.</div></div></div>' +
+                    '<div class="suggestion"><div class="suggestion-check on" onclick="this.classList.toggle(\'on\')">&#10003;</div><div><div class="suggestion-title">Splitta "Postnr + ort" till två fält</div><div class="suggestion-desc">"289 33 Knislinge" &rarr; PostalCode: "289 33", City: "Knislinge"</div></div></div>' +
+                    '<div class="suggestion"><div class="suggestion-check" onclick="this.classList.toggle(\'on\')">&#10003;</div><div><div class="suggestion-title">Normalisera "Företag" till standardvärde</div><div class="suggestion-desc">ObjectType "Företag" (3 st) — närmaste matchning i systemet.</div></div></div>' +
+                '</div></div>' +
+
+                '<div class="ai-card"><div class="ai-card-hdr"><div class="ai-card-hdr-icon">&#10067;</div><div class="ai-card-hdr-text">AI-frågor</div></div>' +
+                '<div class="ai-card-body">' +
+                    '<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:600;color:var(--ts);margin-bottom:4px;">Kolumnen "Telefon" — är detta kundens eller kontaktpersonens nummer?</div>' +
+                    '<div style="display:flex;gap:8px;"><button class="btn btn-sm btn-secondary" style="border:2px solid var(--ns);color:var(--ns);">Kundens</button><button class="btn btn-sm btn-secondary">Kontaktpersonens</button></div></div>' +
+                    '<div><div style="font-size:13px;font-weight:600;color:var(--ts);margin-bottom:4px;">2 rader saknar "Obj.Nr" — ska de hoppas över?</div>' +
+                    '<div style="display:flex;gap:8px;"><button class="btn btn-sm btn-secondary" style="border:2px solid var(--ns);color:var(--ns);">Ja, hoppa över</button><button class="btn btn-sm btn-secondary">Nej, generera ID</button></div></div>' +
+                '</div></div>' +
+
+                '<div class="import-nav"><button class="btn btn-secondary" onclick="IMP.goStep(0)">&#8592; Tillbaka</button><button class="btn btn-primary" onclick="IMP.goStep(2)">Godkänn mappning &rarr;</button></div>' +
+            '</div>' +
+        '</div>';
+    },
+
+    renderTemplates: function() {
+        var self = this;
+        var categories = ['Fiber', 'Schakt', 'Arbetsmiljö', 'Övrigt'];
+        var grouped = '';
+        categories.forEach(function(cat) {
+            var catTemplates = [];
+            TD.templates.forEach(function(t, i) { if (t.cat === cat) catTemplates.push({t:t, i:i}); });
+            if (catTemplates.length === 0) return;
+            var catSelected = catTemplates.filter(function(x) { return self.selectedTemplates[x.i]; }).length;
+            grouped += '<div style="margin-bottom:12px;">' +
+                '<div style="font-size:12px;font-weight:600;color:var(--tm);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">' +
+                    '<span>' + cat + ' (' + catSelected + '/' + catTemplates.length + ')</span>' +
+                    '<span style="font-size:11px;cursor:pointer;color:var(--ns);" onclick="IMP.toggleCategory(\'' + cat + '\')">' + (catSelected === catTemplates.length ? 'Avmarkera alla' : 'Välj alla') + '</span>' +
+                '</div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+            catTemplates.forEach(function(x) {
+                var selected = self.selectedTemplates[x.i] ? ' selected' : '';
+                grouped += '<div class="tmpl-chip' + selected + '" onclick="IMP.toggleTemplate(' + x.i + ')" style="font-size:12px;padding:6px 12px;">' +
+                    '<span style="font-size:14px;">' + (self.selectedTemplates[x.i] ? '&#9745;' : '&#9744;') + '</span>' +
+                    x.t.name +
+                    '<span class="tmpl-chip-count">' + x.t.fields.length + '</span>' +
+                '</div>';
+            });
+            grouped += '</div></div>';
+        });
+
+        var count = Object.keys(this.selectedTemplates).length;
+        return '<div class="card">' +
+            '<div class="card-title">Välj checklistemallar för projektet</div>' +
+            '<p style="font-size:13px;color:var(--tm);margin-bottom:16px;">Varje ny installation får automatiskt en checklista per vald mall. Fiber-mallar är förvalda baserat på projektets kategori.</p>' +
+            grouped +
+            '<div style="font-size:13px;color:var(--ts);font-weight:600;margin-top:12px;padding:12px;background:var(--bg-s);border-radius:var(--r);">' +
+                count + ' mallar valda &middot; 24 installationer &times; ' + count + ' = <b>' + (24 * count) + ' checklistor</b></div>' +
+            '<div class="import-nav"><button class="btn btn-secondary" onclick="IMP.goStep(1)">&#8592; Tillbaka</button><button class="btn btn-primary" onclick="IMP.goStep(3)">Validera &rarr;</button></div>' +
+        '</div>';
+    },
+
+    toggleCategory: function(cat) {
+        var self = this;
+        var catIndices = [];
+        TD.templates.forEach(function(t, i) { if (t.cat === cat) catIndices.push(i); });
+        var allSelected = catIndices.every(function(i) { return self.selectedTemplates[i]; });
+        catIndices.forEach(function(i) {
+            if (allSelected) delete self.selectedTemplates[i];
+            else self.selectedTemplates[i] = true;
+        });
+        this.renderPanel();
+    },
+
+    toggleTemplate: function(idx) {
+        if (this.selectedTemplates[idx]) delete this.selectedTemplates[idx];
+        else this.selectedTemplates[idx] = true;
+        this.renderPanel();
+    },
+
+    renderValidation: function() {
+        return '<div class="val-grid">' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--ok);">22</div><div class="val-lbl" style="color:var(--ok);">Giltiga</div></div>' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--w);">2</div><div class="val-lbl" style="color:var(--w);">Varningar</div></div>' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--e);">0</div><div class="val-lbl" style="color:var(--e);">Fel</div></div>' +
+        '</div>' +
+        '<div class="card">' +
+            '<div class="card-title">Valideringsresultat</div>' +
+            '<table class="data-table"><thead><tr><th>Rad</th><th>Obj.Nr</th><th>Kundnamn</th><th>Status</th><th>Detalj</th></tr></thead><tbody>' +
+                '<tr><td>1</td><td>I-11801</td><td>Sven Andersson</td><td><span class="chip chip-ok">OK</span></td><td>—</td></tr>' +
+                '<tr><td>2</td><td>I-11802</td><td>Maria Johansson</td><td><span class="chip chip-ok">OK</span></td><td>—</td></tr>' +
+                '<tr><td>3</td><td>I-11803</td><td>Erik Nilsson</td><td><span class="chip chip-ok">OK</span></td><td>—</td></tr>' +
+                '<tr style="background:var(--wb);"><td>15</td><td>I-11815</td><td>Nils Gustafsson</td><td><span class="chip chip-warn">Varning</span></td><td>Telefonnummer saknas</td></tr>' +
+                '<tr style="background:var(--wb);"><td>22</td><td>—</td><td>Kristina Moberg</td><td><span class="chip chip-warn">Varning</span></td><td>Obj.Nr saknas — hoppas över</td></tr>' +
+                '<tr><td colspan="5" style="color:var(--tm);font-style:italic;">… 19 rader OK</td></tr>' +
+            '</tbody></table>' +
+            '<div class="import-nav"><button class="btn btn-secondary" onclick="IMP.goStep(2)">&#8592; Tillbaka</button><button class="btn btn-primary" onclick="IMP.goStep(4)">Importera 22 installationer &rarr;</button></div>' +
+        '</div>';
+    },
+
+    renderImport: function() {
+        if (this.importDone) return this.renderImportDone();
+        var self = this;
+        setTimeout(function() { self.runImport(); }, 300);
+        return '<div class="card" style="text-align:center;padding:40px;">' +
+            '<div class="ai-thinking"><div class="ai-dots"><span></span><span></span><span></span></div> Importerar installationer...</div>' +
+            '<div class="progress-bar"><div class="progress-fill" id="importProgress" style="width:0%;"></div></div>' +
+            '<div id="importStatus" style="font-size:13px;color:var(--tm);font-variant-numeric:tabular-nums;">0 / 22</div>' +
+        '</div>';
+    },
+
+    runImport: function() {
+        var bar = document.getElementById('importProgress');
+        var status = document.getElementById('importStatus');
+        var count = 0;
+        var total = 22;
+        var self = this;
+        var iv = setInterval(function() {
+            count += Math.floor(Math.random() * 3) + 1;
+            if (count >= total) count = total;
+            if (bar) bar.style.width = Math.round(count / total * 100) + '%';
+            if (status) status.textContent = count + ' / ' + total;
+            if (count >= total) {
+                clearInterval(iv);
+                self.importDone = true;
+                setTimeout(function() { self.renderSteps(); self.renderPanel(); }, 400);
+            }
+        }, 200);
+    },
+
+    renderImportDone: function() {
+        return '<div class="val-grid">' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--ok);">22</div><div class="val-lbl" style="color:var(--ok);">Skapade</div></div>' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--w);">2</div><div class="val-lbl" style="color:var(--w);">Överhoppade</div></div>' +
+            '<div class="val-tile"><div class="val-num" style="color:var(--e);">0</div><div class="val-lbl" style="color:var(--e);">Fel</div></div>' +
+        '</div>' +
+        '<div class="card">' +
+            '<div class="card-title" style="color:var(--ok);">&#10003; Import slutförd</div>' +
+            '<p style="font-size:14px;color:var(--t);margin-bottom:12px;">22 installationer skapades i projektet <b>Östra Göinge Knislinge Etapp 1</b>. Varje installation fick 7 checklistor (baserat på valda mallar).</p>' +
+            '<div style="font-size:13px;color:var(--tm);margin-bottom:16px;">' +
+                '&#9679; 22 &times; 7 = <b>154 checklistor</b> skapade<br/>' +
+                '&#9679; 22 dokumentbibliotek (Docs_xxxx) skapade<br/>' +
+                '&#9679; 2 rader överhoppade (saknade Obj.Nr)' +
+            '</div>' +
+            '<div style="display:flex;gap:8px;">' +
+                '<button class="btn btn-primary" onclick="IMP.reset();toast(\'Klar för ny import\')">Ny import</button>' +
+                '<button class="btn btn-secondary" onclick="Nav.show(\'projects\');toast(\'Öppnar projektvyn...\')">Gå till projektet</button>' +
+            '</div>' +
+        '</div>';
+    },
+
+    reset: function() { this.step = 0; this.importDone = false; this.renderSteps(); this.renderPanel(); },
+};
+
+/* ═══════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════ */
+TD.init();
+IMP.init();
+</script>
+</body>
+</html>

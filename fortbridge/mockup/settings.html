@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Inställningar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            max-width: 920px;
+        }
+
+        .section-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--lg-gray-200);
+            gap: 28px;
+        }
+        .section-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .section-row:first-child { padding-top: 0; }
+
+        .section-row .label {
+            flex: 0 0 260px;
+        }
+        .section-row .label strong {
+            display: block;
+            font-weight: 600;
+            color: var(--lg-gray-900);
+            font-size: 13.5px;
+            margin-bottom: 2px;
+        }
+        .section-row .label span {
+            font-size: 12.5px;
+            color: var(--lg-teal);
+            line-height: 1.4;
+            display: block;
+        }
+        .section-row .control {
+            flex: 1;
+        }
+
+        .direction-choice {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .direction-opt {
+            border: 2px solid var(--lg-gray-200);
+            border-radius: 8px;
+            padding: 14px 14px 12px;
+            cursor: pointer;
+            position: relative;
+            background: white;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .direction-opt:hover { border-color: var(--lg-teal); }
+        .direction-opt.selected {
+            border-color: var(--lg-green);
+            background: var(--lg-green-light);
+        }
+        .direction-opt.selected::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 16px;
+            height: 16px;
+            background: var(--lg-green);
+            border-radius: 50%;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'><path d='M6.5 11.5L3 8l1.4-1.4 2.1 2.1 5.1-5.1L13 5l-6.5 6.5z'/></svg>");
+        }
+        .direction-opt.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .direction-opt-name {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: var(--lg-blue);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .direction-opt-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            margin-bottom: 6px;
+        }
+        .direction-opt-arrow svg {
+            height: 14px;
+        }
+        .direction-opt-desc {
+            font-size: 11.5px;
+            color: var(--lg-teal);
+            line-height: 1.4;
+        }
+
+        .entity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .entity-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 18px;
+            align-items: center;
+            padding: 12px 14px;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 7px;
+            background: white;
+        }
+        .entity-item.off {
+            background: var(--lg-gray-50);
+            opacity: 0.72;
+        }
+        .entity-item-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--lg-gray-900);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .entity-item-hint {
+            font-size: 11.5px;
+            color: var(--lg-teal);
+            display: block;
+            font-weight: 400;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .dir-segment {
+            display: inline-flex;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+            background: white;
+        }
+        .dir-segment button {
+            background: white;
+            border: none;
+            border-right: 1px solid var(--lg-gray-200);
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 46px;
+            justify-content: center;
+            transition: background 0.1s, color 0.1s;
+        }
+        .dir-segment button:last-child { border-right: none; }
+        .dir-segment button:hover:not(.active):not(:disabled) {
+            background: var(--lg-gray-100);
+            color: var(--lg-gray-900);
+        }
+        .dir-segment button.active {
+            background: var(--lg-green);
+            color: white;
+        }
+        .dir-segment button.active.bidir {
+            background: var(--lg-gold);
+        }
+        .dir-segment button:disabled {
+            cursor: not-allowed;
+            color: var(--lg-gray-200);
+        }
+        .dir-segment svg {
+            width: 22px;
+            height: 10px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+        }
+
+        .dir-fixed {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            background: var(--lg-gray-100);
+        }
+        .dir-fixed svg {
+            width: 22px;
+            height: 10px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+        }
+
+        .entity-header {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 18px;
+            padding: 0 14px 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--lg-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .entity-header .h-dir { min-width: 156px; text-align: center; }
+        .entity-header .h-en { min-width: 38px; text-align: center; }
+
+        .toggle {
+            position: relative;
+            width: 38px;
+            height: 22px;
+            border-radius: 22px;
+            background: var(--lg-gray-200);
+            cursor: pointer;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .toggle.on { background: var(--lg-green); }
+        .toggle.on::after { transform: translateX(16px); }
+
+        .field-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 6px;
+            padding: 9px 12px;
+            font-family: inherit;
+            font-size: 13px;
+            background: white;
+            color: var(--lg-gray-900);
+        }
+        .input:focus {
+            outline: none;
+            border-color: var(--lg-green);
+            box-shadow: 0 0 0 3px rgba(2,184,150,0.15);
+        }
+        .input-label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .connection-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--lg-gray-50);
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 7px;
+            margin-bottom: 10px;
+        }
+        .connection-row:last-child { margin-bottom: 0; }
+        .connection-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .connection-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            color: white;
+        }
+        .connection-icon.fortnox { background: var(--lg-blue); }
+        .connection-icon.d365 { background: var(--lg-green); }
+        .connection-icon.webhook { background: var(--lg-gold); }
+        .connection-meta strong {
+            display: block;
+            font-size: 13.5px;
+            color: var(--lg-gray-900);
+            font-weight: 600;
+        }
+        .connection-meta small {
+            color: var(--lg-teal);
+            font-size: 12px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+            accent-color: var(--lg-green);
+        }
+        .slider-row .slider-value {
+            min-width: 78px;
+            font-weight: 700;
+            color: var(--lg-blue);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .warn-inline {
+            background: #fff7ea;
+            border-left: 3px solid var(--lg-gold);
+            padding: 11px 14px;
+            border-radius: 4px;
+            font-size: 12.5px;
+            color: var(--lg-gray-700);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        .warn-inline strong { color: var(--lg-gold-dark); }
+
+        .footer-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid var(--lg-gray-200);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 -32px -60px;
+            box-shadow: 0 -4px 10px rgba(0,81,126,0.04);
+        }
+        .footer-bar .unsaved {
+            font-size: 12.5px;
+            color: var(--lg-gold-dark);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .footer-bar-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html" class="active">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Inställningar</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök efter inställning...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Hjälp">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+                </button>
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Inställningar</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Inställningar</h1>
+                    <p>Kärninställningar för hur FortBridge synkroniserar mellan Dynamics 365 och Fortnox. Ändras sällan &mdash; dokumentera alla ändringar.</p>
+                </div>
+            </div>
+
+            <div class="settings-grid">
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Synkroniseringsriktning &mdash; principer</h2>
+                            <p>Riktning sätts per entitet längre ner. Här är tumreglerna.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+                            <div style="padding:12px 14px;border:1px solid var(--lg-gray-200);border-radius:7px;background:var(--lg-green-light);">
+                                <div style="font-size:11.5px;font-weight:700;color:var(--lg-green);letter-spacing:0.3px;margin-bottom:3px;">REKOMMENDERAS</div>
+                                <div style="font-size:13px;font-weight:600;color:var(--lg-gray-900);margin-bottom:3px;">Enkelriktad per entitet</div>
+                                <div style="font-size:11.5px;color:var(--lg-teal);line-height:1.45;">Välj det system som &quot;äger&quot; respektive entitet. Inga konflikter &mdash; datan har en tydlig källa.</div>
+                            </div>
+                            <div style="padding:12px 14px;border:1px solid var(--lg-gray-200);border-radius:7px;background:white;">
+                                <div style="font-size:11.5px;font-weight:700;color:var(--lg-gold-dark);letter-spacing:0.3px;margin-bottom:3px;">AVANCERAT</div>
+                                <div style="font-size:13px;font-weight:600;color:var(--lg-gray-900);margin-bottom:3px;">Dubbelriktad per entitet</div>
+                                <div style="font-size:11.5px;color:var(--lg-teal);line-height:1.45;">Använd bara när bägge system verkligen måste kunna skapa/uppdatera. ETag-konflikthantering aktiveras.</div>
+                            </div>
+                            <div style="padding:12px 14px;border:1px solid var(--lg-gray-200);border-radius:7px;background:white;">
+                                <div style="font-size:11.5px;font-weight:700;color:var(--lg-teal);letter-spacing:0.3px;margin-bottom:3px;">FASTA RIKTNINGAR</div>
+                                <div style="font-size:13px;font-weight:600;color:var(--lg-gray-900);margin-bottom:3px;">Betalningsstatus</div>
+                                <div style="font-size:11.5px;color:var(--lg-teal);line-height:1.45;">Vissa entiteter har en naturlig källa och kan inte ställas om (t.ex. betalningar kommer alltid från Fortnox).</div>
+                            </div>
+                        </div>
+                        <div class="warn-inline">
+                            <strong>Varför enkelriktad per entitet?</strong> Parallella uppdateringar på samma fält i bägge system skapar race conditions där den sist mottagna uppdateringen vinner &mdash; även om den är gammal. Genom att låta varje entitet ha ett tydligt hemsystem undviks konflikter helt.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Entiteter och riktning</h2>
+                            <p>Aktivera det ni behöver. Välj riktning per entitet &mdash; D365 &rarr; Fortnox, Fortnox &rarr; D365, eller dubbelriktad.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="entity-header">
+                            <div>Entitet</div>
+                            <div class="h-dir">Riktning</div>
+                            <div class="h-en">Aktiv</div>
+                        </div>
+                        <div class="entity-list">
+
+                            <div class="entity-item">
+                                <div>
+                                    <div class="entity-item-name">
+                                        Kunder (Account &harr; Customer)
+                                        <span class="badge badge-blue">Dubbelriktad stöds</span>
+                                    </div>
+                                    <span class="entity-item-hint">Matchningsnyckel: lg_fortnoxcustomernumber &middot; typisk källa: D365 Sales</span>
+                                </div>
+                                <div class="dir-segment" data-entity="customer">
+                                    <button class="active" title="D365 &rarr; Fortnox">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg>
+                                    </button>
+                                    <button title="Fortnox &rarr; D365">
+                                        <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    </button>
+                                    <button title="Dubbelriktad">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h20M17 1l5 4-5 4M7 9l-5-4 5-4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="toggle on"></div>
+                            </div>
+
+                            <div class="entity-item">
+                                <div>
+                                    <div class="entity-item-name">Artiklar &rarr; Produkter</div>
+                                    <span class="entity-item-hint">Fortnox äger artikelregistret &middot; synk varje timme</span>
+                                </div>
+                                <div class="dir-segment" data-entity="article">
+                                    <button title="D365 &rarr; Fortnox" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg>
+                                    </button>
+                                    <button class="active" title="Fortnox &rarr; D365">
+                                        <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    </button>
+                                    <button title="Dubbelriktad">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h20M17 1l5 4-5 4M7 9l-5-4 5-4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="toggle on"></div>
+                            </div>
+
+                            <div class="entity-item">
+                                <div>
+                                    <div class="entity-item-name">Offerter (Quote &rarr; Offer)</div>
+                                    <span class="entity-item-hint">Skapas i D365 när status blir Aktiv &middot; speglas i Fortnox</span>
+                                </div>
+                                <div class="dir-segment" data-entity="quote">
+                                    <button class="active" title="D365 &rarr; Fortnox">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg>
+                                    </button>
+                                    <button title="Fortnox &rarr; D365" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    </button>
+                                    <button title="Dubbelriktad" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h20M17 1l5 4-5 4M7 9l-5-4 5-4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="toggle on"></div>
+                            </div>
+
+                            <div class="entity-item">
+                                <div>
+                                    <div class="entity-item-name">Ordrar (SalesOrder &rarr; Order)</div>
+                                    <span class="entity-item-hint">D365 är källa &middot; valfri auto-konvertering till faktura</span>
+                                </div>
+                                <div class="dir-segment" data-entity="order">
+                                    <button class="active" title="D365 &rarr; Fortnox">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg>
+                                    </button>
+                                    <button title="Fortnox &rarr; D365" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    </button>
+                                    <button title="Dubbelriktad" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h20M17 1l5 4-5 4M7 9l-5-4 5-4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="toggle on"></div>
+                            </div>
+
+                            <div class="entity-item">
+                                <div>
+                                    <div class="entity-item-name">
+                                        Betalningsstatus
+                                        <span class="badge badge-gray">Fast riktning</span>
+                                    </div>
+                                    <span class="entity-item-hint">Fortnox &auml;r den bokf&ouml;ringsm&auml;ssiga sanningen &mdash; kan ej v&auml;ndas</span>
+                                </div>
+                                <div class="dir-fixed">
+                                    <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    Fortnox &rarr; D365
+                                </div>
+                                <div class="toggle on"></div>
+                            </div>
+
+                            <div class="entity-item off">
+                                <div>
+                                    <div class="entity-item-name">Kontakter på konto</div>
+                                    <span class="entity-item-hint">Begränsat API-stöd i Fortnox &mdash; se kap. 1</span>
+                                </div>
+                                <div class="dir-segment" data-entity="contact">
+                                    <button class="active" title="D365 &rarr; Fortnox">
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg>
+                                    </button>
+                                    <button title="Fortnox &rarr; D365" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg>
+                                    </button>
+                                    <button title="Dubbelriktad" disabled>
+                                        <svg viewBox="0 0 24 10"><path d="M2 5h20M17 1l5 4-5 4M7 9l-5-4 5-4"/></svg>
+                                    </button>
+                                </div>
+                                <div class="toggle"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Frekvens och prestanda</h2>
+                            <p>Hur ofta FortBridge pollar och med vilken prioritet.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>Polling-intervall</strong>
+                                <span>För entiteter utan webhook-stöd. Lägre värden ger snabbare synk men högre API-belastning.</span>
+                            </div>
+                            <div class="control">
+                                <div class="slider-row">
+                                    <input type="range" min="1" max="30" value="5">
+                                    <div class="slider-value">5 min</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>Near-real-time-läge</strong>
+                                <span>Aktiverar Event Grid-bufferten och minskar polling till 60 sek. Kräver Premium Function-plan.</span>
+                            </div>
+                            <div class="control">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div class="toggle on"></div>
+                                    <span style="font-size:12px;color:var(--lg-teal);">Aktiverat &middot; P95 latens: 1.2 s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>Retry-policy</strong>
+                                <span>Antal automatiska återförsök innan händelsen hamnar i felkön.</span>
+                            </div>
+                            <div class="control">
+                                <div class="field-group">
+                                    <div>
+                                        <label class="input-label">Max försök</label>
+                                        <input class="input" type="number" value="3">
+                                    </div>
+                                    <div>
+                                        <label class="input-label">Backoff-faktor</label>
+                                        <input class="input" type="text" value="Exponentiell (1m, 5m, 25m)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Anslutningar</h2>
+                            <p>Konfiguration av de två externa systemen.</p>
+                        </div>
+                        <button class="btn btn-secondary">Testa alla</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="connection-row">
+                            <div class="connection-info">
+                                <div class="connection-icon fortnox">Fx</div>
+                                <div class="connection-meta">
+                                    <strong>Fortnox API</strong>
+                                    <small>OAuth 2.0 &middot; Refresh Token förnyas om 58 dagar</small>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Ansluten</span>
+                                <button class="btn btn-ghost">Kör om OAuth</button>
+                            </div>
+                        </div>
+                        <div class="connection-row">
+                            <div class="connection-info">
+                                <div class="connection-icon d365">D3</div>
+                                <div class="connection-meta">
+                                    <strong>Dynamics 365 &middot; crm4</strong>
+                                    <small>Cert-autentisering &middot; Certifikatet löper ut om 178 dagar</small>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Ansluten</span>
+                                <button class="btn btn-ghost">Byt cert</button>
+                            </div>
+                        </div>
+                        <div class="connection-row">
+                            <div class="connection-info">
+                                <div class="connection-icon webhook">Wh</div>
+                                <div class="connection-meta">
+                                    <strong>Webhook-hemligheter</strong>
+                                    <small>4 hemligheter i Key Vault &middot; Ingen rotation på 90 dagar</small>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <span class="badge badge-gold"><span class="dot dot-gold"></span>Överväg rotation</span>
+                                <button class="btn btn-ghost">Rotera</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Larm och notiser</h2>
+                            <p>Var FortBridge skickar larm vid fel.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>E-postmottagare</strong>
+                                <span>Kommaseparerad lista för kritiska och höga larm.</span>
+                            </div>
+                            <div class="control">
+                                <input class="input" value="drift@langate.se, ekonomi@kund.se">
+                            </div>
+                        </div>
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>Teams-webhook</strong>
+                                <span>Incoming webhook-URL för Microsoft Teams-kanal.</span>
+                            </div>
+                            <div class="control">
+                                <input class="input" value="https://outlook.office.com/webhook/&hellip;" type="password">
+                            </div>
+                        </div>
+                        <div class="section-row">
+                            <div class="label">
+                                <strong>Tystad utanför kontorstid</strong>
+                                <span>Ej-kritiska larm väntar till 08:00 nästa arbetsdag.</span>
+                            </div>
+                            <div class="control">
+                                <div class="toggle on"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Fältmappning</h2>
+                            <p>Avancerat &mdash; endast för administratörer.</p>
+                        </div>
+                        <button class="btn btn-secondary">Öppna mappningseditor</button>
+                    </div>
+                </div>
+
+                <div class="card" style="border-color:var(--lg-red);background:var(--lg-red-light);">
+                    <div class="card-head" style="border-color:rgba(181,88,82,0.25);">
+                        <div>
+                            <h2 style="color:var(--lg-red);">Farozonen</h2>
+                            <p>Irreversibla operationer.</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="section-row" style="border-color:rgba(181,88,82,0.2);">
+                            <div class="label">
+                                <strong>Töm ID-mappningscache</strong>
+                                <span>Tvingar FortBridge att bygga om kund-/artikelmatchningar från noll.</span>
+                            </div>
+                            <div class="control" style="text-align:right;">
+                                <button class="btn btn-danger">Töm cache</button>
+                            </div>
+                        </div>
+                        <div class="section-row" style="border-color:rgba(181,88,82,0.2);">
+                            <div class="label">
+                                <strong>Pausa alla synkroniseringar</strong>
+                                <span>Inkommande webhooks accepteras men läggs i kö. Användbart vid planerat underhåll.</span>
+                            </div>
+                            <div class="control" style="text-align:right;">
+                                <button class="btn btn-danger">Pausa</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bar">
+                <div class="unsaved">
+                    <span class="dot dot-gold pulse"></span>
+                    Osparade ändringar i 2 sektioner
+                </div>
+                <div class="footer-bar-actions">
+                    <button class="btn btn-ghost">Återställ</button>
+                    <button class="btn btn-secondary">Spara utkast</button>
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Spara och verkställ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', () => {
+        t.classList.toggle('on');
+        const item = t.closest('.entity-item');
+        if (item) item.classList.toggle('off', !t.classList.contains('on'));
+    }));
+    document.querySelectorAll('.dir-segment').forEach(seg => {
+        seg.querySelectorAll('button').forEach((btn, idx) => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                seg.querySelectorAll('button').forEach(b => b.classList.remove('active', 'bidir'));
+                btn.classList.add('active');
+                if (idx === 2) btn.classList.add('bidir');
+            });
+        });
+    });
+</script>
+</body>
+</html>

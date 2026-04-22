@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Larm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .alert-banner {
+            background: linear-gradient(90deg, #fbeeed 0%, #fff9f8 100%);
+            border: 1px solid rgba(181,88,82,0.3);
+            border-left: 4px solid var(--lg-red);
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .alert-banner.calm {
+            background: linear-gradient(90deg, #e6faf6 0%, #f5fcfa 100%);
+            border-color: rgba(2,184,150,0.3);
+            border-left-color: var(--lg-green);
+        }
+        .alert-banner-info { display: flex; gap: 14px; align-items: center; }
+        .alert-banner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--lg-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .alert-banner.calm .alert-banner-icon { background: var(--lg-green); }
+        .alert-banner-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .alert-banner-title { font-size: 15px; font-weight: 700; color: var(--lg-gray-900); }
+        .alert-banner-body { font-size: 12.5px; color: var(--lg-teal); margin-top: 2px; }
+
+        .grid-split {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .rule-card {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--lg-gray-200);
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            gap: 14px;
+            align-items: center;
+        }
+        .rule-card:last-child { border-bottom: none; }
+        .rule-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--lg-green-light);
+            color: var(--lg-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rule-icon.warn { background: #fff4de; color: var(--lg-gold-dark); }
+        .rule-icon.crit { background: var(--lg-red-light); color: var(--lg-red); }
+        .rule-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        .rule-name {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--lg-gray-900);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .rule-desc {
+            font-size: 12px;
+            color: var(--lg-teal);
+            margin-top: 3px;
+            line-height: 1.4;
+        }
+        .rule-meta {
+            font-size: 11px;
+            color: var(--lg-teal);
+            margin-top: 6px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .rule-meta span { display: inline-flex; gap: 5px; align-items: center; }
+        .rule-meta svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+        .rule-threshold {
+            font-variant-numeric: tabular-nums;
+            background: var(--lg-gray-100);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lg-blue);
+        }
+
+        .channel-row {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--lg-gray-200);
+            display: grid;
+            grid-template-columns: 32px 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+        .channel-row:last-child { border-bottom: none; }
+        .channel-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 11px;
+            color: white;
+        }
+        .ch-email { background: #4a6cf7; }
+        .ch-teams { background: #6264a7; }
+        .ch-sms { background: #F5A623; }
+        .ch-slack { background: #4A154B; }
+        .ch-webhook { background: #537780; }
+
+        .channel-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--lg-gray-900);
+        }
+        .channel-target {
+            font-size: 11.5px;
+            color: var(--lg-teal);
+            margin-top: 1px;
+        }
+
+        .severity {
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.3px;
+        }
+        .sev-p1 { background: var(--lg-red-light); color: var(--lg-red); }
+        .sev-p2 { background: #fff4de; color: var(--lg-gold-dark); }
+        .sev-p3 { background: var(--lg-blue-light); color: var(--lg-blue); }
+
+        .history-row {
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--lg-gray-100);
+            display: grid;
+            grid-template-columns: 75px 1fr auto;
+            gap: 12px;
+            font-size: 12px;
+            align-items: center;
+        }
+        .history-row:last-child { border-bottom: none; }
+        .history-row:hover { background: var(--lg-gray-50); }
+        .history-row .time { color: var(--lg-teal); font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html" class="active">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Larm</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök efter larmregel...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Larm</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Larm och notiser</h1>
+                    <p>Regler, kanaler och historik för alla larm som FortBridge skickar.</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Testa larm
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Ny larmregel
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert-banner">
+                <div class="alert-banner-info">
+                    <div class="alert-banner-icon">
+                        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <div>
+                        <div class="alert-banner-title">1 aktivt larm pågår just nu</div>
+                        <div class="alert-banner-body">Regel &quot;Felkö-storlek &gt; 1&quot; triggades 14:14 &middot; 2 poster i felkön kräver åtgärd</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        Tysta 1 tim
+                    </button>
+                    <a href="error-queue.html" class="btn btn-primary">Till felkö &rarr;</a>
+                </div>
+            </div>
+
+            <div class="grid-split">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Larmregler</h2>
+                            <p>5 aktiva &middot; 1 triggad just nu</p>
+                        </div>
+                        <div class="filter-group">
+                            <button class="active">Alla</button>
+                            <button>Aktiva</button>
+                            <button>Tystade</button>
+                        </div>
+                    </div>
+
+                    <div class="rule-card">
+                        <div class="rule-icon crit">
+                            <svg viewBox="0 0 24 24"><path d="M7 11V7a5 5 0 0110 0v4"/><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                Autentiseringsfel upptäckt
+                                <span class="severity sev-p1">P1 Kritisk</span>
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                            </div>
+                            <div class="rule-desc">Minst ett 401-fel mot Fortnox eller D365 under senaste 5 min. Triggar omedelbart.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> 5 min fönster</span>
+                                <span><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg> 24/7</span>
+                                <span>Senast triggad: aldrig</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">&ge; 1 fel</div>
+                    </div>
+
+                    <div class="rule-card" style="background:#fff9f8;">
+                        <div class="rule-icon crit">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                Felkö-storlek överskriden
+                                <span class="severity sev-p2">P2 Hög</span>
+                                <span class="badge badge-red"><span class="dot dot-red pulse"></span>Triggar nu</span>
+                            </div>
+                            <div class="rule-desc">Fler än 1 post i dead letter queue under 15 min. Kräver åtgärd innan kötiden överskrider 2 tim.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> 15 min fönster</span>
+                                <span><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg> Kontorstid</span>
+                                <span>Senast triggad: nu (14:14)</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">&gt; 1 post</div>
+                    </div>
+
+                    <div class="rule-card">
+                        <div class="rule-icon warn">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                Rate limit (HTTP 429) upptäckt
+                                <span class="severity sev-p2">P2 Hög</span>
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                            </div>
+                            <div class="rule-desc">Fler än 10 HTTP 429-svar från Fortnox på 5 minuter. Indikerar polling-intervall behöver justeras.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> 5 min fönster</span>
+                                <span><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg> 24/7</span>
+                                <span>Senast triggad: 2026-04-19 10:14</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">&ge; 10 svar</div>
+                    </div>
+
+                    <div class="rule-card">
+                        <div class="rule-icon">
+                            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                Refresh Token löper ut snart
+                                <span class="severity sev-p3">P3 Info</span>
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                            </div>
+                            <div class="rule-desc">Påminnelse 7 dagar innan Fortnox Refresh Token löper ut. Öppna OAuth-flödet i Inställningar.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> Dygnskontroll</span>
+                                <span>Senast triggad: aldrig</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">&le; 7 dagar</div>
+                    </div>
+
+                    <div class="rule-card">
+                        <div class="rule-icon warn">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                Noll synk under kontorstid
+                                <span class="severity sev-p2">P2 Hög</span>
+                                <span class="badge badge-gray"><span class="dot" style="background:var(--lg-teal);"></span>Tystad till 17:00</span>
+                            </div>
+                            <div class="rule-desc">Inga lyckade synkroniseringar under 30 min mellan 08:00&ndash;17:00 på vardagar. Kan indikera stopp.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> 30 min fönster</span>
+                                <span><svg viewBox="0 0 24 24"><path d="M4 12l6 6L20 6"/></svg> Må&ndash;fre, 08&ndash;17</span>
+                                <span>Senast triggad: 2026-03-28</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">= 0 synk</div>
+                    </div>
+
+                    <div class="rule-card">
+                        <div class="rule-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                        </div>
+                        <div>
+                            <div class="rule-name">
+                                P95 latens &gt; tröskel
+                                <span class="severity sev-p3">P3 Info</span>
+                                <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                            </div>
+                            <div class="rule-desc">Genomsnittlig P95-latens över 5 sekunder senaste 15 minuter. Kan indikera nätverksproblem eller kallstarter.</div>
+                            <div class="rule-meta">
+                                <span><svg viewBox="0 0 24 24"><polyline points="12 6 12 12 16 14"/><circle cx="12" cy="12" r="10"/></svg> 15 min fönster</span>
+                                <span>Senast triggad: aldrig</span>
+                            </div>
+                        </div>
+                        <div class="rule-threshold">&gt; 5 000 ms</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card" style="margin-bottom:18px;">
+                        <div class="card-head">
+                            <div>
+                                <h2>Kanaler</h2>
+                                <p>Dit larm skickas</p>
+                            </div>
+                            <button class="btn btn-ghost">Hantera</button>
+                        </div>
+
+                        <div class="channel-row">
+                            <div class="channel-icon ch-email">@</div>
+                            <div>
+                                <div class="channel-name">E-post</div>
+                                <div class="channel-target">drift@langate.se, ekonomi@kund.se</div>
+                            </div>
+                            <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                        </div>
+                        <div class="channel-row">
+                            <div class="channel-icon ch-teams">T</div>
+                            <div>
+                                <div class="channel-name">Microsoft Teams</div>
+                                <div class="channel-target">Kanal: #fortbridge-drift</div>
+                            </div>
+                            <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                        </div>
+                        <div class="channel-row">
+                            <div class="channel-icon ch-sms">SM</div>
+                            <div>
+                                <div class="channel-name">SMS (endast P1)</div>
+                                <div class="channel-target">+46 70 123 45 67 &middot; Peter K.</div>
+                            </div>
+                            <span class="badge badge-green"><span class="dot dot-green"></span>Aktiv</span>
+                        </div>
+                        <div class="channel-row">
+                            <div class="channel-icon ch-webhook">Wh</div>
+                            <div>
+                                <div class="channel-name">PagerDuty (on-call)</div>
+                                <div class="channel-target">Integration: FortBridge-prod</div>
+                            </div>
+                            <span class="badge badge-gray"><span class="dot" style="background:var(--lg-teal);"></span>Ej konf.</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-head">
+                            <div>
+                                <h2>Tystade fönster</h2>
+                                <p>När larm inte skickas</p>
+                            </div>
+                        </div>
+                        <div style="padding:16px 18px;">
+                            <div style="font-size:12.5px;color:var(--lg-gray-900);line-height:1.6;">
+                                <strong style="color:var(--lg-blue);">Utanför kontorstid</strong><br>
+                                <span style="color:var(--lg-teal);font-size:11.5px;">P2 &amp; P3 tystas 17:00&ndash;08:00 och helger</span>
+                            </div>
+                            <div style="margin-top:14px;font-size:12.5px;color:var(--lg-gray-900);line-height:1.6;">
+                                <strong style="color:var(--lg-blue);">Planerat underhåll</strong><br>
+                                <span style="color:var(--lg-teal);font-size:11.5px;">Inga aktiva fönster &middot; <a href="#" style="color:var(--lg-blue);">Skapa&hellip;</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-head">
+                    <div>
+                        <h2>Larmhistorik</h2>
+                        <p>Senaste 30 dagar</p>
+                    </div>
+                    <div class="filter-group">
+                        <button class="active">Alla</button>
+                        <button>P1</button>
+                        <button>P2</button>
+                        <button>P3</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="history-row">
+                        <span class="time">14:14</span>
+                        <div>
+                            <span class="severity sev-p2">P2</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Felkö-storlek överskriden</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; 2 poster &middot; pågående</span>
+                        </div>
+                        <span class="badge badge-red">Pågår</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="time">09:02</span>
+                        <div>
+                            <span class="severity sev-p3">P3</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Latens-spik</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; P95 6,2 s i 15 min &middot; löst automatiskt</span>
+                        </div>
+                        <span class="badge badge-green">Löst 09:18</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="time">Igår 14:02</span>
+                        <div>
+                            <span class="severity sev-p2">P2</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Rate limit upptäckt</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; 14 HTTP 429 på 5 min &middot; löst efter 18 min</span>
+                        </div>
+                        <span class="badge badge-green">Löst</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="time">Igår 10:14</span>
+                        <div>
+                            <span class="severity sev-p2">P2</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Rate limit upptäckt</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; 12 HTTP 429 &middot; justerat polling till 7 min</span>
+                        </div>
+                        <span class="badge badge-green">Löst</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="time">2026-04-19</span>
+                        <div>
+                            <span class="severity sev-p1">P1</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Test-larm</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; Manuellt triggad av Peter &middot; 4 kanaler nådda</span>
+                        </div>
+                        <span class="badge badge-blue">Test</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="time">2026-04-17</span>
+                        <div>
+                            <span class="severity sev-p3">P3</span>
+                            <strong style="font-weight:600;color:var(--lg-gray-900);margin-left:8px;">Refresh Token påminnelse</strong>
+                            <span style="color:var(--lg-teal);font-size:11.5px;">&middot; 14 dagar kvar &middot; åtgärdad manuellt samma dag</span>
+                        </div>
+                        <span class="badge badge-green">Löst</span>
+                    </div>
+                </div>
+                <div style="padding:14px;text-align:center;font-size:12px;">
+                    <a href="#" style="color:var(--lg-blue);font-weight:600;">Visa hela historiken &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

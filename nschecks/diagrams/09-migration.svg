@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" font-family="'DM Sans',sans-serif">
+  <defs>
+    <marker id="a9" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#746355"/></marker>
+  </defs>
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">eHUB &amp; SmartDok → NSChecks</text>
+  <line x1="140" y1="30" x2="540" y2="30" stroke="#E5E5E5"/>
+
+  <!-- eHUB -->
+  <rect x="10" y="50" width="220" height="170" rx="8" fill="#FBEEED" stroke="#B55852"/>
+  <text x="120" y="74" text-anchor="middle" fill="#B55852" font-size="12" font-weight="700">eHUB</text>
+  <text x="120" y="90" text-anchor="middle" fill="#B55852" font-size="10">Installationslivscykel</text>
+  <rect x="24" y="102" width="192" height="22" rx="3" fill="white" stroke="#B55852" stroke-width="0.5"/>
+  <text x="120" y="117" text-anchor="middle" fill="#4A494B" font-size="9">Objekt (installationer) — 7697+</text>
+  <rect x="24" y="128" width="192" height="22" rx="3" fill="white" stroke="#B55852" stroke-width="0.5"/>
+  <text x="120" y="143" text-anchor="middle" fill="#4A494B" font-size="9">Faser → Godkännandechecklistor</text>
+  <rect x="24" y="154" width="192" height="22" rx="3" fill="white" stroke="#B55852" stroke-width="0.5"/>
+  <text x="120" y="169" text-anchor="middle" fill="#4A494B" font-size="9">Foton, signaturer, PDF-export</text>
+  <rect x="24" y="180" width="192" height="22" rx="3" fill="white" stroke="#B55852" stroke-width="0.5"/>
+  <text x="120" y="195" text-anchor="middle" fill="#4A494B" font-size="9">Priser, fakturering</text>
+
+  <!-- SmartDok -->
+  <rect x="10" y="50" width="220" height="170" rx="8" fill="none" stroke="none"/>
+  <rect x="240" y="50" width="200" height="170" rx="8" fill="#FFF8E6" stroke="#C07800"/>
+  <text x="340" y="74" text-anchor="middle" fill="#C07800" font-size="12" font-weight="700">SmartDok</text>
+  <text x="340" y="90" text-anchor="middle" fill="#C07800" font-size="10">Projekthantering &amp; Mallar</text>
+  <rect x="254" y="102" width="172" height="22" rx="3" fill="white" stroke="#C07800" stroke-width="0.5"/>
+  <text x="340" y="117" text-anchor="middle" fill="#4A494B" font-size="9">~50 formulärmallar</text>
+  <rect x="254" y="128" width="172" height="22" rx="3" fill="white" stroke="#C07800" stroke-width="0.5"/>
+  <text x="340" y="143" text-anchor="middle" fill="#4A494B" font-size="9">Projektöversikt &amp; avdelningar</text>
+  <rect x="254" y="154" width="172" height="22" rx="3" fill="white" stroke="#C07800" stroke-width="0.5"/>
+  <text x="340" y="169" text-anchor="middle" fill="#4A494B" font-size="9">Signaturer &amp; notifieringar</text>
+  <rect x="254" y="180" width="172" height="22" rx="3" fill="white" stroke="#C07800" stroke-width="0.5"/>
+  <text x="340" y="195" text-anchor="middle" fill="#4A494B" font-size="9">Kontrollpunktstyper (5 st)</text>
+
+  <!-- Arrows -->
+  <line x1="230" y1="135" x2="460" y2="100" stroke="#746355" stroke-width="2" marker-end="url(#a9)"/>
+  <line x1="440" y1="135" x2="460" y2="135" stroke="#746355" stroke-width="2" marker-end="url(#a9)"/>
+
+  <!-- NSChecks -->
+  <rect x="462" y="50" width="210" height="170" rx="8" fill="#E8F5EE" stroke="#2D8653" stroke-width="2"/>
+  <text x="567" y="74" text-anchor="middle" fill="#2D8653" font-size="12" font-weight="700">NSChecks</text>
+  <text x="567" y="90" text-anchor="middle" fill="#2D8653" font-size="10">Enhetligt system</text>
+  <rect x="476" y="102" width="182" height="22" rx="3" fill="white" stroke="#2D8653" stroke-width="0.5"/>
+  <text x="567" y="117" text-anchor="middle" fill="#4A494B" font-size="9">Projekt → Installation → Checklista</text>
+  <rect x="476" y="128" width="182" height="22" rx="3" fill="white" stroke="#2D8653" stroke-width="0.5"/>
+  <text x="567" y="143" text-anchor="middle" fill="#4A494B" font-size="9">Wizard-UI + Auto-advance</text>
+  <rect x="476" y="154" width="182" height="22" rx="3" fill="white" stroke="#2D8653" stroke-width="0.5"/>
+  <text x="567" y="169" text-anchor="middle" fill="#4A494B" font-size="9">Fortnox + Excel-import (AI)</text>
+  <rect x="476" y="180" width="182" height="22" rx="3" fill="white" stroke="#2D8653" stroke-width="0.5"/>
+  <text x="567" y="195" text-anchor="middle" fill="#4A494B" font-size="9">QR/GPS + SignaturePad + PDF</text>
+</svg>

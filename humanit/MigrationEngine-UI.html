@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>Langate — Migration Decision Engine</title>
+<style>
+/* ─── Design tokens ───────────────────────────────────────────── */
+:root {
+    --navy:        #3D575D;
+    --navy-hover:  #456A72;
+    --navy-active: #4D7780;
+    --blue:        #537780;
+    --blue-light:  #EBF2F5;
+    --blue-mid:    #C2D9DF;
+    --azure:       #B55852;
+    --success:     #2D8659;
+    --success-bg:  #E8F5ED;
+    --warn:        #F5A623;
+    --warn-bg:     #FFF8E1;
+    --danger:      #B55852;
+    --danger-bg:   #F1EEEA;
+    --neutral:     #A0A0A0;
+    --bg:          #F5F5F5;
+    --surface:     #ffffff;
+    --border:      #E0E0E0;
+    --border-light:#EBF2F5;
+    --text:        #4A4A4A;
+    --text-muted:  #A0A0A0;
+    --font:        'Avenir', Helvetica, Arial, sans-serif;
+    --sidebar-w:   228px;
+    --topbar-h:    48px;
+    --radius:      6px;
+    --shadow:      0 1px 4px rgba(61,87,93,.10), 0 4px 16px rgba(61,87,93,.06);
+    --shadow-sm:   0 1px 3px rgba(61,87,93,.10);
+}
+
+/* ─── Reset ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: var(--font); font-size: 13px; color: var(--text); background: var(--bg); display: flex; flex-direction: column; }
+
+/* ─── Top bar ─────────────────────────────────────────────────── */
+.topbar {
+    height: var(--topbar-h);
+    background: var(--navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 0;
+    flex-shrink: 0;
+    gap: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+.topbar-brand {
+    width: var(--sidebar-w);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255,255,255,.08);
+    height: 100%;
+}
+.topbar-brand .logo { font-size: 15px; font-weight: 700; letter-spacing: .03em; color: #fff; }
+.topbar-brand .logo span { color: var(--azure); }
+.topbar-project {
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+.project-label { font-size: 11px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .08em; }
+.project-name  { font-size: 13px; font-weight: 600; color: #fff; }
+.project-sep   { color: rgba(255,255,255,.25); margin: 0 4px; }
+
+/* ─── Step pills ──────────────────────────────────────────────── */
+.step-pills { display: flex; align-items: center; gap: 0; padding-right: 16px; }
+.step-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 14px;
+    font-size: 11px; font-weight: 600;
+    border-radius: 0;
+    color: rgba(255,255,255,.35);
+    white-space: nowrap;
+    position: relative;
+}
+.step-pill.done   { color: rgba(181,88,82,.8); }
+.step-pill.active { color: #fff; background: rgba(83,119,128,.35); border-radius: 4px; }
+.step-pill .step-num {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    background: rgba(255,255,255,.15);
+}
+.step-pill.done .step-num   { background: var(--azure); color: var(--navy); }
+.step-pill.active .step-num { background: var(--blue); color: #fff; }
+.step-arrow { color: rgba(255,255,255,.2); font-size: 12px; }
+
+/* ─── App shell ───────────────────────────────────────────────── */
+.shell { display: flex; flex: 1; overflow: hidden; }
+
+/* ─── Sidebar ─────────────────────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--navy);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 12px 0 16px;
+    gap: 2px;
+}
+.sidebar-section-label {
+    font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.3); padding: 10px 16px 4px; margin-top: 6px;
+}
+.nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 0;
+    color: rgba(255,255,255,.65);
+    font-size: 13px;
+    transition: background .12s, color .12s;
+    user-select: none;
+    position: relative;
+}
+.nav-item:hover  { background: var(--navy-hover); color: #fff; }
+.nav-item.active { background: var(--navy-active); color: #fff; }
+.nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 4px; bottom: 4px;
+    width: 3px; background: var(--blue); border-radius: 0 2px 2px 0;
+}
+.nav-item .icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-item .badge {
+    margin-left: auto;
+    background: var(--blue); color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 1px 6px; border-radius: 10px;
+}
+.nav-item .badge.warn { background: var(--warn); }
+.nav-divider { height: 1px; background: rgba(255,255,255,.08); margin: 8px 16px; }
+
+/* ─── Main content ────────────────────────────────────────────── */
+.main { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.view { display: none; flex-direction: column; gap: 20px; }
+.view.active { display: flex; }
+
+/* ─── Page header ─────────────────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; }
+.page-title  { font-size: 20px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+.page-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+.page-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+/* ─── Buttons ─────────────────────────────────────────────────── */
+.btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: var(--radius); border: none;
+    font-family: var(--font); font-size: 12.5px; font-weight: 600;
+    cursor: pointer; transition: filter .12s, box-shadow .12s;
+    white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-secondary { background: #fff; color: var(--navy); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg); }
+.btn-ghost { background: transparent; color: var(--blue); border: 1px solid var(--blue-mid); }
+.btn-ghost:hover { background: var(--blue-light); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 11.5px; }
+
+/* ─── Cards ───────────────────────────────────────────────────── */
+.card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.card-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+.card-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.card-body { padding: 16px 18px; }
+.card-footer { padding: 10px 18px; border-top: 1px solid var(--border-light); display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+/* ─── Grids ───────────────────────────────────────────────────── */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.grid-70-30 { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; }
+
+/* ─── Stat cards ──────────────────────────────────────────────── */
+.stat-card { padding: 16px 18px; }
+.stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--navy); line-height: 1.2; margin-top: 4px; }
+.stat-sub   { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.stat-card .trend-up   { color: var(--success); font-weight: 700; }
+.stat-card .trend-warn { color: var(--warn);    font-weight: 700; }
+.stat-card .trend-bad  { color: var(--danger);  font-weight: 700; }
+
+/* ─── Status badges ───────────────────────────────────────────── */
+.badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700;
+}
+.badge-blue    { background: var(--blue-light); color: var(--blue); }
+.badge-green   { background: var(--success-bg); color: var(--success); }
+.badge-warn    { background: var(--warn-bg);    color: #8a5000; }
+.badge-danger  { background: var(--danger-bg);  color: var(--danger); }
+.badge-neutral { background: #F5F5F5;           color: var(--neutral); }
+.badge-navy    { background: #EBF2F5;           color: var(--navy); }
+
+/* ─── Tables ──────────────────────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.data-table thead th { background: #EBF2F5; font-weight: 700; color: var(--navy); padding: 8px 12px; text-align: left; border-bottom: 2px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.data-table tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.data-table tbody tr:hover { background: #F5F5F5; }
+.data-table tbody tr.selected { background: var(--blue-light); }
+.data-table tbody tr.selected td { border-bottom-color: var(--blue-mid); }
+.data-table .col-check { width: 32px; }
+.data-table .col-icon  { width: 28px; }
+.data-table .col-name  { font-weight: 600; color: var(--navy); }
+.data-table .col-size  { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.data-table .col-date  { color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ─── Progress bars ───────────────────────────────────────────── */
+.progress-track { height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden; }
+.progress-fill  { height: 100%; border-radius: 3px; transition: width .3s; }
+.progress-fill.blue    { background: var(--blue); }
+.progress-fill.green   { background: var(--success); }
+.progress-fill.warn    { background: var(--warn); }
+.progress-fill.danger  { background: var(--danger); }
+
+/* ─── Score bars (maturity) ───────────────────────────────────── */
+.score-bar { display: flex; align-items: center; gap: 4px; }
+.score-dot { width: 10px; height: 10px; border-radius: 2px; }
+.score-dot.filled { background: var(--blue); }
+.score-dot.empty  { background: var(--border); }
+.score-dot.filled-warn { background: var(--warn); }
+.score-dot.filled-danger { background: var(--danger); }
+
+/* ─── Tabs ────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+.tab {
+    padding: 8px 16px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: color .12s, border-color .12s; user-select: none;
+}
+.tab:hover  { color: var(--navy); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ─── Accordion (maturity areas) ─────────────────────────────── */
+.accordion-item { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.accordion-item + .accordion-item { margin-top: 6px; }
+.accordion-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--surface); cursor: pointer;
+    user-select: none; transition: background .1s;
+}
+.accordion-header:hover { background: #F5F5F5; }
+.accordion-header.open  { background: #F5F5F5; border-bottom: 1px solid var(--border-light); }
+.accordion-title { font-weight: 700; color: var(--navy); font-size: 13px; flex: 1; }
+.accordion-body { padding: 14px 16px; background: #F5F5F5; display: none; }
+.accordion-body.open { display: block; }
+.area-icon { font-size: 16px; width: 24px; text-align: center; }
+
+/* ─── Detail panel ────────────────────────────────────────────── */
+.detail-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+.detail-panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border-light); }
+.detail-panel-title { font-size: 13.5px; font-weight: 700; color: var(--navy); }
+.detail-panel-body  { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ─── Decision option buttons ─────────────────────────────────── */
+.decision-option {
+    border: 2px solid var(--border); border-radius: var(--radius); padding: 10px 12px;
+    cursor: pointer; transition: border-color .12s, background .12s;
+    display: flex; align-items: flex-start; gap: 10px;
+}
+.decision-option:hover   { border-color: var(--blue-mid); background: var(--blue-light); }
+.decision-option.selected { border-color: var(--blue); background: var(--blue-light); }
+.decision-option .opt-icon { font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+.decision-option .opt-title { font-weight: 700; font-size: 12px; color: var(--navy); }
+.decision-option .opt-desc  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ─── ERP gate ────────────────────────────────────────────────── */
+.erp-gate { text-align: center; padding: 32px 24px; }
+.gate-circle {
+    width: 120px; height: 120px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; margin: 0 auto 16px;
+}
+.gate-circle.green  { background: var(--success-bg); border: 4px solid var(--success); }
+.gate-circle.yellow { background: var(--warn-bg);    border: 4px solid var(--warn); }
+.gate-circle.red    { background: var(--danger-bg);  border: 4px solid var(--danger); }
+.gate-label { font-size: 22px; font-weight: 700; }
+.gate-label.green  { color: var(--success); }
+.gate-label.yellow { color: #8a5000; }
+.gate-label.red    { color: var(--danger); }
+
+/* ─── Checklist ───────────────────────────────────────────────── */
+.checklist { display: flex; flex-direction: column; gap: 6px; }
+.check-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--radius); }
+.check-row.pass  { background: var(--success-bg); }
+.check-row.fail  { background: var(--danger-bg); }
+.check-row.warn  { background: var(--warn-bg); }
+.check-row .ci   { font-size: 15px; width: 20px; flex-shrink: 0; }
+.check-row .ct   { font-size: 12.5px; font-weight: 600; flex: 1; }
+.check-row .cv   { font-size: 11.5px; color: var(--text-muted); }
+
+/* ─── Activity feed ───────────────────────────────────────────── */
+.activity-item { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+.activity-item:last-child { border-bottom: none; }
+.activity-dot  { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.activity-dot.blue  { background: var(--blue); }
+.activity-dot.green { background: var(--success); }
+.activity-dot.warn  { background: var(--warn); }
+.activity-text { font-size: 12px; color: var(--text); flex: 1; }
+.activity-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+/* ─── Scan status ─────────────────────────────────────────────── */
+.scan-status { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #EBF2F5; border: 1px solid var(--blue-mid); border-radius: var(--radius); }
+.scan-spinner { width: 18px; height: 18px; border: 2px solid var(--blue-mid); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-label { font-size: 12.5px; font-weight: 600; color: var(--blue); }
+.scan-sub   { font-size: 11px; color: var(--text-muted); }
+
+/* ─── AD tree ─────────────────────────────────────────────────── */
+.ad-tree { font-size: 12px; }
+.ad-node { padding: 4px 0 4px 16px; border-left: 1px solid var(--border); position: relative; }
+.ad-node::before { content: ''; position: absolute; left: 0; top: 12px; width: 12px; height: 1px; background: var(--border); }
+.ad-node-root { padding-left: 0; border-left: none; }
+.ad-node-root::before { display: none; }
+.ad-label { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 3px 6px; border-radius: 4px; }
+.ad-label:hover { background: var(--blue-light); }
+.ad-label .ad-icon { font-size: 13px; }
+.ad-label .ad-name { font-weight: 600; color: var(--navy); }
+.ad-label .ad-count { font-size: 11px; color: var(--text-muted); margin-left: 4px; }
+
+/* ─── Risk meter ──────────────────────────────────────────────── */
+.risk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.risk-row .risk-name { font-size: 12px; font-weight: 600; width: 130px; flex-shrink: 0; }
+.risk-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+.risk-fill  { height: 100%; border-radius: 4px; }
+.risk-score { font-size: 11px; color: var(--text-muted); width: 30px; text-align: right; flex-shrink: 0; }
+
+/* ─── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(61,87,93,.18); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(61,87,93,.32); }
+
+/* ─── Misc ────────────────────────────────────────────────────── */
+.section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); margin-bottom: 10px; }
+.divider       { height: 1px; background: var(--border-light); margin: 8px 0; }
+.tag-row       { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag           { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--text-muted); }
+.form-label    { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 4px; display: block; }
+.form-input    { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; font-family: var(--font); font-size: 12.5px; color: var(--text); }
+.form-input:focus { outline: 2px solid var(--blue); border-color: transparent; }
+select.form-input { appearance: auto; }
+.form-row      { display: flex; gap: 12px; }
+.form-row > div { flex: 1; }
+.info-row      { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-light); font-size: 12px; }
+.info-row .ir-k { color: var(--text-muted); }
+.info-row .ir-v { font-weight: 600; color: var(--navy); }
+.gdpr-flag     { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #8a5000; background: var(--warn-bg); padding: 2px 7px; border-radius: 4px; border: 1px solid #ffd080; }
+
+/* ─── Timeline (90 days) ─────────────────────────────────────── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.tl-phase { position: relative; margin-bottom: 16px; }
+.tl-phase:last-child { margin-bottom: 0; }
+.tl-dot { position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--blue); background: #fff; z-index: 1; }
+.tl-dot.done { background: var(--blue); border-color: var(--blue); }
+.tl-dot.active { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.tl-dot.pending { background: #fff; border-color: var(--border); }
+.tl-phase-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.tl-phase-label { font-weight: 700; font-size: 13px; color: var(--navy); }
+.tl-phase-dates { font-size: 11px; color: var(--text-muted); }
+.tl-deliverables { display: flex; flex-direction: column; gap: 4px; padding-left: 4px; }
+.tl-item { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 8px; border-radius: 4px; }
+.tl-item.done { color: var(--success); }
+.tl-item.active { color: var(--blue); background: var(--blue-light); font-weight: 600; }
+.tl-item.pending { color: var(--text-muted); }
+
+/* ─── Gantt bar chart ─────────────────────────────────────────── */
+.gantt { display: flex; flex-direction: column; gap: 6px; }
+.gantt-row { display: flex; align-items: center; gap: 8px; }
+.gantt-label { width: 120px; font-size: 11px; font-weight: 600; color: var(--navy); text-align: right; flex-shrink: 0; }
+.gantt-track { flex: 1; height: 22px; background: var(--border-light); border-radius: 4px; position: relative; overflow: hidden; }
+.gantt-bar { position: absolute; top: 2px; bottom: 2px; border-radius: 3px; display: flex; align-items: center; padding: 0 6px; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+.gantt-markers { display: flex; justify-content: space-between; margin-top: 2px; padding-left: 128px; }
+.gantt-markers span { font-size: 10px; color: var(--text-muted); }
+
+/* ─── Wizard steps ────────────────────────────────────────────── */
+.wizard-steps { display: flex; align-items: center; gap: 0; margin-bottom: 20px; }
+.wiz-step { display: flex; align-items: center; gap: 6px; padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--text-muted); position: relative; }
+.wiz-step.active { color: var(--blue); }
+.wiz-step.done { color: var(--success); }
+.wiz-step .wiz-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; background: var(--border-light); }
+.wiz-step.active .wiz-num { background: var(--blue); color: #fff; }
+.wiz-step.done .wiz-num { background: var(--success); color: #fff; }
+.wiz-arrow { color: var(--border); font-size: 14px; }
+
+/* ─── Radio options ───────────────────────────────────────────── */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-option {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius);
+    cursor: pointer; transition: border-color .12s, background .12s;
+}
+.radio-option:hover { border-color: var(--blue-mid); background: var(--blue-light); }
+.radio-option.selected { border-color: var(--blue); background: var(--blue-light); }
+.radio-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); margin-top: 1px; flex-shrink: 0; position: relative; }
+.radio-option.selected .radio-dot { border-color: var(--blue); }
+.radio-option.selected .radio-dot::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+
+/* ─── Interview grid ──────────────────────────────────────────── */
+.interview-q { padding: 8px 12px; border-bottom: 1px solid var(--border-light); }
+.interview-q:last-child { border-bottom: none; }
+.iq-label { font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+.iq-response { font-size: 12px; color: var(--text); padding: 5px 8px; background: var(--bg); border-radius: 4px; min-height: 28px; }
+.iq-empty { color: var(--text-muted); font-style: italic; }
+
+/* ─── Start screen (no project open) ─────────────────────────── */
+.start-screen {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, #3D575D 0%, #4D7780 50%, #456A72 100%);
+    color: #fff;
+}
+.start-inner { text-align: center; max-width: 560px; }
+.start-logo { font-size: 32px; font-weight: 700; letter-spacing: .04em; margin-bottom: 6px; }
+.start-logo span { color: var(--azure); }
+.start-subtitle { font-size: 14px; color: rgba(255,255,255,.45); margin-bottom: 36px; font-weight: 300; }
+.start-actions { display: flex; gap: 16px; justify-content: center; margin-bottom: 32px; }
+.start-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    width: 160px; padding: 20px 16px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06);
+    cursor: pointer; transition: background .15s, border-color .15s;
+    color: #fff;
+}
+.start-btn:hover { background: rgba(83,119,128,.25); border-color: rgba(83,119,128,.5); }
+.start-btn .sb-icon { font-size: 28px; }
+.start-btn .sb-label { font-size: 13px; font-weight: 600; }
+.start-btn .sb-desc { font-size: 11px; color: rgba(255,255,255,.4); }
+.start-recent { text-align: left; margin-top: 8px; }
+.start-recent-title { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.3); margin-bottom: 8px; }
+.recent-item {
+    display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    border-radius: 6px; cursor: pointer; transition: background .12s;
+}
+.recent-item:hover { background: rgba(255,255,255,.08); }
+.recent-item .ri-icon { font-size: 16px; }
+.recent-item .ri-name { font-size: 13px; font-weight: 600; flex: 1; }
+.recent-item .ri-date { font-size: 11px; color: rgba(255,255,255,.35); }
+.recent-item .ri-path { font-size: 10px; color: rgba(255,255,255,.2); margin-top: 1px; }
+
+/* ─── Menu bar ────────────────────────────────────────────────── */
+.menubar {
+    height: 28px; background: var(--navy); color: rgba(255,255,255,.8);
+    display: flex; align-items: center; padding: 0; flex-shrink: 0;
+    font-size: 12px; border-bottom: 1px solid rgba(255,255,255,.05);
+    user-select: none;
+}
+.menu-item {
+    padding: 0 12px; height: 100%; display: flex; align-items: center;
+    cursor: pointer; position: relative;
+}
+.menu-item:hover { background: rgba(255,255,255,.1); }
+.menu-dropdown {
+    display: none; position: absolute; top: 100%; left: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0 0 4px 4px; box-shadow: var(--shadow);
+    min-width: 220px; z-index: 200; padding: 4px 0;
+}
+.menu-item:hover .menu-dropdown { display: block; }
+.menu-dropdown-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 14px; font-size: 12px; color: var(--text); cursor: pointer;
+}
+.menu-dropdown-item:hover { background: var(--blue-light); color: var(--blue); }
+.menu-dropdown-item .mdi-shortcut { font-size: 11px; color: var(--text-muted); }
+.menu-sep { height: 1px; background: var(--border-light); margin: 3px 8px; }
+
+/* ─── Titlebar (project info bar) ─────────────────────────────── */
+.titlebar {
+    height: 36px; background: var(--navy); color: #fff;
+    display: flex; align-items: center; padding: 0 16px;
+    flex-shrink: 0; gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.titlebar-name { font-size: 13px; font-weight: 600; }
+.titlebar-meta { font-size: 11px; color: rgba(255,255,255,.4); }
+
+/* ─── Hide project UI when on start screen ────────────────────── */
+.app-project { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+.app-project.open { display: flex; }
+</style>
+</head>
+<body>
+
+<!-- ╔═══════════════════════════════════════════════════════════╗ -->
+<!-- ║  MENU BAR (always visible — like a desktop app)           ║ -->
+<!-- ╚═══════════════════════════════════════════════════════════╝ -->
+<nav class="menubar">
+    <div class="menu-item" style="padding:0 10px;font-weight:700;letter-spacing:.03em;color:#fff;">
+        Lan<span style="color:var(--azure)">gate</span>
+        <span style="font-weight:400;opacity:.35;margin-left:6px;font-size:10px;">MDE</span>
+    </div>
+    <div class="menu-item">
+        Arkiv
+        <div class="menu-dropdown">
+            <div class="menu-dropdown-item" onclick="openStartScreen()">Nytt projekt... <span class="mdi-shortcut">Ctrl+N</span></div>
+            <div class="menu-dropdown-item" onclick="openProject()">Öppna projekt... <span class="mdi-shortcut">Ctrl+O</span></div>
+            <div class="menu-sep"></div>
+            <div class="menu-dropdown-item">Spara <span class="mdi-shortcut">Ctrl+S</span></div>
+            <div class="menu-dropdown-item">Spara som...</div>
+            <div class="menu-sep"></div>
+            <div class="menu-dropdown-item">Senaste projekt ►</div>
+            <div class="menu-sep"></div>
+            <div class="menu-dropdown-item">Avsluta <span class="mdi-shortcut">Alt+F4</span></div>
+        </div>
+    </div>
+    <div class="menu-item">
+        Skanning
+        <div class="menu-dropdown">
+            <div class="menu-dropdown-item" onclick="openProject()">Kör M365-skanning...</div>
+            <div class="menu-dropdown-item" onclick="openProject()">Kör filserverskanning...</div>
+            <div class="menu-dropdown-item" onclick="openProject()">Kör AD-inventering...</div>
+            <div class="menu-sep"></div>
+            <div class="menu-dropdown-item">Anslutningsinställningar...</div>
+        </div>
+    </div>
+    <div class="menu-item">
+        Export
+        <div class="menu-dropdown">
+            <div class="menu-dropdown-item">Beslutsrapport (PDF)</div>
+            <div class="menu-dropdown-item">Styrelserapport (Word)</div>
+            <div class="menu-dropdown-item">Inventeringsdata (Excel)</div>
+            <div class="menu-sep"></div>
+            <div class="menu-dropdown-item">Migreringslogg (JSON)</div>
+        </div>
+    </div>
+    <div class="menu-item">Hjälp</div>
+</nav>
+
+<!-- ╔═══════════════════════════════════════════════════════════╗ -->
+<!-- ║  START SCREEN (shown when no project is open)             ║ -->
+<!-- ╚═══════════════════════════════════════════════════════════╝ -->
+<div id="start-screen" class="start-screen">
+    <div class="start-inner">
+        <div class="start-logo">Lan<span>gate</span></div>
+        <div style="font-size:15px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:2px;">Migration Decision Engine</div>
+        <div class="start-subtitle">Beslutsstöd för Microsoft 365 tenant-to-tenant migrering</div>
+
+        <div class="start-actions">
+            <div class="start-btn" onclick="openNewProject()">
+                <span class="sb-icon">📄</span>
+                <span class="sb-label">Nytt projekt</span>
+                <span class="sb-desc">Starta ett nytt förvärv</span>
+            </div>
+            <div class="start-btn" onclick="openProject()">
+                <span class="sb-icon">📂</span>
+                <span class="sb-label">Öppna projekt</span>
+                <span class="sb-desc">Öppna .mde-projektfil</span>
+            </div>
+        </div>
+
+        <div class="start-recent">
+            <div class="start-recent-title">Senaste projekt</div>
+            <div class="recent-item" onclick="openProject()">
+                <span class="ri-icon">📋</span>
+                <div style="flex:1;text-align:left;">
+                    <div class="ri-name">TechFlow AB — Förvärvsanalys 2026</div>
+                    <div class="ri-path">C:\Projekt\Langate\TechFlow-2026.mde</div>
+                </div>
+                <span class="ri-date">3 apr 2026</span>
+            </div>
+            <div class="recent-item" onclick="openProject()">
+                <span class="ri-icon">✅</span>
+                <div style="flex:1;text-align:left;">
+                    <div class="ri-name">Nordsäk Sverige AB</div>
+                    <div class="ri-path">C:\Projekt\Langate\Nordsak-2025.mde</div>
+                </div>
+                <span class="ri-date">3 nov 2025</span>
+            </div>
+            <div class="recent-item" onclick="openProject()">
+                <span class="ri-icon">✅</span>
+                <div style="flex:1;text-align:left;">
+                    <div class="ri-name">Fjord Logistik AS</div>
+                    <div class="ri-path">C:\Projekt\Langate\FjordLogistik-2025.mde</div>
+                </div>
+                <span class="ri-date">18 aug 2025</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ╔═══════════════════════════════════════════════════════════╗ -->
+<!-- ║  PROJECT UI (hidden until a project is open)              ║ -->
+<!-- ╚═══════════════════════════════════════════════════════════╝ -->
+<div id="app-project" class="app-project">
+
+<!-- Title bar with project info + phase pills -->
+<div class="titlebar">
+    <span class="titlebar-name">TechFlow AB — Förvärvsanalys 2026</span>
+    <span class="titlebar-meta">Nytt förvärv (post-close) &nbsp;·&nbsp; Dag 18 av 90</span>
+    <span class="badge badge-warn" style="font-size:10px;">Pågår</span>
+    <div style="flex:1;"></div>
+    <div class="step-pills">
+        <div class="step-pill done"><div class="step-num">1</div>Discovery</div>
+        <span class="step-arrow">›</span>
+        <div class="step-pill active"><div class="step-num">2</div>Normalisering</div>
+        <span class="step-arrow">›</span>
+        <div class="step-pill"><div class="step-num">3</div>Klassificering</div>
+        <span class="step-arrow">›</span>
+        <div class="step-pill"><div class="step-num">4</div>ERP-port</div>
+    </div>
+</div>
+
+<div class="shell">
+
+<!-- ╔═══════════════════════════════════════════════════════════╗ -->
+<!-- ║  SIDEBAR                                                  ║ -->
+<!-- ╚═══════════════════════════════════════════════════════════╝ -->
+<nav class="sidebar">
+    <!-- 0 -->
+    <div class="nav-item active" onclick="showView('dashboard')">
+        <span class="icon">📊</span> Instrumentpanel
+    </div>
+
+    <div class="sidebar-section-label">Förvärvsflöde</div>
+    <!-- 1 -->
+    <div class="nav-item" onclick="showView('tidslinje')">
+        <span class="icon">📅</span> 90-dagars tidslinje
+        <span class="badge">Dag 18</span>
+    </div>
+    <!-- 2 -->
+    <div class="nav-item" onclick="showView('intervjuer')">
+        <span class="icon">🎤</span> Intervjuer &amp; Enkät
+        <span class="badge warn">2/3</span>
+    </div>
+
+    <div class="sidebar-section-label">Fas 1 — Inventering</div>
+    <!-- 3 -->
+    <div class="nav-item" onclick="showView('inventering')">
+        <span class="icon">🔍</span> Inventering
+        <span class="badge">312</span>
+    </div>
+
+    <div class="sidebar-section-label">Fas 2 — Normalisering</div>
+    <!-- 4 -->
+    <div class="nav-item" onclick="showView('analys')">
+        <span class="icon">📈</span> Analys &amp; Poängsättning
+        <span class="badge warn">5/8</span>
+    </div>
+
+    <div class="sidebar-section-label">Fas 3 — Klassificering</div>
+    <!-- 5 -->
+    <div class="nav-item" onclick="showView('beslut')">
+        <span class="icon">🗂️</span> Containerbeslut
+        <span class="badge warn">247</span>
+    </div>
+
+    <div class="sidebar-section-label">Fas 4 — ERP-port</div>
+    <!-- 6 -->
+    <div class="nav-item" onclick="showView('erp')">
+        <span class="icon">🛡️</span> ERP-beredskapsport
+    </div>
+    <!-- 7 -->
+    <div class="nav-item" onclick="showView('iso')">
+        <span class="icon">📋</span> ISO 27001
+        <span class="badge warn">47 %</span>
+    </div>
+
+    <div class="nav-divider"></div>
+    <!-- 8 -->
+    <div class="nav-item" onclick="showView('manifest')">
+        <span class="icon">🚀</span> Migrering
+    </div>
+    <!-- 9 -->
+    <div class="nav-item" onclick="showView('styrelse')">
+        <span class="icon">📊</span> Styrelserapport
+    </div>
+</nav>
+
+<!-- ╔═══════════════════════════════════════════════════════════╗ -->
+<!-- ║  MAIN CONTENT                                             ║ -->
+<!-- ╚═══════════════════════════════════════════════════════════╝ -->
+<main class="main">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: INSTRUMENTPANEL                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-dashboard" class="view active">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Instrumentpanel</div>
+            <div class="page-subtitle">TechFlow AB &mdash; Startdatum: 15 mars 2026 &nbsp;·&nbsp; Konsult: Anna Lindström &nbsp;·&nbsp; Dag 18 av 30 (fas 2)</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📄 Exportera statusrapport</button>
+            <button class="btn btn-primary btn-sm">▶ Fortsätt analys</button>
+        </div>
+    </div>
+
+    <!-- KPI-kort -->
+    <div class="grid-4">
+        <div class="card stat-card">
+            <div class="stat-label">Inventerade containrar</div>
+            <div class="stat-value">312</div>
+            <div class="stat-sub">SharePoint · Teams · Filresurser · AD</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-label">Analysområden klara</div>
+            <div class="stat-value">5 <span style="font-size:16px;color:var(--text-muted)">/ 8</span></div>
+            <div class="stat-sub"><span class="trend-warn">Säkerhet · Data · IT-processer</span> återstår</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-label">Containerbeslut väntande</div>
+            <div class="stat-value" style="color:var(--warn)">247</div>
+            <div class="stat-sub">65 klara &nbsp;·&nbsp; 0 GDPR-blockerade</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-label">Beräknad lagringsbesparing</div>
+            <div class="stat-value" style="color:var(--success)">~€4 200</div>
+            <div class="stat-sub">per år vid kalllagringsdirigering</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- Risköversikt -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Mognadspoäng per område</div>
+                    <div class="card-subtitle">Skala 1–5 baserad på Langates standardmodell</div>
+                </div>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="risk-row"><div class="risk-name">🔑 Identitet</div><div class="risk-track"><div class="risk-fill" style="width:60%;background:var(--warn)"></div></div><div class="risk-score">3/5</div></div>
+                <div class="risk-row"><div class="risk-name">🛡️ Säkerhet</div><div class="risk-track"><div class="risk-fill" style="width:40%;background:var(--danger)"></div></div><div class="risk-score">2/5</div></div>
+                <div class="risk-row"><div class="risk-name">💻 Enheter</div><div class="risk-track"><div class="risk-fill" style="width:60%;background:var(--warn)"></div></div><div class="risk-score">3/5</div></div>
+                <div class="risk-row"><div class="risk-name">📦 Applikationer &amp; ERP</div><div class="risk-track"><div class="risk-fill" style="width:60%;background:var(--warn)"></div></div><div class="risk-score">3/5</div></div>
+                <div class="risk-row"><div class="risk-name">🌐 Nätverk</div><div class="risk-track"><div class="risk-fill" style="width:60%;background:var(--warn)"></div></div><div class="risk-score">3/5</div></div>
+                <div class="risk-row"><div class="risk-name">💾 Data</div><div class="risk-track"><div class="risk-fill" style="width:40%;background:var(--danger)"></div></div><div class="risk-score">2/5</div></div>
+                <div class="risk-row"><div class="risk-name">⚙️ IT-processer</div><div class="risk-track"><div class="risk-fill" style="width:40%;background:var(--danger)"></div></div><div class="risk-score">2/5</div></div>
+                <div class="risk-row"><div class="risk-name">💰 Kostnadsbild</div><div class="risk-track"><div class="risk-fill" style="width:80%;background:var(--blue)"></div></div><div class="risk-score">4/5</div></div>
+            </div>
+        </div>
+
+        <!-- Aktivitetsflöde -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Senaste aktivitet</div>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:0;">
+                <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text">M365-klientskanning slutförd — 8 SP-webbplatser, 14 Teams, 183 OneDrive hittades</div><div class="activity-time">10:32</div></div>
+                <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text">Filserverskanning \\TECHFLOW-FS01 klar — 2,3 TB inventerade, 847 filer &gt;100 MB identifierade</div><div class="activity-time">09:14</div></div>
+                <div class="activity-item"><div class="activity-dot blue"></div><div class="activity-text">Active Directory-inventering startad — techflow.local — 183 konton, 42 grupper</div><div class="activity-time">Igår 16:40</div></div>
+                <div class="activity-item"><div class="activity-dot warn"></div><div class="activity-text">⚠ Skugg-IT identifierat: Dropbox Business-prenumeration hittad (ej godkänd)</div><div class="activity-time">Igår 16:12</div></div>
+                <div class="activity-item"><div class="activity-dot blue"></div><div class="activity-text">Identitetsanalys sparad — MFA saknas för 94 % av användarna, ingen Intune</div><div class="activity-time">Igår 14:55</div></div>
+                <div class="activity-item"><div class="activity-dot green"></div><div class="activity-text">Projekt skapat och inledande intervju med CTO dokumenterad</div><div class="activity-time">15 mar</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ERP-beredskapsöversikt + containerbeslut -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">ERP-beredskapsport (preliminär)</div>
+                <span class="badge badge-warn">🟡 Åtgärder krävs</span>
+            </div>
+            <div class="card-body">
+                <div class="checklist">
+                    <div class="check-row pass"><span class="ci">✅</span><span class="ct">Microsoft-klient identifierad</span><span class="cv">techflow.onmicrosoft.com</span></div>
+                    <div class="check-row fail"><span class="ci">❌</span><span class="ct">MFA aktiverat för alla användare</span><span class="cv">0 % täckning</span></div>
+                    <div class="check-row fail"><span class="ci">❌</span><span class="ct">Enhetsstyrning (Intune)</span><span class="cv">Ej driftsatt</span></div>
+                    <div class="check-row warn"><span class="ci">⚠️</span><span class="ct">ERP-system kompatibilitet</span><span class="cv">Fortnox → Dynamics-migration krävs</span></div>
+                    <div class="check-row pass"><span class="ci">✅</span><span class="ct">Nätverksinfrastruktur</span><span class="cv">Fortinet OK, VPN driftsatt</span></div>
+                    <div class="check-row fail"><span class="ci">❌</span><span class="ct">GDPR-klassificering av data</span><span class="cv">Ej genomförd</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Containerbeslut — fördelning</div>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="risk-row"><div class="risk-name">Fristående kopia</div><div class="risk-track"><div class="risk-fill" style="width:15%;background:var(--blue)"></div></div><div class="risk-score">2 st</div></div>
+                <div class="risk-row"><div class="risk-name">Navintegrering</div><div class="risk-track"><div class="risk-fill" style="width:24%;background:var(--blue)"></div></div><div class="risk-score">3 st</div></div>
+                <div class="risk-row"><div class="risk-name">Enbart dokument</div><div class="risk-track"><div class="risk-fill" style="width:24%;background:var(--warn)"></div></div><div class="risk-score">3 st</div></div>
+                <div class="risk-row"><div class="risk-name">Kalllagring (Azure)</div><div class="risk-track"><div class="risk-fill" style="width:32%;background:var(--warn)"></div></div><div class="risk-score">4 st</div></div>
+                <div class="risk-row"><div class="risk-name">Arkiv (skrivskyddat)</div><div class="risk-track"><div class="risk-fill" style="width:16%;background:var(--neutral)"></div></div><div class="risk-score">2 st</div></div>
+                <div class="risk-row"><div class="risk-name">Kassering</div><div class="risk-track"><div class="risk-fill" style="width:8%;background:var(--danger)"></div></div><div class="risk-score">1 st</div></div>
+                <div class="risk-row"><div class="risk-name" style="color:var(--text-muted)">⏳ Ej beslutade</div><div class="risk-track"><div class="risk-fill" style="width:100%;background:var(--border)"></div></div><div class="risk-score" style="color:var(--warn);font-weight:700">247</div></div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-dashboard -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: INVENTERING                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-inventering" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Inventering</div>
+            <div class="page-subtitle">Fas 1 — Rapid IT Discovery &nbsp;·&nbsp; TechFlow AB</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">⚙️ Anslutningsinställningar</button>
+            <button class="btn btn-primary btn-sm">🔄 Kör ny skanning</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab(this,'inv','inv-m365')">☁️ M365-klient</div>
+        <div class="tab" onclick="showTab(this,'inv','inv-filserver')">🗄️ Filservrar &amp; nätverksresurser</div>
+        <div class="tab" onclick="showTab(this,'inv','inv-ad')">🏢 Active Directory</div>
+        <div class="tab" onclick="showTab(this,'inv','inv-sammanfattning')">📋 Sammanfattning</div>
+    </div>
+
+    <!-- M365 tab -->
+    <div id="inv-m365" class="inv-tab" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="scan-status">
+            <div style="width:18px;height:18px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;flex-shrink:0;">✓</div>
+            <div><div class="scan-label" style="color:var(--success);">Skanning slutförd</div><div class="scan-sub">techflow.onmicrosoft.com &nbsp;·&nbsp; 312 objekt inventerade &nbsp;·&nbsp; Slutförd 02-apr 10:32</div></div>
+        </div>
+        <div class="grid-3" style="gap:10px;">
+            <div class="card stat-card"><div class="stat-label">SharePoint-webbplatser</div><div class="stat-value">8</div><div class="stat-sub">Total: 47,3 GB</div></div>
+            <div class="card stat-card"><div class="stat-label">Teams-arbetsytor</div><div class="stat-value">14</div><div class="stat-sub">6 aktiva · 8 inaktiva >6 mån</div></div>
+            <div class="card stat-card"><div class="stat-label">OneDrive-volymer</div><div class="stat-value">183</div><div class="stat-sub">Total: 1,1 TB</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">SharePoint-webbplatser</div><span class="badge badge-neutral">8 hittade</span></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th class="col-icon"></th><th class="col-name">Webbplatsnamn</th><th>URL</th><th>Storlek</th><th>Senast ändrad</th><th>Ägare</th><th>Externt delad</th><th>Beslut</th></tr></thead>
+                    <tbody>
+                        <tr><td>🌐</td><td class="col-name">TechFlow Intranät</td><td style="color:var(--text-muted);font-size:11px;">/sites/intranat</td><td class="col-size">12,4 GB</td><td class="col-date">2026-04-01</td><td>eva.berg@</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>📁</td><td class="col-name">Projekt Arkiv</td><td style="color:var(--text-muted);font-size:11px;">/sites/projekt</td><td class="col-size">8,1 GB</td><td class="col-date">2025-11-14</td><td>markus.k@</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr class="selected"><td>📋</td><td class="col-name">HR-portal</td><td style="color:var(--text-muted);font-size:11px;">/sites/hr</td><td class="col-size">3,2 GB</td><td class="col-date">2026-03-28</td><td>sofia.a@</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-blue">Beslutad</span></td></tr>
+                        <tr><td>🔧</td><td class="col-name">IT-avdelningen</td><td style="color:var(--text-muted);font-size:11px;">/sites/it</td><td class="col-size">2,7 GB</td><td class="col-date">2026-03-15</td><td>jonas.l@</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>💰</td><td class="col-name">Ekonomi</td><td style="color:var(--text-muted);font-size:11px;">/sites/ekonomi</td><td class="col-size">7,8 GB</td><td class="col-date">2026-04-02</td><td>anna.n@</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="gdpr-flag">⚠ GDPR</span></td></tr>
+                        <tr><td>🏗️</td><td class="col-name">Produktion 2023</td><td style="color:var(--text-muted);font-size:11px;">/sites/prod2023</td><td class="col-size">9,6 GB</td><td class="col-date">2024-01-03</td><td>—</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>📣</td><td class="col-name">Marknadsföring</td><td style="color:var(--text-muted);font-size:11px;">/sites/marknad</td><td class="col-size">1,9 GB</td><td class="col-date">2026-02-10</td><td>lena.s@</td><td><span class="badge badge-danger">Ja</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>⚙️</td><td class="col-name">Gammal TestMiljö</td><td style="color:var(--text-muted);font-size:11px;">/sites/test-old</td><td class="col-size">1,6 GB</td><td class="col-date">2023-06-12</td><td>—</td><td><span class="badge badge-neutral">Nej</span></td><td><span class="badge badge-danger">Kassera</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filserver tab -->
+    <div id="inv-filserver" class="inv-tab" style="display:none;flex-direction:column;gap:16px;">
+        <div class="scan-status">
+            <div class="scan-spinner"></div>
+            <div><div class="scan-label">Skannar \\TECHFLOW-FS02\Archive...</div><div class="scan-sub">84 % klart &nbsp;·&nbsp; 4 240 av 5 038 filer bearbetade &nbsp;·&nbsp; Beräknad tid kvar: 3 min</div></div>
+            <div class="progress-track" style="width:180px;margin-left:auto;"><div class="progress-fill blue" style="width:84%"></div></div>
+        </div>
+        <div class="grid-3" style="gap:10px;">
+            <div class="card stat-card"><div class="stat-label">Nätverksresurser hittade</div><div class="stat-value">5</div><div class="stat-sub">2 filservrar · 3 delningar</div></div>
+            <div class="card stat-card"><div class="stat-label">Total datastorlek</div><div class="stat-value">2,3 TB</div><div class="stat-sub">847 filer &gt;100 MB</div></div>
+            <div class="card stat-card"><div class="stat-label">Rekommenderas till kalllagring</div><div class="stat-value" style="color:var(--warn)">1,8 TB</div><div class="stat-sub">~€4 200/år besparing</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">Hittade nätverksresurser</div></div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th></th><th class="col-name">Sökväg</th><th>Server</th><th>Storlek</th><th>Antal filer</th><th>Äldsta fil</th><th>Filer &gt;100 MB</th><th>Åtkomst senast</th><th>Beslut</th></tr></thead>
+                    <tbody>
+                        <tr><td>🗄️</td><td class="col-name">\\FS01\Shared</td><td>TECHFLOW-FS01</td><td class="col-size">480 GB</td><td>12 340</td><td class="col-date">2015-03-01</td><td>214 st</td><td class="col-date">2026-04-01</td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>🗄️</td><td class="col-name">\\FS01\CAD-Ritningar</td><td>TECHFLOW-FS01</td><td class="col-size">820 GB</td><td>3 412</td><td class="col-date">2011-09-14</td><td>541 st</td><td class="col-date">2025-12-18</td><td><span class="badge badge-warn">Kalllagring?</span></td></tr>
+                        <tr><td>🗄️</td><td class="col-name">\\FS01\Video</td><td>TECHFLOW-FS01</td><td class="col-size">310 GB</td><td>892</td><td class="col-date">2018-02-20</td><td>892 st</td><td class="col-date">2025-06-04</td><td><span class="badge badge-danger">Kalllagring</span></td></tr>
+                        <tr><td>🗄️</td><td class="col-name">\\FS02\Backups</td><td>TECHFLOW-FS02</td><td class="col-size">680 GB</td><td>1 230</td><td class="col-date">2019-01-01</td><td>–</td><td class="col-date">2026-01-15</td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr><td>🗄️</td><td class="col-name">\\FS02\Archive</td><td>TECHFLOW-FS02</td><td class="col-size">~65 GB</td><td>~5 038</td><td class="col-date">–</td><td>–</td><td class="col-date">–</td><td><span class="badge badge-neutral">Skannar...</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Directory tab -->
+    <div id="inv-ad" class="inv-tab" style="display:none;flex-direction:column;gap:16px;">
+        <div class="grid-3" style="gap:10px;">
+            <div class="card stat-card"><div class="stat-label">AD-domän</div><div class="stat-value" style="font-size:16px;">techflow.local</div><div class="stat-sub">Windows Server 2019 · Funktionsnivå 2016</div></div>
+            <div class="card stat-card"><div class="stat-label">Användarkonton</div><div class="stat-value">183</div><div class="stat-sub"><span class="trend-warn">24 inaktiva &gt;90 dagar</span> · 8 tjänstekonton</div></div>
+            <div class="card stat-card"><div class="stat-label">Säkerhetsproblem</div><div class="stat-value" style="color:var(--danger)">6</div><div class="stat-sub">MFA: 0 % · 3 adminintjänsten utan MFA</div></div>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header"><div class="card-title">OU-struktur</div><div class="card-subtitle">techflow.local</div></div>
+                <div class="card-body">
+                    <div class="ad-tree">
+                        <div class="ad-node ad-node-root"><div class="ad-label"><span class="ad-icon">🏛️</span><span class="ad-name">techflow.local</span></div>
+                            <div class="ad-node"><div class="ad-label"><span class="ad-icon">📁</span><span class="ad-name">Användare</span><span class="ad-count">183 objekt</span></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">👥</span><span class="ad-name">Management</span><span class="ad-count">12</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">👥</span><span class="ad-name">Produktion</span><span class="ad-count">74</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">👥</span><span class="ad-name">Administration</span><span class="ad-count">31</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">👥</span><span class="ad-name">IT</span><span class="ad-count">8</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">👥</span><span class="ad-name">Inaktiva</span><span class="ad-count" style="color:var(--warn);">24</span></div></div>
+                            </div>
+                            <div class="ad-node"><div class="ad-label"><span class="ad-icon">🖥️</span><span class="ad-name">Datorer</span><span class="ad-count">147 objekt</span></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">💻</span><span class="ad-name">Bärbara (Windows)</span><span class="ad-count">98</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">🍎</span><span class="ad-name">Mac</span><span class="ad-count">29</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">🖥️</span><span class="ad-name">Skrivbord</span><span class="ad-count">14</span></div></div>
+                                <div class="ad-node"><div class="ad-label"><span class="ad-icon">🗄️</span><span class="ad-name">Servrar</span><span class="ad-count">6</span></div></div>
+                            </div>
+                            <div class="ad-node"><div class="ad-label"><span class="ad-icon">📋</span><span class="ad-name">Grupper</span><span class="ad-count">42 objekt</span></div></div>
+                            <div class="ad-node"><div class="ad-label"><span class="ad-icon">⚙️</span><span class="ad-name">Tjänstkonton</span><span class="ad-count" style="color:var(--warn);">8</span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Identitetsrisker</div></div>
+                <div class="card-body">
+                    <div class="checklist">
+                        <div class="check-row fail"><span class="ci">❌</span><span class="ct">MFA aktiverat</span><span class="cv">0 av 183 konton har MFA</span></div>
+                        <div class="check-row fail"><span class="ci">❌</span><span class="ct">Adminintjänster skyddade</span><span class="cv">3 domänadminintjänsten saknar MFA</span></div>
+                        <div class="check-row warn"><span class="ci">⚠️</span><span class="ct">Inaktiva konton</span><span class="cv">24 konton inaktiva &gt;90 dagar</span></div>
+                        <div class="check-row warn"><span class="ci">⚠️</span><span class="ct">Lösenordspolicy</span><span class="cv">Lösenord upphör ej, komplexitet låg</span></div>
+                        <div class="check-row pass"><span class="ci">✅</span><span class="ct">Azure AD Connect</span><span class="cv">Synkad mot M365-klienten</span></div>
+                        <div class="check-row warn"><span class="ci">⚠️</span><span class="ct">Skugg-IT identifierat</span><span class="cv">Dropbox Business utanför IT-styrning</span></div>
+                        <div class="check-row fail"><span class="ci">❌</span><span class="ct">Onboarding/offboarding</span><span class="cv">Manuell process, ingen automatik</span></div>
+                    </div>
+                    <div class="info-row" style="margin-top:12px;"><span class="ir-k">Eget Microsoft-klient</span><span class="ir-v">Ja — techflow.onmicrosoft.com</span></div>
+                    <div class="info-row"><span class="ir-k">Lokal AD</span><span class="ir-v">Ja — techflow.local</span></div>
+                    <div class="info-row"><span class="ir-k">Privilegierade adminkonton</span><span class="ir-v">3 st (separata konton: Nej)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sammanfattning tab -->
+    <div id="inv-sammanfattning" class="inv-tab" style="display:none;flex-direction:column;gap:14px;">
+        <div class="grid-2">
+            <div class="card"><div class="card-header"><div class="card-title">🔑 Identitet</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">Antal konton</span><span class="ir-v">183 aktiva · 24 inaktiva</span></div>
+                <div class="info-row"><span class="ir-k">Lokal AD</span><span class="ir-v">Ja — techflow.local</span></div>
+                <div class="info-row"><span class="ir-k">Eget Microsoft-klient</span><span class="ir-v">Ja — M365 Business Standard</span></div>
+                <div class="info-row"><span class="ir-k">MFA</span><span class="ir-v" style="color:var(--danger);">Av — 0 % täckning</span></div>
+                <div class="info-row"><span class="ir-k">Adminkonton</span><span class="ir-v">3 domänadmins, ej separerade</span></div>
+                <div class="info-row"><span class="ir-k">Skugg-IT</span><span class="ir-v" style="color:var(--warn);">Dropbox Business (ej godkänd)</span></div>
+                <div class="info-row"><span class="ir-k">Onboarding/offboarding</span><span class="ir-v">Manuell, odokumenterad</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">💻 Enheter</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">Windows bärbara</span><span class="ir-v">98 st (Win 10: 34, Win 11: 64)</span></div>
+                <div class="info-row"><span class="ir-k">OS-versioner (Win)</span><span class="ir-v" style="color:var(--warn);">Win 10 22H2: 34 · Win 11 23H2: 42 · Win 11 24H2: 22</span></div>
+                <div class="info-row"><span class="ir-k">Mac</span><span class="ir-v">29 st (macOS 14 Sonoma: 22, macOS 13: 7)</span></div>
+                <div class="info-row"><span class="ir-k">Skrivbord</span><span class="ir-v">14 st</span></div>
+                <div class="info-row"><span class="ir-k">Mobila enheter (iOS/Android)</span><span class="ir-v">~60 st (iOS 17: 38, Android 14: 22)</span></div>
+                <div class="info-row"><span class="ir-k">Intune</span><span class="ir-v" style="color:var(--danger);">Ej driftsatt</span></div>
+                <div class="info-row"><span class="ir-k">BitLocker/FileVault</span><span class="ir-v" style="color:var(--warn);">Delvis — 40 % av bärbara</span></div>
+                <div class="info-row"><span class="ir-k">Lokala admintjänster</span><span class="ir-v" style="color:var(--warn);">Alla användare är lokala admins</span></div>
+                <div class="info-row"><span class="ir-k">Patchningsnivå</span><span class="ir-v" style="color:var(--warn);">Manuell, 3–6 månaders eftersläpning</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">📦 Applikationer &amp; ERP</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">ERP-system</span><span class="ir-v">Fortnox (SaaS) + lokal Excel-rapportering</span></div>
+                <div class="info-row"><span class="ir-k">ERP-alternativ bedömda</span><span class="ir-v">Visma, Fortnox, Odoo, Xledger, SAP B1</span></div>
+                <div class="info-row"><span class="ir-k">Målsystem (Dynamics)</span><span class="ir-v" style="color:var(--warn);">Migration krävs</span></div>
+                <div class="info-row"><span class="ir-k">CAD / ritprogram</span><span class="ir-v">AutoCAD 2022, SolidWorks</span></div>
+                <div class="info-row"><span class="ir-k">Kommunikation</span><span class="ir-v">Zoom (ej M365 Teams), M365 E-post</span></div>
+                <div class="info-row"><span class="ir-k">Fildelning (skugg-IT)</span><span class="ir-v" style="color:var(--warn);">Dropbox Business — 23 licenser</span></div>
+                <div class="info-row"><span class="ir-k">Lokala custom-solutions</span><span class="ir-v">1 st — orderhantering (Access DB)</span></div>
+                <div class="info-row"><span class="ir-k">Integrationer</span><span class="ir-v">Fortnox ↔ Excel (manuell), ingen API-integration</span></div>
+                <div class="info-row"><span class="ir-k">Licenskostnad/mån</span><span class="ir-v">~42 000 kr</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">🌐 Infrastruktur</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">Lokala servrar</span><span class="ir-v">2 st — TECHFLOW-FS01, FS02</span></div>
+                <div class="info-row"><span class="ir-k">Filresurser</span><span class="ir-v">5 st — totalt 2,3 TB</span></div>
+                <div class="info-row"><span class="ir-k">VPN</span><span class="ir-v">Fortinet FortiClient — driftsatt</span></div>
+                <div class="info-row"><span class="ir-k">Brandvägg</span><span class="ir-v">Fortinet FortiGate 100F</span></div>
+                <div class="info-row"><span class="ir-k">WiFi</span><span class="ir-v">Cisco Meraki — gäst-SSID saknar isolering</span></div>
+                <div class="info-row"><span class="ir-k">Säkerhetskopia</span><span class="ir-v" style="color:var(--warn);">Veeam lokal — ej off-site</span></div>
+                <div class="info-row"><span class="ir-k">Hosting</span><span class="ir-v">M365 (SaaS) · Inga AWS/Google/Azure IaaS</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">💾 Data</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">Total datavolym</span><span class="ir-v">~3,4 TB (SP + filserver + OneDrive)</span></div>
+                <div class="info-row"><span class="ir-k">Datakvalitet</span><span class="ir-v" style="color:var(--warn);">Dålig — inga namnkonventioner</span></div>
+                <div class="info-row"><span class="ir-k">Var lagras data</span><span class="ir-v">Filserver (2,3 TB) + M365 (1,1 TB)</span></div>
+                <div class="info-row"><span class="ir-k">GDPR-klassificering</span><span class="ir-v" style="color:var(--danger);">Ej genomförd</span></div>
+                <div class="info-row"><span class="ir-k">Identifierade personuppgifter</span><span class="ir-v" style="color:var(--warn);">HR-portal, Ekonomi-sidor</span></div>
+                <div class="info-row"><span class="ir-k">Backup/restore</span><span class="ir-v">Veeam — ej testad senaste 6 mån</span></div>
+                <div class="info-row"><span class="ir-k">Dataklassificering</span><span class="ir-v" style="color:var(--danger);">Saknas</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">🛡️ Säkerhet</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">Antivirus</span><span class="ir-v">ESET Endpoint (licensierat)</span></div>
+                <div class="info-row"><span class="ir-k">EDR</span><span class="ir-v" style="color:var(--danger);">Saknas</span></div>
+                <div class="info-row"><span class="ir-k">SIEM / loggning</span><span class="ir-v" style="color:var(--danger);">Saknas</span></div>
+                <div class="info-row"><span class="ir-k">E-postkryptering</span><span class="ir-v" style="color:var(--warn);">Ingen DLP-policy aktiv</span></div>
+                <div class="info-row"><span class="ir-k">Incidenthistorik</span><span class="ir-v">1 phishing-incident 2024-Q3</span></div>
+                <div class="info-row"><span class="ir-k">Phishing-träning</span><span class="ir-v" style="color:var(--danger);">Ingen genomförd</span></div>
+            </div></div>
+            <div class="card"><div class="card-header"><div class="card-title">💰 Kostnadsbild</div></div><div class="card-body">
+                <div class="info-row"><span class="ir-k">IT-personal</span><span class="ir-v">1 IT-ansvarig (deltid)</span></div>
+                <div class="info-row"><span class="ir-k">Externa konsulter</span><span class="ir-v">~15 000 kr/mån (Phoniro Support)</span></div>
+                <div class="info-row"><span class="ir-k">M365-licenser</span><span class="ir-v">183 × Business Standard ≈ 26 900 kr/mån</span></div>
+                <div class="info-row"><span class="ir-k">Dropbox Business</span><span class="ir-v">23 × 165 kr = 3 795 kr/mån (kan tas bort)</span></div>
+                <div class="info-row"><span class="ir-k">Zoom</span><span class="ir-v">1 860 kr/mån (kan ersättas med Teams)</span></div>
+                <div class="info-row"><span class="ir-k">Supportavtal (hårdvara)</span><span class="ir-v">~8 000 kr/mån</span></div>
+                <div class="info-row" style="font-weight:700;"><span class="ir-k">Total IT-kostnad/mån</span><span class="ir-v" style="color:var(--navy);">~55 555 kr</span></div>
+            </div></div>
+        </div>
+    </div>
+</div><!-- /view-inventering -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: ANALYS & POÄNGSÄTTNING                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-analys" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Analys &amp; Poängsättning</div>
+            <div class="page-subtitle">Fas 2 — Normalisering &amp; Poängsättning &nbsp;·&nbsp; 5 av 8 områden slutförda</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📋 Slutför alla områden</button>
+            <button class="btn btn-primary btn-sm">💾 Spara analys</button>
+        </div>
+    </div>
+
+    <!-- Område: Identitet -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">🔑</span>
+            <span class="accordion-title">Identitet (Entra AD / lokal AD)</span>
+            <div class="score-bar">
+                <div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--warn);font-weight:700;">3/5 — Medelhög risk</span>
+            </div>
+            <span class="badge badge-green" style="margin-left:16px;">Klar</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▼</span>
+        </div>
+        <div class="accordion-body">
+            <div class="grid-2" style="gap:10px;">
+                <div>
+                    <div class="info-row"><span class="ir-k">Antal konton (aktiva)</span><span class="ir-v">183</span></div>
+                    <div class="info-row"><span class="ir-k">Inaktiva konton &gt;90 dagar</span><span class="ir-v" style="color:var(--warn);">24 st</span></div>
+                    <div class="info-row"><span class="ir-k">Lokal AD</span><span class="ir-v">Ja — techflow.local</span></div>
+                    <div class="info-row"><span class="ir-k">Eget Microsoft-klient</span><span class="ir-v">Ja — M365 Business Standard</span></div>
+                    <div class="info-row"><span class="ir-k">MFA</span><span class="ir-v" style="color:var(--danger);font-weight:700;">Av — 0 % täckning ❌</span></div>
+                    <div class="info-row"><span class="ir-k">Adminkonton separerade</span><span class="ir-v" style="color:var(--danger);">Nej — 3 domänadmins</span></div>
+                </div>
+                <div>
+                    <div class="info-row"><span class="ir-k">Skugg-IT</span><span class="ir-v" style="color:var(--warn);">Dropbox Business (23 lic)</span></div>
+                    <div class="info-row"><span class="ir-k">Onboarding-process</span><span class="ir-v">Manuell, odokumenterad</span></div>
+                    <div class="info-row"><span class="ir-k">Offboarding-process</span><span class="ir-v" style="color:var(--danger);">Saknas — inaktiva konton kvarstår</span></div>
+                    <div class="info-row"><span class="ir-k">Azure AD Connect</span><span class="ir-v">Driftsatt — synkroniserad</span></div>
+                    <div class="info-row"><span class="ir-k">Privileged Identity Mgmt</span><span class="ir-v" style="color:var(--danger);">Saknas</span></div>
+                    <div class="info-row"><span class="ir-k">Tjänstkonton</span><span class="ir-v">8 st — ej granskade</span></div>
+                </div>
+            </div>
+            <div class="note-box" style="background:var(--danger-bg);border-left:3px solid var(--danger);padding:8px 12px;border-radius:4px;margin-top:10px;font-size:12px;">
+                <strong>P1 Åtgärd:</strong> MFA måste aktiveras för alla konton — särskilt de 3 domänadminkontona — innan ERP-migrering kan påbörjas.
+            </div>
+        </div>
+    </div>
+
+    <!-- Område: Säkerhet -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">🛡️</span>
+            <span class="accordion-title">Säkerhet</span>
+            <div class="score-bar">
+                <div class="score-dot filled-danger"></div><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--danger);font-weight:700;">2/5 — Hög risk</span>
+            </div>
+            <span class="badge badge-warn" style="margin-left:16px;">Pågår</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▼</span>
+        </div>
+        <div class="accordion-body">
+            <div class="grid-2" style="gap:10px;">
+                <div>
+                    <div class="info-row"><span class="ir-k">Antivirusprogram</span><span class="ir-v">ESET Endpoint Security — OK</span></div>
+                    <div class="info-row"><span class="ir-k">EDR (Endpoint Detection)</span><span class="ir-v" style="color:var(--danger);">Saknas ❌</span></div>
+                    <div class="info-row"><span class="ir-k">SIEM / Loggning</span><span class="ir-v" style="color:var(--danger);">Saknas ❌</span></div>
+                    <div class="info-row"><span class="ir-k">DLP (Data Loss Prevention)</span><span class="ir-v" style="color:var(--danger);">Inga policyer</span></div>
+                </div>
+                <div>
+                    <div class="info-row"><span class="ir-k">Kryptering (enheter)</span><span class="ir-v" style="color:var(--warn);">40 % BitLocker aktiverat</span></div>
+                    <div class="info-row"><span class="ir-k">Incidenthistorik</span><span class="ir-v">1 phishing 2024-Q3 (hanterad)</span></div>
+                    <div class="info-row"><span class="ir-k">Phishing-träning</span><span class="ir-v" style="color:var(--danger);">Aldrig genomförd ❌</span></div>
+                    <div class="info-row"><span class="ir-k">Defender for Endpoint</span><span class="ir-v" style="color:var(--danger);">Ej licensierat</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Område: Enheter -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">💻</span>
+            <span class="accordion-title">Enheter (Windows / Mac / iOS / Android)</span>
+            <div class="score-bar">
+                <div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--warn);font-weight:700;">3/5 — Medelhög risk</span>
+            </div>
+            <span class="badge badge-green" style="margin-left:16px;">Klar</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▼</span>
+        </div>
+        <div class="accordion-body">
+            <div class="grid-2" style="gap:10px;">
+                <div>
+                    <div class="info-row"><span class="ir-k">Win 11 bärbara</span><span class="ir-v">64 st</span></div>
+                    <div class="info-row"><span class="ir-k">Win 10 bärbara</span><span class="ir-v" style="color:var(--warn);">34 st (EOS okt 2025)</span></div>
+                    <div class="info-row"><span class="ir-k">Mac (macOS 14+)</span><span class="ir-v">22 st</span></div>
+                    <div class="info-row"><span class="ir-k">Mac (äldre)</span><span class="ir-v" style="color:var(--warn);">7 st</span></div>
+                    <div class="info-row"><span class="ir-k">Skrivbord (blandat)</span><span class="ir-v">14 st</span></div>
+                </div>
+                <div>
+                    <div class="info-row"><span class="ir-k">Intune MDM</span><span class="ir-v" style="color:var(--danger);">Ej driftsatt</span></div>
+                    <div class="info-row"><span class="ir-k">BitLocker</span><span class="ir-v" style="color:var(--warn);">40 % täckning</span></div>
+                    <div class="info-row"><span class="ir-k">Lokala privilegier</span><span class="ir-v" style="color:var(--danger);">Alla är lokala admins</span></div>
+                    <div class="info-row"><span class="ir-k">Patchningsnivå</span><span class="ir-v" style="color:var(--warn);">3–6 mån eftersläpning</span></div>
+                    <div class="info-row"><span class="ir-k">Mobila enheter</span><span class="ir-v">~60 st okontrollerade</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Område: Applikationer & ERP (collapsed) -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">📦</span>
+            <span class="accordion-title">Applikationer &amp; ERP-komplexitet</span>
+            <div class="score-bar">
+                <div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--warn);font-weight:700;">3/5 — Medelhög risk</span>
+            </div>
+            <span class="badge badge-green" style="margin-left:16px;">Klar</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span>
+        </div>
+    </div>
+
+    <!-- Område: Nätverk (collapsed) -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">🌐</span>
+            <span class="accordion-title">Nätverk (servrar, filresurser, VPN, brandväggar, WiFi, backup)</span>
+            <div class="score-bar">
+                <div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--warn);font-weight:700;">3/5</span>
+            </div>
+            <span class="badge badge-green" style="margin-left:16px;">Klar</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span>
+        </div>
+    </div>
+
+    <!-- Område: Data (pending) -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">💾</span>
+            <span class="accordion-title">Data (volym, GDPR-härkomst, klassificering)</span>
+            <div class="score-bar">
+                <div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--text-muted);">Ej poängsatt</span>
+            </div>
+            <span class="badge badge-warn" style="margin-left:16px;">Väntande</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span>
+        </div>
+    </div>
+
+    <!-- Område: IT-processer (pending) -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">⚙️</span>
+            <span class="accordion-title">IT-processer (onboarding, offboarding, dokumentation)</span>
+            <div class="score-bar">
+                <div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--text-muted);">Ej poängsatt</span>
+            </div>
+            <span class="badge badge-warn" style="margin-left:16px;">Väntande</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span>
+        </div>
+    </div>
+
+    <!-- Område: Kostnadsbild -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="area-icon">💰</span>
+            <span class="accordion-title">Kostnadsbild (IT-personal, licenser, cloud, supportavtal)</span>
+            <div class="score-bar">
+                <div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div>
+                <span style="margin-left:8px;font-size:11px;color:var(--blue);font-weight:700;">4/5 — Låg risk</span>
+            </div>
+            <span class="badge badge-green" style="margin-left:16px;">Klar</span>
+            <span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span>
+        </div>
+    </div>
+</div><!-- /view-analys -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: CONTAINERBESLUT                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-beslut" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Containerbeslut</div>
+            <div class="page-subtitle">Fas 3 — Klassificering &amp; prioritering &nbsp;·&nbsp; 65 beslutade av 312 containrar</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">🔽 Filtrera</button>
+            <button class="btn btn-primary btn-sm">▶ Nästa obeslutat</button>
+        </div>
+    </div>
+
+    <div class="grid-70-30">
+        <!-- Containerlista -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">SharePoint-webbplatser &amp; Teams (22 st)</div>
+                <div style="display:flex;gap:6px;">
+                    <span class="badge badge-green">8 beslutade</span>
+                    <span class="badge badge-warn">14 väntande</span>
+                </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="col-icon"></th>
+                            <th class="col-name">Containername</th>
+                            <th>Typ</th>
+                            <th>Storlek</th>
+                            <th>Aktivitet</th>
+                            <th>Prioritet</th>
+                            <th>Beslut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="selectContainer(this)"><td>🌐</td><td class="col-name">TechFlow Intranät</td><td><span class="badge badge-blue">SharePoint</span></td><td class="col-size">12,4 GB</td><td>Aktiv</td><td><span class="badge badge-danger">P1</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>📋</td><td class="col-name">HR-portal</td><td><span class="badge badge-blue">SharePoint</span></td><td class="col-size">3,2 GB</td><td>Aktiv</td><td><span class="badge badge-danger">P1</span></td><td><span class="badge badge-green">Navintegrering</span></td></tr>
+                        <tr class="selected" onclick="selectContainer(this)"><td>💰</td><td class="col-name">Ekonomi</td><td><span class="badge badge-blue">SharePoint</span></td><td class="col-size">7,8 GB</td><td>Aktiv</td><td><span class="badge badge-danger">P1</span></td><td><span class="gdpr-flag">⚠ GDPR-granskning</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>📁</td><td class="col-name">Projekt Arkiv 2019–23</td><td><span class="badge badge-blue">SharePoint</span></td><td class="col-size">8,1 GB</td><td>Vilande</td><td><span class="badge badge-warn">P2</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>⚙️</td><td class="col-name">Gammal TestMiljö</td><td><span class="badge badge-blue">SharePoint</span></td><td class="col-size">1,6 GB</td><td>Inaktiv</td><td><span class="badge badge-neutral">P3</span></td><td><span class="badge badge-danger">Kasseras</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>👥</td><td class="col-name">Team: Produktutveckling</td><td><span class="badge badge-navy">Teams</span></td><td class="col-size">4,2 GB</td><td>Aktiv</td><td><span class="badge badge-warn">P2</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>👥</td><td class="col-name">Team: Säljkåren 2022</td><td><span class="badge badge-navy">Teams</span></td><td class="col-size">0,8 GB</td><td>Inaktiv</td><td><span class="badge badge-neutral">P3</span></td><td><span class="badge badge-neutral">Arkiv</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>🗄️</td><td class="col-name">\\FS01\CAD-Ritningar</td><td><span class="badge badge-neutral">Filresurs</span></td><td class="col-size">820 GB</td><td>Sällan</td><td><span class="badge badge-warn">P2</span></td><td><span class="badge badge-warn">Väntande</span></td></tr>
+                        <tr onclick="selectContainer(this)"><td>🗄️</td><td class="col-name">\\FS01\Video</td><td><span class="badge badge-neutral">Filresurs</span></td><td class="col-size">310 GB</td><td>Sällan</td><td><span class="badge badge-warn">P2</span></td><td><span class="badge badge-danger">Kalllagring</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Beslutspanel -->
+        <div class="detail-panel">
+            <div class="detail-panel-header">
+                <div class="detail-panel-title">💰 Ekonomi</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">/sites/ekonomi &nbsp;·&nbsp; 7,8 GB &nbsp;·&nbsp; Aktiv</div>
+            </div>
+            <div class="detail-panel-body">
+                <div>
+                    <div class="section-title">Containerinfo</div>
+                    <div class="info-row"><span class="ir-k">Ägare</span><span class="ir-v">anna.n@techflow.se</span></div>
+                    <div class="info-row"><span class="ir-k">Senast ändrad</span><span class="ir-v">2026-04-02</span></div>
+                    <div class="info-row"><span class="ir-k">Antal filer</span><span class="ir-v">4 892</span></div>
+                    <div class="info-row"><span class="ir-k">Externa delningar</span><span class="ir-v">Nej</span></div>
+                    <div class="gdpr-flag" style="margin-top:8px;display:flex;">⚠️ GDPR-flaggad — juridisk granskning krävs</div>
+                </div>
+                <div>
+                    <div class="section-title">Välj destinationsstrategi</div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                        <div class="decision-option"><span class="opt-icon">🌐</span><div><div class="opt-title">Fristående webbplatskopia</div><div class="opt-desc">Återskapas som egen webbplats i destinationsklienten</div></div></div>
+                        <div class="decision-option"><span class="opt-icon">🔗</span><div><div class="opt-title">Navintegrering</div><div class="opt-desc">Integreras i befintlig navwebbplats (t.ex. Ekonomi-nav)</div></div></div>
+                        <div class="decision-option selected"><span class="opt-icon">📄</span><div><div class="opt-title">Enbart dokumentmigration</div><div class="opt-desc">Dokument migreras till befintligt bibliotek, strukturen kasseras</div></div></div>
+                        <div class="decision-option"><span class="opt-icon">🧊</span><div><div class="opt-title">Kalllagring (Azure Cold)</div><div class="opt-desc">Innehåll arkiveras till Azure Cold Storage</div></div></div>
+                        <div class="decision-option"><span class="opt-icon">🔒</span><div><div class="opt-title">Skrivskyddat arkiv</div><div class="opt-desc">Migreras men sätts omedelbart till skrivskyddat</div></div></div>
+                        <div class="decision-option"><span class="opt-icon">🗑️</span><div><div class="opt-title">Kasseras (med bevispost)</div><div class="opt-desc">Migreras inte — kassationspost skapas</div></div></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Motivering</label>
+                    <textarea class="form-input" rows="2" placeholder="Anteckna motivering för beslutet...">GDPR-granskning pågår. Juridisk sign-off krävs av Anna N. innan migrering.</textarea>
+                </div>
+                <div>
+                    <label class="form-label">Godkännare</label>
+                    <input class="form-input" value="anna.n@techflow.se" placeholder="E-post till godkännare">
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary btn-sm" style="flex:1">⏩ Hoppa över</button>
+                    <button class="btn btn-primary btn-sm" style="flex:1">📧 Begär godkännande</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-beslut -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: ERP-BEREDSKAPSPORT                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-erp" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">ERP-beredskapsport</div>
+            <div class="page-subtitle">Fas 4 — Kraven för Dynamics-migrering &nbsp;·&nbsp; TechFlow AB</div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="erp-gate">
+                    <div class="gate-circle yellow">🟡</div>
+                    <div class="gate-label yellow">ERP-klar efter åtgärder</div>
+                    <p style="font-size:12px;color:var(--text-muted);margin-top:8px;max-width:280px;margin-left:auto;margin-right:auto;">TechFlow AB är inte redo för Dynamics-migrering. 3 kritiska krav (P1) måste åtgärdas. 2 viktiga krav (P2) kan adresseras parallellt.</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">Åtgärdsstatus per prioritet</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="risk-row"><div class="risk-name" style="color:var(--danger);">P1 Kritiska</div><div class="risk-track"><div class="risk-fill" style="width:0%;background:var(--danger)"></div></div><div class="risk-score" style="color:var(--danger);font-weight:700;">0/3</div></div>
+                <div class="risk-row"><div class="risk-name" style="color:var(--warn);">P2 Viktiga</div><div class="risk-track"><div class="risk-fill" style="width:50%;background:var(--warn)"></div></div><div class="risk-score">1/2</div></div>
+                <div class="risk-row"><div class="risk-name">P3 Önskvärda</div><div class="risk-track"><div class="risk-fill" style="width:66%;background:var(--blue)"></div></div><div class="risk-score">2/3</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><div class="card-title">Kravchecklista</div></div>
+        <div class="card-body">
+            <div class="checklist">
+                <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--danger);margin-bottom:6px;">P1 — Kritiska (måste åtgärdas före ERP)</div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">MFA aktiverat för alla användare</span><span class="cv">0 % täckning — krav: 100 %</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">Enhetsstyrning (Intune MDM)</span><span class="cv">Ej driftsatt — krävs för Conditional Access</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">GDPR-klassificering slutförd</span><span class="cv">Juridisk granskning av Ekonomi &amp; HR pågår</span></div>
+
+                <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--warn);margin:12px 0 6px;">P2 — Viktiga (kan adresseras parallellt)</div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Microsoft-klient identifierad &amp; konfigurerad</span><span class="cv">techflow.onmicrosoft.com — OK</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">Skugg-IT eliminerat (Dropbox, Zoom)</span><span class="cv">Dropbox 23 lic + Zoom 155 lic kvarstår</span></div>
+
+                <div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin:12px 0 6px;">P3 — Önskvärda</div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Nätverksinfrastruktur bedömd</span><span class="cv">Fortinet FortiGate — godkänd</span></div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">VPN-lösning dokumenterad</span><span class="cv">FortiClient VPN — driftsatt</span></div>
+                <div class="check-row warn"><span class="ci">⚠️</span><span class="ct">Win 10-enheter uppgraderade till Win 11</span><span class="cv">34 enheter kvarstår (EOS okt 2025)</span></div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-secondary btn-sm">📋 Generera åtgärdsplan</button>
+            <button class="btn btn-primary btn-sm">📄 ERP-beredskapsrapport</button>
+        </div>
+    </div>
+</div><!-- /view-erp -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: MIGRERING (execution via Microsoft APIs)             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-manifest" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Migrering</div>
+            <div class="page-subtitle">Exekvera migrering direkt via Microsofts API:er &mdash; inga tredjepartsverktyg</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">⏸ Pausa alla</button>
+            <button class="btn btn-primary btn-sm" style="opacity:.5;cursor:not-allowed;">▶ Starta migrering</button>
+        </div>
+    </div>
+
+    <!-- Pre-flight -->
+    <div class="card" style="border-top:3px solid var(--warn);">
+        <div class="card-header"><div class="card-title">Förflyttningskontroll</div><span class="badge badge-warn">3 blockerare</span></div>
+        <div class="card-body">
+            <div class="checklist">
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Källklient-anslutning verifierad</span><span class="cv">techflow.onmicrosoft.com — Graph + CSOM OK</span></div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Destinationsklient-anslutning verifierad</span><span class="cv">safelife.onmicrosoft.com — Graph + CSOM OK</span></div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Cross-Tenant Organization Relationship</span><span class="cv">Konfigurerad och aktiv</span></div>
+                <div class="check-row pass"><span class="ci">ℹ️</span><span class="ct">Cross-Tenant User Data Migration-licenser</span><span class="cv" style="color:var(--text-muted);">Krävs ej i gratisläge (filer). Krävs för e-post ($15/st).</span></div>
+                <div class="check-row pass"><span class="ci">✅</span><span class="ct">Azure Blob Storage-konto (staging)</span><span class="cv">humanitmigration.blob.core.windows.net</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">Alla containerbeslut godkända</span><span class="cv">247 av 312 saknar beslut</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">GDPR-granskning slutförd</span><span class="cv">3 containrar väntar på juridisk sign-off</span></div>
+                <div class="check-row fail"><span class="ci">❌</span><span class="ct">MFA aktiverat i källklienten</span><span class="cv">0 % — krav: 100 % före migrering</span></div>
+            </div>
+            <div class="note-box" style="background:var(--warn-bg);border-left:3px solid var(--warn);padding:8px 12px;border-radius:4px;font-size:12px;margin-top:10px;">
+                <strong>Migrering kan inte startas.</strong> Alla blockerare (❌) måste åtgärdas. Åtgärda beslut, GDPR-granskning och MFA först.
+            </div>
+        </div>
+    </div>
+
+    <!-- Speed vs. cost toggle -->
+    <div class="card" style="border-left:4px solid var(--blue);">
+        <div class="card-header">
+            <div class="card-title">Migreringsläge — hastighet vs. kostnad</div>
+        </div>
+        <div class="card-body">
+            <div class="grid-3" style="gap:10px;">
+                <div>
+                    <div class="radio-group">
+                        <div class="radio-option" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div>
+                                <div style="font-weight:700;font-size:12px;color:var(--navy);">⚡ Snabbläge (licensierat)</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Cross-tenant cmdlets. Server-till-server, ~1–2 dagar.</div>
+                                <div style="font-size:11px;color:var(--danger);font-weight:600;margin-top:2px;">$15/användare + $X/100 GB</div>
+                            </div>
+                        </div>
+                        <div class="radio-option selected" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div>
+                                <div style="font-weight:700;font-size:12px;color:var(--navy);">💰 Gratisläge (Graph API)</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Nedladdning + uppladdning. Throttle-styrt, ~5–10 dagar.</div>
+                                <div style="font-size:11px;color:var(--success);font-weight:600;margin-top:2px;">$0 extra licenskostnad</div>
+                            </div>
+                        </div>
+                        <div class="radio-option" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div>
+                                <div style="font-weight:700;font-size:12px;color:var(--navy);">🔀 Hybrid (per container)</div>
+                                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Snabbläge för kritiska, gratisläge för resten.</div>
+                                <div style="font-size:11px;color:var(--warn);font-weight:600;margin-top:2px;">Kostnad varierar per beslut</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">Beräknad tid &amp; kostnad (gratisläge)</div>
+                    <div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-family:'Consolas','Courier New',monospace;font-size:10px;line-height:1.7;margin-bottom:8px;">
+                        Filer att migrera: <strong>18 000 st</strong> &nbsp;·&nbsp; Data: <strong>1 648 GB</strong><br>
+                        Medelfilstorlek: 94 MB &nbsp;·&nbsp; Chunk: 10 MiB<br>
+                        ─────────────────────────────────<br>
+                        <span style="color:var(--blue);font-weight:700;">Flaskhals 1: RU-budget</span><br>
+                        RU/fil = 2 + 2 + ⌈94/10⌉×2 = <strong>24 RU</strong><br>
+                        Total = 18 000 × 24 = 432 000 RU<br>
+                        Budget = 840 RU/min × 600 min/dag<br>
+                        = 504 000 RU/dag → <strong>0,9 dagar</strong><br>
+                        ─────────────────────────────────<br>
+                        <span style="color:var(--blue);font-weight:700;">Flaskhals 2: Bandbredd</span><br>
+                        100 Mbps × 4 strömmar × 0.75 = 37,5 MB/s<br>
+                        1 648 GB / (37,5 × 36 000) → <strong>1,2 dagar</strong><br>
+                        ─────────────────────────────────<br>
+                        <span style="color:var(--navy);font-weight:700;">Resultat = max(0,9 , 1,2)</span><br>
+                        <strong style="font-size:12px;color:var(--navy);">≈ 1,5 dagar</strong> (10h nattlig körning)
+                    </div>
+                    <div class="info-row"><span class="ir-k">⚡ Snabbläge: kostnad</span><span class="ir-v" style="color:var(--danger);">$3 300</span></div>
+                    <div class="info-row"><span class="ir-k">⚡ Snabbläge: tid</span><span class="ir-v">~1 dag</span></div>
+                    <div class="info-row"><span class="ir-k">💰 Gratisläge: kostnad</span><span class="ir-v" style="color:var(--success);">$0 (filer)</span></div>
+                    <div class="info-row"><span class="ir-k">💰 Gratisläge: tid</span><span class="ir-v" style="color:var(--warn);">~1,5 dagar</span></div>
+                    <div class="info-row" style="font-weight:700;"><span class="ir-k">Besparing</span><span class="ir-v" style="color:var(--success);">$550 (dataavgift)</span></div>
+                    <div class="note-box" style="font-size:10px;margin-top:4px;padding:3px 6px;">
+                        E-post ($2 745) krävs oavsett läge. Full besparing uppnås när e-post ej ingår.
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title">Throttle-strategi (gratisläge)</div>
+                    <div class="checklist" style="gap:4px;">
+                        <div class="check-row pass" style="padding:4px 8px;"><span class="ci" style="font-size:13px;">✅</span><span class="ct" style="font-size:11px;">Exponentiell backoff vid HTTP 429</span></div>
+                        <div class="check-row pass" style="padding:4px 8px;"><span class="ci" style="font-size:13px;">✅</span><span class="ct" style="font-size:11px;">Nattlig acceleration (20:00–06:00)</span></div>
+                        <div class="check-row pass" style="padding:4px 8px;"><span class="ci" style="font-size:13px;">✅</span><span class="ct" style="font-size:11px;">Adaptiva parallella strömmar (4→N)</span></div>
+                        <div class="check-row pass" style="padding:4px 8px;"><span class="ci" style="font-size:13px;">✅</span><span class="ct" style="font-size:11px;">Prioritering: små kritiska först</span></div>
+                        <div class="check-row pass" style="padding:4px 8px;"><span class="ci" style="font-size:13px;">✅</span><span class="ct" style="font-size:11px;">Stora filer → Azure Blob (separata gränser)</span></div>
+                    </div>
+                    <div class="note-box" style="font-size:10px;margin-top:6px;padding:4px 6px;">
+                        <strong>OBS:</strong> E-postmigrering kräver alltid Microsoft-licens ($15/användare) — ingen gratis alternativväg finns för Exchange Online.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <!-- Container queue -->
+        <div class="card">
+            <div class="card-header">
+                <div><div class="card-title">Migreringskö (beslutade containrar)</div>
+                <div class="card-subtitle">65 containrar redo — grupperade per API-metod</div></div>
+            </div>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>API-metod</th><th>Antal</th><th>Total storlek</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td class="col-name">Cross-Tenant Site Move<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">Start-SPOCrossTenantSiteContentMove</span></td><td>5</td><td class="col-size">25,6 GB</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">Cross-Tenant OneDrive Move<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">Start-SPOCrossTenantUserContentMove</span></td><td>34</td><td class="col-size">310 GB</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">Graph API Dokument&shy;kopiering<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">Download → CreateUploadSession</span></td><td>12</td><td class="col-size">18,4 GB</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">SharePoint Migration API (bulk)<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">CreateMigrationJobEncrypted</span></td><td>3</td><td class="col-size">4,1 GB</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">Azure Cold/Archive Storage<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">Azure.Storage.Blobs SDK</span></td><td>4</td><td class="col-size">1,8 TB</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">Exchange Online (e-post)<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">New-MigrationBatch</span></td><td>1 batch</td><td class="col-size">183 postlådor</td><td><span class="badge badge-neutral">Väntar</span></td></tr>
+                        <tr><td class="col-name">Kassering (signerad loggpost)<br><span style="font-size:10px;color:var(--text-muted);font-weight:400;">Ingen flytt — enbart dokumentation</span></td><td>6</td><td class="col-size">—</td><td><span class="badge badge-green">Redo</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- API status and throttle monitoring -->
+        <div class="card">
+            <div class="card-header"><div class="card-title">API-status &amp; frekvensbegränsning</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                <div class="risk-row"><div class="risk-name">Graph API</div><div class="risk-track"><div class="risk-fill" style="width:12%;background:var(--success)"></div></div><div class="risk-score" style="color:var(--success);">12 %</div></div>
+                <div class="risk-row"><div class="risk-name">SPO REST</div><div class="risk-track"><div class="risk-fill" style="width:8%;background:var(--success)"></div></div><div class="risk-score" style="color:var(--success);">8 %</div></div>
+                <div class="risk-row"><div class="risk-name">Migration API</div><div class="risk-track"><div class="risk-fill" style="width:0%;background:var(--success)"></div></div><div class="risk-score">0 %</div></div>
+                <div class="risk-row"><div class="risk-name">Azure Blob</div><div class="risk-track"><div class="risk-fill" style="width:0%;background:var(--success)"></div></div><div class="risk-score">0 %</div></div>
+                <div class="divider"></div>
+                <div class="info-row"><span class="ir-k">HTTP 429 (throttled) idag</span><span class="ir-v">0</span></div>
+                <div class="info-row"><span class="ir-k">Automatiska omförsök</span><span class="ir-v">0</span></div>
+                <div class="info-row"><span class="ir-k">Retry-After respekterad</span><span class="ir-v">Ja (exponentiell backoff)</span></div>
+
+                <div class="divider"></div>
+                <div class="section-title">Migreringslogg (senaste)</div>
+                <div style="font-size:11px;color:var(--text-muted);font-style:italic;">Ingen migrering har startats ännu.</div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-manifest -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: NYTT PROJEKT (shown as first view for new projects)  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-nyttprojekt" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Nytt förvärv</div>
+            <div class="page-subtitle">Skapa ett nytt förvärvsprojekt &mdash; steg 1 av 3</div>
+        </div>
+    </div>
+
+    <div class="wizard-steps">
+        <div class="wiz-step active"><div class="wiz-num">1</div>Bolagsinformation</div>
+        <span class="wiz-arrow">›</span>
+        <div class="wiz-step"><div class="wiz-num">2</div>Spår &amp; tidslinje</div>
+        <span class="wiz-arrow">›</span>
+        <div class="wiz-step"><div class="wiz-num">3</div>Anslutningar</div>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-header"><div class="card-title">Bolagsinformation</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+                <div class="form-row">
+                    <div><label class="form-label">Bolagsnamn</label><input class="form-input" placeholder="t.ex. NordTek AB"></div>
+                    <div><label class="form-label">Org.nummer</label><input class="form-input" placeholder="556xxx-xxxx"></div>
+                </div>
+                <div class="form-row">
+                    <div><label class="form-label">Land</label>
+                        <select class="form-input"><option>Sverige</option><option>Norge</option><option>Finland</option><option>Danmark</option><option>Estland</option><option>Lettland</option><option>Litauen</option></select>
+                    </div>
+                    <div><label class="form-label">Antal anställda</label><input class="form-input" type="number" placeholder="t.ex. 85"></div>
+                </div>
+                <div class="form-row">
+                    <div><label class="form-label">Kontaktperson (CEO/CTO)</label><input class="form-input" placeholder="Namn"></div>
+                    <div><label class="form-label">E-post</label><input class="form-input" placeholder="namn@bolag.se"></div>
+                </div>
+                <div>
+                    <label class="form-label">Ansvarig Langate-konsult</label>
+                    <select class="form-input"><option>Anna Lindström</option><option>Marcus Eriksson</option><option>Jonas Larsson</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">Spår &amp; trigger</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+                <div>
+                    <label class="form-label">Typ av förvärvsprojekt</label>
+                    <div class="radio-group">
+                        <div class="radio-option selected" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div><div style="font-weight:700;font-size:12px;color:var(--navy);">Nytt förvärv (pre-/post-close)</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">IT-analys och beslutsdokumentation inför eller i samband med förvärv. Rapid IT Discovery efter LOI eller tillträde.</div></div>
+                        </div>
+                        <div class="radio-option" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div><div style="font-weight:700;font-size:12px;color:var(--navy);">Förvärvat bolag (post-merger stabilisering)</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Analys och design av bolag som redan ingår i koncernen men ännu inte standardiserats.</div></div>
+                        </div>
+                        <div class="radio-option" onclick="selectRadio(this)">
+                            <div class="radio-dot"></div>
+                            <div><div style="font-weight:700;font-size:12px;color:var(--navy);">ERP-kritiskt bolag (Dynamics &amp; kärnssystem)</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Fördjupad standardisering till den nivå som krävs för anslutning till Microsoft Dynamics.</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div><label class="form-label">LOI-datum / Tillträdesdatum</label><input class="form-input" type="date" value="2026-04-04"></div>
+                    <div><label class="form-label">Pre-close / Post-close</label>
+                        <select class="form-input"><option>Pre-close (LOI signerad)</option><option>Post-close (tillträde skett)</option></select>
+                    </div>
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+                    <button class="btn btn-secondary btn-sm">Avbryt</button>
+                    <button class="btn btn-primary btn-sm">Skapa projekt &amp; starta dag 0 →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-nyttprojekt -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: 90-DAGARS TIDSLINJE                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-tidslinje" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">90-dagars tidslinje</div>
+            <div class="page-subtitle">TechFlow AB &nbsp;·&nbsp; Start: 15 mars 2026 &nbsp;·&nbsp; Dag 18 av 90 &nbsp;·&nbsp; Spår: Nytt förvärv (post-close)</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📄 Exportera Gantt</button>
+        </div>
+    </div>
+
+    <!-- Gantt chart -->
+    <div class="card">
+        <div class="card-header"><div class="card-title">Tidsöversikt</div></div>
+        <div class="card-body">
+            <div class="gantt">
+                <div class="gantt-row"><div class="gantt-label">Fas 1: Discovery</div><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:33.3%;background:var(--success);">Dag 0–30</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">Fas 2: Beslut</div><div class="gantt-track"><div class="gantt-bar" style="left:33.3%;width:33.3%;background:var(--blue);opacity:.75;">Dag 30–60</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">Fas 3: Migrering</div><div class="gantt-track"><div class="gantt-bar" style="left:66.6%;width:33.4%;background:var(--neutral);opacity:.4;">Dag 60–90</div></div></div>
+                <div class="gantt-row"><div class="gantt-label" style="color:var(--danger);">MFA-aktivering</div><div class="gantt-track"><div class="gantt-bar" style="left:0%;width:11%;background:var(--danger);">P1</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">Intune-driftsättning</div><div class="gantt-track"><div class="gantt-bar" style="left:11%;width:22%;background:var(--warn);">P1</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">GDPR-granskning</div><div class="gantt-track"><div class="gantt-bar" style="left:22%;width:22%;background:var(--warn);">P2</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">E-postmigrering</div><div class="gantt-track"><div class="gantt-bar" style="left:33%;width:22%;background:var(--blue);opacity:.6;">Fas 2</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">ERP-förberedelse</div><div class="gantt-track"><div class="gantt-bar" style="left:55%;width:22%;background:var(--blue);opacity:.6;">Fas 2–3</div></div></div>
+                <div class="gantt-row"><div class="gantt-label">Styrelserapport</div><div class="gantt-track"><div class="gantt-bar" style="left:88%;width:12%;background:var(--navy);">Dag 80–90</div></div></div>
+            </div>
+            <div class="gantt-markers">
+                <span>Dag 0</span><span>Dag 15</span><span>Dag 30</span><span>Dag 45</span><span>Dag 60</span><span>Dag 75</span><span>Dag 90</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:8px;">
+                <div style="width:30px;height:3px;background:var(--danger);border-radius:2px;"></div>
+                <span style="font-size:10px;color:var(--text-muted);">Idag (dag 18)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase details -->
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-header"><div class="card-title" style="color:var(--success);">✅ Fas 1 — IT Due Diligence</div><div class="card-subtitle">Dag 0–30 &nbsp;·&nbsp; 15 mar – 14 apr</div></div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="tl-phase"><div class="tl-dot done"></div><div class="tl-phase-header"><div class="tl-phase-label">Ledningsintervjuer</div><div class="tl-phase-dates">15–17 mar</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item done">✅ VD-intervju (CEO)</div>
+                            <div class="tl-item done">✅ Ekonomichef</div>
+                            <div class="tl-item active">🔵 IT-ansvarig (planerad 5 apr)</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot done"></div><div class="tl-phase-header"><div class="tl-phase-label">Teknisk Discovery</div><div class="tl-phase-dates">18 mar – 2 apr</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item done">✅ M365-klientskanning</div>
+                            <div class="tl-item done">✅ Filserverskanning</div>
+                            <div class="tl-item done">✅ AD-inventering</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot active"></div><div class="tl-phase-header"><div class="tl-phase-label">Riskanalys</div><div class="tl-phase-dates">3 apr – pågår</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item active">🔵 Poängsättning (5/8 klara)</div>
+                            <div class="tl-item pending">⬜ Prioriteringstabell (P1/P2/P3)</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Integrationsrekommendation</div><div class="tl-phase-dates">senast 14 apr</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ Integrera direkt / efter standardisering / avvakta</div>
+                            <div class="tl-item pending">⬜ Säkrad admin-access + MFA</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="opacity:.65;">
+            <div class="card-header"><div class="card-title">⏳ Fas 2 — Beslut &amp; migrering</div><div class="card-subtitle">Dag 30–60 &nbsp;·&nbsp; 15 apr – 14 maj</div></div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Containerbeslut</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ Alla 312 containers beslutade</div>
+                            <div class="tl-item pending">⬜ GDPR-granskningsportar</div>
+                            <div class="tl-item pending">⬜ Godkännanden inhämtade</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Identitet &amp; e-post</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ Identitetsmappning slutförd</div>
+                            <div class="tl-item pending">⬜ E-postmigrering</div>
+                            <div class="tl-item pending">⬜ Licensplan godkänd</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Säkerhetsbaslinje</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ MFA 100 %</div>
+                            <div class="tl-item pending">⬜ Defender for Endpoint</div>
+                            <div class="tl-item pending">⬜ Intune MDM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="opacity:.45;">
+            <div class="card-header"><div class="card-title">⬜ Fas 3 — ERP &amp; validering</div><div class="card-subtitle">Dag 60–90 &nbsp;·&nbsp; 15 maj – 13 jun</div></div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Migreringsexekvering</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ Migrering exekverad via Microsoft API:er</div>
+                            <div class="tl-item pending">⬜ Datamigrering genomförd</div>
+                            <div class="tl-item pending">⬜ Kalllagringsdirigering</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">ERP-integration</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ ERP-beredskapsport avklarad</div>
+                            <div class="tl-item pending">⬜ Dynamics-anslutning</div>
+                        </div>
+                    </div>
+                    <div class="tl-phase"><div class="tl-dot pending"></div><div class="tl-phase-header"><div class="tl-phase-label">Avslut &amp; rapport</div></div>
+                        <div class="tl-deliverables">
+                            <div class="tl-item pending">⬜ Validering efter migrering</div>
+                            <div class="tl-item pending">⬜ Styrelserapport genererad</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-tidslinje -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: INTERVJUER & ENKÄT                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-intervjuer" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Intervjuer &amp; IT-enkät</div>
+            <div class="page-subtitle">Standardiserad datainsamling &mdash; ledningsintervjuer + IT-undersökning</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📋 Exportera svar</button>
+            <button class="btn btn-primary btn-sm">＋ Ny intervju</button>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab(this,'itv','itv-intervjuer')">🎤 Ledningsintervjuer</div>
+        <div class="tab" onclick="showTab(this,'itv','itv-enkat')">📝 Standardiserad IT-enkät</div>
+    </div>
+
+    <!-- Intervjuer -->
+    <div id="itv-intervjuer" class="itv-tab" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="grid-3" style="gap:10px;">
+            <div class="card" style="border-top:3px solid var(--success);">
+                <div class="card-header"><div class="card-title">VD / CEO</div><span class="badge badge-green">Genomförd</span></div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:0;">
+                    <div class="info-row"><span class="ir-k">Intervjuad</span><span class="ir-v">Erik Johansson</span></div>
+                    <div class="info-row"><span class="ir-k">Datum</span><span class="ir-v">15 mar 2026</span></div>
+                    <div class="info-row"><span class="ir-k">Konsult</span><span class="ir-v">Anna Lindström</span></div>
+                    <div class="interview-q"><div class="iq-label">Förvärvets strategiska syfte?</div><div class="iq-response">TechFlow kompletterar vår produktportfölj inom industriautomation. Vi vill ha bolaget fullt integrerat inom 6 månader.</div></div>
+                    <div class="interview-q"><div class="iq-label">Kända IT-risker?</div><div class="iq-response">VD har medgett att IT har "vuxit organiskt". Ingen dedikerad IT-chef. En deltids-IT-ansvarig som också gör supportärenden.</div></div>
+                    <div class="interview-q"><div class="iq-label">ERP-planer?</div><div class="iq-response">Fortnox idag, medveten om att koncernen kör Dynamics. Inga starka åsikter om vilken lösning — vill bara att det fungerar.</div></div>
+                </div>
+            </div>
+            <div class="card" style="border-top:3px solid var(--success);">
+                <div class="card-header"><div class="card-title">Ekonomichef / CFO</div><span class="badge badge-green">Genomförd</span></div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:0;">
+                    <div class="info-row"><span class="ir-k">Intervjuad</span><span class="ir-v">Anna Nilsson</span></div>
+                    <div class="info-row"><span class="ir-k">Datum</span><span class="ir-v">17 mar 2026</span></div>
+                    <div class="info-row"><span class="ir-k">Konsult</span><span class="ir-v">Anna Lindström</span></div>
+                    <div class="interview-q"><div class="iq-label">ERP-system &amp; integrationer?</div><div class="iq-response">Fortnox för bokföring. Excel-rapportering mot styrelsen. Ingen integration med andra system — manuella exporter.</div></div>
+                    <div class="interview-q"><div class="iq-label">GDPR-hantering?</div><div class="iq-response">Har ett personuppgiftsombud men ingen systematisk hantering. HR-filer och lönespecifikationer på SharePoint utan klassificering.</div></div>
+                    <div class="interview-q"><div class="iq-label">IT-budget?</div><div class="iq-response">~55 000 kr/mån total IT-kostnad. Anser att det är för mycket med tanke på att de bara har 183 anställda.</div></div>
+                </div>
+            </div>
+            <div class="card" style="border-top:3px solid var(--blue);">
+                <div class="card-header"><div class="card-title">IT-ansvarig</div><span class="badge badge-blue">Planerad</span></div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:0;">
+                    <div class="info-row"><span class="ir-k">Kontakt</span><span class="ir-v">Jonas Lindqvist</span></div>
+                    <div class="info-row"><span class="ir-k">Planerat datum</span><span class="ir-v">5 apr 2026</span></div>
+                    <div class="info-row"><span class="ir-k">Konsult</span><span class="ir-v">Anna Lindström</span></div>
+                    <div class="interview-q"><div class="iq-label">Infrastrukturöversikt?</div><div class="iq-response iq-empty">Ej genomförd</div></div>
+                    <div class="interview-q"><div class="iq-label">Säkerhetsrutiner?</div><div class="iq-response iq-empty">Ej genomförd</div></div>
+                    <div class="interview-q"><div class="iq-label">Kända systemskulder?</div><div class="iq-response iq-empty">Ej genomförd</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- IT-enkät -->
+    <div id="itv-enkat" class="itv-tab" style="display:none;flex-direction:column;gap:16px;">
+        <div class="scan-status">
+            <div style="width:18px;height:18px;border-radius:50%;background:var(--warn);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;flex-shrink:0;">!</div>
+            <div><div class="scan-label" style="color:#8a5000;">Enkät skickad — väntar på svar</div><div class="scan-sub">Skickad till jonas.l@techflow.se 30 mar &nbsp;·&nbsp; Påminnelse skickad 3 apr</div></div>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header"><div class="card-title">Standardiserad IT-undersökning (42 frågor)</div></div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:0;">
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">🔑</span><span class="accordion-title">Identitet (7 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/7</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                        <div class="accordion-body">
+                            <div class="interview-q"><div class="iq-label">Har bolaget en lokal Active Directory?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">Entra AD / ingen AD?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">Eget Microsoft-klient (tenant)?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">MFA aktiverat? Alla konton?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">Separerade adminkonton?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">Känd skugg-IT (Dropbox, Google Drive, Slack)?</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                            <div class="interview-q"><div class="iq-label">Beskriv onboarding-/offboardingprocess</div><div class="iq-response iq-empty">Ej besvarad</div></div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">💻</span><span class="accordion-title">Enheter (6 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/6</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">📦</span><span class="accordion-title">Applikationer &amp; ERP (6 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/6</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">🌐</span><span class="accordion-title">Infrastruktur (7 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/7</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">💾</span><span class="accordion-title">Data &amp; GDPR (6 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/6</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">🛡️</span><span class="accordion-title">Säkerhet (6 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/6</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)"><span class="area-icon">💰</span><span class="accordion-title">Kostnader &amp; supportavtal (4 frågor)</span><span class="badge badge-neutral" style="margin-left:auto;">0/4</span><span style="margin-left:8px;font-size:12px;color:var(--text-muted);">▶</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">Enkätinställningar</div></div>
+                <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                    <div class="info-row"><span class="ir-k">Mottagare</span><span class="ir-v">jonas.l@techflow.se</span></div>
+                    <div class="info-row"><span class="ir-k">Skickad</span><span class="ir-v">30 mar 2026</span></div>
+                    <div class="info-row"><span class="ir-k">Påminnelser</span><span class="ir-v">1 st (3 apr)</span></div>
+                    <div class="info-row"><span class="ir-k">Status</span><span class="ir-v" style="color:var(--warn);">Väntar på svar</span></div>
+                    <div class="info-row"><span class="ir-k">Besvarade frågor</span><span class="ir-v">0 av 42</span></div>
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="btn btn-ghost btn-sm" style="flex:1;">📧 Skicka påminnelse</button>
+                        <button class="btn btn-secondary btn-sm" style="flex:1;">✏️ Fyll i manuellt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /view-intervjuer -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: ISO 27001                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-iso" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">ISO 27001 — Alignment</div>
+            <div class="page-subtitle">Spårning av hur TechFlow AB bidrar till koncernens ISO 27001-resa</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📄 Exportera rapport</button>
+        </div>
+    </div>
+
+    <div class="grid-4" style="gap:10px;">
+        <div class="card stat-card"><div class="stat-label">Total alignment</div><div class="stat-value" style="color:var(--warn);">47 %</div><div class="stat-sub">av 14 kontrollområden</div></div>
+        <div class="card stat-card"><div class="stat-label">Uppfyllda kontroller</div><div class="stat-value" style="color:var(--success);">19</div><div class="stat-sub">av 40 tillämpliga kontroller</div></div>
+        <div class="card stat-card"><div class="stat-label">Kritiska brister</div><div class="stat-value" style="color:var(--danger);">6</div><div class="stat-sub">kräver åtgärd före migrering</div></div>
+        <div class="card stat-card"><div class="stat-label">Senast uppdaterad</div><div class="stat-value" style="font-size:16px;">3 apr 2026</div><div class="stat-sub">av Anna Lindström</div></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><div class="card-title">Kontrollområden (Annex A-urval)</div></div>
+        <div class="card-body" style="padding:0;">
+            <table class="data-table">
+                <thead><tr><th style="width:8%">Krav</th><th class="col-name" style="width:28%">Kontrollområde</th><th>Status</th><th>Nivå</th><th>Anmärkning</th></tr></thead>
+                <tbody>
+                    <tr><td>A.5</td><td class="col-name">Informationssäkerhetspolicy</td><td><span class="badge badge-danger">Saknas</span></td><td><div class="score-bar"><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Inget policydokument existerar</td></tr>
+                    <tr><td>A.6</td><td class="col-name">Organisation av informationssäkerhet</td><td><span class="badge badge-danger">Saknas</span></td><td><div class="score-bar"><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Ingen utsedd informationssäkerhetsansvarig</td></tr>
+                    <tr><td>A.7</td><td class="col-name">Personalresurser — säkerhet</td><td><span class="badge badge-warn">Delvis</span></td><td><div class="score-bar"><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Anställningsavtal OK, ingen säkerhetsutbildning</td></tr>
+                    <tr><td>A.8</td><td class="col-name">Tillgångshantering</td><td><span class="badge badge-warn">Delvis</span></td><td><div class="score-bar"><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Ingen dataklassificering, partiell inventering</td></tr>
+                    <tr><td>A.9</td><td class="col-name">Åtkomstkontroll</td><td><span class="badge badge-warn">Delvis</span></td><td><div class="score-bar"><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">AD-grupper finns, MFA saknas, lokala admins</td></tr>
+                    <tr><td>A.10</td><td class="col-name">Kryptografi</td><td><span class="badge badge-warn">Delvis</span></td><td><div class="score-bar"><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">BitLocker 40 %, ingen e-postkryptering</td></tr>
+                    <tr><td>A.11</td><td class="col-name">Fysisk säkerhet</td><td><span class="badge badge-green">OK</span></td><td><div class="score-bar"><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Låst serverrum, passerkort</td></tr>
+                    <tr><td>A.12</td><td class="col-name">Driftsäkerhet</td><td><span class="badge badge-danger">Saknas</span></td><td><div class="score-bar"><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Ingen loggning/SIEM, ingen ändringsprocess</td></tr>
+                    <tr><td>A.13</td><td class="col-name">Kommunikationssäkerhet</td><td><span class="badge badge-green">OK</span></td><td><div class="score-bar"><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot filled"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">VPN driftsatt, brandvägg OK</td></tr>
+                    <tr><td>A.14</td><td class="col-name">Systemförvärv &amp; utveckling</td><td><span class="badge badge-neutral">Ej tillämplig</span></td><td></td><td style="font-size:11px;color:var(--text-muted);">Ingen egen systemutveckling</td></tr>
+                    <tr><td>A.16</td><td class="col-name">Incidenthantering</td><td><span class="badge badge-danger">Saknas</span></td><td><div class="score-bar"><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Ingen incidentprocess, 1 phishing-historik</td></tr>
+                    <tr><td>A.17</td><td class="col-name">Kontinuitetsplanering</td><td><span class="badge badge-danger">Saknas</span></td><td><div class="score-bar"><div class="score-dot filled-danger"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Ingen BCP/DR-plan, backup ej testad</td></tr>
+                    <tr><td>A.18</td><td class="col-name">Efterlevnad (GDPR m.m.)</td><td><span class="badge badge-warn">Delvis</span></td><td><div class="score-bar"><div class="score-dot filled-warn"></div><div class="score-dot filled-warn"></div><div class="score-dot empty"></div><div class="score-dot empty"></div><div class="score-dot empty"></div></div></td><td style="font-size:11px;color:var(--text-muted);">Personuppgiftsombud utsett, ingen registerförteckning</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div><!-- /view-iso -->
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- VIEW: STYRELSERAPPORT                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="view-styrelse" class="view">
+    <div class="page-header">
+        <div>
+            <div class="page-title">Styrelserapport</div>
+            <div class="page-subtitle">Sammanfattning för styrelse &amp; ägare &mdash; TechFlow AB</div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary btn-sm">📄 Exportera PDF</button>
+            <button class="btn btn-primary btn-sm">📊 Exportera Word</button>
+        </div>
+    </div>
+
+    <div class="card" style="border-top:4px solid var(--navy);">
+        <div class="card-body" style="padding:20px 24px;">
+            <div style="text-align:center;margin-bottom:16px;">
+                <div style="font-size:22px;font-weight:700;color:var(--navy);">TechFlow AB — IT-integrationsrapport</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Framtagen av Langate &nbsp;·&nbsp; Rapport genererad 4 apr 2026 &nbsp;·&nbsp; Dag 18 av 90</div>
+            </div>
+
+            <div class="grid-3" style="gap:10px;margin-bottom:16px;">
+                <div class="card stat-card" style="border:1px solid var(--border);text-align:center;">
+                    <div class="stat-label">Integrationsrekommendation</div>
+                    <div class="stat-value" style="font-size:16px;color:var(--warn);">Integrera efter standardisering</div>
+                    <div class="stat-sub">3 kritiska åtgärder måste slutföras</div>
+                </div>
+                <div class="card stat-card" style="border:1px solid var(--border);text-align:center;">
+                    <div class="stat-label">ERP-beredskap</div>
+                    <div class="stat-value" style="font-size:16px;color:var(--warn);">🟡 Ej redo</div>
+                    <div class="stat-sub">Klar efter MFA + Intune + GDPR</div>
+                </div>
+                <div class="card stat-card" style="border:1px solid var(--border);text-align:center;">
+                    <div class="stat-label">Beräknad integrationskostnad</div>
+                    <div class="stat-value" style="font-size:16px;color:var(--navy);">~180 000 kr</div>
+                    <div class="stat-sub">Baserat på scope och åtgärdslista</div>
+                </div>
+            </div>
+
+            <h2 style="font-size:13px;margin-top:12px;">Strategiskt värde för koncernen</h2>
+            <div class="grid-2" style="gap:8px;margin-bottom:14px;">
+                <div class="feature-card"><h4 style="color:var(--success);">Minskad cyberrisk</h4><p>MFA, Defender och Intune eliminerar de mest akuta sårbarheterna. Phishing-risken reduceras väsentligt.</p></div>
+                <div class="feature-card"><h4 style="color:var(--success);">Förutsägbar integrationskostnad</h4><p>Standardiserat ramverk med fast 90-dagarsmodell. Inga överraskningar för styrelsen.</p></div>
+                <div class="feature-card"><h4 style="color:var(--success);">Snabbare realisering av förvärvsvärde</h4><p>TechFlows produktportfölj tillgänglig via koncernens system inom 90 dagar efter tillträde.</p></div>
+                <div class="feature-card"><h4 style="color:var(--success);">ISO 27001-readiness</h4><p>Integrationen höjer koncernens totala alignment från 45 % till ~52 %. Varje förvärv adderar.</p></div>
+            </div>
+
+            <h2 style="font-size:13px;">Risksammanfattning (för styrelsen)</h2>
+            <div class="card-body" style="padding:0;">
+                <table class="data-table">
+                    <thead><tr><th>Riskkategori</th><th>Nivå</th><th>Beskrivning</th><th>Åtgärd</th></tr></thead>
+                    <tbody>
+                        <tr><td class="col-name">Identitet &amp; åtkomst</td><td><span class="badge badge-danger">Kritisk</span></td><td>Ingen MFA, delade adminkonton</td><td>P1 — Aktivera MFA dag 1–10</td></tr>
+                        <tr><td class="col-name">Enhetssäkerhet</td><td><span class="badge badge-danger">Kritisk</span></td><td>Ingen Intune, alla lokala admins</td><td>P1 — Intune-driftsättning dag 10–30</td></tr>
+                        <tr><td class="col-name">Dataskydd (GDPR)</td><td><span class="badge badge-danger">Kritisk</span></td><td>Oklassificerade personuppgifter på SP</td><td>P1 — Juridisk granskning dag 15–30</td></tr>
+                        <tr><td class="col-name">Applikationer &amp; ERP</td><td><span class="badge badge-warn">Medel</span></td><td>Fortnox → Dynamics-migrering</td><td>P2 — Planeras i fas 3</td></tr>
+                        <tr><td class="col-name">Skugg-IT</td><td><span class="badge badge-warn">Medel</span></td><td>Dropbox + Zoom utanför styrning</td><td>P2 — Avveckla vid cut-over</td></tr>
+                        <tr><td class="col-name">Lagringskostnad</td><td><span class="badge badge-neutral">Låg</span></td><td>2,3 TB filserverdata, mest kallt</td><td>P3 — Azure-kalllagring, ~€4 200/år besparing</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:16px;padding:10px 14px;background:#EBF2F5;border:1px solid var(--blue-mid);border-radius:var(--radius);font-size:12px;">
+                <strong>Gemensamt språk för IT, ledning och styrelse:</strong>
+                Denna rapport följer Langates standardiserade analysmodell. Samma format, terminologi och poängsättning används för alla koncernförvärv,
+                vilket skapar förutsägbarhet och möjliggör jämförande analys över portföljen. Vi skyddar ert kapital genom transparens och strukturerade beslut.
+            </div>
+        </div>
+    </div>
+</div><!-- /view-styrelse -->
+
+
+</main>
+</div><!-- /shell -->
+</div><!-- /app-project -->
+
+<script>
+// ─── Start screen / project open ────────────────────────────────
+function openStartScreen() {
+    document.getElementById('start-screen').style.display = 'flex';
+    document.getElementById('app-project').classList.remove('open');
+}
+
+function openProject() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('app-project').classList.add('open');
+    showView('dashboard');
+}
+
+function openNewProject() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('app-project').classList.add('open');
+    showView('nyttprojekt');
+}
+
+// ─── View navigation ───────────────────────────────────────────
+function showView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById('view-' + viewId);
+    if (el) el.classList.add('active');
+
+    const map = {
+        dashboard: 0, tidslinje: 1, intervjuer: 2, inventering: 3, analys: 4,
+        beslut: 5, erp: 6, iso: 7, manifest: 8, styrelse: 9
+    };
+    const items = document.querySelectorAll('.nav-item');
+    if (map[viewId] !== undefined) items[map[viewId]].classList.add('active');
+}
+
+// ─── Sub-tabs ──────────────────────────────────────────────────
+function showTab(el, group, tabId) {
+    const prefix = group + '-';
+    document.querySelectorAll('[id^="' + prefix + '"]').forEach(t => {
+        t.style.display = 'none';
+    });
+    const target = document.getElementById(tabId);
+    if (target) { target.style.display = 'flex'; }
+    el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+// ─── Accordion ─────────────────────────────────────────────────
+function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    if (!body || !body.classList.contains('accordion-body')) return;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    const arrow = header.querySelector('span:last-child');
+    if (arrow) arrow.textContent = isOpen ? '▶' : '▼';
+}
+
+// ─── Container row selection ────────────────────────────────────
+function selectContainer(row) {
+    row.closest('tbody').querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+}
+
+// ─── Decision option selection ──────────────────────────────────
+document.querySelectorAll('.decision-option').forEach(opt => {
+    opt.addEventListener('click', function() {
+        if (this.style.cursor === 'not-allowed') return;
+        this.closest('.detail-panel-body, .card-body')
+            ?.querySelectorAll('.decision-option')
+            .forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+    });
+});
+
+// ─── Radio group selection ──────────────────────────────────────
+function selectRadio(el) {
+    el.closest('.radio-group').querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+// Open first two accordion items in the analys view on load
+document.querySelectorAll('#view-analys .accordion-header').forEach((h, i) => {
+    if (i < 2) toggleAccordion(h);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Integration Fortnox & Dynamics 365 Sales</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap');
+
+:root {
+    --primary:        #00517e;
+    --primary-teal:   #537780;
+    --primary-navy:   #0b3ebe;
+    --accent-green:   #02B896;
+    --accent-gold:    #F5A623;
+    --accent-red:     #B55852;
+    --bg:             #ffffff;
+    --bg-subtle:      #ebf2f5;
+    --bg-grey:        #EAEAEC;
+    --text:           #4A4A4A;
+    --text-muted:     #888888;
+    --border:         #DBE4EA;
+    --border-light:   #E0E0E0;
+    --success-bg:     #e6faf6;
+    --warning-bg:     #fff8e6;
+    --error-bg:       #fbeeed;
+    --info-bg:        #ebf2f5;
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--text);
+    background: #dde4e8;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+.page-content { padding: 9mm 10mm 22mm 13mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+h1, h2, h3            { break-after: avoid; }
+p, li, tr              { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box   { break-inside: avoid; }
+.feature-card          { break-inside: avoid; }
+.two-col               { break-inside: avoid; }
+.three-col             { break-inside: avoid; }
+table                  { break-inside: avoid; }
+.screenshot            { break-inside: avoid; }
+img                    { break-inside: avoid; }
+
+/* Cover */
+.page-cover { min-height: 297mm; display: flex; flex-direction: column;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important; }
+.cover-top-bar { background: var(--accent-green); height: 3mm; flex-shrink: 0; }
+.cover-body    { background: var(--primary); flex: 1; padding: 16mm 14mm 12mm;
+                 display: flex; flex-direction: column; justify-content: space-between; }
+.cover-logo-area { display: flex; align-items: center; gap: 3mm; }
+.cover-logo-text { color: white; font-size: 14pt; font-weight: 700; letter-spacing: 0.04em; }
+.cover-logo-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); }
+.cover-middle    { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 12mm 0; }
+.cover-tag       { font-size: 8pt; font-weight: 600; letter-spacing: 0.16em;
+                   text-transform: uppercase; color: var(--accent-green); margin-bottom: 4mm; }
+.cover-title     { font-size: 38pt; font-weight: 800; color: white; line-height: 1.1; margin-bottom: 4mm; }
+.cover-subtitle  { font-size: 15pt; font-weight: 300; color: rgba(255,255,255,0.65); }
+.cover-divider   { width: 14mm; height: 3px; background: var(--accent-green); margin: 6mm 0; }
+.cover-desc      { font-size: 10pt; font-weight: 400; color: rgba(255,255,255,0.55); max-width: 120mm; line-height: 1.6; }
+.cover-footer    { display: flex; justify-content: space-between; align-items: center;
+                   border-top: 1px solid rgba(255,255,255,0.12); padding-top: 5mm;
+                   font-size: 8.5pt; color: rgba(255,255,255,0.4); }
+
+/* Page header */
+.page-header {
+    background: var(--primary);
+    display: flex;
+    align-items: stretch;
+    height: 14mm;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.page-header-accent {
+    width: 3mm;
+    background: var(--accent-green);
+    flex-shrink: 0;
+}
+.page-header-inner {
+    flex: 1;
+    padding: 0 8mm;
+    display: flex;
+    align-items: center;
+    gap: 5mm;
+}
+.page-header-brand {
+    color: white;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+.page-header-dot {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    flex-shrink: 0;
+}
+.page-header-rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.18);
+}
+.page-header-section {
+    color: rgba(255,255,255,0.6);
+    font-size: 7.5pt;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Page footer */
+.page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 3mm 10mm 3mm 13mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    background: var(--bg-subtle);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.page-footer-left  { font-size: 7.5pt; color: var(--text-muted); }
+.page-footer-right { font-size: 7.5pt; color: var(--primary-teal); font-weight: 600; }
+
+/* Typography */
+h1 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 3mm;
+    line-height: 1.2;
+}
+.chapter-num {
+    display: block;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent-green);
+    margin-bottom: 2mm;
+}
+.chapter-rule {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--bg-subtle) 100%);
+    margin: 3mm 0 6mm;
+}
+h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 7mm 0 2.5mm;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+}
+h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 12pt;
+    background: var(--accent-green);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+h3 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 5mm 0 2mm;
+}
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--primary-teal); text-decoration: none; }
+strong { color: var(--primary); }
+
+/* Chapter intro banner */
+.chapter-intro {
+    background: var(--bg-subtle);
+    border-left: 4px solid var(--accent-green);
+    padding: 4mm 6mm;
+    margin-bottom: 6mm;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Callout boxes */
+.note-box { background: var(--warning-bg); border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.tip-box  { background: var(--success-bg);  border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.info-box { background: var(--info-bg);     border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.warn-box { background: var(--error-bg);    border-left: 3px solid var(--accent-red); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+
+/* Step list */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 3mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--primary); color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5.5mm; height: 5.5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.5mm; flex-shrink: 0;
+}
+
+/* Two/three column cards */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin: 3mm 0; }
+.feature-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.5mm;
+}
+.feature-card p { font-size: 9pt; margin-bottom: 0; }
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 5mm;
+    font-size: 9.5pt;
+}
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    padding: 2.5mm 3.5mm;
+    text-align: left;
+    font-size: 8.5pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+td {
+    padding: 2mm 3.5mm;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+tr:nth-child(even) td {
+    background: var(--bg-subtle);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Badges */
+.badge        { display: inline-block; font-size: 7.5pt; font-weight: 700;
+                padding: 0.5mm 2mm; border-radius: 10px;
+                letter-spacing: 0.04em; }
+.badge-green  { background: #e6faf6; color: #017a64; }
+.badge-orange { background: #fff8e6; color: #c07800; }
+.badge-red    { background: #fbeeed; color: #B55852; }
+.badge-blue   { background: #ebf2f5; color: #00517e; }
+.badge-teal   { background: #e6f4f3; color: #537780; }
+.badge-gray   { background: #EAEAEC; color: #888888; }
+
+/* TOC */
+.toc-title { font-size: 18pt; font-weight: 800; color: var(--primary); margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.5mm 0; }
+.toc-entry.toc-h1 { font-weight: 700; color: var(--primary); margin-top: 3mm; font-size: 10pt; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9pt; color: var(--text-muted); }
+.toc-num  { min-width: 12mm; flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-light); margin: 0 2mm 1.5mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; font-weight: 600; }
+
+/* Arch diagram boxes */
+.arch-box {
+    background: var(--primary);
+    color: white;
+    border-radius: 6px;
+    padding: 4mm 6mm;
+    text-align: center;
+    font-weight: 700;
+    font-size: 9.5pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.arch-box-teal {
+    background: var(--primary-teal);
+    color: white;
+    border-radius: 6px;
+    padding: 4mm 6mm;
+    text-align: center;
+    font-weight: 700;
+    font-size: 9.5pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.arch-box-green {
+    background: var(--accent-green);
+    color: white;
+    border-radius: 6px;
+    padding: 4mm 6mm;
+    text-align: center;
+    font-weight: 700;
+    font-size: 9.5pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.arch-arrow {
+    text-align: center;
+    font-size: 14pt;
+    color: var(--primary-teal);
+    padding: 1mm 0;
+    font-weight: 700;
+}
+.arch-label {
+    text-align: center;
+    font-size: 7.5pt;
+    color: var(--text-muted);
+    margin-top: 1mm;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="page page-cover">
+    <div class="cover-top-bar"></div>
+    <div class="cover-body">
+        <div class="cover-logo-area">
+            <span class="cover-logo-text">Langate</span>
+            <div class="cover-logo-dot"></div>
+        </div>
+        <div class="cover-middle">
+            <div class="cover-tag">Lösningsbeskrivning</div>
+            <div class="cover-title">FortBridge</div>
+            <div class="cover-subtitle">Integration mellan Fortnox och Dynamics 365 Sales</div>
+            <div class="cover-divider"></div>
+            <div class="cover-desc">
+                En Azure-baserad integrationslösning som synkroniserar kunder, offerter, ordrar
+                och artiklar i realtid mellan Fortnox redovisningssystem och Dynamics 365 Sales CRM-plattform.
+            </div>
+        </div>
+        <div class="cover-footer">
+            <div>Langate AB &nbsp;&middot;&nbsp; peter@kalmstrom.com</div>
+            <div>Version 1.0 &mdash; April 2026</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Innehållsförteckning</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="toc-title">Innehållsförteckning</div>
+                        <div class="toc-entry toc-h1"><span class="toc-num">1</span>Bakgrund och syfte<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>Problemet som löses<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>Vad är FortBridge?<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>Systemöversikt<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>Vad synkroniseras?<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Fortnox API<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>Teknisk grund<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>OAuth 2.0-flöde<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>Behörighetsomfång (Scopes)<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.4</span>Relevanta API-resurser<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.5</span>Webhooks och polling<div class="toc-dots"></div><span class="toc-page">10</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>Dynamics 365 Sales API<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>Teknisk grund<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>Dataverse Webhooks &mdash; registrering<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>Relevanta entiteter<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.4</span>Anpassade fält för integration<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.5</span>Polymorfiska sökfält och OData-bindning<div class="toc-dots"></div><span class="toc-page">12</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>Arkitektur<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>Azure-komponentdiagram<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Azure Function App &mdash; B1-plan<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Funktioner (triggers)<div class="toc-dots"></div><span class="toc-page">15</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Statlagring med Azure Table Storage<div class="toc-dots"></div><span class="toc-page">15</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Datamappning<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Säljflödet i D365<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Konton &#x2194; Kunder (dubbelriktad)<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Produkter &#x2190; Artiklar (Fortnox &rarr; D365)<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>Offerter (D365 &rarr; Fortnox)<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.5</span>Ordrar (D365 &rarr; Fortnox)<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.6</span>Betalningsstatus (Fortnox &rarr; D365)<div class="toc-dots"></div><span class="toc-page">19</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">6</span>Autentisering och säkerhet<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.1</span>Nyckelhantering &mdash; hierarki<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.2</span>Fortnox-autentisering<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Dynamics 365-autentisering (Server-till-Server)<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Inkommande webhook-säkerhet<div class="toc-dots"></div><span class="toc-page">22</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Azure-resurser och kostnader<div class="toc-dots"></div><span class="toc-page">22</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.6</span>Checklista &mdash; säkerhetsgranskning vid driftsättning<div class="toc-dots"></div><span class="toc-page">22</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Implementationsplan<div class="toc-dots"></div><span class="toc-page">23</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>Fasöversikt<div class="toc-dots"></div><span class="toc-page">23</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Fas 1 &mdash; Infrastruktur och autentisering<div class="toc-dots"></div><span class="toc-page">23</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>Fas 2 &mdash; Artikelsynkronisering (Fortnox &rarr; D365)<div class="toc-dots"></div><span class="toc-page">24</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Fas 3 &mdash; Kundsynkronisering (dubbelriktad)<div class="toc-dots"></div><span class="toc-page">25</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.5</span>Fas 4 &mdash; Offerter, ordrar och betalningsstatus<div class="toc-dots"></div><span class="toc-page">25</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.6</span>Teknikstack<div class="toc-dots"></div><span class="toc-page">25</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">8</span>Felhantering och monitorering<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.1</span>Felklassificering<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.2</span>Retry-flöde med exponentiell backoff<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.3</span>Monitorering med Application Insights<div class="toc-dots"></div><span class="toc-page">27</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.4</span>Idempotens &mdash; säker hantering av dubbla händelser<div class="toc-dots"></div><span class="toc-page">28</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.5</span>Initial datamigration<div class="toc-dots"></div><span class="toc-page">28</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.6</span>Certifikat- och tokenlivscykel<div class="toc-dots"></div><span class="toc-page">28</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">9</span>Realtidsprestanda<div class="toc-dots"></div><span class="toc-page">29</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.1</span>Latensbudget<div class="toc-dots"></div><span class="toc-page">29</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.2</span>Tekniker för att minska latens<div class="toc-dots"></div><span class="toc-page">30</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.3</span>Arkitektur för near-real-time<div class="toc-dots"></div><span class="toc-page">30</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.4</span>Dashboard-uppdateringar i realtid<div class="toc-dots"></div><span class="toc-page">31</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">10</span>Testning och kvalitetssäkring<div class="toc-dots"></div><span class="toc-page">32</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.1</span>Testnivåer<div class="toc-dots"></div><span class="toc-page">32</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.2</span>Enhetstester (Jest / Vitest)<div class="toc-dots"></div><span class="toc-page">32</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.3</span>Kontraktstester<div class="toc-dots"></div><span class="toc-page">32</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.4</span>Integrationstester mot sandbox-miljöer<div class="toc-dots"></div><span class="toc-page">33</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.5</span>End-to-end-tester (release-gate)<div class="toc-dots"></div><span class="toc-page">33</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.6</span>Sandbox-hygien<div class="toc-dots"></div><span class="toc-page">33</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">11</span>Driftrunbok<div class="toc-dots"></div><span class="toc-page">35</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.1</span>Incidentklasser &mdash; översikt<div class="toc-dots"></div><span class="toc-page">35</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.2</span>Refresh Token utgången<div class="toc-dots"></div><span class="toc-page">35</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.3</span>D365-certifikat utgånget<div class="toc-dots"></div><span class="toc-page">35</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.4</span>HTTP 429-storm från Fortnox<div class="toc-dots"></div><span class="toc-page">35</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.5</span>Dead letter queue växer<div class="toc-dots"></div><span class="toc-page">36</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.6</span>HealthCheck returnerar rött<div class="toc-dots"></div><span class="toc-page">36</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.7</span>Noll synkroniseringar under kontorstid<div class="toc-dots"></div><span class="toc-page">36</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.8</span>Manuell återsynkronisering av en kund<div class="toc-dots"></div><span class="toc-page">36</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.9</span>Eskaleringsschema<div class="toc-dots"></div><span class="toc-page">36</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num"></span>Bilaga AOrdlista<div class="toc-dots"></div><span class="toc-page">37</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>A.1 Allmänna begrepp<div class="toc-dots"></div><span class="toc-page">37</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>A.2 FortBridge-specifika termer<div class="toc-dots"></div><span class="toc-page">39</span></div>
+        </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 1 &mdash; Bakgrund och syfte</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1><span class="chapter-num">Kapitel 1</span>Bakgrund och syfte</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FortBridge är en integrationslösning som låter säljorganisationer arbeta
+            i Dynamics 365 Sales utan att behöva hantera dubbel datainmatning i Fortnox.
+            Systemet håller kunder, produkter, offerter och ordrar kontinuerligt i synk
+            mellan de två plattformarna &mdash; med fördröjningar på sekunder till minuter.</p>
+        </div>
+
+        <h2>1.1 Problemet som löses</h2>
+        <p>Många svenska företag använder Fortnox som sitt ekonomisystem och Dynamics 365 Sales som sitt
+        CRM-system. Utan integration uppstår ett klassiskt problem: säljteamet skapar en order i D365 Sales
+        och ekonomiavdelningen måste sedan lägga in samma order manuellt i Fortnox. Resultatet:</p>
+        <ul>
+            <li>Dubbelarbete som tar tid och skapar frustration hos båda avdelningarna</li>
+            <li>Fel och avvikelser när data registreras på olika sätt i de två systemen</li>
+            <li>Försenade fakturor eftersom ekonomiavdelningen är beroende av manuell kommunikation från sälj</li>
+            <li>Bristande synlighet &mdash; säljaren ser inte betalningsstatus direkt i CRM</li>
+        </ul>
+        <p>Sammantaget innebär detta längre ledtider i faktureringen, ökad risk för kassaflödesproblem
+        och ett sämre kundintryck &mdash; problem som FortBridge löser utan att kräva förändrade
+        arbetsrutiner i säljteamet.</p>
+
+        <h2>1.2 Vad är FortBridge?</h2>
+        <p>FortBridge är en Azure-baserad integrationstjänst som körs i bakgrunden och håller de två
+        systemen i synk. Lösningen är byggd som en Azure Function App (B1-plan) och kommunicerar
+        med båda systemens REST API:er.</p>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Fortnox</h4>
+                <p>Svenskt molnbaserat ekonomisystem med ett väldokumenterat REST API v3. Hanterar
+                kunder, fakturor, ordrar, artiklar, betalningar och bokföring.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Dynamics 365 Sales</h4>
+                <p>Microsofts CRM-plattform för säljprocesser. Hanterar konton, kontakter,
+                affärsmöjligheter, offerter och ordrar via Dataverse Web API.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 1 &mdash; Bakgrund och syfte</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>1.3 Systemöversikt</h2>
+        <p>FortBridge agerar som en intelligent brygga mellan de två systemen. Dataflödet är
+        dubbelriktat för kunder men enkelriktat för offerter och ordrar (sälj styr,
+        ekonomi tar emot):</p>
+<svg viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:4mm 0 2mm;" aria-label="Systemöversikt FortBridge">
+            <defs>
+                <marker id="arr-blue" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#00517e"/>
+                </marker>
+                <marker id="arr-green" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#02B896"/>
+                </marker>
+                <marker id="arr-teal" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+                    <path d="M0,0 L0,7 L9,3.5 z" fill="#537780"/>
+                </marker>
+            </defs>
+            <!-- D365 box -->
+            <rect x="5" y="20" width="190" height="170" rx="8" fill="#ebf2f5" stroke="#00517e" stroke-width="2"/>
+            <rect x="5" y="20" width="190" height="36" rx="8" fill="#00517e"/>
+            <rect x="5" y="44" width="190" height="12" fill="#00517e"/>
+            <text x="100" y="44" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="13" font-weight="700" fill="white">Dynamics 365 Sales</text>
+            <text x="100" y="80" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Konton (Account)</text>
+            <text x="100" y="99" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Offerter (Quote)</text>
+            <text x="100" y="118" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Ordrar (SalesOrder)</text>
+            <text x="100" y="137" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Produkter (Product)</text>
+            <text x="100" y="156" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#4A4A4A" font-weight="600">Dataverse Webhooks &#x2192;</text>
+            <text x="100" y="175" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#4A4A4A" font-weight="600">&#x2190; Dataverse Web API</text>
+
+            <!-- FortBridge center box -->
+            <rect x="265" y="5" width="190" height="200" rx="8" fill="#e6faf6" stroke="#02B896" stroke-width="2.5"/>
+            <rect x="265" y="5" width="190" height="36" rx="8" fill="#02B896"/>
+            <rect x="265" y="29" width="190" height="12" fill="#02B896"/>
+            <text x="360" y="29" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="800" fill="white">FortBridge</text>
+            <text x="360" y="58" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Azure Function App (B1)</text>
+            <text x="360" y="77" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#537780">HTTP Triggers (webhooks in)</text>
+            <text x="360" y="94" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#537780">Timer Triggers (polling)</text>
+            <line x1="280" y1="103" x2="440" y2="103" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="360" y="118" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#537780">Azure Table Storage</text>
+            <text x="360" y="135" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#537780">Azure Key Vault</text>
+            <text x="360" y="152" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#537780">Application Insights</text>
+            <line x1="280" y1="161" x2="440" y2="161" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="360" y="176" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="600">Idempotent synk</text>
+            <text x="360" y="193" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="600">Retry med backoff</text>
+
+            <!-- Fortnox box -->
+            <rect x="525" y="20" width="190" height="170" rx="8" fill="#ebf2f5" stroke="#537780" stroke-width="2"/>
+            <rect x="525" y="20" width="190" height="36" rx="8" fill="#537780"/>
+            <rect x="525" y="44" width="190" height="12" fill="#537780"/>
+            <text x="620" y="44" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="13" font-weight="700" fill="white">Fortnox</text>
+            <text x="620" y="80" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Kunder (Customer)</text>
+            <text x="620" y="99" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Offerter (Offer)</text>
+            <text x="620" y="118" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Ordrar (Order)</text>
+            <text x="620" y="137" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#537780">Artiklar (Article)</text>
+            <text x="620" y="156" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#4A4A4A" font-weight="600">&#x2190; REST API v3</text>
+            <text x="620" y="175" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#4A4A4A" font-weight="600">Webhooks + Poll &#x2192;</text>
+
+            <!-- Left arrows (D365 <-> FortBridge) -->
+            <path d="M195 85 L265 85" stroke="#00517e" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+            <path d="M265 120 L195 120" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#arr-green)"/>
+            <!-- Right arrows (FortBridge <-> Fortnox) -->
+            <path d="M455 85 L525 85" stroke="#00517e" stroke-width="2" fill="none" marker-end="url(#arr-blue)"/>
+            <path d="M525 120 L455 120" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#arr-green)"/>
+        </svg>
+<h2>1.4 Vad synkroniseras?</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>Datatyp</th>
+                    <th>D365 Sales</th>
+                    <th>Fortnox</th>
+                    <th>Riktning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Kunder / Konton</strong></td>
+                    <td>Account</td>
+                    <td>Customer</td>
+                    <td>Dubbelriktad</td>
+                </tr>
+                <tr>
+                    <td><strong>Produkter / Artiklar</strong></td>
+                    <td>Product</td>
+                    <td>Article</td>
+                    <td>Fortnox &rarr; D365</td>
+                </tr>
+                <tr>
+                    <td><strong>Offerter</strong></td>
+                    <td>Quote</td>
+                    <td>Offer</td>
+                    <td>D365 &rarr; Fortnox</td>
+                </tr>
+                <tr>
+                    <td><strong>Ordrar</strong></td>
+                    <td>SalesOrder</td>
+                    <td>Order / Faktura</td>
+                    <td>D365 &rarr; Fortnox</td>
+                </tr>
+                <tr>
+                    <td><strong>Betalningsstatus</strong></td>
+                    <td>SalesOrder (fält)</td>
+                    <td>InvoicePayment</td>
+                    <td>Fortnox &rarr; D365</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 1 &mdash; Bakgrund och syfte</div>
+        </div>
+    </div>
+    <div class="page-content">
+<div class="info-box">
+            <strong>Avgränsning:</strong> FortBridge synkroniserar inte leads, affärsmöjligheter
+            (Opportunity), aktiviteter eller kampanjer. Dessa saknar motsvarighet i Fortnox API.
+            Säljcykeln fångas upp när en offert skapas &mdash; affärsmöjligheten stannar i D365
+            som historik, medan offerten och allt som följer synkroniseras fullt ut.
+            Återkommande fakturering (abonnemang, servicekontrakt) faller utanför FortBridges scope
+            och kräver separat hantering i Fortnox.
+        </div>
+<div class="note-box">
+            <strong>Kontaktpersoner:</strong> Fortnox lagrar kontaktpersoner som referensfält på kunden
+            (<code>YourReference</code> / <code>OurReference</code>), inte som separata objekt.
+            D365 Contact-poster synkroniseras därför inte som egna entiteter &mdash; kontaktnamn
+            kan valfritt mappas till referensfälten vid offert- och ordersynkronisering.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Fortnox API</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 2</span>Fortnox API</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Fortnox erbjuder ett väldokumenterat REST API (version 3) som ger bred tillgång
+            till ekonomisystemets resurser. API:et stöder JSON och XML, och används av hundratals
+            tredjepartsintegrationer på den svenska marknaden.</p>
+        </div>
+<h2>2.1 Teknisk grund</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Bas-URL</h4>
+                <p><code>https://api.fortnox.se/3/</code></p>
+                <p>Alla resurser nås via denna bas med resursnamn som sökväg, t.ex. <code>/3/customers</code>.</p>
+            </div>
+<div class="feature-card">
+                <h4>Autentisering</h4>
+                <p>OAuth 2.0 Authorization Code Flow. Access Token gäller 1 timme,
+                Refresh Token 60 dagar. Refresh Token roteras vid varje förnyelse.</p>
+            </div>
+<div class="feature-card">
+                <h4>Hastighetsgräns</h4>
+                <p>400 anrop per minut per integration. Vid överskridning returneras
+                HTTP 429 med <code>Retry-After</code>-header. FortBridge respekterar denna header.</p>
+            </div>
+<div class="feature-card">
+                <h4>Paginering</h4>
+                <p>Max 500 poster per sida via <code>limit</code> och <code>page</code>.
+                Svarsobjektet innehåller <code>MetaInformation</code> med <code>@TotalPages</code>
+                och <code>@TotalResources</code>.</p>
+            </div>
+        </div>
+<div class="tip-box">
+            <strong>Effektiv polling:</strong> Nästan alla list-resurser stöder filtret
+            <code>?lastmodified=YYYY-MM-DD</code>. FortBridge sparar tidsstämpeln för senaste
+            lyckade poll i Table Storage och skickar alltid detta filter &mdash; aldrig en full
+            lista. Det håller anropsvolymen långt under hastighetsgränsen.
+        </div>
+<h2>2.2 OAuth 2.0-flöde</h2>
+        <p>Fortnox implementerar Authorization Code Flow. Installationsflödet körs en gång;
+        därefter sköts tokenförnyelse automatiskt av FortBridge.</p>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Fortnox API</div>
+        </div>
+    </div>
+    <div class="page-content">
+<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Fortnox OAuth 2.0-flöde">
+            <defs>
+                <marker id="oarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+                <marker id="oarr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+            </defs>
+            <!-- Actor headers -->
+            <rect x="30" y="5" width="150" height="34" rx="6" fill="#00517e"/>
+            <text x="105" y="27" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="white">Fortnox Admin</text>
+            <rect x="285" y="5" width="150" height="34" rx="6" fill="#02B896"/>
+            <text x="360" y="27" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="white">FortBridge</text>
+            <rect x="540" y="5" width="150" height="34" rx="6" fill="#537780"/>
+            <text x="615" y="27" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="white">Fortnox Auth</text>
+            <!-- Lifelines -->
+            <line x1="105" y1="39" x2="105" y2="225" stroke="#DBE4EA" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <line x1="360" y1="39" x2="360" y2="225" stroke="#DBE4EA" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <line x1="615" y1="39" x2="615" y2="225" stroke="#DBE4EA" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <!-- Step 1: Installationsflödet startar -->
+            <text x="15" y="67" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">1</text>
+            <path d="M105 63 L354 63" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#oarr)"/>
+            <text x="225" y="58" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#00517e">Öppnar /api/setup/authorize</text>
+            <!-- Step 2: Redirect to Fortnox -->
+            <text x="15" y="90" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">2</text>
+            <path d="M360 86 L609 86" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#oarr)"/>
+            <text x="488" y="81" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#00517e">Redirect: client_id + scope + state</text>
+            <!-- Step 3: User logs in -->
+            <text x="15" y="113" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">3</text>
+            <path d="M615 109 L111 109" stroke="#537780" stroke-width="1.5" fill="none" marker-end="url(#oarr)"/>
+            <text x="360" y="104" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Inloggningssida visas</text>
+            <!-- Step 4: Admin approves -->
+            <text x="15" y="136" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">4</text>
+            <path d="M105 132 L609 132" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#oarr)"/>
+            <text x="360" y="127" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#00517e">Admin loggar in och godkänner scopes</text>
+            <!-- Step 5: Auth Code -->
+            <text x="15" y="159" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">5</text>
+            <path d="M615 155 L366 155" stroke="#537780" stroke-width="1.5" fill="none" marker-end="url(#oarr)"/>
+            <text x="488" y="150" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Authorization Code (giltig 10 min)</text>
+            <!-- Step 6: Token exchange -->
+            <text x="15" y="182" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">6</text>
+            <path d="M360 178 L609 178" stroke="#02B896" stroke-width="1.5" fill="none" marker-end="url(#oarr-g)"/>
+            <text x="488" y="173" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896">POST /oauth-v1/token &mdash; byt ut kod</text>
+            <!-- Step 7: Tokens returned -->
+            <text x="15" y="205" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="700">7</text>
+            <path d="M615 201 L366 201" stroke="#02B896" stroke-width="1.5" fill="none" marker-end="url(#oarr-g)"/>
+            <text x="488" y="196" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896">Access Token (1h) + Refresh Token (60d)</text>
+            <!-- Step 8: Stored in Key Vault -->
+            <text x="15" y="225" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780" font-weight="600">8</text>
+            <rect x="306" y="213" width="108" height="16" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="360" y="224" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#00517e" font-weight="600">Sparas i Key Vault</text>
+        </svg>
+<div class="warn-box">
+            <strong>Rotation av Refresh Token:</strong> Fortnox ogiltigförklarar det gamla
+            Refresh Token omedelbart vid varje förnyelse. Om FortBridge kraschar halvvägs genom
+            en tokenförnyelse kan integrationens tokens vara i ett ogiltigt tillstånd.
+            Lösning: lagra Access Token och Refresh Token atomärt i en enda Table Storage-transaktion
+            och behåll en backup-kopia av föregående Refresh Token under 5 minuter.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Fortnox API</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>2.3 Behörighetsomfång (Scopes)</h2>
+        <p>FortBridge begär följande scopes vid konfiguration. Scopes är skiftlägeskänsliga
+        och listas i Fortnox Developer Portal vid integrationsregistreringen.</p>
+        <table>
+            <thead>
+                <tr><th>Scope</th><th>Används för</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>customer</code></td><td>Läsa och skriva kundregister</td></tr>
+                <tr><td><code>invoice</code></td><td>Skapa och läsa fakturor</td></tr>
+                <tr><td><code>order</code></td><td>Skapa och läsa ordrar och offerter</td></tr>
+                <tr><td><code>article</code></td><td>Läsa artikelregister för produktsynk</td></tr>
+                <tr><td><code>payment</code></td><td>Läsa betalningsstatus för fakturor</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Fortnox API</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>2.4 Relevanta API-resurser</h2>
+        <h3>Kunder (<code>/3/customers</code>)</h3>
+        <table>
+            <thead><tr><th>Fält</th><th>Typ</th><th>Beskrivning</th></tr></thead>
+            <tbody>
+                <tr><td><code>CustomerNumber</code></td><td>String</td><td>Unikt kundnummer (internt ID)</td></tr>
+                <tr><td><code>Name</code></td><td>String</td><td>Företagsnamn</td></tr>
+                <tr><td><code>OrganisationNumber</code></td><td>String</td><td>Organisationsnummer</td></tr>
+                <tr><td><code>Email</code></td><td>String</td><td>E-postadress</td></tr>
+                <tr><td><code>Phone1</code></td><td>String</td><td>Telefonnummer</td></tr>
+                <tr><td><code>Address1</code>, <code>ZipCode</code>, <code>City</code></td><td>String</td><td>Postadress</td></tr>
+                <tr><td><code>CountryCode</code></td><td>String</td><td>ISO 3166-1 landkod (t.ex. <code>"SE"</code>)</td></tr>
+                <tr><td><code>YourReference</code>, <code>OurReference</code></td><td>String</td><td>Kontaktpersonsnamn (se avgränsning kap. 1)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Artiklar (<code>/3/articles</code>)</h3>
+        <table>
+            <thead><tr><th>Fält</th><th>Typ</th><th>Beskrivning</th></tr></thead>
+            <tbody>
+                <tr><td><code>ArticleNumber</code></td><td>String</td><td>Unikt artikelnummer</td></tr>
+                <tr><td><code>Description</code></td><td>String</td><td>Artikelnamn/-beskrivning</td></tr>
+                <tr><td><code>SalesPrice</code></td><td>Number</td><td>Försäljningspris exklusive moms</td></tr>
+                <tr><td><code>VAT</code></td><td>Integer</td><td>Momssats i heltal (t.ex. <code>25</code>, <code>12</code>, <code>6</code>)</td></tr>
+                <tr><td><code>Unit</code></td><td>String</td><td>Enhet (st, tim, m², osv.)</td></tr>
+                <tr><td><code>Active</code></td><td>Boolean</td><td>Om artikeln är aktiv</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Offerter (<code>/3/offers</code>) och Ordrar (<code>/3/orders</code>)</h3>
+        <table>
+            <thead><tr><th>Fält</th><th>Beskrivning</th></tr></thead>
+            <tbody>
+                <tr><td><code>DocumentNumber</code></td><td>Internt löpnummer</td></tr>
+                <tr><td><code>CustomerNumber</code></td><td>Koppling till kund</td></tr>
+                <tr><td><code>OfferDate</code> / <code>OrderDate</code></td><td>Dokumentdatum</td></tr>
+                <tr><td><code>ExpireDate</code></td><td>Giltighetsdatum (offerter)</td></tr>
+                <tr><td><code>Total</code></td><td>Totalsumma inklusive moms</td></tr>
+                <tr><td><code>OfferRows</code> / <code>OrderRows</code></td><td>Array med artikelrader</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Fakturor och betalningar</h3>
+        <p>En order konverteras till faktura via <code>GET /3/orders/{DocumentNumber}/createinvoice</code>.
+        Betalningsstatus avgörs av fakturans fält <code>Balance</code> (återstående obetalat belopp):
+        fakturan är betald när <code>Balance == 0</code>. Det finns inget separat <code>Paid</code>-fält.
+        Individuella inbetalningar listas via <code>GET /3/invoicepayments</code>.</p>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Fortnox API</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>2.5 Webhooks och polling</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Webhooks (native)</h4>
+                <p>Fortnox anropar FortBridge direkt vid specifika händelser. Signaturen
+                skickas i headern <code>X-Fortnox-Hmac-SHA256</code> (HMAC-SHA256).</p>
+            </div>
+            <div class="feature-card">
+                <h4>Polling (timer-trigger)</h4>
+                <p>Azure Function med timer-trigger pollar Fortnox var 5:e minut med
+                <code>?lastmodified=</code>-filter för resurser utan webhook-stöd.</p>
+            </div>
+        </div>
+        <p>Fortnox webhook-händelser som FortBridge registrerar via <code>POST /3/webhooks</code>:</p>
+        <table>
+            <thead><tr><th>Händelse-sträng</th><th>Trigger</th></tr></thead>
+            <tbody>
+                <tr><td><code>customer-created</code></td><td>Ny kund skapad i Fortnox</td></tr>
+                <tr><td><code>customer-changed</code></td><td>Kund uppdaterad i Fortnox</td></tr>
+                <tr><td><code>invoice-paid</code></td><td>Faktura markerad som betald</td></tr>
+                <tr><td><code>order-created</code></td><td>Order skapad i Fortnox</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 3 &mdash; Dynamics 365 Sales API</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 3</span>Dynamics 365 Sales API</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Dynamics 365 Sales exponerar all sin data via <strong>Dataverse Web API</strong> &mdash;
+            ett OData v4-baserat REST API. FortBridge använder detta API för att läsa och skriva
+            konton, produkter, offerter och ordrar. Utgående händelser skickas via
+            <strong>Dataverse Webhooks</strong> (Service Endpoints).</p>
+        </div>
+<h2>3.1 Teknisk grund</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Bas-URL</h4>
+                <p><code>https://&lt;org&gt;.api.crm4.dynamics.com/api/data/v9.2/</code></p>
+                <p>Suffixet <code>crm4</code> gäller för europeiska tenants. Korrekt URL
+                hämtas alltid från Power Platform Admin Center under miljöinställningarna (fält: "Web API URL").</p>
+            </div>
+<div class="feature-card">
+                <h4>Autentisering S2S</h4>
+                <p>Azure AD <strong>Application permissions</strong> (inte Delegated).
+                Token begärs med scope <code>https://&lt;org&gt;.crm4.dynamics.com/.default</code>.
+                Kräver en Application User i Dataverse.</p>
+            </div>
+<div class="feature-card">
+                <h4>OData-frågor</h4>
+                <p>Stödjer <code>$filter</code>, <code>$select</code>, <code>$expand</code>
+                och <code>$orderby</code>. Batch-anrop via <code>/$batch</code> rekommenderas
+                vid synkronisering av orderrader.</p>
+            </div>
+<div class="feature-card">
+                <h4>Utgående händelser</h4>
+                <p>Dataverse Webhooks (Service Endpoints av typen Webhook) registreras i
+                Plugin Registration Tool och skickar HTTP POST till FortBridge vid
+                Create/Update/StateChange.</p>
+            </div>
+        </div>
+<div class="warn-box">
+            <strong>Server-till-server-autentisering:</strong> För en tjänst utan inloggad
+            användare ska alltid <strong>Application permissions</strong> användas &mdash; inte
+            Delegated permissions (<code>user_impersonation</code>). Skapa en Application User
+            i Dataverse, koppla den till appregistreringen via Client ID, och tilldela en
+            säkerhetsroll med CRUD-rättigheter på relevanta entiteter.
+        </div>
+<h2>3.2 Dataverse Webhooks &mdash; registrering</h2>
+        <p>D365 skickar händelser till FortBridge via Webhooks registrerade i
+        <strong>Plugin Registration Tool</strong>. Processen:</p>
+        <ol class="step-list">
+            <li>Öppna Plugin Registration Tool &rarr; <em>Register New Service Endpoint</em>
+            &rarr; välj typ <strong>Webhook</strong>.</li>
+            <li>Fyll i FortBridges endpoint-URL och konfigurera autentisering som
+            <em>HttpHeader</em> med headern <code>X-FortBridge-Secret</code>.</li>
+            <li>Lägg till ett <strong>Step</strong> på Service Endpoint (ej på ett Plugin):
+            välj entitet, message och stage. Använd <em>PostOperation, Asynchronous</em>
+            för bättre prestanda och tillförlitlighet.</li>
+            <li>D365 förväntar sig HTTP 200-svar inom <strong>60 sekunder</strong> &mdash;
+            annars anses leveransen misslyckad och steget kan automatiskt inaktiveras vid
+            upprepade fel.</li>
+        </ol>
+<table>
+            <thead><tr><th>Entitet</th><th>Message</th><th>Stage</th><th>FortBridge-funktion</th></tr></thead>
+            <tbody>
+                <tr><td>account</td><td>Create, Update</td><td>PostOperation</td><td><code>OnD365AccountChanged</code></td></tr>
+                <tr><td>quote</td><td>Create, Update, SetStateDynamicEntity</td><td>PostOperation</td><td><code>OnD365QuoteChanged</code></td></tr>
+                <tr><td>salesorder</td><td>Create, Update</td><td>PostOperation</td><td><code>OnD365OrderChanged</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 3 &mdash; Dynamics 365 Sales API</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>3.3 Relevanta entiteter</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>D365-entitet</th>
+                    <th>API-samlingsnamn</th>
+                    <th>Fortnox-motsvarighet</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Konto (Account)</td><td><code>accounts</code></td><td>Customer</td></tr>
+                <tr><td>Kontakt (Contact)</td><td><code>contacts</code></td><td>YourReference / OurReference på kund</td></tr>
+                <tr><td>Produkt (Product)</td><td><code>products</code></td><td>Article</td></tr>
+                <tr><td>Enhetsgrupp (UoMSchedule)</td><td><code>uomschedules</code></td><td>Fortnox Unit-fält</td></tr>
+                <tr><td>Enhet (UoM)</td><td><code>uoms</code></td><td>Fortnox Unit-fält</td></tr>
+                <tr><td>Prislista (PriceLevel)</td><td><code>pricelevels</code></td><td>Price List</td></tr>
+                <tr><td>Offert (Quote)</td><td><code>quotes</code></td><td>Offer</td></tr>
+                <tr><td>Offertrader (QuoteDetail)</td><td><code>quotedetails</code></td><td>OfferRows</td></tr>
+                <tr><td>Order (SalesOrder)</td><td><code>salesorders</code></td><td>Order / Faktura</td></tr>
+                <tr><td>Orderrader (SalesOrderDetail)</td><td><code>salesorderdetails</code></td><td>OrderRows</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>Enheter (UoM) är obligatoriska</strong> vid skapande av <code>quotedetails</code>
+            och <code>salesorderdetails</code>. Fältet <code>uomid</code> måste pekas mot en UoM
+            inom rätt enhetsgrupp. Utan det returnerar Dataverse valideringsfel och raden skapas ej.
+        </div>
+<h2>3.4 Anpassade fält för integration</h2>
+        <p>FortBridge skapar anpassade fält i D365 med publisherprefixet <code>lg_</code> (Langate).
+        Fälten skapas i en hanterad lösning för att möjliggöra ren avinstallation.</p>
+<table>
+            <thead>
+                <tr><th>Entitet</th><th>Fältnamn</th><th>Typ</th><th>Syfte</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Account</td><td><code>lg_fortnoxcustomernumber</code></td><td>Text (100)</td><td>Fortnox CustomerNumber &mdash; matchningsnyckel</td></tr>
+                <tr><td>Account</td><td><code>lg_fortnoxsynced</code></td><td>DateTime</td><td>Tidpunkt för senaste lyckade synk</td></tr>
+                <tr><td>Product</td><td><code>lg_fortnoxarticlenumber</code></td><td>Text (100)</td><td>Fortnox ArticleNumber &mdash; matchningsnyckel</td></tr>
+                <tr><td>Product</td><td><code>lg_vatpercent</code></td><td>Integer</td><td>Momssats i heltal från Fortnox</td></tr>
+                <tr><td>Quote</td><td><code>lg_fortnoxoffernumber</code></td><td>Text (100)</td><td>Fortnox DocumentNumber (offer)</td></tr>
+                <tr><td>SalesOrder</td><td><code>lg_fortnoxordernumber</code></td><td>Text (100)</td><td>Fortnox DocumentNumber (order)</td></tr>
+                <tr><td>SalesOrder</td><td><code>lg_fortnoxinvoicenumber</code></td><td>Text (100)</td><td>Fortnox fakturanummer</td></tr>
+                <tr><td>SalesOrder</td><td><code>lg_invoicepaid</code></td><td>Boolean</td><td>Faktura betald (Balance == 0 i Fortnox)</td></tr>
+                <tr><td>SalesOrder</td><td><code>lg_invoicepaiddate</code></td><td>DateTime</td><td>Betalningsdatum (från Fortnox)</td></tr>
+            </tbody>
+        </table>
+<h2>3.5 Polymorfiska sökfält och OData-bindning</h2>
+        <p>Fältet <code>customerid</code> på Quote och SalesOrder är en polymorfisk lookup &mdash;
+        det kan peka på antingen ett Account eller en Contact. Vid OData PATCH/POST-anrop
+        används <code>@odata.bind</code>-syntax:</p>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Binda till Account</h4>
+                <p><code>"customerid_account@odata.bind": "/accounts(GUID)"</code></p>
+            </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 3 &mdash; Dynamics 365 Sales API</div>
+        </div>
+    </div>
+    <div class="page-content">
+<div class="feature-card">
+                <h4>Orderrader: ispriceoverridden</h4>
+                <p>Sätt <code>"ispriceoverridden": true</code> på <code>quotedetails</code> /
+                <code>salesorderdetails</code> om <code>priceperunit</code> ska respekteras
+                och inte hämtas från prislistan.</p>
+            </div>
+        </div>
+<div class="tip-box">
+            <strong>ETag och optimistisk concurrency:</strong> Dataverse Web API returnerar
+            <code>@odata.etag</code> för varje post. Skicka med etag i <code>If-Match</code>-headern
+            vid PATCH-anrop för att undvika konflikter om D365 och FortBridge uppdaterar
+            samma post parallellt.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 4 &mdash; Arkitektur</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 4</span>Arkitektur</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FortBridge körs som en Azure Function App på B1-plan. Lösningen innehåller
+            åtta funktioner (triggers) som hanterar synkronisering i båda riktningarna,
+            tokenhantering och felåterförsök. All state lagras i Azure Table Storage och
+            alla hemligheter i Azure Key Vault.</p>
+        </div>
+<h2>4.1 Azure-komponentdiagram</h2>
+<svg viewBox="0 0 720 295" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="FortBridge Azure-arkitektur">
+            <defs>
+                <marker id="ca" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+                <marker id="ca-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+                <marker id="ca-t" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#537780"/>
+                </marker>
+            </defs>
+
+            <!-- Azure boundary -->
+            <rect x="155" y="5" width="415" height="285" rx="10" fill="#f0f9ff" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="6,3"/>
+            <text x="363" y="22" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#0078d4" font-weight="700">Azure Resource Group</text>
+
+            <!-- Function App box -->
+            <rect x="170" y="30" width="385" height="185" rx="8" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <rect x="170" y="30" width="385" height="28" rx="8" fill="#02B896"/>
+            <rect x="170" y="50" width="385" height="8" fill="#02B896"/>
+            <text x="363" y="50" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="white">Function App (B1 &mdash; Always On)</text>
+
+            <!-- HTTP Triggers column -->
+            <text x="255" y="76" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#00517e">HTTP Triggers</text>
+            <rect x="178" y="80" width="154" height="20" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="255" y="94" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">OnD365AccountChanged</text>
+            <rect x="178" y="103" width="154" height="20" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="255" y="117" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">OnD365QuoteChanged</text>
+            <rect x="178" y="126" width="154" height="20" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="255" y="140" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">OnD365OrderChanged</text>
+            <rect x="178" y="149" width="154" height="20" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="255" y="163" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">OnFortnoxWebhook</text>
+            <rect x="178" y="172" width="154" height="20" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="255" y="186" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">HealthCheck</text>
+
+            <!-- Divider -->
+            <line x1="337" y1="65" x2="337" y2="205" stroke="#DBE4EA" stroke-width="1"/>
+
+            <!-- Timer Triggers column -->
+            <text x="423" y="76" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#00517e">Timer Triggers</text>
+            <rect x="342" y="80" width="204" height="20" rx="4" fill="#e6f4f3" stroke="#537780" stroke-width="1"/>
+            <text x="444" y="94" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">PollFortnoxChanges (var 5 min)</text>
+            <rect x="342" y="103" width="204" height="20" rx="4" fill="#e6f4f3" stroke="#537780" stroke-width="1"/>
+            <text x="444" y="117" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">SyncArticlesToD365 (var 1 tim)</text>
+            <rect x="342" y="126" width="204" height="20" rx="4" fill="#e6f4f3" stroke="#537780" stroke-width="1"/>
+            <text x="444" y="140" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">RefreshFortnoxToken (var 45 min)</text>
+
+            <!-- Supporting services row -->
+            <rect x="178" y="228" width="116" height="52" rx="6" fill="#fff8e6" stroke="#F5A623" stroke-width="1.5"/>
+            <text x="236" y="248" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" font-weight="700" fill="#c07800">Table Storage</text>
+            <text x="236" y="262" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Tokens, Mappningar</text>
+            <text x="236" y="274" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Retry-kö</text>
+
+            <rect x="304" y="228" width="116" height="52" rx="6" fill="#fbeeed" stroke="#B55852" stroke-width="1.5"/>
+            <text x="362" y="248" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" font-weight="700" fill="#B55852">Key Vault</text>
+            <text x="362" y="262" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Fortnox tokens</text>
+            <text x="362" y="274" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Certifikat, secrets</text>
+
+            <rect x="430" y="228" width="116" height="52" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="488" y="248" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" font-weight="700" fill="#00517e">App Insights</text>
+            <text x="488" y="262" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Loggning</text>
+            <text x="488" y="274" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#4A4A4A">Larm, traces</text>
+
+            <!-- Internal arrows (Function App -> supporting) -->
+            <path d="M236 215 L236 228" stroke="#F5A623" stroke-width="1.5" fill="none" marker-end="url(#ca-g)"/>
+            <path d="M362 215 L362 228" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ca-g)"/>
+            <path d="M363 215 L488 228" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#ca)"/>
+
+            <!-- External: D365 (left of Azure box) -->
+            <rect x="5" y="95" width="140" height="50" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="2"/>
+            <rect x="5" y="95" width="140" height="22" rx="6" fill="#00517e"/>
+            <rect x="5" y="110" width="140" height="7" fill="#00517e"/>
+            <text x="75" y="110" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Dynamics 365</text>
+            <text x="75" y="133" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Dataverse Web API</text>
+
+            <!-- External: Fortnox (right of Azure box) -->
+            <rect x="575" y="95" width="140" height="50" rx="6" fill="#ebf2f5" stroke="#537780" stroke-width="2"/>
+            <rect x="575" y="95" width="140" height="22" rx="6" fill="#537780"/>
+            <rect x="575" y="110" width="140" height="7" fill="#537780"/>
+            <text x="645" y="110" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Fortnox</text>
+            <text x="645" y="133" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">REST API v3</text>
+
+            <!-- D365 <-> Function App arrows -->
+            <path d="M145 108 L170 108" stroke="#00517e" stroke-width="2" fill="none" marker-end="url(#ca)"/>
+            <text x="157" y="103" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#00517e">hook</text>
+            <path d="M170 128 L145 128" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#ca-g)"/>
+            <text x="157" y="142" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#02B896">API</text>
+
+            <!-- Fortnox <-> Function App arrows -->
+            <path d="M555 108 L575 108" stroke="#537780" stroke-width="2" fill="none" marker-end="url(#ca-t)"/>
+            <text x="565" y="103" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#537780">API</text>
+            <path d="M575 128 L555 128" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#ca-g)"/>
+            <text x="565" y="142" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#02B896">hook</text>
+        </svg>
+<h2>4.2 Azure Function App &mdash; B1-plan</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>B1 Basic &mdash; specifikation</h4>
+                <p>1 kärna, 1,75 GB RAM, 10 GB diskutrymme. Stöder <strong>Always On</strong>
+                (förhindrar viloläge) &mdash; kritiskt för timer-triggers.
+                Ca 530 kr/månad i West Europe.</p>
+            </div>
+<div class="feature-card">
+                <h4>Varför B1 och inte Consumption?</h4>
+                <p>Consumption-plan garanterar inte exakta timer-intervall och går i viloläge
+                vid inaktivitet. B1 ger förutsägbar latens och exakta 5-minuterspollar.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 4 &mdash; Arkitektur</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>4.3 Funktioner (triggers)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Funktion</th>
+                    <th>Trigger</th>
+                    <th>Ansvar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>OnD365AccountChanged</code></td>
+                    <td>HTTP</td>
+                    <td>Tar emot Dataverse Webhook för konton. Skapar/uppdaterar kund i Fortnox.</td>
+                </tr>
+                <tr>
+                    <td><code>OnD365QuoteChanged</code></td>
+                    <td>HTTP</td>
+                    <td>Tar emot offerthändelser från D365. Skapar/uppdaterar offert i Fortnox.</td>
+                </tr>
+                <tr>
+                    <td><code>OnD365OrderChanged</code></td>
+                    <td>HTTP</td>
+                    <td>Tar emot orderhändelser från D365. Skapar order och valfritt faktura i Fortnox.</td>
+                </tr>
+                <tr>
+                    <td><code>OnFortnoxWebhook</code></td>
+                    <td>HTTP</td>
+                    <td>Tar emot Fortnox-webhooks (ny kund, betald faktura). Uppdaterar D365.</td>
+                </tr>
+                <tr>
+                    <td><code>HealthCheck</code></td>
+                    <td>HTTP</td>
+                    <td>Returnerar status för båda API-anslutningarna. Används för monitorering.</td>
+                </tr>
+                <tr>
+                    <td><code>PollFortnoxChanges</code></td>
+                    <td>Timer (5 min)</td>
+                    <td>Pollar Fortnox med <code>?lastmodified=</code>-filter för resurser utan webhook-stöd.</td>
+                </tr>
+                <tr>
+                    <td><code>SyncArticlesToD365</code></td>
+                    <td>Timer (1 tim)</td>
+                    <td>Synkroniserar Fortnox artikelregister till D365 produktkatalog.</td>
+                </tr>
+                <tr>
+                    <td><code>RefreshFortnoxToken</code></td>
+                    <td>Timer (45 min)</td>
+                    <td>Förnyar Fortnox Access Token och sparar nytt token-par atomärt i Table Storage.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4.4 Statlagring med Azure Table Storage</h2>
+        <p>FortBridge använder Azure Table Storage för att lagra fyra kategorier av data:</p>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Tokens</h4>
+                <p>Fortnox Access Token och Refresh Token. Krypterade via Key Vault-referens.
+                Inkluderar backup-kopia för tokenrotation.</p>
+            </div>
+            <div class="feature-card">
+                <h4>ID-mappningar</h4>
+                <p>Kopplingar mellan D365 GUID och Fortnox-nummer för kunder, produkter,
+                offerter och ordrar.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Poll-tidsstämplar</h4>
+                <p>Tidpunkt för senaste lyckade poll per resurstyp. Används som
+                <code>lastmodified</code>-filter vid nästa poll.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Felkö</h4>
+                <p>Misslyckade synkroniseringsförsök med payload och antal försök.
+                Återförsöks automatiskt med exponentiell backoff.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 15</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 5 &mdash; Datamappning</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 5</span>Datamappning</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Exakt fältmappning är kärnan i en fungerande integration. Nedan specificeras hur
+            fält mappas mellan D365 Sales och Fortnox för varje datatyp. Fält markerade med
+            <span class="badge badge-green">Nyckel</span> används som matchningsnyckel vid
+            synk för att undvika dubbletter.</p>
+        </div>
+<h2>5.1 Säljflödet i D365</h2>
+        <p>En typisk svensk B2B-säljprocess i D365 genomgår dessa steg. FortBridge aktiveras
+        från Offert-steget och framåt:</p>
+<svg viewBox="0 0 720 90" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 4mm;" aria-label="Säljflöde D365 till Fortnox">
+            <defs>
+                <marker id="sf-a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+                <marker id="sf-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+            </defs>
+            <!-- Lead (out of scope) -->
+            <rect x="5" y="25" width="95" height="40" rx="6" fill="#EAEAEC" stroke="#888" stroke-width="1.5"/>
+            <text x="53" y="43" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#888">Lead</text>
+            <text x="53" y="57" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#aaa">utanför scope</text>
+            <!-- Opportunity (out of scope) -->
+            <rect x="115" y="25" width="120" height="40" rx="6" fill="#EAEAEC" stroke="#888" stroke-width="1.5"/>
+            <text x="175" y="43" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="#888">Affärsmöjlighet</text>
+            <text x="175" y="57" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#aaa">utanför scope</text>
+            <!-- Arrow -->
+            <path d="M100 45 L115 45" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#sf-a)"/>
+            <path d="M235 45 L255 45" stroke="#888" stroke-width="1.5" fill="none" marker-end="url(#sf-a)"/>
+            <!-- FortBridge activation bar -->
+            <rect x="255" y="5" width="460" height="12" rx="3" fill="#02B896"/>
+            <text x="485" y="14" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="white">FortBridge synkroniserar fr&aring;n h&auml;r</text>
+            <!-- Quote -->
+            <rect x="255" y="20" width="100" height="50" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <text x="305" y="42" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Offert</text>
+            <text x="305" y="56" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#537780">Quote &rarr; Offer</text>
+            <path d="M355 45 L375 45" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#sf-g)"/>
+            <!-- Order -->
+            <rect x="375" y="20" width="100" height="50" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <text x="425" y="42" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Order</text>
+            <text x="425" y="56" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#537780">SalesOrder &rarr; Order</text>
+            <path d="M475 45 L495 45" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#sf-g)"/>
+            <!-- Invoice -->
+            <rect x="495" y="20" width="100" height="50" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <text x="545" y="42" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Faktura</text>
+            <text x="545" y="56" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#537780">Fortnox Invoice</text>
+            <path d="M595 45 L615 45" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#sf-g)"/>
+            <!-- Payment -->
+            <rect x="615" y="20" width="100" height="50" rx="6" fill="#ebf2f5" stroke="#537780" stroke-width="2"/>
+            <text x="665" y="42" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Betalt</text>
+            <text x="665" y="56" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#537780">&#x2190; D365 uppdateras</text>
+        </svg>
+<h2>5.2 Konton &#x2194; Kunder (dubbelriktad)</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>D365 Account-fält</th>
+                    <th>Fortnox Customer-fält</th>
+                    <th>Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>lg_fortnoxcustomernumber</code></td><td><code>CustomerNumber</code></td><td><span class="badge badge-green">Nyckel</span></td></tr>
+                <tr><td><code>name</code></td><td><code>Name</code></td><td></td></tr>
+                <tr><td><code>telephone1</code></td><td><code>Phone1</code></td><td></td></tr>
+                <tr><td><code>emailaddress1</code></td><td><code>Email</code></td><td></td></tr>
+                <tr><td><code>address1_line1</code></td><td><code>Address1</code></td><td></td></tr>
+                <tr><td><code>address1_postalcode</code></td><td><code>ZipCode</code></td><td></td></tr>
+                <tr><td><code>address1_city</code></td><td><code>City</code></td><td></td></tr>
+                <tr><td><code>address1_country</code></td><td><code>CountryCode</code></td><td>ISO-landkod, t.ex. <code>"SE"</code></td></tr>
+                <tr><td><code>lg_organisationnumber</code></td><td><code>OrganisationNumber</code></td><td>Anpassat D365-fält</td></tr>
+            </tbody>
+        </table>
+<h2>5.3 Produkter &#x2190; Artiklar (Fortnox &rarr; D365)</h2>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 16</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 5 &mdash; Datamappning</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+            <thead>
+                <tr>
+                    <th>Fortnox Article-fält</th>
+                    <th>D365 Product-fält</th>
+                    <th>Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>ArticleNumber</code></td><td><code>lg_fortnoxarticlenumber</code></td><td><span class="badge badge-green">Nyckel</span></td></tr>
+                <tr><td><code>Description</code></td><td><code>name</code></td><td></td></tr>
+                <tr><td><code>SalesPrice</code></td><td><code>price</code> (via ProductPriceLevel)</td><td>Kräver prislista i D365</td></tr>
+                <tr><td><code>VAT</code> (heltal)</td><td><code>lg_vatpercent</code></td><td>Informationsfält, t.ex. <code>25</code></td></tr>
+                <tr><td><code>Unit</code></td><td><code>defaultuomid</code></td><td>Matchas mot D365 enhetsgrupp (UoMSchedule)</td></tr>
+                <tr><td><code>Active</code></td><td><code>statecode</code> 0/1</td><td><code>false</code> = inaktiverad produkt i D365</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 17</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 5 &mdash; Datamappning</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>5.4 Offerter (D365 &rarr; Fortnox)</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>D365 Quote-fält</th>
+                    <th>Fortnox Offer-fält</th>
+                    <th>Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>lg_fortnoxoffernumber</code></td><td><code>DocumentNumber</code></td><td><span class="badge badge-green">Nyckel</span></td></tr>
+                <tr><td><code>customerid_account@odata.bind</code></td><td><code>CustomerNumber</code></td><td>Via <code>lg_fortnoxcustomernumber</code></td></tr>
+                <tr><td><code>createdon</code></td><td><code>OfferDate</code></td><td></td></tr>
+                <tr><td><code>expireson</code></td><td><code>ExpireDate</code></td><td>Utan tidsdel (DateOnly)</td></tr>
+                <tr><td><code>name</code></td><td><code>Remarks</code></td><td>Offertens rubrik som kommentar</td></tr>
+                <tr><td>QuoteDetail: <code>productid</code></td><td>OfferRow: <code>ArticleNumber</code></td><td>Via <code>lg_fortnoxarticlenumber</code></td></tr>
+                <tr><td>QuoteDetail: <code>quantity</code></td><td>OfferRow: <code>DeliveredQuantity</code></td><td></td></tr>
+                <tr><td>QuoteDetail: <code>priceperunit</code></td><td>OfferRow: <code>Price</code></td><td>Kräver <code>ispriceoverridden: true</code> i D365</td></tr>
+                <tr><td>QuoteDetail: <code>uomid</code></td><td>OfferRow: <code>Unit</code></td><td>Obligatoriskt fält vid skapande</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>Offert-till-order-flöde:</strong> FortBridge skapar offerten i Fortnox
+            när D365-offertens status ändras till <em>Aktiv</em>. Förlorade offerter (status
+            <em>Stängd &mdash; förlorad</em>) synkroniseras inte retroaktivt utan ligger kvar
+            i Fortnox som öppna. Rekommendation: konfigurera FortBridge att skicka en
+            stängningssignal till Fortnox vid förlorad offert.
+        </div>
+<h2>5.5 Ordrar (D365 &rarr; Fortnox)</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>D365 SalesOrder-fält</th>
+                    <th>Fortnox Order-fält</th>
+                    <th>Not</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><code>lg_fortnoxordernumber</code></td><td><code>DocumentNumber</code></td><td><span class="badge badge-green">Nyckel</span></td></tr>
+                <tr><td><code>customerid_account@odata.bind</code></td><td><code>CustomerNumber</code></td><td></td></tr>
+                <tr><td><code>createdon</code></td><td><code>OrderDate</code></td><td></td></tr>
+                <tr><td><code>requestdeliveryby</code></td><td><code>DeliveryDate</code></td><td>DateOnly-format: <code>"YYYY-MM-DD"</code></td></tr>
+                <tr><td>SalesOrderDetail: <code>productid</code></td><td>OrderRow: <code>ArticleNumber</code></td><td>Via <code>lg_fortnoxarticlenumber</code></td></tr>
+                <tr><td>SalesOrderDetail: <code>quantity</code></td><td>OrderRow: <code>OrderedQuantity</code></td><td></td></tr>
+                <tr><td>SalesOrderDetail: <code>priceperunit</code></td><td>OrderRow: <code>Price</code></td><td>Kräver <code>ispriceoverridden: true</code></td></tr>
+                <tr><td>SalesOrderDetail: <code>uomid</code></td><td>OrderRow: <code>Unit</code></td><td>Obligatoriskt fält</td></tr>
+            </tbody>
+        </table>
+<div class="warn-box">
+            <strong>Delleveranser:</strong> FortBridge mappar en D365-order till en Fortnox-order
+            och en faktura. Delleveranser &mdash; där en order resulterar i flera delfakturor &mdash;
+            stöds inte i nuvarande version. Betalningsstatus uppdateras i D365 när den ursprungliga
+            fakturan är helt betald (Balance == 0).
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 18</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 5 &mdash; Datamappning</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>5.6 Betalningsstatus (Fortnox &rarr; D365)</h2>
+        <p>När Fortnox rapporterar att en faktura är betald (<code>Balance == 0</code>) uppdaterar
+        FortBridge motsvarande order i D365:</p>
+        <ul>
+            <li><code>lg_invoicepaid</code> sätts till <code>true</code></li>
+            <li><code>lg_invoicepaiddate</code> sätts till betalningsdatumet från Fortnox</li>
+            <li>D365-orderns statustransition till <em>Fulfilled</em> sker via Dataverse-actionen
+            <code>FulfillSalesOrder</code>, inte via direkt PATCH på <code>statecode</code></li>
+        </ul>
+<div class="note-box">
+            <strong>Konflikthantering:</strong> Om samma fält ändras i båda systemen parallellt
+            vinner den senast mottagna ändringen. FortBridge använder ETag (<code>If-Match</code>)
+            vid PATCH-anrop mot Dataverse för optimistisk concurrency, och loggar alla konflikter
+            till Application Insights för uppföljning.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 19</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 6 &mdash; Autentisering och säkerhet</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 6</span>Autentisering och säkerhet</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FortBridge hanterar autentisering mot tre externa system: Fortnox API, Dynamics 365
+            Dataverse och Azure-tjänster. Alla hemligheter lagras i Azure Key Vault och nås via
+            Managed Identity &mdash; inga lösenord i konfigurationsfiler eller kod.</p>
+        </div>
+<h2>6.1 Nyckelhantering &mdash; hierarki</h2>
+<svg viewBox="0 0 720 170" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Säkerhetsmodell nyckelhantering">
+            <defs>
+                <marker id="ka" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#B55852"/>
+                </marker>
+                <marker id="ka-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+            </defs>
+
+            <!-- Key Vault center -->
+            <rect x="270" y="10" width="180" height="65" rx="8" fill="#fbeeed" stroke="#B55852" stroke-width="2"/>
+            <rect x="270" y="10" width="180" height="28" rx="8" fill="#B55852"/>
+            <rect x="270" y="30" width="180" height="8" fill="#B55852"/>
+            <text x="360" y="29" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="white">Azure Key Vault</text>
+            <text x="360" y="53" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#B55852">Fortnox tokens</text>
+            <text x="360" y="67" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#B55852">D365-certifikat (PEM), Webhook-secrets</text>
+
+            <!-- Function App (Managed Identity) -->
+            <rect x="270" y="115" width="180" height="50" rx="8" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <rect x="270" y="115" width="180" height="22" rx="8" fill="#02B896"/>
+            <rect x="270" y="129" width="180" height="8" fill="#02B896"/>
+            <text x="360" y="129" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Function App</text>
+            <text x="360" y="148" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#00517e">Managed Identity &#x2192; Key Vault läsrättighet</text>
+            <text x="360" y="160" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Inga credentials i konfiguration</text>
+            <path d="M360 115 L360 75" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#ka-g)"/>
+            <text x="375" y="98" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#02B896">GetSecret()</text>
+
+            <!-- Fortnox (left) -->
+            <rect x="30" y="50" width="170" height="55" rx="8" fill="#ebf2f5" stroke="#537780" stroke-width="1.5"/>
+            <text x="115" y="72" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#537780">Fortnox API</text>
+            <text x="115" y="87" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">OAuth 2.0</text>
+            <text x="115" y="99" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Access Token (1h)</text>
+            <path d="M200 77 L270 45" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ka)"/>
+            <text x="233" y="55" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#B55852">Tokens lagras</text>
+
+            <!-- D365 (right) -->
+            <rect x="520" y="50" width="170" height="55" rx="8" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="605" y="72" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Dynamics 365</text>
+            <text x="605" y="87" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Application permission</text>
+            <text x="605" y="99" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Cert-autentisering (PEM)</text>
+            <path d="M520 77 L450 45" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ka)"/>
+            <text x="488" y="55" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#B55852">Certifikat lagras</text>
+        </svg>
+<h2>6.2 Fortnox-autentisering</h2>
+        <p>Fortnox OAuth-flödet körs en gång vid installation. Därefter sköts tokenförnyelse
+        automatiskt.</p>
+        <ol class="step-list">
+            <li><strong>Registrera integration</strong> på <code>developer.fortnox.se</code>.
+            Notera Client ID och Client Secret.</li>
+            <li><strong>Kör installationsflödet:</strong> FortBridge erbjuder engångssidan
+            <code>/api/setup/authorize</code> som startar OAuth-flödet och lagrar tokens
+            krypterat i Key Vault.</li>
+            <li><strong>Automatisk förnyelse:</strong> <code>RefreshFortnoxToken</code>
+            körs var 45 minuter, förnyar Access Token, och sparar det nya token-paret
+            atomärt i Table Storage.</li>
+        </ol>
+<div class="warn-box">
+            <strong>Rotation av Refresh Token:</strong> Fortnox ogiltigförklarar det gamla
+            Refresh Token omedelbart vid varje förnyelse. FortBridge lagrar alltid det nya
+            paret atomärt och behåller en backup-kopia under 5 minuter för att klara
+            av eventuella halvfärdiga transaktioner.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 20</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 6 &mdash; Autentisering och säkerhet</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>6.3 Dynamics 365-autentisering (Server-till-Server)</h2>
+        <ol class="step-list">
+            <li>Skapa app-registrering i Azure AD. Lägg till <strong>Application permission</strong>
+            (inte Delegated) under <em>Dynamics CRM</em>. Ge administratörsgodkännande.</li>
+            <li>Skapa en <strong>Application User</strong> i D365 kopplad till appens Client ID.
+            Tilldela en säkerhetsroll med CRUD-rättigheter på relevanta entiteter.</li>
+            <li>Generera ett certifikat. Ladda upp <code>.cer</code> (publika nyckeln) till
+            appregistreringen. Spara PEM-filen (privata nyckeln) i Key Vault.</li>
+            <li>FortBridge begär tokens mot
+            <code>https://login.microsoftonline.com/&lt;tenant&gt;/oauth2/v2.0/token</code>
+            med scope <code>https://&lt;org&gt;.crm4.dynamics.com/.default</code>.</li>
+        </ol>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 21</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 6 &mdash; Autentisering och säkerhet</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>6.4 Inkommande webhook-säkerhet</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Dataverse Webhooks</h4>
+                <p>FortBridge verifierar anropets äkthet via headern <code>X-FortBridge-Secret</code>
+                som konfigureras i Plugin Registration Tool (autentiseringstyp: <em>HttpHeader</em>).
+                Funktionen svarar HTTP 200 inom 60 sekunder &mdash; annars anser D365 att
+                leveransen misslyckades.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Fortnox Webhooks</h4>
+                <p>Fortnox signerar webhook-anrop med HMAC-SHA256. Signaturen skickas i headern
+                <code>X-Fortnox-Hmac-SHA256</code>. FortBridge verifierar signaturen mot
+                webhook-hemligheten lagrad i Key Vault.</p>
+            </div>
+        </div>
+
+        <h2>6.5 Azure-resurser och kostnader</h2>
+        <table>
+            <thead>
+                <tr><th>Azure-resurs</th><th>Syfte</th><th>Plan / SKU</th><th>Kostnad/mån</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>App Service Plan + Function App</td><td>Värd för FortBridge, Always On</td><td>B1 (Basic)</td><td>ca 530 kr</td></tr>
+                <tr><td>Storage Account</td><td>Table Storage: tokens, mappning, retry-kö</td><td>LRS Standard</td><td>&lt; 10 kr</td></tr>
+                <tr><td>Key Vault</td><td>Secrets: tokens, certifikat, webhook-hemligheter</td><td>Standard</td><td>&lt; 5 kr</td></tr>
+                <tr><td>Application Insights</td><td>Loggning, spårning, larm</td><td>Pay-as-you-go</td><td>&lt; 20 kr</td></tr>
+            </tbody>
+        </table>
+        <div class="info-box">
+            <strong>Total uppskattad månadskostnad:</strong> ca 560&ndash;600 kr i West Europe-regionen.
+            Kostnaden förändras inte nämnvärt med ökad transaktionsvolym &mdash; B1-planen är
+            fast pris oavsett antal synkroniseringar.
+        </div>
+
+        <h2>6.6 Checklista &mdash; säkerhetsgranskning vid driftsättning</h2>
+        <ul>
+            <li>Inga hemligheter i miljövariabler eller konfigurationsfiler &mdash; allt via Key Vault</li>
+            <li>Managed Identity aktiverad och begränsad till Key Vault-läsrättighet</li>
+            <li>Webhook-endpoints svarar HTTP 200 för ogiltiga signaturer (inte 401 &mdash; returnera ej information om hemligheter)</li>
+            <li>HTTPS enforced på Function App (HTTP &rarr; HTTPS redirect)</li>
+            <li>Application Insights larmregel för autentiseringsfel aktiv</li>
+            <li>Certifikat för D365-autentisering har minst 12 månaders kvarvarande giltighetstid vid driftsättning</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 22</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 7 &mdash; Implementationsplan</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 7</span>Implementationsplan</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Implementationen delas upp i fyra faser. Varje fas levererar ett körbart resultat
+            som kan testas och verifieras innan nästa fas påbörjas.
+            Fas 1 och 2 kan genomföras parallellt av olika utvecklare.</p>
+        </div>
+<h2>7.1 Fasöversikt</h2>
+<svg viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 4mm;" aria-label="Implementationsfaser">
+            <!-- Phase 1 -->
+            <rect x="5" y="30" width="162" height="75" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="2"/>
+            <rect x="5" y="30" width="162" height="28" rx="6" fill="#00517e"/>
+            <rect x="5" y="50" width="162" height="8" fill="#00517e"/>
+            <text x="10" y="15" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#888">VEC 1&ndash;2</text>
+            <text x="87" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Fas 1</text>
+            <text x="87" y="70" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#00517e" font-weight="600">Infrastruktur</text>
+            <text x="87" y="83" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Azure-resurser</text>
+            <text x="87" y="95" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">OAuth-fl&ouml;de</text>
+            <text x="87" y="107" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">HealthCheck</text>
+
+            <!-- Arrow 1-->
+            <path d="M167 67 L182 67" stroke="#DBE4EA" stroke-width="2" fill="none"/>
+            <polygon points="182,62 192,67 182,72" fill="#DBE4EA"/>
+
+            <!-- Phase 2 -->
+            <rect x="192" y="30" width="162" height="75" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <rect x="192" y="30" width="162" height="28" rx="6" fill="#02B896"/>
+            <rect x="192" y="50" width="162" height="8" fill="#02B896"/>
+            <text x="197" y="15" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#888">VEC 2&ndash;3</text>
+            <text x="273" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Fas 2</text>
+            <text x="273" y="70" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#02B896" font-weight="600">Artiklar</text>
+            <text x="273" y="83" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Fortnox &rarr; D365</text>
+            <text x="273" y="95" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Produktkatalog</text>
+            <text x="273" y="107" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Enhetsgrupper</text>
+
+            <!-- Arrow 2-->
+            <path d="M354 67 L369 67" stroke="#DBE4EA" stroke-width="2" fill="none"/>
+            <polygon points="369,62 379,67 369,72" fill="#DBE4EA"/>
+
+            <!-- Phase 3 -->
+            <rect x="379" y="30" width="162" height="75" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="2"/>
+            <rect x="379" y="30" width="162" height="28" rx="6" fill="#537780"/>
+            <rect x="379" y="50" width="162" height="8" fill="#537780"/>
+            <text x="384" y="15" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#888">VEC 3&ndash;5</text>
+            <text x="460" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Fas 3</text>
+            <text x="460" y="70" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780" font-weight="600">Kunder</text>
+            <text x="460" y="83" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Dubbelriktad synk</text>
+            <text x="460" y="95" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Webhooks + polling</text>
+            <text x="460" y="107" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Matchningslogik</text>
+
+            <!-- Arrow 3-->
+            <path d="M541 67 L556 67" stroke="#DBE4EA" stroke-width="2" fill="none"/>
+            <polygon points="556,62 566,67 556,72" fill="#DBE4EA"/>
+
+            <!-- Phase 4 -->
+            <rect x="566" y="30" width="149" height="75" rx="6" fill="#ebf2f5" stroke="#F5A623" stroke-width="2"/>
+            <rect x="566" y="30" width="149" height="28" rx="6" fill="#F5A623"/>
+            <rect x="566" y="50" width="149" height="8" fill="#F5A623"/>
+            <text x="571" y="15" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="700" fill="#888">VEC 5&ndash;8</text>
+            <text x="641" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="white">Fas 4</text>
+            <text x="641" y="70" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#c07800" font-weight="600">Offerter &amp; Ordrar</text>
+            <text x="641" y="83" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Betalningsstatus</text>
+            <text x="641" y="95" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">E2E-test</text>
+            <text x="641" y="107" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Driftsättning</text>
+        </svg>
+<h2>7.2 Fas 1 &mdash; Infrastruktur och autentisering</h2>
+        <p><em>Mål: Alla Azure-resurser på plats, båda API-anslutningarna verifierade.</em></p>
+        <ol class="step-list">
+            <li>Skapa Azure Resource Group och distribuera infrastruktur via Bicep-mall:
+            Function App (B1), Storage Account, Key Vault. Aktivera Always On och Managed Identity.</li>
+            <li>Registrera Fortnox-integration på <code>developer.fortnox.se</code>. Notera
+            Client ID och Client Secret. Välj relevanta scopes.</li>
+            <li>Registrera Azure AD-appregistrering för D365 med Application permission
+            (inte Delegated). Skapa Application User i D365 med lämplig säkerhetsroll.
+            Generera PEM-certifikat och spara i Key Vault.</li>
+            <li>Bygg och driftsätt <code>HealthCheck</code>-funktionen. Verifiera att båda
+            anslutningarna är gröna via <code>GET /api/health?deep=true</code>.</li>
+            <li>Bygg installationsflödet (<code>/api/setup/authorize</code>) för Fortnox OAuth.
+            Slutför OAuth-flödet och verifiera att tokens lagras korrekt i Key Vault.</li>
+        </ol>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 23</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 7 &mdash; Implementationsplan</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>7.3 Fas 2 &mdash; Artikelsynkronisering (Fortnox &rarr; D365)</h2>
+        <p><em>Mål: D365 produktkatalog speglar Fortnox artikelregister.</em></p>
+        <ol class="step-list">
+            <li>Skapa anpassade fält i D365 (<code>lg_fortnoxarticlenumber</code>,
+            <code>lg_vatpercent</code>) via Dataverse API eller Power Apps-lösningshanteraren.
+            Konfigurera enhetsgrupp och standardenhet.</li>
+            <li>Bygg <code>SyncArticlesToD365</code> (timer, 1 tim): hämta alla aktiva artiklar
+            från Fortnox och matcha mot D365-produkter via <code>lg_fortnoxarticlenumber</code>.</li>
+            <li>Implementera skapa/uppdatera/inaktivera-logik. Sätt alltid <code>defaultuomid</code>
+            vid skapande av produkter.</li>
+            <li>Verifiera synkronisering och att befintliga artiklar uppdateras utan dubbletter.</li>
+        </ol>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 24</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 7 &mdash; Implementationsplan</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>7.4 Fas 3 &mdash; Kundsynkronisering (dubbelriktad)</h2>
+        <p><em>Mål: Kunder synkas i nära realtid oavsett vilket system som uppdateras.</em></p>
+        <ol class="step-list">
+            <li>Skapa anpassade fält i D365 (<code>lg_fortnoxcustomernumber</code>,
+            <code>lg_fortnoxsynced</code>, <code>lg_organisationnumber</code>).</li>
+            <li>Registrera Dataverse Webhook (Service Endpoint) för entiteten <code>account</code>
+            med messages Create och Update. Peka på <code>/api/d365/account</code>.</li>
+            <li>Bygg <code>OnD365AccountChanged</code>: ta emot webhook-payload, skapa
+            eller uppdatera kund i Fortnox. Skriv tillbaka Fortnox-kundnummer till D365
+            via PATCH med ETag-validering.</li>
+            <li>Registrera Fortnox-webhooks för <code>customer-created</code> och
+            <code>customer-changed</code>. Bygg hantering i <code>OnFortnoxWebhook</code>:
+            skapa/uppdatera konto i D365.</li>
+            <li>Bygg <code>PollFortnoxChanges</code> med <code>?lastmodified=</code>-filter
+            för kunder som uppdaterats sedan senaste lyckade poll.</li>
+        </ol>
+
+        <h2>7.5 Fas 4 &mdash; Offerter, ordrar och betalningsstatus</h2>
+        <p><em>Mål: Hela säljflödet synkroniseras D365 &rarr; Fortnox med betalningsåterkoppling.</em></p>
+        <ol class="step-list">
+            <li>Bygg <code>OnD365QuoteChanged</code>: konvertera D365 Quote + QuoteDetails
+            till Fortnox Offer + OfferRows. Inkludera <code>uomid</code> och sätt
+            <code>ispriceoverridden: true</code> på rader.</li>
+            <li>Bygg <code>OnD365OrderChanged</code>: konvertera D365 SalesOrder till Fortnox
+            Order via <code>POST /3/orders</code>. Valfritt: konvertera direkt till faktura via
+            <code>GET /3/orders/{nr}/createinvoice</code>.</li>
+            <li>Registrera Fortnox-webhook för <code>invoice-paid</code>. I
+            <code>OnFortnoxWebhook</code>: uppdatera <code>lg_invoicepaid</code>,
+            <code>lg_invoicepaiddate</code>, och anropa Dataverse-actionen
+            <code>FulfillSalesOrder</code> för att ändra orderstatus.</li>
+            <li>Bygg felkö och retry-logik med exponentiell backoff. Verifiera mot
+            Fortnox 429-svar (<code>Retry-After</code>-header).</li>
+            <li>Kör end-to-end-test: skapa offert i D365 &rarr; verifiera i Fortnox &rarr;
+            bekräfta order &rarr; betala faktura i Fortnox &rarr; verifiera betalningsstatus i D365.</li>
+        </ol>
+
+        <h2>7.6 Teknikstack</h2>
+        <div class="three-col">
+            <div class="feature-card">
+                <h4>Språk &amp; runtime</h4>
+                <p>TypeScript (Node.js 20) med Azure Functions v4 programmatic model (barrel entry point).</p>
+            </div>
+            <div class="feature-card">
+                <h4>Azure SDK:er</h4>
+                <p><code>@azure/identity</code>, <code>@azure/data-tables</code>,
+                <code>@azure/keyvault-secrets</code>.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Distribution</h4>
+                <p>Zip-deploy via <code>az webapp deploy</code> med <code>WEBSITE_RUN_FROM_PACKAGE=1</code>.
+                Aldrig <code>SCM_DO_BUILD_DURING_DEPLOYMENT</code>.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 25</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Felhantering och monitorering</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 8</span>Felhantering och monitorering</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>En integration är bara så bra som dess förmåga att hantera fel och informera
+            om problem. FortBridge är utformat för att aldrig tyst tappa en synkronisering &mdash;
+            alla fel loggas, misslyckade anrop återförsöks automatiskt och kritiska fel
+            genererar larm.</p>
+        </div>
+<h2>8.1 Felklassificering</h2>
+<table>
+            <thead>
+                <tr>
+                    <th>Feltyp</th>
+                    <th>Exempel</th>
+                    <th>Hantering</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-orange">Tillfälligt</span></td>
+                    <td>HTTP 429 (rate limit), HTTP 503 (tillgänglighet)</td>
+                    <td>Retry med exponentiell backoff. Respekterar <code>Retry-After</code>. Max 3 försök.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-orange">Mappningsfel</span></td>
+                    <td>Saknad artikel, ogiltig adress, kreditgräns nådd i Fortnox</td>
+                    <td>Loggas med payload. Larm skickas; manuell åtgärd krävs.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-red">Autentiseringsfel</span></td>
+                    <td>Utgånget Refresh Token, certifikat löpt ut</td>
+                    <td>Alla synkroniseringar stoppas. Omedelbart larm till administratör.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-red">Konfigurationsfel</span></td>
+                    <td>Saknad miljövariabel, anslutningsproblem</td>
+                    <td>HealthCheck returnerar rött. Funktion svarar 503.</td>
+                </tr>
+            </tbody>
+        </table>
+<div class="note-box">
+            <strong>Affärslogikfel:</strong> Om Fortnox avvisar en order på grund av att en kunds
+            kreditgräns (<code>CreditLimit</code>) är nådd eller att kunden är inaktiv,
+            klassificeras detta som ett mappningsfel &mdash; ett larm skickas och ekonomiavdelningen
+            måste åtgärda det direkt i Fortnox.
+        </div>
+<h2>8.2 Retry-flöde med exponentiell backoff</h2>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 26</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Felhantering och monitorering</div>
+        </div>
+    </div>
+    <div class="page-content">
+<svg viewBox="0 0 720 185" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Retry-flöde">
+            <defs>
+                <marker id="ra" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+                <marker id="ra-r" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#B55852"/>
+                </marker>
+                <marker id="ra-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+            </defs>
+
+            <!-- Trigger box -->
+            <rect x="5" y="70" width="110" height="46" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="60" y="90" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" font-weight="700" fill="#00517e">Synk-händelse</text>
+            <text x="60" y="106" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">webhook / timer</text>
+            <path d="M115 93 L140 93" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#ra)"/>
+
+            <!-- Try 1 -->
+            <rect x="140" y="70" width="100" height="46" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="190" y="90" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" font-weight="700" fill="#02B896">Försök 1</text>
+            <text x="190" y="106" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Omedelbart</text>
+
+            <!-- Success path -->
+            <path d="M190 70 L190 45 L700 45" stroke="#02B896" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+            <text x="400" y="39" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#02B896" font-weight="600">Lyckades &rarr; Loggas i App Insights</text>
+
+            <!-- Fail path 1 -->
+            <path d="M240 93 L265 93" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ra-r)"/>
+            <text x="253" y="87" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#B55852">429/5xx</text>
+
+            <!-- Try 2 -->
+            <rect x="265" y="70" width="100" height="46" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="315" y="90" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" font-weight="700" fill="#02B896">Försök 2</text>
+            <text x="315" y="106" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Efter 1 minut</text>
+
+            <!-- Fail path 2 -->
+            <path d="M365 93 L390 93" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ra-r)"/>
+            <text x="378" y="87" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#B55852">429/5xx</text>
+
+            <!-- Try 3 -->
+            <rect x="390" y="70" width="100" height="46" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="440" y="90" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" font-weight="700" fill="#02B896">Försök 3</text>
+            <text x="440" y="106" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Efter 5 minuter</text>
+
+            <!-- Fail path 3 -->
+            <path d="M490 93 L515 93" stroke="#B55852" stroke-width="1.5" fill="none" marker-end="url(#ra-r)"/>
+            <text x="503" y="87" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="7.5" fill="#B55852">Misslyck.</text>
+
+            <!-- Dead letter queue -->
+            <rect x="515" y="60" width="130" height="65" rx="6" fill="#fbeeed" stroke="#B55852" stroke-width="1.5"/>
+            <text x="580" y="82" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" font-weight="700" fill="#B55852">Felkö</text>
+            <text x="580" y="97" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#4A4A4A">Table Storage</text>
+            <text x="580" y="112" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Payload + feltyp</text>
+            <text x="580" y="127" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Larm skickas</text>
+
+            <!-- 429 specific path -->
+            <path d="M190 116 L190 155 L315 155 L315 145" stroke="#F5A623" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#ra)"/>
+            <text x="253" y="170" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8" fill="#c07800">HTTP 429: v&auml;nta p&aring; Retry-After-header</text>
+        </svg>
+<h2>8.3 Monitorering med Application Insights</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Strukturerade trace-händelser</h4>
+                <p>Varje synkronisering loggas med: entitetstyp, riktning, Fortnox-ID,
+                D365-GUID, varaktighet i ms och slutresultat (lyckades/misslyckades).</p>
+            </div>
+<div class="feature-card">
+                <h4>Larmregler (Azure Monitor)</h4>
+                <p>Larm triggas vid: &gt;5 fel på 15 min, autentiseringsfel, HealthCheck-fel,
+                0 synkroniseringar under 30 min under kontorstid (08&ndash;17).</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 27</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Felhantering och monitorering</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2>8.4 Idempotens &mdash; säker hantering av dubbla händelser</h2>
+        <p>Alla FortBridge-synkroniseringsoperationer är <strong>idempotenta</strong>: att köra
+        samma operation flera gånger ger samma resultat som att köra den en gång.
+        Detta är kritiskt eftersom webhooks och polling kan leverera samma händelse fler än en gång.</p>
+        <p>Idempotens uppnås genom att:</p>
+        <ul>
+            <li>Alltid söka på matchningsnyckeln (t.ex. <code>lg_fortnoxcustomernumber</code>)
+            innan skapa &mdash; uppdatera om post finns, skapa annars</li>
+            <li>Jämföra checksummor på relevanta fält och hoppa över om inget har ändrats</li>
+            <li>Lagra senaste behandlade händelse-ID per entitet i Table Storage</li>
+            <li>Använda ETag (<code>If-Match</code>) vid PATCH-anrop mot Dataverse för att
+            fånga upp parallella skrivkonflikter</li>
+        </ul>
+
+        <h2>8.5 Initial datamigration</h2>
+        <p>Vid driftsättning på en befintlig miljö med existerande data i båda systemen
+        behövs en engångsmigration för att matcha poster:</p>
+        <ol class="step-list">
+            <li>Exportera alla Fortnox-kunder till CSV. Matcha mot D365-konton via
+            organisationsnummer eller namn.</li>
+            <li>Skriv Fortnox-kundnummer till <code>lg_fortnoxcustomernumber</code> i D365
+            för alla matchade konton.</li>
+            <li>Matcha Fortnox-artiklar mot D365-produkter via artikelnummer.
+            Kör <code>SyncArticlesToD365</code> manuellt för att skapa saknade produkter
+            och fylla <code>lg_fortnoxarticlenumber</code>.</li>
+            <li>Verifiera matchningskvalitet i Application Insights-loggar.
+            Åtgärda omatchade poster manuellt innan FortBridge aktiveras för live-trafik.</li>
+        </ol>
+
+        <div class="tip-box">
+            <strong>Rekommendation:</strong> Kör initialmigration i en D365-sandbox-miljö först
+            och verifiera resultatet noggrant. Behåll en fullständig export av D365-data som backup
+            innan produktionsmigration.
+        </div>
+
+        <h2>8.6 Certifikat- och tokenlivscykel</h2>
+        <p>Tre tidskritiska resurser kräver aktiv uppföljning:</p>
+        <table>
+            <thead>
+                <tr><th>Resurs</th><th>Livslängd</th><th>Varning bör skickas</th><th>Åtgärd</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Fortnox Refresh Token</td>
+                    <td>60 dagar (roteras)</td>
+                    <td>Om ej använd på 55 dagar</td>
+                    <td>Kör OAuth-flödet igen</td>
+                </tr>
+                <tr>
+                    <td>D365 PEM-certifikat</td>
+                    <td>Konfigureras vid skapande</td>
+                    <td>30 dagar före utgång</td>
+                    <td>Generera nytt cert, ladda upp <code>.cer</code>, ersätt PEM i Key Vault</td>
+                </tr>
+                <tr>
+                    <td>FortBridge-webhook-secret</td>
+                    <td>Manuell rotation</td>
+                    <td>&mdash;</td>
+                    <td>Rotera vid misstanke om läckage. Uppdatera i Key Vault och webhook-registrering</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 28</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Realtidsprestanda</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1><span class="chapter-num">Kapitel 9</span>Realtidsprestanda</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Termen &quot;realtid&quot; är missvisande för en integration som måste passera
+            två moln-API:er, serialisering och nätverk. Det praktiska målet är
+            <strong>near-real-time</strong>: ändringar i ett system syns i det andra inom
+            loppet av sekunder, inte minuter. Det här kapitlet beskriver hur FortBridge
+            kan skalas från standard-konfigurationens 1&ndash;5 min latens till under 2 sekunder
+            P95.</p>
+        </div>
+
+        <h2>9.1 Latensbudget</h2>
+        <p>Varje händelse går igenom en kedja av steg. Varje steg bidrar med sin egen fördröjning
+        &mdash; totala latensen är summan. Budgeten ser ut så här i olika konfigurationer:</p>
+
+        <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Latensbudget">
+            <!-- Column headers -->
+            <text x="65" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Steg</text>
+            <text x="355" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e" text-anchor="middle">Standard (B1)</text>
+            <text x="555" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896" text-anchor="middle">Near-real-time (Premium)</text>
+
+            <!-- Row 1: Event detection -->
+            <rect x="20" y="30" width="200" height="30" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="30" y="49" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#00517e" font-weight="600">1. Källsystemet detekterar ändring</text>
+            <rect x="240" y="30" width="200" height="30" rx="4" fill="#fbeeed" stroke="#B55852" stroke-width="1"/>
+            <text x="340" y="49" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#B55852" text-anchor="middle" font-weight="600">0&ndash;300 s (polling)</text>
+            <rect x="460" y="30" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="560" y="49" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">&lt; 100 ms (webhook push)</text>
+
+            <!-- Row 2: Cold start -->
+            <rect x="20" y="65" width="200" height="30" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="30" y="84" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#00517e" font-weight="600">2. Function App &ndash; kallstart</text>
+            <rect x="240" y="65" width="200" height="30" rx="4" fill="#fff7ea" stroke="#F5A623" stroke-width="1"/>
+            <text x="340" y="84" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#c07800" text-anchor="middle" font-weight="600">300&ndash;2000 ms</text>
+            <rect x="460" y="65" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="560" y="84" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">0 ms (Premium, alltid varm)</text>
+
+            <!-- Row 3: Processing -->
+            <rect x="20" y="100" width="200" height="30" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="30" y="119" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#00517e" font-weight="600">3. Mappning &amp; validering</text>
+            <rect x="240" y="100" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="340" y="119" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">20&ndash;80 ms</text>
+            <rect x="460" y="100" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="560" y="119" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">20&ndash;80 ms</text>
+
+            <!-- Row 4: Outbound call -->
+            <rect x="20" y="135" width="200" height="30" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="30" y="154" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#00517e" font-weight="600">4. API-anrop mot målsystem</text>
+            <rect x="240" y="135" width="200" height="30" rx="4" fill="#fff7ea" stroke="#F5A623" stroke-width="1"/>
+            <text x="340" y="154" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#c07800" text-anchor="middle" font-weight="600">150&ndash;800 ms</text>
+            <rect x="460" y="135" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="560" y="154" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">100&ndash;500 ms (keep-alive)</text>
+
+            <!-- Row 5: Confirmation -->
+            <rect x="20" y="170" width="200" height="30" rx="4" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="1"/>
+            <text x="30" y="189" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#00517e" font-weight="600">5. Skriv tillbaka ID + logga</text>
+            <rect x="240" y="170" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="340" y="189" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">50&ndash;200 ms</text>
+            <rect x="460" y="170" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1"/>
+            <text x="560" y="189" font-family="'DM Sans',Arial,sans-serif" font-size="9.5" fill="#02B896" text-anchor="middle" font-weight="600">50&ndash;200 ms</text>
+
+            <!-- Total row -->
+            <rect x="20" y="205" width="200" height="30" rx="4" fill="#00517e"/>
+            <text x="30" y="224" font-family="'DM Sans',Arial,sans-serif" font-size="10" fill="white" font-weight="700">Totalt (P95)</text>
+            <rect x="240" y="205" width="200" height="30" rx="4" fill="#fbeeed" stroke="#B55852" stroke-width="1.5"/>
+            <text x="340" y="224" font-family="'DM Sans',Arial,sans-serif" font-size="10.5" fill="#B55852" text-anchor="middle" font-weight="700">~60&ndash;310 sek</text>
+            <rect x="460" y="205" width="200" height="30" rx="4" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="560" y="224" font-family="'DM Sans',Arial,sans-serif" font-size="10.5" fill="#02B896" text-anchor="middle" font-weight="700">~0.3&ndash;1.2 sek</text>
+        </svg>
+
+        <div class="info-box">
+            <strong>Viktig observation:</strong> Det största hoppet är från polling till webhooks
+            (steg 1) och från Consumption/B1 till Premium (steg 2). Mappningslogiken i steg 3
+            är redan snabb och optimeras inte vidare &mdash; den står för mindre än 10 % av totala
+            tiden i båda scenariona.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 29</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Realtidsprestanda</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>9.2 Tekniker för att minska latens</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Webhooks över polling</h4>
+                <p>Den enskilt största vinsten. Fortnox stöder webhooks för
+                <code>customer-*</code>, <code>invoice-paid</code> och <code>order-created</code>.
+                Dataverse Service Endpoints triggas vid Create/Update. Polling används bara
+                som fallback för resurser utan webhook-stöd.</p>
+            </div>
+<div class="feature-card">
+                <h4>Premium Function Plan</h4>
+                <p>Tar bort kallstarter helt och ger minst en alltid-varm instans.
+                Kostnad ~2&nbsp;200 kr/mån (EP1) men P95-latensen tappar ~1&nbsp;500 ms.
+                Rekommenderas när near-real-time är affärskritiskt.</p>
+            </div>
+<div class="feature-card">
+                <h4>HTTP Keep-Alive &amp; connection pooling</h4>
+                <p>Varm TLS-session sparar 150&ndash;300 ms per anrop. FortBridge håller
+                en singleton-instans av <code>HttpClient</code> per målsystem under
+                funktionsinstansens livstid.</p>
+            </div>
+<div class="feature-card">
+                <h4>Event Grid som buffert</h4>
+                <p>För hög belastning: mottagande webhook-funktion postar direkt till Event Grid
+                och svarar 200. Separata bearbetnings&shy;funktioner konsumerar topicen.
+                Kopplar bort inleveransen från bearbetningen och jämnar ut toppar.</p>
+            </div>
+<div class="feature-card">
+                <h4>Cacha ID-mappningar</h4>
+                <p>Uppslag av D365-GUID &harr; Fortnox-kundnummer görs via minneskache
+                (TTL 5 min) innan Table Storage-lookup. Träffar en varm cache tar &lt; 1 ms
+                istället för 30&ndash;80 ms.</p>
+            </div>
+<div class="feature-card">
+                <h4>Parallellisering med backpressure</h4>
+                <p>Flera webhooks kan bearbetas samtidigt men med en semafor som begränsar
+                samtidiga anrop mot Fortnox till 20 (hälften av rate limit). Förhindrar
+                att egen last sänker oss till 429.</p>
+            </div>
+        </div>
+<h2>9.3 Arkitektur för near-real-time</h2>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 30</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Realtidsprestanda</div>
+        </div>
+    </div>
+    <div class="page-content">
+<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Near-real-time-arkitektur">
+            <defs>
+                <marker id="rta" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#02B896"/>
+                </marker>
+                <marker id="rta-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+            </defs>
+
+            <!-- D365 -->
+            <rect x="15" y="15" width="120" height="55" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="75" y="37" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Dynamics 365</text>
+            <text x="75" y="53" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Service Endpoint</text>
+            <text x="75" y="64" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Create / Update</text>
+
+            <!-- Fortnox -->
+            <rect x="585" y="15" width="120" height="55" rx="6" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="645" y="37" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Fortnox</text>
+            <text x="645" y="53" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Native Webhooks</text>
+            <text x="645" y="64" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">customer-*, invoice-paid</text>
+
+            <!-- Ingestion function -->
+            <rect x="180" y="15" width="130" height="55" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="245" y="35" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896">IngestD365</text>
+            <text x="245" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Premium, Always On</text>
+            <text x="245" y="62" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Signatur &rarr; Event Grid</text>
+
+            <rect x="410" y="15" width="130" height="55" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="475" y="35" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896">IngestFortnox</text>
+            <text x="475" y="49" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Premium, Always On</text>
+            <text x="475" y="62" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">HMAC &rarr; Event Grid</text>
+
+            <!-- Arrows from source to ingestion -->
+            <path d="M135 43 L175 43" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#rta-b)"/>
+            <path d="M585 43 L545 43" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#rta-b)"/>
+
+            <!-- Event Grid bus -->
+            <rect x="180" y="95" width="360" height="35" rx="6" fill="#fff7ea" stroke="#F5A623" stroke-width="1.5"/>
+            <text x="360" y="117" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#c07800">Azure Event Grid &mdash; fortbridge-events</text>
+
+            <!-- Arrows from ingest to bus -->
+            <path d="M245 70 L245 95" stroke="#F5A623" stroke-width="1.5" fill="none" marker-end="url(#rta)"/>
+            <path d="M475 70 L475 95" stroke="#F5A623" stroke-width="1.5" fill="none" marker-end="url(#rta)"/>
+
+            <!-- Worker functions -->
+            <rect x="25" y="155" width="145" height="45" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="97" y="174" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896">SyncCustomer</text>
+            <text x="97" y="190" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Idempotent, ETag</text>
+
+            <rect x="185" y="155" width="145" height="45" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="257" y="174" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896">SyncOrder</text>
+            <text x="257" y="190" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">uomid, ispriceoverridden</text>
+
+            <rect x="345" y="155" width="145" height="45" rx="6" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="417" y="174" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#02B896">SyncPayment</text>
+            <text x="417" y="190" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">FulfillSalesOrder</text>
+
+            <rect x="505" y="155" width="145" height="45" rx="6" fill="#fbeeed" stroke="#B55852" stroke-width="1.5"/>
+            <text x="577" y="174" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#B55852">DeadLetter</text>
+            <text x="577" y="190" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" fill="#537780">Table Storage + larm</text>
+
+            <!-- Arrows from Event Grid to workers -->
+            <path d="M260 130 L97 155" stroke="#02B896" stroke-width="1.5" fill="none" marker-end="url(#rta)"/>
+            <path d="M330 130 L257 155" stroke="#02B896" stroke-width="1.5" fill="none" marker-end="url(#rta)"/>
+            <path d="M400 130 L417 155" stroke="#02B896" stroke-width="1.5" fill="none" marker-end="url(#rta)"/>
+            <path d="M470 130 L577 155" stroke="#B55852" stroke-width="1.5" fill="none" stroke-dasharray="3,2" marker-end="url(#rta)"/>
+
+            <!-- SignalR to dashboard -->
+            <rect x="550" y="215" width="150" height="10" rx="3" fill="#00517e"/>
+            <text x="625" y="223" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="8.5" font-weight="600" fill="white">SignalR &rarr; Dashboard live</text>
+        </svg>
+<h2>9.4 Dashboard-uppdateringar i realtid</h2>
+        <p>Själva dashboarden får sin direkta känsla genom <strong>Azure SignalR
+        Service</strong> (Serverless-plan). När en worker-funktion avslutar en synk publicerar den
+        en händelse till SignalR, som i sin tur pushar uppdateringen till alla anslutna
+        webbläsarsessioner inom några hundra millisekunder. Ingen polling från klienten.</p>
+        <ul>
+            <li>KPI-rutorna räknas upp i takt med att synkar avslutas</li>
+            <li>Tabellen &quot;Senaste synkroniseringar&quot; uppdateras med nya rader i toppen</li>
+            <li>Felkö-räknaren blinkar rött direkt när en ny post läggs till</li>
+            <li>Systemhälsa-indikatorer ändrar färg utan sidomladdning</li>
+        </ul>
+<div class="warn-box">
+            <strong>Avvägning:</strong> Premium-planen och Event Grid ökar driftkostnaden
+            från ~560 kr/mån till ~2&nbsp;800 kr/mån. För de flesta kunder räcker standard-konfigurationen
+            gott &mdash; aktivera near-real-time bara om verksamheten faktiskt behöver subsekund-synk
+            (t.ex. e-handel med kreditkontroll i realtid eller stora volymer ordrar per dag).
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 31</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 10 &mdash; Testning och kvalitetssäkring</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1><span class="chapter-num">Kapitel 10</span>Testning och kvalitetssäkring</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>En integration mot ekonomisystem måste testas noggrant &mdash; ett fel i
+            fakturaflödet kan direkt påverka kassaflöde och bokföring. FortBridge testas
+            på fyra nivåer: enhetstester, kontrakts&shy;tester, integrationstester och
+            end-to-end-tester mot sandbox-miljöer.</p>
+        </div>
+
+        <h2>10.1 Testnivåer</h2>
+
+        <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; margin:3mm 0 2mm;" aria-label="Testpyramid">
+            <!-- Pyramid base: E2E (fewest) -->
+            <polygon points="280,20 440,20 460,50 260,50" fill="#fbeeed" stroke="#B55852" stroke-width="1.5"/>
+            <text x="360" y="40" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="#B55852">E2E-tester</text>
+            <text x="480" y="40" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">F&aring; &mdash; k&ouml;rs manuellt f&ouml;re release</text>
+
+            <!-- Integration -->
+            <polygon points="260,50 460,50 490,95 230,95" fill="#ebf2f5" stroke="#00517e" stroke-width="1.5"/>
+            <text x="360" y="78" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="#00517e">Integrationstester</text>
+            <text x="510" y="78" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">Mot Fortnox/D365 sandbox</text>
+
+            <!-- Contract -->
+            <polygon points="230,95 490,95 525,140 195,140" fill="#e6faf6" stroke="#02B896" stroke-width="1.5"/>
+            <text x="360" y="122" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="#02B896">Kontraktstester</text>
+            <text x="545" y="122" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">JSON-schemas, OpenAPI-stub</text>
+
+            <!-- Unit (most) -->
+            <polygon points="195,140 525,140 560,185 160,185" fill="#f5f9fb" stroke="#537780" stroke-width="1.5"/>
+            <text x="360" y="167" text-anchor="middle" font-family="'DM Sans',Arial,sans-serif" font-size="11" font-weight="700" fill="#537780">Enhetstester</text>
+            <text x="580" y="167" font-family="'DM Sans',Arial,sans-serif" font-size="9" fill="#537780">M&aring;nga &mdash; k&ouml;rs vid varje commit</text>
+
+            <text x="30" y="110" font-family="'DM Sans',Arial,sans-serif" font-size="10" font-weight="700" fill="#00517e">Volym</text>
+            <path d="M50 130 L50 90" stroke="#00517e" stroke-width="1.5" fill="none" marker-end="url(#tp-a)"/>
+            <defs>
+                <marker id="tp-a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L8,3 z" fill="#00517e"/>
+                </marker>
+            </defs>
+        </svg>
+
+        <h2>10.2 Enhetstester (Jest / Vitest)</h2>
+        <p>Täcker all mappnings- och transformationslogik. Inga nätverksanrop &mdash; alla
+        externa beroenden mockas. Målet är &gt;80 % kodtäckning på mappningsmoduler.</p>
+        <ul>
+            <li>D365 Account &rarr; Fortnox Customer mappning (alla fält, null-hantering, ISO-landkoder)</li>
+            <li>D365 QuoteDetail &rarr; Fortnox OfferRow (priser, rabatter, enheter)</li>
+            <li>HMAC-SHA256-signaturverifiering för Fortnox-webhooks</li>
+            <li>ETag-parsing från Dataverse-svar</li>
+            <li>Retry-logik: exponentiell backoff, Retry-After-respekt</li>
+        </ul>
+
+        <h2>10.3 Kontraktstester</h2>
+        <p>Verifierar att FortBridge tolkar API-svar korrekt även när Fortnox eller
+        Dataverse ändrar sig i mindre delar. Lagras inspelningar av riktiga svar och
+        körs mot dem vid varje build.</p>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Fortnox-svar (fixtures)</h4>
+                <p>JSON-filer med riktiga svar från sandbox: kund, artikel, offert, order,
+                faktura. Uppdateras manuellt vid API-förändring.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Dataverse-svar (fixtures)</h4>
+                <p>Svar för account, product, quote, salesorder inkl. ETag-header.
+                Täcker också felfall (404, 412 Precondition Failed).</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 32</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 10 &mdash; Testning och kvalitetssäkring</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>10.4 Integrationstester mot sandbox-miljöer</h2>
+        <p>Körs mot riktiga test-instanser av båda systemen. Separat Fortnox-testkonto
+        och D365-sandbox-miljö krävs. Testerna är idempotenta &mdash; de kan köras
+        upprepade gånger utan sidoeffekter.</p>
+<table>
+            <thead>
+                <tr><th>Testfall</th><th>Miljö</th><th>Verifierar</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Skapa kund i D365</td>
+                    <td>D365 sandbox + Fortnox test</td>
+                    <td>Kund skapas i Fortnox, <code>lg_fortnoxcustomernumber</code> skrivs tillbaka</td>
+                </tr>
+                <tr>
+                    <td>Uppdatera kund i Fortnox</td>
+                    <td>Fortnox test + D365 sandbox</td>
+                    <td>Ändring propageras till D365 via polling/webhook</td>
+                </tr>
+                <tr>
+                    <td>Skapa offert i D365</td>
+                    <td>Bägge</td>
+                    <td>Offert skapas i Fortnox med korrekta rader och enheter</td>
+                </tr>
+                <tr>
+                    <td>Betala faktura i Fortnox</td>
+                    <td>Bägge</td>
+                    <td><code>lg_invoicepaid</code> sätts; orderstatus blir Fulfilled i D365</td>
+                </tr>
+                <tr>
+                    <td>Rate limit (429)</td>
+                    <td>Simulerat</td>
+                    <td>Retry-logik triggas, ingen data tappas</td>
+                </tr>
+            </tbody>
+        </table>
+<h2>10.5 End-to-end-tester (release-gate)</h2>
+        <p>Körs manuellt innan driftsättning till produktion. Validerar hela säljflödet
+        från offert till betalning:</p>
+        <ol class="step-list">
+            <li>Skapa ny kund i D365 &rarr; verifiera i Fortnox</li>
+            <li>Skapa offert med tre rader (olika enheter, en med prisöverstyrning) &rarr;
+            verifiera att rader, enheter och priser är korrekt i Fortnox</li>
+            <li>Godkänn offert i D365 (status &rarr; Aktiv) &rarr; skapa order i D365</li>
+            <li>Konvertera order till faktura i Fortnox &rarr; registrera betalning</li>
+            <li>Verifiera att D365-ordern markeras som Fulfilled och
+            <code>lg_invoicepaid = true</code></li>
+        </ol>
+<div class="tip-box">
+            <strong>Automatiserad E2E:</strong> I senare fas kan E2E-testerna automatiseras
+            med Playwright mot Dynamics 365 UI, kombinerat med direkta Fortnox API-anrop för
+            verifiering. Initialt körs de manuellt av testledaren.
+        </div>
+<h2>10.6 Sandbox-hygien</h2>
+        <ul>
+            <li><strong>Fortnox:</strong> Använd ett separat test-konto &mdash; aldrig
+            produktionskontot. Test-konton hos Fortnox kan återställas via support.</li>
+            <li><strong>D365:</strong> Använd Microsoft-erbjudna sandbox-miljöer
+            (konfigureras via Power Platform Admin Center). Kopiera från produktion vid
+            behov men anonymisera kundregister.</li>
+            <li><strong>Testdata:</strong> Märk testkunder tydligt (prefix <code>TEST-</code>
+            på kundnummer eller namn) så de är lätta att rensa.</li>
+            <li><strong>Hemligheter:</strong> Sandbox-miljöer har egna Key Vault-instanser
+            &mdash; dela aldrig produktionshemligheter till testmiljö.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 33</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 10 &mdash; Testning och kvalitetssäkring</div>
+        </div>
+    </div>
+    <div class="page-content">
+<div class="warn-box">
+            <strong>Webhook-säkerhet i test:</strong> Fortnox webhook-hemligheter och D365
+            webhook-headers skiljer sig mellan miljöer. Dubbelkolla vid deploy att rätt
+            Key Vault-referenser pekas ut &mdash; annars valideras anrop tyst bort.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 34</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 11 &mdash; Driftrunbok</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Kapitel 11</span>Driftrunbok</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Den här runboken beskriver åtgärder för de vanligaste incident&shy;typerna
+            i drift. Varje sektion listar symptom, första kontroll, och steg för
+            återställning. Skriv alltid en kort incidentnotering i App Insights
+            efter åtgärd.</p>
+        </div>
+<h2>11.1 Incidentklasser &mdash; översikt</h2>
+<table>
+            <thead>
+                <tr><th>Klass</th><th>Exempel</th><th>Åtgärdsfönster</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-red">Kritisk (P1)</span></td>
+                    <td>Alla synkar stoppade, autentisering trasig</td>
+                    <td>&lt; 1 timme, dygnet runt</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-orange">Hög (P2)</span></td>
+                    <td>En entitetstyp misslyckas (t.ex. offerter)</td>
+                    <td>&lt; 4 timmar, kontorstid</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-green">Låg (P3)</span></td>
+                    <td>Enskilda fel i dead letter queue</td>
+                    <td>Nästa arbetsdag</td>
+                </tr>
+            </tbody>
+        </table>
+<h2>11.2 Refresh Token utgången</h2>
+        <p><strong>Symptom:</strong> Alla Fortnox-anrop returnerar HTTP 401. App Insights
+        visar upprepade autentiseringsfel. Larm triggats.</p>
+        <p><strong>Orsak:</strong> Refresh Token har inte använts på 60 dagar
+        (integrationen stod stilla), eller roterades inte atomärt.</p>
+        <ol class="step-list">
+            <li>Öppna <code>/api/setup/authorize</code> för berörd Fortnox-tenant</li>
+            <li>Logga in som Fortnox-administratör och godkänn scopes på nytt</li>
+            <li>Verifiera i Key Vault att nya tokens sparats (tidsstämpel &lt; 5 min gammal)</li>
+            <li>Kör <code>HealthCheck</code> med <code>?deep=true</code> &mdash; båda anslutningar ska vara gröna</li>
+            <li>Töm dead letter queue om poster finns &mdash; de kan nu behandlas</li>
+        </ol>
+<h2>11.3 D365-certifikat utgånget</h2>
+        <p><strong>Symptom:</strong> Alla Dataverse-anrop returnerar HTTP 401.
+        Felmeddelande innehåller <em>&quot;AADSTS700027: The certificate is invalid&quot;</em>.</p>
+        <ol class="step-list">
+            <li>Generera nytt certifikat (PowerShell <code>New-SelfSignedCertificate</code>
+            eller CA) med minst 24 mån giltighet</li>
+            <li>Exportera <code>.cer</code> (publik) och <code>.pem</code> (privat)</li>
+            <li>Ladda upp <code>.cer</code> till app-registreringen i Azure AD</li>
+            <li>Uppdatera PEM-secret i Key Vault &mdash; nytt versions-ID skapas automatiskt</li>
+            <li>Starta om Function App så token-cachen rensas</li>
+            <li>Verifiera anslutning via HealthCheck</li>
+        </ol>
+<div class="warn-box">
+            <strong>Parallell giltighet:</strong> Ta inte bort det gamla certifikatet
+            från app-registreringen förrän det nya är verifierat i drift. Azure AD
+            stödjer flera aktiva certifikat &mdash; detta ger en säker rollback-möjlighet.
+        </div>
+<h2>11.4 HTTP 429-storm från Fortnox</h2>
+        <p><strong>Symptom:</strong> Många HTTP 429-loggar, synkfördröjning ökar. Dead
+        letter queue växer.</p>
+        <ol class="step-list">
+            <li>Kontrollera i App Insights om en specifik timer-trigger fyrar för ofta
+            &mdash; justera intervallet i <code>host.json</code></li>
+            <li>Kontrollera att <code>Retry-After</code>-header respekteras korrekt</li>
+            <li>Om 429 persisterar: kontakta Fortnox support och be om höjd gräns
+            (standard 400/min kan utökas mot avtal)</li>
+            <li>Efter åtgärd: kör <code>ReplayDeadLetterQueue</code> manuellt</li>
+        </ol>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 35</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Kapitel 11 &mdash; Driftrunbok</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2>11.5 Dead letter queue växer</h2>
+        <p><strong>Symptom:</strong> Larm om &gt;5 fel på 15 min. Poster ligger i
+        <code>Table Storage &mdash; failedSyncs</code>.</p>
+        <ol class="step-list">
+            <li>Öppna Azure Portal &rarr; Storage Account &rarr; Tables &rarr;
+            <code>failedSyncs</code></li>
+            <li>Gruppera felposter på <code>errorType</code> &mdash; hitta gemensam nämnare</li>
+            <li>Vanliga orsaker och åtgärder:
+                <ul>
+                    <li><strong>Mappningsfel:</strong> Saknad artikel &rarr; skapa i Fortnox, kör replay</li>
+                    <li><strong>Kreditgräns nådd:</strong> Ekonomi höjer gränsen eller markerar kunden aktiv</li>
+                    <li><strong>Konflikt (412):</strong> ETag-mismatch &mdash; hämta nytt ETag och försök igen</li>
+                </ul>
+            </li>
+            <li>Kör <code>ReplayDeadLetterQueue</code> för åtgärdade poster</li>
+            <li>Arkivera permanent misslyckade poster till Blob Storage för revision</li>
+        </ol>
+<h2>11.6 HealthCheck returnerar rött</h2>
+        <p><strong>Symptom:</strong> Function App svarar 503 på <code>/api/health?deep=true</code>.</p>
+        <ol class="step-list">
+            <li>Kontrollera Application Insights &mdash; filtrera på
+            <code>exceptions</code> senaste 30 min</li>
+            <li>Verifiera Key Vault &mdash; secrets läsbara via Managed Identity?</li>
+            <li>Verifiera att Always On är aktivt på App Service Plan</li>
+            <li>Om Azure-incident misstänks: kontrollera
+            <code>status.azure.com</code> för regionstatus</li>
+            <li>Restart Function App som sista åtgärd (påverkar pågående synkar)</li>
+        </ol>
+<h2>11.7 Noll synkroniseringar under kontorstid</h2>
+        <p><strong>Symptom:</strong> Larm &quot;0 synk under 30 min, 08&ndash;17&quot;.</p>
+        <ol class="step-list">
+            <li>Är det verkligen inga ändringar? (Kolla senaste D365-aktivitet)</li>
+            <li>Körs timers? Kontrollera <code>Traces</code> &mdash; senaste
+            <code>PollFortnoxChanges</code>-körning</li>
+            <li>Är webhooks registrerade korrekt? Testa en manuell ändring i båda system</li>
+            <li>Verifiera att Function App inte är stoppad av resursbegränsning</li>
+        </ol>
+<h2>11.8 Manuell återsynkronisering av en kund</h2>
+        <p>Ibland behövs en punktinsats för en specifik kund som blivit desynkad.</p>
+        <ol class="step-list">
+            <li>Anropa <code>POST /api/admin/resync</code> med JSON-body
+            <code>{"entity":"customer","fortnoxId":"123"}</code></li>
+            <li>Endpointen kräver <code>X-Admin-Key</code>-header med värde från Key Vault</li>
+            <li>Händelsen loggas i App Insights med flagga <code>manualResync: true</code></li>
+            <li>Verifiera resultatet i båda systemen</li>
+        </ol>
+<h2>11.9 Eskaleringsschema</h2>
+<table>
+            <thead>
+                <tr><th>Nivå</th><th>Ansvar</th><th>Nåbar när</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>L1 &mdash; Operatör</td><td>Larmtriage, standardåtgärder enl. runbook</td><td>Kontorstid</td></tr>
+                <tr><td>L2 &mdash; FortBridge-utvecklare</td><td>Kodändringar, förbi runbook</td><td>Beredskap</td></tr>
+                <tr><td>L3 &mdash; Fortnox support</td><td>API-problem, rate limit, konto</td><td>Kontorstid (svenska)</td></tr>
+                <tr><td>L3 &mdash; Microsoft support</td><td>Dataverse, Azure-incidenter</td><td>Enligt supportavtal</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>Efter varje incident:</strong> Dokumentera root cause, åtgärd, och
+            preventiva förbättringar. Om en ny incidenttyp uppstår som inte täcks av den
+            här runboken &mdash; lägg till ett avsnitt här för nästa gång.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 36</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Bilaga A &mdash; Ordlista</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1><span class="chapter-num">Bilaga A</span>Ordlista</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Kort förklaring av termer och förkortningar som används i dokumentet.
+            Listan är sorterad alfabetiskt. Termer som är specifika för FortBridge
+            eller Langate är markerade.</p>
+        </div>
+<h2>A.1 Allmänna begrepp</h2>
+<table>
+<thead>
+                <tr><th>Term</th><th>Förklaring</th></tr>
+            </thead>
+<tbody>
+<tr>
+                    <td><strong>Access Token</strong></td>
+                    <td>Kortlivad nyckel (1 timme i Fortnox) som skickas med varje API-anrop
+                    för att bevisa att integrationen har rätt att nå datan.</td>
+                </tr>
+<tr>
+                    <td><strong>Azure AD</strong></td>
+                    <td>Microsofts identitetstjänst. Hanterar app-registreringar, certifikat,
+                    och tokenutfärdande för Dataverse-anrop. Numera benämnd Microsoft Entra ID.</td>
+                </tr>
+<tr>
+                    <td><strong>Azure Function App</strong></td>
+                    <td>Värd för serverlösa funktioner i Azure. FortBridge körs på Basic-planen
+                    (B1) med Always On aktiverat.</td>
+                </tr>
+<tr>
+                    <td><strong>Bicep</strong></td>
+                    <td>Deklarativt språk för att definiera Azure-resurser. Används för
+                    infrastruktur som kod &mdash; ersätter ARM-mallar.</td>
+                </tr>
+<tr>
+                    <td><strong>D365</strong></td>
+                    <td>Dynamics 365 &mdash; Microsofts produktfamilj för CRM och ERP.
+                    FortBridge integrerar specifikt med Dynamics 365 Sales-modulen.</td>
+                </tr>
+<tr>
+                    <td><strong>Dataverse</strong></td>
+                    <td>Lagrings&shy;plattformen bakom Dynamics 365 och Power Platform. Nås via
+                    Web API (OData v4) och är dit FortBridge läser och skriver kunddata.</td>
+                </tr>
+<tr>
+                    <td><strong>Dead Letter Queue</strong></td>
+                    <td>Felkö &mdash; där misslyckade synkar hamnar efter tre automatiska retry:er.
+                    FortBridge lagrar dessa i Azure Table Storage.</td>
+                </tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 37</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Bilaga A &mdash; Ordlista</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+<thead>
+                <tr><th>Term</th><th>Förklaring</th></tr>
+            </thead>
+<tbody>
+<tr>
+                    <td><strong>ETag</strong></td>
+                    <td>Versionsmarkör som Dataverse skickar med varje entitet. Används
+                    vid PATCH (<code>If-Match</code>-header) för att upptäcka parallella
+                    skrivkonflikter (optimistic concurrency).</td>
+                </tr>
+<tr>
+                    <td><strong>HMAC-SHA256</strong></td>
+                    <td>Kryptografisk signatur (Hash-based Message Authentication Code med
+                    SHA-256). Används av Fortnox för att signera webhook-anrop så att mottagaren
+                    kan verifiera att anropet verkligen kommer från Fortnox.</td>
+                </tr>
+<tr>
+                    <td><strong>Idempotens</strong></td>
+                    <td>Egenskap där upprepad körning ger samma resultat som en körning.
+                    Kritiskt för webhook-hantering eftersom samma händelse kan levereras flera gånger.</td>
+                </tr>
+<tr>
+                    <td><strong>Key Vault</strong></td>
+                    <td>Azure-tjänst för säker lagring av hemligheter (tokens, certifikat,
+                    lösenord). FortBridge läser aldrig hemligheter från konfigurationsfiler
+                    &mdash; allt går via Key Vault.</td>
+                </tr>
+<tr>
+                    <td><strong>Managed Identity</strong></td>
+                    <td>En automatiskt genererad identitet som Function App använder för att
+                    autentisera mot Key Vault och andra Azure-tjänster &mdash; utan credentials
+                    i koden.</td>
+                </tr>
+<tr>
+                    <td><strong>OAuth 2.0</strong></td>
+                    <td>Standardprotokoll för delegerad auktorisering. Fortnox använder
+                    Authorization Code Flow; FortBridge kör detta en gång vid installation.</td>
+                </tr>
+<tr>
+                    <td><strong>OData</strong></td>
+                    <td>Open Data Protocol &mdash; RESTful standard för datatillgång. Dataverse
+                    Web API är OData v4, vilket ger filter, expand och batch som standard.</td>
+                </tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 38</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Bilaga A &mdash; Ordlista</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+<thead>
+                <tr><th>Term</th><th>Förklaring</th></tr>
+            </thead>
+<tbody>
+<tr>
+                    <td><strong>PEM</strong></td>
+                    <td>Privacy Enhanced Mail &mdash; textformat för certifikat och privata
+                    nycklar. Används för D365-autentisering (Application User med certifikat).</td>
+                </tr>
+<tr>
+                    <td><strong>Polling</strong></td>
+                    <td>Regelbunden avfrågning av ett API för att hitta ändringar. FortBridge
+                    pollar Fortnox var 5:e minut med <code>?lastmodified=</code>-filter som
+                    komplement till webhooks.</td>
+                </tr>
+<tr>
+                    <td><strong>Rate Limit</strong></td>
+                    <td>Anropsbegränsning. Fortnox tillåter 400 anrop/min per integration.
+                    Vid överskridning: HTTP 429 med <code>Retry-After</code>-header.</td>
+                </tr>
+<tr>
+                    <td><strong>Refresh Token</strong></td>
+                    <td>Långlivad nyckel (60 dagar i Fortnox) som används för att hämta en ny
+                    Access Token när den gamla löpt ut. Roteras vid varje förnyelse.</td>
+                </tr>
+<tr>
+                    <td><strong>Retry-After</strong></td>
+                    <td>HTTP-header som talar om hur länge klienten bör vänta innan nästa
+                    försök. FortBridge respekterar alltid detta värde framför egen
+                    backoff-logik.</td>
+                </tr>
+</tbody>
+</table>
+<table>
+<thead>
+                <tr><th>Term</th><th>Förklaring</th></tr>
+            </thead>
+<tbody>
+<tr>
+                    <td><strong>Scope (OAuth)</strong></td>
+                    <td>Behörighetsomfång. Fortnox-scopes som <code>customer</code>,
+                    <code>invoice</code>, <code>order</code> styr vilka API-resurser
+                    integrationen får nå.</td>
+                </tr>
+<tr>
+                    <td><strong>Service Endpoint (Dataverse)</strong></td>
+                    <td>Mekanism i Plugin Registration Tool för att registrera webhook-mottagare.
+                    Ersätter tidigare &quot;Plugin Steps&quot; för extern webhook-integration.</td>
+                </tr>
+<tr>
+                    <td><strong>Table Storage</strong></td>
+                    <td>NoSQL-del av Azure Storage Account. FortBridge använder det för
+                    ID-mappningar, poll-tidsstämplar, och felkön.</td>
+                </tr>
+<tr>
+                    <td><strong>Timer Trigger</strong></td>
+                    <td>Azure Function-trigger som körs på schema (CRON-uttryck). FortBridge
+                    använder timers för token-förnyelse och polling.</td>
+                </tr>
+<tr>
+                    <td><strong>UOM</strong></td>
+                    <td>Unit of Measure &mdash; måttenhet. I D365 definieras UOM:er i
+                    enhetsgrupper (<code>uomschedule</code>). FortBridge måste alltid sätta
+                    <code>uomid</code> på orderrader, annars misslyckas skapandet.</td>
+                </tr>
+<tr>
+                    <td><strong>Webhook</strong></td>
+                    <td>Metod där källsystemet skickar en HTTP-request till mottagaren vid
+                    ändringar &mdash; realtidsalternativ till polling. Används från båda hållen
+                    i FortBridge.</td>
+                </tr>
+</tbody>
+</table>
+<h2>A.2 FortBridge-specifika termer</h2>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 39</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">FortBridge</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-rule"></div>
+            <div class="page-header-section">Bilaga A &mdash; Ordlista</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+            <thead>
+                <tr><th>Term</th><th>Förklaring</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>lg_fortnoxcustomernumber</code></td>
+                    <td>Anpassat D365-fält på <code>account</code>. Lagrar Fortnox-kundnummer
+                    och används som matchningsnyckel.</td>
+                </tr>
+                <tr>
+                    <td><code>lg_fortnoxarticlenumber</code></td>
+                    <td>Anpassat D365-fält på <code>product</code>. Lagrar Fortnox-artikelnummer.</td>
+                </tr>
+                <tr>
+                    <td><code>lg_invoicepaid</code></td>
+                    <td>Anpassat D365-fält på <code>salesorder</code>. Sätts till
+                    <code>true</code> när Fortnox rapporterar <code>Balance == 0</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>HealthCheck</code></td>
+                    <td>FortBridge-endpoint <code>GET /api/health</code>. Med <code>?deep=true</code>
+                    testas även båda externa API-anslutningar.</td>
+                </tr>
+                <tr>
+                    <td><code>SyncArticlesToD365</code></td>
+                    <td>Timer-funktion som kör artikelsynk Fortnox &rarr; D365 varje timme.</td>
+                </tr>
+                <tr>
+                    <td><code>OnFortnoxWebhook</code></td>
+                    <td>HTTP-trigger som tar emot webhook-anrop från Fortnox. Verifierar HMAC-signatur
+                    och dispatcher till rätt hanterare baserat på händelsetyp.</td>
+                </tr>
+                <tr>
+                    <td><code>ReplayDeadLetterQueue</code></td>
+                    <td>Administrativ endpoint som försöker köra om misslyckade synk-försök
+                    från felkön. Används manuellt efter att rotorsak åtgärdats.</td>
+                </tr>
+                <tr>
+                    <td>Langate</td>
+                    <td>Systemleverantören och utgivaren av FortBridge. Prefix
+                    <code>lg_</code> på anpassade fält står för Langate.</td>
+                </tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>Saknas en term?</strong> Denna lista uppdateras löpande. Skicka förslag
+            på tillägg till dokumentägaren &mdash; målet är att en person utan tidigare D365-
+            eller Fortnox-kunskap ska kunna läsa dokumentet och förstå det.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FortBridge — Lösningsbeskrivning</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 40</div>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NSChecks — SPA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nschecks-shared.css">
+<style>
+/* ── App-specific styles (shared component styles in nschecks-shared.css) ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    /* NS Brand */
+    --ns: #2E9E5F;  --ns-dark: #237A49;  --ns-light: #E9F2EC;
+    --black: #1A1A1A;
+    --canvas: #FAFAFA;
+
+    /* Semantic */
+    --ok: #2E9E5F;  --okb: #E0F2E7;
+    --w: #C07800;   --wb: #FFF3D6;
+    --e: #C53030;   --eb: #FDE8E8;
+
+    /* Surfaces */
+    --bg: #FFFFFF;  --bg-s: #F5F5F5;  --bg2: #EBEBEB;
+    --b: #E4E4E7;
+
+    /* Text — WCAG AA compliant */
+    --ts: #18181B;  --t: #3F3F46;  --tm: #71717A;
+
+    /* Radius */
+    --r: 8px;  --rl: 12px;
+
+    /* Motion */
+    --tr: 0.2s cubic-bezier(0.4,0,0.2,1);
+    --slide: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #E8E8E8; color: var(--t);
+    line-height: 1.5; min-height: 100dvh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 16px; -webkit-user-select: none; user-select: none;
+}
+
+/* ── SPA View Transitions ── */
+.spa-view {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    transition: transform 0.35s cubic-bezier(0.22, 0.68, 0.35, 1.05);
+    background: var(--bg);
+    overflow: hidden;
+}
+.spa-view.active { transform: translateX(0); z-index: 2; }
+.spa-view.left   { transform: translateX(-100%); z-index: 1; }
+.spa-view.right  { transform: translateX(100%); z-index: 1; }
+
+/* ── Segmented Progress (replaces pill stats) ── */
+.seg-progress {
+    display: flex; gap: 3px; padding: 0 16px 12px;
+    background: var(--black); flex-shrink: 0;
+}
+.seg-bar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); }
+.seg-bar.done { background: var(--ns); }
+.seg-bar.prog { background: var(--w); }
+
+/* ── Project Meta Line ── */
+.project-meta {
+    padding: 10px 16px; background: var(--bg-s);
+    border-bottom: 1px solid var(--b); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.project-meta-text { font-size: 13px; color: var(--tm); font-weight: 500; }
+.project-meta-text b { color: var(--ts); font-weight: 600; }
+
+/* ── Resume CTA ── */
+.resume-cta {
+    margin: 12px 16px 4px; padding: 14px 16px;
+    background: var(--ns-light); border: 1.5px solid var(--ns);
+    border-radius: var(--rl); cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: all var(--tr); -webkit-tap-highlight-color: transparent;
+}
+.resume-cta:active { transform: scale(0.98); }
+.resume-cta-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ns); color: #fff; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.resume-cta-text { flex: 1; }
+.resume-cta-title { font-size: 14px; font-weight: 600; color: var(--ns-dark); }
+.resume-cta-sub { font-size: 12px; color: var(--tm); }
+.resume-cta-arrow { color: var(--ns); font-size: 20px; flex-shrink: 0; }
+
+/* ── Filter & Search Row ── */
+.filter-row {
+    display: flex; gap: 8px; padding: 8px 16px; flex-shrink: 0;
+    align-items: center;
+}
+.search-wrap { flex: 1; position: relative; }
+.search {
+    width: 100%; padding: 10px 14px 10px 36px;
+    border: 1.5px solid var(--b); border-radius: 24px;
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--ts); background: var(--bg-s); outline: none;
+    transition: border-color var(--tr); min-height: 44px;
+}
+.search:focus { border-color: var(--ns); }
+.search::placeholder { color: var(--tm); }
+.search-icon {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); font-size: 16px;
+    color: var(--tm); pointer-events: none;
+}
+.filter-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--b); background: var(--bg);
+    color: var(--tm); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--tr); flex-shrink: 0;
+}
+.filter-btn.active { border-color: var(--ns); background: var(--ns-light); color: var(--ns); }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 0; padding: 0 16px; flex-shrink: 0; border-bottom: 1px solid var(--b); }
+.tab {
+    flex: 1; padding: 12px 0; text-align: center;
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.02em;
+    color: var(--tm); cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all var(--tr);
+    min-height: 44px; display: flex; align-items: center; justify-content: center;
+}
+.tab.active { color: var(--ts); border-bottom-color: var(--ns); }
+
+/* ── List (shared) ── */
+.list { flex: 1; overflow-y: auto; padding: 8px 16px 16px; overscroll-behavior: contain; }
+
+/* ── Installation Card (redesigned) ── */
+.inst {
+    display: flex; align-items: center; gap: 12px; padding: 14px;
+    margin-bottom: 8px; background: var(--bg);
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    border-left: 4px solid var(--tm);
+    cursor: pointer; transition: all var(--tr); -webkit-tap-highlight-color: transparent;
+    position: relative; overflow: hidden;
+}
+.inst:active { transform: scale(0.99); }
+.inst:hover { border-color: var(--ns); }
+.inst.status-complete { border-left-color: var(--ok); }
+.inst.status-progress { border-left-color: var(--w); }
+.inst.status-prepped { border-left-color: var(--w); border-left-style: dashed; }
+.inst.status-new { border-left-color: var(--tm); }
+.inst-prepped-label {
+    font-size: 10px; font-weight: 600; color: var(--tm);
+    text-transform: uppercase; margin-top: 2px;
+}
+.inst-info { flex: 1; min-width: 0; }
+.inst-name {
+    font-size: 14px; font-weight: 600; color: var(--ts);
+    line-height: 1.3; /* allow two-line Swedish compound words */
+}
+.inst-addr { font-size: 12px; color: var(--tm); margin-top: 2px; line-height: 1.3; }
+.inst-progress-bar {
+    height: 4px; background: var(--b); border-radius: 2px;
+    margin-top: 6px; overflow: hidden;
+}
+.inst-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.inst-count {
+    font-size: 13px; font-weight: 700; color: var(--tm);
+    font-variant-numeric: tabular-nums; flex-shrink: 0;
+    min-width: 36px; text-align: center;
+}
+.inst.status-complete .inst-count { color: var(--ok); }
+.inst.status-progress .inst-count { color: var(--w); }
+.inst-arrow { color: var(--b); font-size: 18px; flex-shrink: 0; }
+
+/* ── Inspection List (redesigned) ── */
+/* Collapsed customer strip */
+.cust-strip {
+    margin: 0 16px; padding: 12px 14px;
+    background: var(--bg-s); border: 1.5px solid var(--b); border-radius: var(--rl);
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0;
+}
+.cust-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--ns-light); color: var(--ns);
+    font-weight: 700; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.cust-info { flex: 1; min-width: 0; }
+.cust-name { font-size: 14px; font-weight: 600; color: var(--ts); }
+.cust-addr { font-size: 12px; color: var(--tm); line-height: 1.3; }
+.cust-icon-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.cust-icon-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--b); background: var(--bg);
+    color: var(--tm); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--tr);
+}
+.cust-icon-btn:hover { border-color: var(--ns); color: var(--ns); }
+
+/* Display-size progress */
+.progress-hero {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 16px 12px; flex-shrink: 0;
+}
+.progress-number {
+    font-size: 44px; font-weight: 800; color: var(--ns);
+    font-variant-numeric: tabular-nums; line-height: 1;
+}
+.progress-number span { font-size: 28px; color: var(--tm); font-weight: 600; }
+.progress-text { flex: 1; }
+.progress-title { font-size: 15px; font-weight: 600; color: var(--ts); }
+.progress-sub { font-size: 13px; color: var(--tm); }
+
+/* Continue CTA (bottom dock) */
+.continue-cta {
+    margin: 0 16px 8px; padding: 14px 16px;
+    background: var(--ns); border-radius: var(--rl);
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: all var(--tr); -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+}
+.continue-cta:active { transform: scale(0.98); }
+.continue-cta:hover { background: var(--ns-dark); }
+.continue-cta-icon { font-size: 20px; flex-shrink: 0; }
+.continue-cta-text { flex: 1; font-size: 14px; font-weight: 600; }
+.continue-cta-arrow { font-size: 18px; flex-shrink: 0; }
+
+.divider { padding: 0 16px; margin-bottom: 8px; flex-shrink: 0; }
+.divider-text {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--tm);
+}
+.divider-text.fail-section { color: var(--e); }
+
+/* Inspection card */
+.insp {
+    display: flex; align-items: center; gap: 12px; padding: 14px; margin-bottom: 8px;
+    background: var(--bg); border: 1.5px solid var(--b); border-radius: var(--rl);
+    cursor: pointer; transition: all var(--tr); -webkit-tap-highlight-color: transparent;
+}
+.insp:active { transform: scale(0.99); }
+.insp:hover { border-color: var(--ns); }
+.insp-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+}
+.insp-icon.done { background: var(--okb); color: var(--ok); }
+.insp-icon.prog { background: var(--wb); color: var(--w); }
+.insp-icon.new  { background: var(--bg-s); color: var(--tm); }
+.insp-icon.fail { background: var(--eb); color: var(--e); }
+.insp-info { flex: 1; min-width: 0; }
+.insp-name { font-size: 13px; font-weight: 600; color: var(--ts); line-height: 1.3; }
+.insp-meta { font-size: 11px; color: var(--tm); margin-top: 2px; }
+.insp-bar { height: 4px; background: var(--b); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.insp-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.insp-arrow { color: var(--b); font-size: 18px; flex-shrink: 0; }
+.insp.complete { border-left: 4px solid var(--ok); }
+.insp.complete .insp-name { color: var(--ok); }
+.insp.rejected { border-left: 4px solid var(--e); }
+
+/* ── Group Labels ── */
+.group-label {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em; color: var(--tm); margin: 12px 0 6px;
+}
+.group-label.fail-group { color: var(--e); }
+
+/* ══════════════════════════════════════════════════
+   WIZARD STYLES
+   ══════════════════════════════════════════════════ */
+
+/* ── Viewport (app uses .card instead of .wiz-card) ── */
+.card {
+    flex: 0 0 100%; height: 100%;
+    display: flex; flex-direction: column;
+    padding: 24px 20px 16px;
+    overflow-y: auto; overscroll-behavior: contain;
+}
+
+/* ── Notify ── */
+.noti {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--b);
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+    min-height: 48px;
+}
+.noti:last-child { border-bottom: none; }
+.tog {
+    width: 48px; height: 28px; border-radius: 14px;
+    background: var(--bg2); position: relative; transition: background var(--tr); flex-shrink: 0;
+}
+.tog::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform var(--tr);
+}
+.tog.on { background: var(--ns); }
+.tog.on::after { transform: translateX(20px); }
+.noti-txt { font-size: 15px; color: var(--t); }
+
+/* ── Summary ── */
+.sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.sum-cell { padding: 14px; border-radius: var(--r); text-align: center; }
+.sum-num { font-size: 28px; font-weight: 800; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.sum-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; }
+
+/* ── Toast ── */
+.toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--black); color: white;
+    padding: 12px 24px; border-radius: 24px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    opacity: 0; pointer-events: none;
+    transition: all 0.3s ease; z-index: 100; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Undo Toast ── */
+.undo-toast {
+    position: fixed; bottom: 100px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--black); color: white;
+    padding: 10px 12px 10px 20px; border-radius: 24px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    opacity: 0; pointer-events: none;
+    transition: all 0.25s ease; z-index: 110;
+    display: flex; align-items: center; gap: 12px; white-space: nowrap;
+}
+.undo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.undo-btn {
+    background: rgba(255,255,255,0.2); border: none; color: white;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 14px; cursor: pointer;
+    transition: background var(--tr); min-height: 36px;
+}
+.undo-btn:hover { background: rgba(255,255,255,0.35); }
+
+/* ── Completion Overlay ── */
+.completion-overlay {
+    position: absolute; inset: 0;
+    background: rgba(46, 158, 95, 0.95);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+}
+.completion-overlay.show { opacity: 1; pointer-events: auto; }
+.completion-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; color: white; margin-bottom: 16px;
+    animation: completePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes completePop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+.completion-text { font-size: 20px; font-weight: 700; color: white; }
+.completion-sub {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px;
+    color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.03em;
+}
+.completion-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.particle {
+    position: absolute; width: 8px; height: 8px; border-radius: 2px;
+    animation: particleFall 1.5s ease-out forwards;
+}
+@keyframes particleFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(300px) rotate(720deg); opacity: 0; } }
+
+/* ── QR Scanner Overlay ── */
+.qr-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    z-index: 200; display: none; flex-direction: column; align-items: center; justify-content: center;
+}
+.qr-overlay.show { display: flex; }
+.qr-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 60px 20px 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.qr-title { font-size: 16px; font-weight: 600; color: white; }
+.qr-close {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none; color: white; font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.qr-viewfinder { width: 240px; height: 240px; position: relative; }
+.qr-corner {
+    position: absolute; width: 30px; height: 30px;
+    border-color: var(--ns); border-style: solid; border-width: 0;
+}
+.qr-corner.tl { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; border-radius: 4px 0 0 0; }
+.qr-corner.tr { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-radius: 0 4px 0 0; }
+.qr-corner.bl { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 4px; }
+.qr-corner.br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 4px 0; }
+.qr-scanline {
+    position: absolute; left: 10px; right: 10px; height: 2px;
+    background: var(--ns); box-shadow: 0 0 12px rgba(46,158,95,0.6);
+    animation: qrScan 2s ease-in-out infinite;
+}
+@keyframes qrScan { 0%, 100% { top: 10px; } 50% { top: calc(100% - 12px); } }
+.qr-label {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px;
+    color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.04em;
+    margin-top: 24px; text-align: center;
+}
+.qr-result { display: none; flex-direction: column; align-items: center; gap: 8px; margin-top: 20px; }
+.qr-result.show { display: flex; }
+.qr-result-badge {
+    background: var(--ns); color: white;
+    font-size: 14px; font-weight: 700; padding: 8px 20px; border-radius: 20px;
+}
+.qr-result-mac { font-size: 18px; font-weight: 700; color: white; letter-spacing: 0.05em; font-variant-numeric: tabular-nums; }
+
+/* ── Photo Required Warning ── */
+.photo-warn {
+    display: none; align-items: center; gap: 8px;
+    padding: 10px 14px; margin-top: 8px;
+    background: var(--wb); border: 1.5px solid var(--w);
+    border-radius: var(--r); font-size: 13px; font-weight: 600; color: var(--w);
+    animation: warnPulse 2s ease-in-out infinite;
+}
+.photo-warn.show { display: flex; }
+@keyframes warnPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+/* ── Success Overlay ── */
+.success-overlay {
+    position: absolute; inset: 0;
+    background: var(--ns); z-index: 300; display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+.success-overlay.show { display: flex; }
+.success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; color: white;
+    animation: completePop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+.success-title { font-size: 22px; font-weight: 700; color: white; }
+.success-sub { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; max-width: 280px; }
+.success-progress { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.success-btn {
+    margin-top: 20px; padding: 14px 32px; background: white; color: var(--ns);
+    border: none; border-radius: var(--r);
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; cursor: pointer; transition: all var(--tr);
+    min-height: 48px;
+}
+.success-btn:hover { background: rgba(255,255,255,0.9); }
+
+/* ── Landscape Signature Modal ── */
+.sig-landscape {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+    z-index: 250; display: none; flex-direction: column;
+    align-items: center; justify-content: center; padding: 20px;
+}
+.sig-landscape.show { display: flex; }
+.sig-ls-header {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 600px; margin-bottom: 12px;
+}
+.sig-ls-title { font-size: 15px; font-weight: 600; color: white; }
+.sig-ls-close {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none; color: white; font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.sig-ls-canvas-wrap {
+    width: 100%; max-width: 600px; height: 220px;
+    background: white; border-radius: var(--rl); position: relative; overflow: hidden;
+}
+.sig-ls-canvas { width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.sig-ls-baseline {
+    position: absolute; bottom: 40px; left: 30px; right: 30px;
+    border-bottom: 1px dotted #999; pointer-events: none;
+}
+.sig-ls-actions { display: flex; gap: 10px; margin-top: 12px; width: 100%; max-width: 600px; }
+.sig-ls-actions .sbtn { flex: 1; padding: 12px; }
+
+/* ── PDF Preview ── */
+.pdf-preview-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px; margin-top: 16px;
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    background: var(--bg-s); font-size: 13px; font-weight: 700; color: var(--ns);
+    text-transform: uppercase; cursor: pointer; transition: all var(--tr);
+    min-height: 48px;
+}
+.pdf-preview-btn:hover { border-color: var(--ns); }
+.pdf-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.pdf-modal.show { display: flex; }
+.pdf-sheet {
+    width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto;
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.pdf-close {
+    float: right; width: 44px; height: 44px; border-radius: 50%;
+    background: #f0f0f0; border: none; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.pdf-page {
+    border: 1px solid #e0e0e0; border-radius: 4px;
+    padding: 16px; margin-bottom: 12px; background: white;
+    font-size: 10px; color: #333; line-height: 1.5;
+}
+.pdf-page-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; margin-bottom: 8px;
+}
+.pdf-logo { font-weight: 800; font-size: 11px; }
+.pdf-docnr { font-size: 9px; color: #888; font-variant-numeric: tabular-nums; }
+.pdf-h1 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.pdf-row { display: flex; gap: 8px; margin-bottom: 3px; }
+.pdf-label { font-weight: 600; color: #888; min-width: 80px; }
+.pdf-val { color: #333; }
+.pdf-check { display: flex; align-items: center; gap: 6px; padding: 3px 0; font-size: 10px; }
+.pdf-check-icon { width: 12px; height: 12px; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
+
+/* ── Empty State ── */
+.empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 20px; text-align: center;
+}
+.empty-state-icon { font-size: 48px; color: var(--b); margin-bottom: 12px; }
+.empty-state-title { font-size: 16px; font-weight: 600; color: var(--ts); margin-bottom: 4px; }
+.empty-state-text { font-size: 14px; color: var(--tm); max-width: 260px; }
+
+/* ── Pull-to-refresh ── */
+.ptr-indicator {
+    text-align: center; padding: 0; height: 0; overflow: hidden;
+    transition: height 0.2s ease, opacity 0.2s ease;
+    opacity: 0; color: var(--tm); font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.ptr-indicator.pulling { height: 40px; opacity: 1; }
+.ptr-indicator.refreshing { height: 40px; opacity: 1; }
+.ptr-spinner {
+    width: 16px; height: 16px; border: 2px solid var(--b);
+    border-top-color: var(--ns); border-radius: 50%;
+}
+.ptr-indicator.refreshing .ptr-spinner { animation: ptrSpin 0.6s linear infinite; }
+@keyframes ptrSpin { to { transform: rotate(360deg); } }
+
+/* ── Dark Mode ── */
+.dark { --bg: #1a1a1c; --bg-s: #222224; --bg2: #2a2a2c; --t: #c8c8ca; --ts: #e8e8ea; --tm: #888; --b: #3a3a3c; --canvas: #111; }
+.dark .phone { background: var(--bg); }
+.dark .fi, .dark .date-input, .dark .cmt { background: var(--bg-s); color: var(--ts); border-color: var(--b); }
+.dark .fi::placeholder, .dark .cmt::placeholder { color: #555; }
+.dark .tri { background: var(--bg-s); border-color: var(--b); color: var(--t); }
+.dark .bin { background: var(--bg-s); border-color: var(--b); color: var(--t); }
+.dark .conf { border-color: var(--b); }
+.dark .conf-box { border-color: var(--b); }
+.dark .photo-add { border-color: var(--b); color: var(--tm); }
+.dark .photo-thumb { background: var(--bg2); border-color: var(--b); }
+.dark .mic-btn { background: var(--bg-s); border-color: var(--b); color: var(--tm); }
+.dark .sig-wrap { background: var(--bg-s); border-color: var(--b); }
+.dark .sig-canvas { background: var(--bg-s); }
+.dark .noti { border-color: var(--b); }
+.dark .tog { background: var(--b); }
+.dark .bnav { background: var(--bg); border-color: var(--b); }
+.dark .nb-prev { background: var(--bg2); color: var(--t); }
+.dark .sum-cell { background: var(--bg-s) !important; }
+.dark .inst { background: var(--bg); border-color: var(--b); }
+.dark .cust-strip { background: var(--bg-s); border-color: var(--b); }
+.dark .cust-icon-btn { background: var(--bg); border-color: var(--b); color: var(--t); }
+.dark .insp { background: var(--bg); border-color: var(--b); }
+.dark .search { background: var(--bg-s); color: var(--ts); border-color: var(--b); }
+.dark .rpt-fi { background: var(--bg-s); color: var(--ts); border-color: var(--b); }
+.dark .project-meta { background: var(--bg-s); border-color: var(--b); }
+.dark .resume-cta { background: rgba(46,158,95,0.1); border-color: var(--ns); }
+.dark .attach-chip { background: var(--bg-s); border-color: var(--b); color: #555; }
+.dark .attach-chip:hover { color: var(--ns); }
+.dark .filter-btn { background: var(--bg-s); border-color: var(--b); }
+.dark .tri { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+.dark .bin { box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+.dark .nb-next { box-shadow: 0 0 12px rgba(46,158,95,0.3); }
+
+/* ── Glove Mode (high contrast, no layout reflow) ── */
+.glove .inst, .glove .insp, .glove .cust-strip,
+.glove .tri, .glove .bin, .glove .conf,
+.glove .fi, .glove .date-input, .glove .cmt,
+.glove .rpt-fi, .glove .attach-chip,
+.glove .photo-add, .glove .rpt-entry {
+    border-width: 2px; border-color: #000;
+}
+.glove .card-q { color: #000; }
+.glove .inst-name, .glove .cust-name, .glove .insp-name,
+.glove .fi-label, .glove .conf-txt, .glove .noti-txt { color: #000; }
+.glove .inst-addr, .glove .cust-addr, .glove .insp-meta,
+.glove .card-hint, .glove .card-label { color: #333; }
+.glove .tri.s-ok { background: var(--ns); color: #fff; border-color: var(--ns); }
+.glove .tri.s-ok .ic { background: #fff; color: var(--ns); border-color: #fff; }
+.glove .tri.s-fail { background: #D00000; color: #fff; border-color: #D00000; }
+.glove .tri.s-fail .ic { background: #fff; color: #D00000; border-color: #fff; }
+.glove .bin.s-yes { background: var(--ns); color: #fff; border-color: var(--ns); }
+.glove .bin.s-no { background: #D00000; color: #fff; border-color: #D00000; }
+.glove .photo-add { border-style: solid; }
+
+@media (max-width: 420px) {
+    body { padding: 0; }
+    .phone { border-radius: 0; height: 100dvh; width: 100%; }
+}
+</style>
+</head>
+<body class="nsc">
+
+<div class="phone">
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 1: INSTALLATION LIST
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view active" id="view-installations">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="app-bar">
+            <button class="app-bar-back" style="visibility:hidden;">&#8592;</button>
+            <svg class="ns-mark" viewBox="0 0 15 20" width="16" height="22" style="flex-shrink:0;">
+                <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+            </svg>
+            <div class="app-bar-content">
+                <div class="app-bar-title">Installationer</div>
+            </div>
+            <div class="app-bar-actions">
+                <button class="app-bar-btn" id="gloveToggle" onclick="App.toggleGlove()" title="Handskläge">&#9758;</button>
+                <button class="app-bar-btn" onclick="App.toggleDark()" title="Mörkt läge">&#9789;</button>
+            </div>
+        </div>
+        <div class="project-meta">
+            <div class="project-meta-text"><b>Östra Göinge Knislinge Etapp 1</b> &middot; Fiber</div>
+            <div class="project-meta-text" style="font-variant-numeric:tabular-nums;">8/24 klara</div>
+            <!-- 8 complete, 1 active (tech is here), 11 contractor-prepped (3/7), 4 not started -->
+        </div>
+        <div class="seg-progress" id="segProgress"></div>
+        <div style="display:flex;gap:12px;padding:0 16px 6px;font-size:10px;color:var(--tm);font-weight:600;">
+            <span>&#9679; <span style="color:var(--ok);">Klar</span></span>
+            <span>&#9679; <span style="color:var(--w);">Pågår</span></span>
+            <span>&#9679; Ej påbörjad</span>
+        </div>
+
+        <!-- Resume CTA -->
+        <div class="resume-cta" id="resumeCta" onclick="App.resumeLast()">
+            <div class="resume-cta-icon">&#9654;</div>
+            <div class="resume-cta-text">
+                <div class="resume-cta-title">Fortsätt där du var</div>
+                <div class="resume-cta-sub" id="resumeCtaSub">I-11809 Immeln 5:3 — 5/7 klara — för 23 min sedan</div>
+            </div>
+            <div class="resume-cta-arrow">&#8250;</div>
+        </div>
+
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">&#128269;</span>
+                <input class="search" id="instSearch" placeholder="Sök installation, kund, adress..." />
+            </div>
+            <button class="filter-btn" id="filterBtn" onclick="App.cycleFilter()" title="Filtrera"><span id="filterLabel">&#9776;</span></button>
+        </div>
+        <div class="ptr-indicator" id="ptrIndicator"><div class="ptr-spinner"></div><span id="ptrText">Dra för att uppdatera</span></div>
+        <div class="list" id="instList"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 2: INSPECTION LIST
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-inspections">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="app-bar">
+            <button class="app-bar-back" onclick="App.navigateTo('view-installations')">&#8592;</button>
+            <svg class="ns-mark" viewBox="0 0 15 20" width="14" height="18" style="flex-shrink:0;">
+                <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+            </svg>
+            <div class="app-bar-content">
+                <div class="app-bar-title" id="inspHdrTitle">I-11809 Immeln 5:3</div>
+                <div class="app-bar-sub" id="inspHdrSub">Östra Göinge Knislinge Etapp 1</div>
+            </div>
+        </div>
+
+        <!-- Collapsed customer strip -->
+        <div class="cust-strip">
+            <div class="cust-avatar" id="inspAvatar">AH</div>
+            <div class="cust-info">
+                <div class="cust-name" id="inspCustName">Anders Holm</div>
+                <div class="cust-addr" id="inspCustAddr">Sjövägen 1, Immeln</div>
+            </div>
+            <div class="cust-icon-actions">
+                <button class="cust-icon-btn" onclick="App.toast('Ringer...')" title="Ring">&#128222;</button>
+                <button class="cust-icon-btn" onclick="App.toast('Öppnar karta...')" title="Navigera">&#128506;</button>
+                <button class="cust-icon-btn" onclick="App.toast('Öppnar e-post...')" title="E-post">&#128231;</button>
+            </div>
+        </div>
+
+        <!-- Display-size progress -->
+        <div class="progress-hero">
+            <div class="progress-number" id="inspProgressNum">5<span>/7</span></div>
+            <div class="progress-text">
+                <div class="progress-title" id="inspProgressTitle">5 av 7 checklistor klara</div>
+                <div class="progress-sub" id="inspProgressSub">2 kvar att slutföra</div>
+            </div>
+        </div>
+
+        <!-- Continue CTA -->
+        <div class="continue-cta" id="continueCta" onclick="App.continueNext()">
+            <div class="continue-cta-icon">&#9654;</div>
+            <div class="continue-cta-text" id="continueCtaText">Fortsätt nästa checklista</div>
+            <div class="continue-cta-arrow">&#8250;</div>
+        </div>
+
+        <div class="list" id="inspList" style="margin-top:4px;"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 3: WIZARD
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-wizard">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="wiz-header">
+            <div class="wiz-header-top">
+                <button class="app-bar-back" onclick="App.navigateTo('view-inspections')">&#8592;</button>
+                <svg class="ns-mark" viewBox="0 0 15 20" width="14" height="18" style="flex-shrink:0;">
+                    <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+                </svg>
+                <div class="wiz-header-info">
+                    <div class="wiz-title" id="wizHdrTitle">Egenkontroll sättning skåp</div>
+                    <div class="wiz-sub" id="wizHdrSub">I-11809 &middot; Immeln 5:3</div>
+                </div>
+                <button class="app-bar-btn" onclick="App.toggleDark()" title="Mörkt läge">&#9789;</button>
+            </div>
+            <div class="wiz-header-row2">
+                <div class="step-counter" id="stepCounter">Steg 1 / 15</div>
+                <div class="wiz-header-chips">
+                    <div class="autosave-chip" id="autosaveChip"><div class="autosave-dot"></div><span id="autosaveText">Sparad</span></div>
+                    <div class="gps-chip locked" id="gpsChip"><div class="gps-dot"></div><span id="gpsText">GPS</span></div>
+                </div>
+            </div>
+            <div class="prog-track" id="progTrack"></div>
+        </div>
+
+        <div class="vp" id="wizardVp">
+            <div class="track" id="track">
+
+                <!-- 0: Identifiering -->
+                <div class="card">
+                    <div class="card-label">Identifiering</div>
+                    <div class="card-q">Fyll i uppgifter om skåpet</div>
+                    <div class="fi-group">
+                        <div class="fi-label">Skåps-ID<span class="req-dot"></span></div>
+                        <input class="fi" placeholder="T.ex. FOS-42-A" value="FOS-42-A" />
+                    </div>
+                    <div class="fi-group">
+                        <div class="fi-label">Fastighetsbeteckning / adress<span class="req-dot"></span></div>
+                        <input class="fi" placeholder="Fastighet eller adress" value="Östra Göinge Immeln 5:3" />
+                    </div>
+                </div>
+
+                <!-- 1: Tristate -->
+                <div class="card">
+                    <div class="nbadge">1 / 12</div>
+                    <div class="card-q">Skåp monterat enligt anvisning i våg och lod, på rätt djup med fullt utfällda stödben och markankare.<span class="req-dot"></span></div>
+                    <div class="tri-stack">
+                        <div class="tri" onclick="Wiz.tri(1,'ok',this)"><div class="ic">&#10003;</div>Godkänt</div>
+                        <div class="tri" onclick="Wiz.tri(1,'fail',this)"><div class="ic">&#10007;</div>Ej godkänt</div>
+                        <div class="tri" onclick="Wiz.tri(1,'na',this)"><div class="ic">&mdash;</div>Ej relevant</div>
+                    </div>
+                    <div class="attach-chips" id="chips1">
+                        <div class="attach-chip" onclick="Wiz.toggleComment(1)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                        <div class="attach-chip" onclick="Wiz.addPhoto(this,1)"><span class="attach-chip-icon">&#128247;</span> Foto</div>
+                        <div class="attach-chip" onclick="Wiz.toggleMicChip(1)"><span class="attach-chip-icon">&#127908;</span> Röst</div>
+                    </div>
+                    <div class="cmt-area" id="cmtArea1">
+                        <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                    </div>
+                    <div class="photo-area" id="photoArea1" style="display:none;">
+                        <div class="photo-grid">
+                            <div class="photo-add" onclick="Wiz.addPhoto(this,1)">&#128247;<span>Foto</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2: Ja/Nej (binary) -->
+                <div class="card">
+                    <div class="nbadge">2 / 12</div>
+                    <div class="card-q">Utbildning finns för den som utfört inmätningen.<span class="req-dot"></span></div>
+                    <div class="card-hint">Certifikat eller utbildningsbevis krävs för denna kontrollpunkt.</div>
+                    <div class="bin-row">
+                        <div class="bin" onclick="Wiz.binSel(2,'yes',this)"><span class="bin-icon">&#10003;</span>Ja</div>
+                        <div class="bin" onclick="Wiz.binSel(2,'no',this)"><span class="bin-icon">&#10007;</span>Nej</div>
+                    </div>
+                    <div class="attach-chips" id="chips2">
+                        <div class="attach-chip" onclick="Wiz.toggleComment(2)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                    </div>
+                    <div class="cmt-area" id="cmtArea2">
+                        <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                    </div>
+                </div>
+
+                <!-- 3: Date field -->
+                <div class="card">
+                    <div class="nbadge">3 / 12</div>
+                    <div class="card-q">Datum för instrumentkontroll.<span class="req-dot"></span></div>
+                    <div class="card-hint">Ange det datum då instrumentkontrollen senast utfördes.</div>
+                    <input type="date" class="date-input" id="dateField" onchange="Wiz.dateSet(3,this)" />
+                    <div class="attach-chips" id="chips3">
+                        <div class="attach-chip" onclick="Wiz.toggleComment(3)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                    </div>
+                    <div class="cmt-area" id="cmtArea3">
+                        <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                    </div>
+                </div>
+
+                <!-- 4: Text field -->
+                <div class="card">
+                    <div class="nbadge">4 / 12</div>
+                    <div class="card-q">Ange nätobjekt i fältet nedan om inmätningen ansluter mot tidigare inmätning.</div>
+                    <div class="fi-group">
+                        <div class="fi-label">Nätobjekt</div>
+                        <input class="fi" placeholder="T.ex. NO-4521" oninput="Wiz.textSet(4,this)" />
+                    </div>
+                    <div class="attach-chips" id="chips4">
+                        <div class="attach-chip" onclick="Wiz.toggleComment(4)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                    </div>
+                    <div class="cmt-area" id="cmtArea4">
+                        <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                    </div>
+                    <div style="margin-top:auto; padding:16px; background:var(--bg-s); border-radius:var(--rl); font-size:13px; color:var(--tm); line-height:1.5;">
+                        <b style="color:var(--ts);">&#128161; Tips</b><br/>
+                        Nätobjekt-ID finns på etiketten inuti skåpet, under luckan till vänster. Format: NO-XXXX.
+                    </div>
+                </div>
+
+                <!-- 5: Photo-first (required photo + tristate) -->
+                <div class="card" data-photo-req="true" id="card5">
+                    <div class="nbadge">5 / 12</div>
+                    <div class="card-q">KUP monterad och skarvad mot söktråd.<span class="req-dot"></span></div>
+                    <div class="photo-req-label" style="margin-bottom:8px;">&#128247; Foto krävs</div>
+
+                    <!-- Photo-first state (before capture) -->
+                    <div class="photo-first-area" id="photoFirst5">
+                        <div class="photo-first-viewfinder">
+                            <div class="corner tl"></div><div class="corner tr"></div>
+                            <div class="corner bl"></div><div class="corner br"></div>
+                            <div class="photo-first-icon">&#128247;</div>
+                            <div class="photo-first-label">Ta foto först</div>
+                        </div>
+                        <div class="photo-first-shutter" onclick="Wiz.capturePhotoFirst(5)">&#128247;</div>
+                        <div class="photo-first-hint">Godkänt / Ej godkänt visas efter foto</div>
+                    </div>
+
+                    <!-- After capture (hidden initially) -->
+                    <div id="afterCapture5" style="display:none;">
+                        <div class="photo-captured-row" id="capturedPhotos5">
+                            <div class="photo-add" onclick="Wiz.addPhoto(this,5)">&#128247;<span>+ Mer</span></div>
+                        </div>
+                        <div class="tri-stack">
+                            <div class="tri" onclick="Wiz.tri(5,'ok',this)"><div class="ic">&#10003;</div>Godkänt</div>
+                            <div class="tri" onclick="Wiz.tri(5,'fail',this)"><div class="ic">&#10007;</div>Ej godkänt</div>
+                            <div class="tri" onclick="Wiz.tri(5,'na',this)"><div class="ic">&mdash;</div>Ej relevant</div>
+                        </div>
+                        <div class="attach-chips">
+                            <div class="attach-chip" onclick="Wiz.toggleComment(5)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                        </div>
+                        <div class="cmt-area" id="cmtArea5">
+                            <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6: Photo-first + QR -->
+                <div class="card" data-photo-req="true" id="card6">
+                    <div class="nbadge">6 / 12</div>
+                    <div class="card-q">Foto där skåpets placering tydligt framgår.<span class="req-dot"></span></div>
+                    <div class="photo-req-label" style="margin-bottom:8px;">&#128247; Foto krävs</div>
+
+                    <div class="photo-first-area" id="photoFirst6">
+                        <div class="photo-first-viewfinder">
+                            <div class="corner tl"></div><div class="corner tr"></div>
+                            <div class="corner bl"></div><div class="corner br"></div>
+                            <div class="photo-first-icon">&#128247;</div>
+                            <div class="photo-first-label">Ta foto först</div>
+                        </div>
+                        <div style="display:flex; gap:12px; margin-top:16px;">
+                            <div class="photo-first-shutter" onclick="Wiz.capturePhotoFirst(6)">&#128247;</div>
+                            <div class="photo-first-shutter" onclick="Wiz.openQR()" style="background:var(--black);">&#9641;</div>
+                        </div>
+                        <div class="photo-first-hint">Godkänt / Ej godkänt visas efter foto</div>
+                    </div>
+
+                    <div id="afterCapture6" style="display:none;">
+                        <div class="photo-captured-row" id="capturedPhotos6">
+                            <div class="photo-add" onclick="Wiz.addPhoto(this,6)">&#128247;<span>+ Mer</span></div>
+                            <div class="photo-add" onclick="Wiz.openQR()" style="border-color:var(--ns);color:var(--ns);">&#9641;<span>QR</span></div>
+                        </div>
+                        <div class="tri-stack">
+                            <div class="tri" onclick="Wiz.tri(6,'ok',this)"><div class="ic">&#10003;</div>Godkänt</div>
+                            <div class="tri" onclick="Wiz.tri(6,'fail',this)"><div class="ic">&#10007;</div>Ej godkänt</div>
+                            <div class="tri" onclick="Wiz.tri(6,'na',this)"><div class="ic">&mdash;</div>Ej relevant</div>
+                        </div>
+                        <div class="attach-chips">
+                            <div class="attach-chip" onclick="Wiz.toggleComment(6)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                        </div>
+                        <div class="cmt-area" id="cmtArea6">
+                            <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7: Numeric input -->
+                <div class="card">
+                    <div class="nbadge">7 / 12</div>
+                    <div class="card-q">Djup på sökband (mm).<span class="req-dot"></span></div>
+                    <div class="card-hint">Mät djupet från markytan till sökbandets överkant.</div>
+                    <div class="fi-group">
+                        <div class="fi-label">Djup (mm)</div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="number" class="fi" placeholder="T.ex. 350" oninput="Wiz.numSet(7,this)" style="flex:1;" inputmode="numeric" />
+                            <span style="font-size:14px; color:var(--tm); font-weight:700;">mm</span>
+                        </div>
+                    </div>
+                    <div class="attach-chips" id="chips7">
+                        <div class="attach-chip" onclick="Wiz.toggleComment(7)"><span class="attach-chip-icon">&#128172;</span> Kommentar</div>
+                    </div>
+                    <div class="cmt-area" id="cmtArea7">
+                        <div class="cmt-row"><textarea class="cmt" placeholder="Kommentar (valfritt)..." rows="2"></textarea><button class="mic-btn" onclick="Wiz.toggleMic(this)"><span class="mic-icon">&#127908;</span></button></div>
+                    </div>
+                </div>
+
+                <!-- 8: Multi-line text (incident) -->
+                <div class="card">
+                    <div class="nbadge">8 / 12</div>
+                    <div class="card-q">Beskriv avvikelsen eller incidenten.</div>
+                    <div class="card-hint">Vad hände? Beskriv händelsen, orsak och eventuella åtgärder.</div>
+                    <textarea class="cmt" placeholder="Beskriv vad som hände..." rows="6" style="min-height:140px; font-size:16px;" oninput="Wiz.textSet(8,this)"></textarea>
+                    <div class="attach-chips">
+                        <div class="attach-chip" onclick="Wiz.addPhoto(this,8)"><span class="attach-chip-icon">&#128247;</span> Foto</div>
+                    </div>
+                    <div class="photo-area" id="photoArea8" style="display:none;">
+                        <div class="photo-grid">
+                            <div class="photo-add" onclick="Wiz.addPhoto(this,8)">&#128247;<span>Foto</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9: Binary with forced comment -->
+                <div class="card">
+                    <div class="nbadge">9 / 12</div>
+                    <div class="card-q">Centralsmörjning kontrollerad.<span class="req-dot"></span></div>
+                    <div class="bin-row">
+                        <div class="bin" onclick="Wiz.binForced(9,'yes',this)"><span class="bin-icon">&#10003;</span>OK</div>
+                        <div class="bin" onclick="Wiz.binForced(9,'no',this)"><span class="bin-icon">&#10007;</span>Ej OK</div>
+                    </div>
+                    <div class="forced-cmt" id="forcedCmt9" style="display:none;">
+                        <div style="font-size:12px; font-weight:700; color:var(--e); text-transform:uppercase; margin-bottom:4px;">&#9888; Ange anledning (obligatoriskt)</div>
+                        <textarea class="cmt" placeholder="Beskriv varför..." rows="3" style="border-color:var(--e);"></textarea>
+                    </div>
+                </div>
+
+                <!-- 10: Repeater input (Borrprotokoll) -->
+                <div class="card">
+                    <div class="nbadge">10 / 12</div>
+                    <div class="card-q">Borrprotokoll — registrera mätvärden per stång.</div>
+                    <div class="card-hint">Lägg till en stång i taget. Fyll i djup och avvikelse.</div>
+                    <div class="rpt-entries" id="rptEntries">
+                        <div class="rpt-empty" id="rptEmpty">Inga stänger registrerade ännu</div>
+                    </div>
+                    <div class="rpt-form">
+                        <div class="rpt-form-title">Ny stång</div>
+                        <div class="rpt-row">
+                            <div class="rpt-field">
+                                <div class="rpt-field-label">Djup (m)</div>
+                                <input type="number" class="rpt-fi" id="rptDepth" placeholder="T.ex. 12.5" inputmode="decimal" />
+                            </div>
+                            <div class="rpt-field">
+                                <div class="rpt-field-label">Avvikelse (%)</div>
+                                <input type="number" class="rpt-fi" id="rptDev" placeholder="T.ex. 2.1" inputmode="decimal" />
+                            </div>
+                        </div>
+                        <div class="rpt-field" style="margin-bottom:8px;">
+                            <div class="rpt-field-label">Notering (valfritt)</div>
+                            <input class="rpt-fi" id="rptNote" placeholder="T.ex. Lera, berg vid 8m" />
+                        </div>
+                        <button class="rpt-add-btn" onclick="Wiz.addRptEntry()">+ Lägg till stång</button>
+                    </div>
+                </div>
+
+                <!-- 11: Info/instruction block -->
+                <div class="card">
+                    <div class="nbadge">11 / 12</div>
+                    <div class="info-block">
+                        <div class="info-block-title">&#9432; Villkor för kontroll</div>
+                        <div class="info-block-text">
+                            Denna kontroll ska utföras enligt Skanovas instruktion T3836-12 Rev 18.0.
+                            Kontrollanten ska ha genomgått utbildning och ha giltigt certifikat.
+                            Vid avvikelse — dokumentera med foto och kontakta projektledare innan
+                            arbetet fortsätter.
+                        </div>
+                    </div>
+                    <div class="conf" onclick="Wiz.confTog(this,11)" style="margin-top:16px;">
+                        <div class="conf-box">&#10003;</div>
+                        <div class="conf-txt">Jag har läst och förstått villkoren ovan</div>
+                    </div>
+                </div>
+
+                <!-- 12: Photo confirmation -->
+                <div class="card">
+                    <div class="nbadge">12 / 12</div>
+                    <div class="card-q">Fotodokumentation finns för punkt 1-7.<span class="req-dot"></span></div>
+                    <div class="conf" onclick="Wiz.confTog(this,12)">
+                        <div class="conf-box">&#10003;</div>
+                        <div class="conf-txt">Alla foton uppladdade i checklistan</div>
+                    </div>
+                    <textarea class="cmt" placeholder="Övriga kommentarer..." rows="3"></textarea>
+                </div>
+
+                <!-- 13: Signature -->
+                <div class="card">
+                    <div class="card-label">Signatur</div>
+                    <div class="card-q" style="font-size:18px; margin-bottom:12px;">Kontroll utförd av<span class="req-dot"></span></div>
+                    <div class="sig-wrap" id="sigW">
+                        <canvas class="sig-canvas" id="sigC"></canvas>
+                        <div class="sig-base"></div>
+                        <div class="sig-ph">
+                            <div class="sig-ph-icon">&#9998;</div>
+                            <div class="sig-ph-text">Rita din signatur här</div>
+                        </div>
+                    </div>
+                    <div class="sig-info" id="sigInfo">
+                        <div class="sig-info-icon">&#10003;</div>
+                        <div>
+                            <div class="sig-info-text">Signatur sparad</div>
+                            <div class="sig-info-time" id="sigTime"></div>
+                        </div>
+                    </div>
+                    <div style="font-size:12px;color:var(--tm);margin-bottom:8px;font-style:italic;">Du kan inte ändra efter låsning</div>
+                    <div class="sig-btns">
+                        <button class="sbtn sbtn-sec" onclick="Wiz.sigClear()">Rensa</button>
+                        <button class="sbtn sbtn-sec" onclick="Wiz.openLandscapeSig()" style="font-size:12px;">&#8634; Liggande</button>
+                        <button class="sbtn sbtn-pri" onclick="Wiz.sigLock()">Lås signatur</button>
+                    </div>
+                </div>
+
+                <!-- 14: Summary -->
+                <div class="card">
+                    <div class="card-label">Sammanfattning</div>
+                    <div id="sumGrid"></div>
+                    <div style="margin-bottom:16px;">
+                        <div class="card-label" style="margin-top:8px;">Notifieringar</div>
+                        <div class="noti" onclick="this.querySelector('.tog').classList.toggle('on')">
+                            <div class="tog on"></div>
+                            <div class="noti-txt">E-postkopia till Erik Lindgren (erik@ns.se)</div>
+                        </div>
+                        <div class="noti" onclick="this.querySelector('.tog').classList.toggle('on')">
+                            <div class="tog"></div>
+                            <div class="noti-txt">E-postkopia till uppdragsgivare</div>
+                        </div>
+                        <div class="noti" onclick="this.querySelector('.tog').classList.toggle('on')">
+                            <div class="tog"></div>
+                            <div class="noti-txt">Flagga för uppföljning</div>
+                        </div>
+                    </div>
+                    <div class="pdf-preview-btn" onclick="Wiz.openPDF()">&#128196; Förhandsvisning PDF</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bnav">
+            <button class="nb nb-prev" id="pBtn" onclick="Wiz.go(Wiz.cur-1)" disabled>&#8592;</button>
+            <button class="nb nb-next" id="nBtn" onclick="Wiz.goNext()">Nästa &#8594;</button>
+        </div>
+
+        <!-- Wizard overlays inside the view -->
+        <div class="success-overlay" id="successOverlay">
+            <div class="success-icon">&#10003;</div>
+            <div class="success-title">Checklista inskickad!</div>
+            <div class="success-sub" id="successSub">Egenkontroll kundinstallation — I-11809 Immeln 5:3</div>
+            <div class="success-progress" id="successProgress">Installation: 6/7 klara</div>
+            <button class="success-btn" onclick="App.onWizardSubmitSuccess()">&#8592; Tillbaka till installationen</button>
+        </div>
+        <div class="completion-overlay" id="completeOverlay">
+            <div class="completion-particles" id="particles"></div>
+            <div class="completion-icon">&#10003;</div>
+            <div class="completion-text">Alla punkter ifyllda!</div>
+            <div class="completion-sub">Signera och skicka in</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Global overlays -->
+<div class="toast" id="toastEl"></div>
+<div class="undo-toast" id="undoToast">
+    <span id="undoText"></span>
+    <button class="undo-btn" onclick="Wiz.undoAction()">Ångra</button>
+</div>
+<div class="sig-landscape" id="sigLandscape">
+    <div class="sig-ls-header">
+        <div class="sig-ls-title">Signera — liggande läge</div>
+        <button class="sig-ls-close" onclick="Wiz.closeLandscapeSig()">&#10005;</button>
+    </div>
+    <div class="sig-ls-canvas-wrap">
+        <canvas class="sig-ls-canvas" id="sigLsCanvas"></canvas>
+        <div class="sig-ls-baseline"></div>
+    </div>
+    <div class="sig-ls-actions">
+        <button class="sbtn sbtn-sec" onclick="Wiz.clearLandscapeSig()">Rensa</button>
+        <button class="sbtn sbtn-pri" onclick="Wiz.saveLandscapeSig()">Spara signatur</button>
+    </div>
+</div>
+<div class="qr-overlay" id="qrOverlay">
+    <div class="qr-header">
+        <div class="qr-title">Skanna QR-kod</div>
+        <button class="qr-close" onclick="Wiz.closeQR()">&#10005;</button>
+    </div>
+    <div class="qr-viewfinder">
+        <div class="qr-corner tl"></div>
+        <div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div>
+        <div class="qr-corner br"></div>
+        <div class="qr-scanline" id="qrScanline"></div>
+    </div>
+    <div class="qr-label" id="qrLabel">Rikta kameran mot QR-koden på utrustningen</div>
+    <div class="qr-result" id="qrResult">
+        <div class="qr-result-badge">QR-KOD HITTAD</div>
+        <div class="qr-result-mac" id="qrMac"></div>
+    </div>
+    <div style="margin-top:24px;font-size:13px;color:rgba(255,255,255,0.4);text-align:center;cursor:pointer;" onclick="Wiz.closeQR();App.toast('Manuell inmatning')">Kan inte skanna? <span style="text-decoration:underline;color:rgba(255,255,255,0.6);">Mata in ID manuellt</span></div>
+</div>
+<div class="pdf-modal" id="pdfModal" onclick="if(event.target===this)this.classList.remove('show')">
+    <div class="pdf-sheet" id="pdfSheet"></div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   APP — SPA Navigation Controller
+   ══════════════════════════════════════════════════════════════ */
+const App = {
+    currentView: 'view-installations',
+    viewStack: ['view-installations'],
+    selectedInstallation: null,
+    selectedInspection: null,
+    currentFilter: '',
+    _tt: null,
+
+    navigateTo(viewId) {
+        if (viewId === this.currentView) return;
+        const current = document.getElementById(this.currentView);
+        const target = document.getElementById(viewId);
+        const viewOrder = ['view-installations', 'view-inspections', 'view-wizard'];
+        const currentIdx = viewOrder.indexOf(this.currentView);
+        const targetIdx = viewOrder.indexOf(viewId);
+        const goingForward = targetIdx > currentIdx;
+
+        if (goingForward) {
+            target.classList.remove('left', 'right');
+            target.classList.add('right');
+            target.offsetHeight;
+            current.classList.remove('active');
+            current.classList.add('left');
+            target.classList.remove('right');
+            target.classList.add('active');
+            this.viewStack.push(viewId);
+        } else {
+            target.classList.remove('left', 'right');
+            target.classList.add('left');
+            target.offsetHeight;
+            current.classList.remove('active');
+            current.classList.add('right');
+            target.classList.remove('left');
+            target.classList.add('active');
+            const idx = this.viewStack.indexOf(viewId);
+            if (idx >= 0) this.viewStack = this.viewStack.slice(0, idx + 1);
+        }
+        this.currentView = viewId;
+    },
+
+    openInstallation(instData) {
+        this.selectedInstallation = instData;
+        // Save as last visited
+        try { localStorage.setItem('nschecks_last', JSON.stringify({ idx: InstList.data.indexOf(instData), ts: Date.now() })); } catch(e) {}
+
+        document.getElementById('inspHdrTitle').textContent = instData.name;
+        document.getElementById('inspHdrSub').textContent = 'Östra Göinge Knislinge Etapp 1';
+        const parts = instData.addr.split(' \u00b7 ');
+        document.getElementById('inspCustName').textContent = parts[0] || '';
+        document.getElementById('inspCustAddr').textContent = parts[1] || '';
+        // Avatar initials
+        const nameParts = (parts[0] || '').split(' ');
+        const initials = nameParts.length >= 2
+            ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
+            : (nameParts[0] || '?')[0];
+        document.getElementById('inspAvatar').textContent = initials.toUpperCase();
+        // Display-size progress
+        document.getElementById('inspProgressNum').innerHTML = instData.done + '<span>/' + instData.total + '</span>';
+        document.getElementById('inspProgressTitle').textContent = instData.done + ' av ' + instData.total + ' checklistor klara';
+        const remaining = instData.total - instData.done;
+        var subText = 'Alla klara!';
+        if (remaining === 1) subText = 'Sista checklistan kvar';
+        else if (remaining > 1) subText = remaining + ' kvar att slutföra';
+        document.getElementById('inspProgressSub').textContent = subText;
+        // Load inspection set for this installation's status
+        InspList.loadForInstallation(instData);
+        // Continue CTA
+        const nextInsp = InspList.inspections.find(function(i) { return i.status !== 'done'; });
+        const ctaEl = document.getElementById('continueCta');
+        if (nextInsp) {
+            ctaEl.style.display = '';
+            document.getElementById('continueCtaText').textContent = 'Fortsätt: ' + nextInsp.name;
+        } else {
+            ctaEl.style.display = 'none';
+        }
+        InspList.render(instData);
+        this.navigateTo('view-inspections');
+    },
+
+    continueNext() {
+        const nextInsp = InspList.inspections.find(function(i) { return i.status !== 'done'; });
+        if (nextInsp) {
+            this.openWizard(nextInsp);
+        }
+    },
+
+    resumeLast() {
+        try {
+            var saved = JSON.parse(localStorage.getItem('nschecks_last') || '{}');
+            if (typeof saved.idx === 'number' && InstList.data[saved.idx]) {
+                this.openInstallation(InstList.data[saved.idx]);
+                return;
+            }
+        } catch(e) {}
+        // Default: open first in-progress
+        var prog = InstList.data.find(function(d) { return d.status === 'progress'; });
+        if (prog) this.openInstallation(prog);
+    },
+
+    openWizard(inspData) {
+        this.selectedInspection = inspData;
+        document.getElementById('wizHdrTitle').textContent = inspData.name;
+        var instName = this.selectedInstallation ? this.selectedInstallation.name : '';
+        document.getElementById('wizHdrSub').textContent = instName;
+        Wiz.reset();
+        Wiz.flashGps();
+        this.navigateTo('view-wizard');
+    },
+
+    onWizardSubmitSuccess() {
+        document.getElementById('successOverlay').classList.remove('show');
+        this.navigateTo('view-inspections');
+    },
+
+    toggleDark() {
+        document.body.classList.toggle('dark');
+        if (navigator.vibrate) navigator.vibrate(10);
+    },
+
+    toggleGlove() {
+        document.body.classList.toggle('glove');
+        var btn = document.getElementById('gloveToggle');
+        btn.classList.toggle('active');
+        if (navigator.vibrate) navigator.vibrate(10);
+        this.toast(document.body.classList.contains('glove') ? 'Handskläge PÅ' : 'Handskläge AV');
+    },
+
+    cycleFilter() {
+        var filters = ['', 'progress', 'complete'];
+        var labels = {'': '&#9776;', 'progress': 'Pågår', 'complete': 'Klara'};
+        var idx = filters.indexOf(this.currentFilter);
+        this.currentFilter = filters[(idx + 1) % filters.length];
+        var btn = document.getElementById('filterBtn');
+        btn.classList.toggle('active', this.currentFilter !== '');
+        document.getElementById('filterLabel').innerHTML = labels[this.currentFilter];
+        document.querySelectorAll('#view-installations .tab').forEach(function(tab) {
+            tab.classList.toggle('active', (tab.dataset.filter || '') === App.currentFilter);
+        });
+        InstList.render(this.currentFilter || null);
+    },
+
+    toast(m) {
+        var el = document.getElementById('toastEl');
+        el.textContent = m; el.classList.add('show');
+        clearTimeout(this._tt);
+        this._tt = setTimeout(function() { el.classList.remove('show'); }, 2200);
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   INSTALLATION LIST
+   ══════════════════════════════════════════════════════════════ */
+const InstList = {
+    // Realistic scenario: fiber route through Östra Göinge.
+    // Excavation contractor (Bylunds) works ahead along the route doing schakt/brunn (3/7).
+    // NS technician follows behind doing skåp/kund/godkännande.
+    // Installations completed sequentially — no skipping around.
+    data: [
+        // ── Fully complete: NS tech finished these in order ──
+        {name:"I-11801 Hjärsåslilla 7:3", addr:"Sven Andersson \u00b7 Ringvägen 4, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11802 Hjärsåslilla 8:1", addr:"Maria Johansson \u00b7 Storgatan 12, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11803 Backaskog 2:4", addr:"Erik Nilsson \u00b7 Industrivägen 8, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11804 Rinkaby 3:12", addr:"Anna Svensson \u00b7 Parkgatan 3, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11805 Rinkaby 3:15", addr:"Lars Pettersson \u00b7 Björkvägen 11, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11806 Knislinge 14:2", addr:"Karin Lindqvist \u00b7 Skolvägen 6, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11807 Knislinge 14:8", addr:"Johan Ek \u00b7 Nygatan 22, Knislinge", done:7, total:7, status:"complete"},
+        {name:"I-11808 Knislinge 15:1", addr:"Eva Borg \u00b7 Tallvägen 9, Knislinge", done:7, total:7, status:"complete"},
+        // ── Currently active: NS tech is here now ──
+        {name:"I-11809 Immeln 5:3", addr:"Anders Holm \u00b7 Sjövägen 1, Immeln", done:5, total:7, status:"progress"},
+        // ── Contractor-prepped: Bylunds did planering+schakt+brunn, waiting for NS tech ──
+        {name:"I-11810 Immeln 5:7", addr:"Lisa Strand \u00b7 Strandvägen 5, Immeln", done:3, total:7, status:"prepped"},
+        {name:"I-11811 Färlöv 9:2", addr:"Ulf Dahl \u00b7 Kyrkvägen 14, Färlöv", done:3, total:7, status:"prepped"},
+        {name:"I-11812 Färlöv 9:5", addr:"Helena Berg \u00b7 Ängavägen 3, Färlöv", done:3, total:7, status:"prepped"},
+        {name:"I-11813 Glimåkra 1:4", addr:"Per Lund \u00b7 Fabriksgatan 7, Glimåkra", done:3, total:7, status:"prepped"},
+        {name:"I-11814 Glimåkra 1:9", addr:"Maja Olsson \u00b7 Trädgårdsvägen 2, Glimåkra", done:3, total:7, status:"prepped"},
+        {name:"I-11815 Glimåkra 2:1", addr:"Nils Gustafsson \u00b7 Backavägen 10, Glimåkra", done:3, total:7, status:"prepped"},
+        {name:"I-11816 Broby 4:3", addr:"Ingrid Persson \u00b7 Ängsvägen 8, Broby", done:3, total:7, status:"prepped"},
+        {name:"I-11817 Broby 4:6", addr:"Gustav Fredriksson \u00b7 Almvägen 15, Broby", done:3, total:7, status:"prepped"},
+        {name:"I-11818 Broby 5:2", addr:"Birgitta Wallin \u00b7 Hagvägen 4, Broby", done:3, total:7, status:"prepped"},
+        {name:"I-11819 Broby 5:8", addr:"Martin Skog \u00b7 Dammvägen 6, Broby", done:3, total:7, status:"prepped"},
+        {name:"I-11820 Broby 6:1", addr:"Sara Åberg \u00b7 Lönngatan 3, Broby", done:3, total:7, status:"prepped"},
+        // ── Not started: contractor hasn't reached these yet ──
+        {name:"I-11821 Hanaskog 7:2", addr:"Olof Sjögren \u00b7 Lindevägen 12, Hanaskog", done:0, total:7, status:"new"},
+        {name:"I-11822 Hanaskog 7:5", addr:"Kristina Moberg \u00b7 Ekvägen 8, Hanaskog", done:0, total:7, status:"new"},
+        {name:"I-11823 Hanaskog 8:1", addr:"Thomas Blom \u00b7 Granvägen 1, Hanaskog", done:0, total:7, status:"new"},
+        {name:"I-11824 Hanaskog 8:4", addr:"Lena Nordin \u00b7 Furuvägen 5, Hanaskog", done:0, total:7, status:"new"},
+    ],
+
+    renderCard(d, idx) {
+        var pct = Math.round((d.done / d.total) * 100);
+        var color = pct === 100 ? 'var(--ok)' : pct > 0 ? 'var(--w)' : 'var(--tm)';
+        var statusCls = 'status-' + d.status;
+        var preppedLabel = d.status === 'prepped'
+            ? '<div class="inst-prepped-label">Entreprenör 3/7</div>' : '';
+        return '<div class="inst ' + statusCls + '" onclick="App.openInstallation(InstList.data[' + idx + '])">' +
+            '<div class="inst-info">' +
+                '<div class="inst-name">' + d.name + '</div>' +
+                '<div class="inst-addr">' + d.addr + '</div>' +
+                preppedLabel +
+                '<div class="inst-progress-bar"><div class="inst-progress-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+            '</div>' +
+            '<div class="inst-count">' + d.done + '/' + d.total + '</div>' +
+            '<div class="inst-arrow">&#8250;</div>' +
+        '</div>';
+    },
+
+    renderSegProgress() {
+        var el = document.getElementById('segProgress');
+        var html = '';
+        for (var i = 0; i < this.data.length; i++) {
+            var d = this.data[i];
+            var cls = d.status === 'complete' ? 'done' : (d.status === 'progress' || d.status === 'prepped') ? 'prog' : '';
+            html += '<div class="seg-bar ' + cls + '" style="cursor:pointer;" onclick="InstList.scrollToCard(' + i + ')" title="' + d.name + '"></div>';
+        }
+        el.innerHTML = html;
+    },
+
+    scrollToCard(idx) {
+        var cards = document.querySelectorAll('#instList .inst');
+        var dataIdx = this.data[idx];
+        if (!dataIdx) return;
+        // Find the card containing this name
+        for (var i = 0; i < cards.length; i++) {
+            if (cards[i].textContent.indexOf(dataIdx.name) >= 0) {
+                cards[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cards[i].style.boxShadow = '0 0 0 2px var(--ns)';
+                setTimeout(function() { cards[i].style.boxShadow = ''; }, 1500);
+                break;
+            }
+        }
+    },
+
+    doneCollapsed: true,
+
+    render(filter) {
+        var list = document.getElementById('instList');
+        var filtered = this.data;
+        if (filter === 'complete') filtered = this.data.filter(function(d) { return d.status === 'complete'; });
+        else if (filter === 'progress') filtered = this.data.filter(function(d) { return d.status !== 'complete'; });
+
+        var active = filtered.filter(function(d) { return d.status === 'progress'; });
+        var prepped = filtered.filter(function(d) { return d.status === 'prepped'; });
+        var notStarted = filtered.filter(function(d) { return d.status === 'new'; });
+        var done = filtered.filter(function(d) { return d.status === 'complete'; });
+        var html = '';
+        var self = this;
+
+        if (active.length === 0 && prepped.length === 0 && notStarted.length === 0 && done.length === 0) {
+            html = '<div class="empty-state"><div class="empty-state-icon">&#128269;</div><div class="empty-state-title">Inga installationer matchar</div><div class="empty-state-text">Pröva att ändra filtret eller söktermen.</div></div>';
+            list.innerHTML = html;
+            return;
+        }
+
+        // Active (tech is here now)
+        if (active.length > 0) {
+            html += '<div class="group-label">Aktiv (' + active.length + ')</div>';
+            active.forEach(function(d) { html += self.renderCard(d, self.data.indexOf(d)); });
+        }
+        // Contractor-prepped
+        if (prepped.length > 0) {
+            html += '<div class="group-label" style="margin-top:8px;">Förberett av entreprenör (' + prepped.length + ')</div>';
+            prepped.forEach(function(d) { html += self.renderCard(d, self.data.indexOf(d)); });
+        }
+        // Not started
+        if (notStarted.length > 0) {
+            html += '<div class="group-label" style="margin-top:8px;">Ej påbörjade (' + notStarted.length + ')</div>';
+            notStarted.forEach(function(d) { html += self.renderCard(d, self.data.indexOf(d)); });
+        }
+        // Completed — collapsible
+        if (done.length > 0) {
+            var collapsed = this.doneCollapsed && filter !== 'complete';
+            html += '<div class="group-label" style="margin-top:12px;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="InstList.toggleDone()">' +
+                '<span style="font-size:16px;transition:transform 0.2s;">' + (collapsed ? '&#9654;' : '&#9660;') + '</span>' +
+                'Klara (' + done.length + ')' +
+                (collapsed ? ' <span style="font-weight:400;color:var(--ok);margin-left:4px;">&#10003;</span>' : '') +
+            '</div>';
+            if (!collapsed) {
+                done.forEach(function(d) { html += self.renderCard(d, self.data.indexOf(d)); });
+            }
+        }
+        list.innerHTML = html;
+    },
+
+    toggleDone() {
+        this.doneCollapsed = !this.doneCollapsed;
+        this.render(App.currentFilter || null);
+    },
+
+    init() {
+        this.render();
+        this.renderSegProgress();
+        // Update resume CTA
+        try {
+            var saved = JSON.parse(localStorage.getItem('nschecks_last') || '{}');
+            if (typeof saved.idx === 'number' && this.data[saved.idx]) {
+                var d = this.data[saved.idx];
+                var elapsed = '';
+                if (saved.ts) {
+                    var mins = Math.round((Date.now() - saved.ts) / 60000);
+                    if (mins < 1) elapsed = ' \u2014 just nu';
+                    else if (mins < 60) elapsed = ' \u2014 för ' + mins + ' min sedan';
+                    else elapsed = ' \u2014 för ' + Math.round(mins / 60) + ' tim sedan';
+                }
+                document.getElementById('resumeCtaSub').textContent = d.name + ' \u2014 ' + d.done + '/' + d.total + ' klara' + elapsed;
+            }
+        } catch(e) {}
+        // Tabs
+        document.querySelectorAll('#view-installations .tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('#view-installations .tab').forEach(function(t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                App.currentFilter = tab.dataset.filter || '';
+                document.getElementById('filterBtn').classList.toggle('active', App.currentFilter !== '');
+                InstList.render(tab.dataset.filter || null);
+            });
+        });
+        // Search
+        document.getElementById('instSearch').addEventListener('input', function(e) {
+            var q = e.target.value.toLowerCase();
+            document.querySelectorAll('#instList .inst').forEach(function(el) {
+                el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+        // Pull-to-refresh
+        this.initPullToRefresh();
+    },
+
+    initPullToRefresh() {
+        var list = document.getElementById('instList');
+        var ptr = document.getElementById('ptrIndicator');
+        var ptrText = document.getElementById('ptrText');
+        var startY = 0;
+        var pulling = false;
+
+        list.addEventListener('touchstart', function(e) {
+            if (list.scrollTop <= 0) {
+                startY = e.touches[0].clientY;
+                pulling = true;
+            }
+        }, { passive: true });
+
+        list.addEventListener('touchmove', function(e) {
+            if (!pulling) return;
+            var dy = e.touches[0].clientY - startY;
+            if (dy > 20 && list.scrollTop <= 0) {
+                ptr.classList.add('pulling');
+                ptrText.textContent = dy > 80 ? 'Släpp för att uppdatera' : 'Dra för att uppdatera';
+            }
+        }, { passive: true });
+
+        list.addEventListener('touchend', function() {
+            if (!pulling) return;
+            pulling = false;
+            if (ptr.classList.contains('pulling')) {
+                ptr.classList.remove('pulling');
+                ptr.classList.add('refreshing');
+                ptrText.textContent = 'Uppdaterar...';
+                setTimeout(function() {
+                    ptr.classList.remove('refreshing');
+                    var now = new Date();
+                    var time = now.toTimeString().slice(0, 5);
+                    App.toast('Uppdaterad ' + time);
+                    InstList.render(App.currentFilter || null);
+                }, 800);
+            }
+        });
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   INSPECTION LIST
+   ══════════════════════════════════════════════════════════════ */
+const InspList = {
+    // Multiple inspection data sets based on installation state.
+    // All installations share the same 7 inspection types but at different completion levels.
+    inspectionSets: {
+        // Complete installation (7/7): all done, mixed contractors
+        complete: [
+            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-12", checks:5, total:5},
+            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:12, total:12},
+            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:8, total:8},
+            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson", date:"2026-03-20", checks:10, total:10},
+            {name:"Godkännande utförande", status:"done", by:"Albert Fransson", date:"2026-03-20", checks:3, total:3},
+            {name:"Egenkontroll kundinstallation", status:"done", by:"Albert Fransson", date:"2026-03-22", checks:8, total:8},
+            {name:"Godkännande bekräftelse", status:"done", by:"Anders Holm (kund)", date:"2026-03-22", checks:5, total:5},
+        ],
+        // Active installation (5/7): tech is here now
+        progress: [
+            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-28", checks:5, total:5},
+            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:12, total:12},
+            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:8, total:8},
+            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson", date:"2026-04-18", checks:10, total:10},
+            {name:"Godkännande utförande", status:"done", by:"Albert Fransson", date:"2026-04-18", checks:3, total:3},
+            {name:"Egenkontroll kundinstallation", status:"progress", by:"", date:"", checks:4, total:8},
+            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+        ],
+        // Contractor-prepped (3/7): only Bylunds work done
+        prepped: [
+            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-08", checks:5, total:5},
+            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:12, total:12},
+            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:8, total:8},
+            {name:"Egenkontroll sättning skåp", status:"new", by:"", date:"", checks:0, total:10},
+            {name:"Godkännande utförande", status:"new", by:"", date:"", checks:0, total:3},
+            {name:"Egenkontroll kundinstallation", status:"new", by:"", date:"", checks:0, total:8},
+            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+        ],
+        // Not started (0/7): completely empty
+        new: [
+            {name:"Godkännande planering", status:"new", by:"", date:"", checks:0, total:5},
+            {name:"Egenkontroll schakt", status:"new", by:"", date:"", checks:0, total:12},
+            {name:"Egenkontroll sättning brunn", status:"new", by:"", date:"", checks:0, total:8},
+            {name:"Egenkontroll sättning skåp", status:"new", by:"", date:"", checks:0, total:10},
+            {name:"Godkännande utförande", status:"new", by:"", date:"", checks:0, total:3},
+            {name:"Egenkontroll kundinstallation", status:"new", by:"", date:"", checks:0, total:8},
+            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+        ],
+    },
+
+    inspections: [],
+
+    loadForInstallation(instData) {
+        var setKey = instData.status;
+        this.inspections = this.inspectionSets[setKey] || this.inspectionSets['progress'];
+    },
+
+    renderCard(d, idx) {
+        var pct = Math.round((d.checks / d.total) * 100);
+        var icon = d.status === 'done' ? '&#10003;' : d.status === 'progress' ? '&#9998;' : '&#9711;';
+        var cls = d.status === 'done' ? 'insp complete' : d.status === 'rejected' ? 'insp rejected' : 'insp';
+        var barColor = d.status === 'done' ? 'var(--ok)' : d.status === 'progress' ? 'var(--w)' : 'var(--tm)';
+        var iconCls = d.status === 'rejected' ? 'fail' : d.status;
+        var isContractor = d.by && d.by.indexOf('Bylunds') >= 0;
+        var meta = '';
+        var badge = '';
+        if (d.status === 'done') {
+            meta = d.by + ' &middot; ' + d.date;
+            if (isContractor) {
+                badge = '<span style="font-size:10px;font-weight:600;background:#EEF2FF;color:#3730A3;padding:1px 6px;border-radius:3px;margin-left:6px;">Bylunds</span>';
+            }
+        } else if (d.status === 'progress') {
+            meta = d.checks + '/' + d.total + ' kontrollpunkter ifyllda';
+        } else {
+            meta = 'Ej påbörjad &middot; ' + d.total + ' kontrollpunkter';
+        }
+        return '<div class="' + cls + '" onclick="App.openWizard(InspList.inspections[' + idx + '])">' +
+            '<div class="insp-icon ' + iconCls + '">' + icon + '</div>' +
+            '<div class="insp-info">' +
+                '<div class="insp-name">' + d.name + badge + '</div>' +
+                '<div class="insp-meta">' + meta + '</div>' +
+                '<div class="insp-bar"><div class="insp-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>' +
+            '</div>' +
+            '<div class="insp-arrow">&#8250;</div>' +
+        '</div>';
+    },
+
+    render(instData) {
+        var list = document.getElementById('inspList');
+        // Group: Atgarda (rejected), Att göra, Klara
+        var rejected = this.inspections.filter(function(d) { return d.status === 'rejected'; });
+        var todo = this.inspections.filter(function(d) { return d.status !== 'done' && d.status !== 'rejected'; });
+        var done = this.inspections.filter(function(d) { return d.status === 'done'; });
+        var html = '';
+        var self = this;
+
+        if (rejected.length > 0) {
+            html += '<div class="group-label fail-group">&#9888; Atgarda (' + rejected.length + ')</div>';
+            rejected.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+        }
+        if (todo.length > 0) {
+            html += '<div class="group-label">Att göra (' + todo.length + ')</div>';
+            todo.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+        }
+        if (done.length > 0) {
+            html += '<div class="group-label" style="margin-top:12px;">Klara (' + done.length + ')</div>';
+            done.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+        }
+        list.innerHTML = html;
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   WIZARD
+   ══════════════════════════════════════════════════════════════ */
+const Wiz = {
+    STEPS: 15,
+    cur: 0,
+    ans: {},
+    sigInk: false,
+    sigLocked: false,
+    visited: new Set(),
+    extras: { comments: {}, photos: {} },
+    autoAdvanceTimer: null,
+    lastAction: null,
+    undoTimer: null,
+    completionShown: false,
+    rptData: [],
+    drawing: false,
+    lsDrawing: false,
+    photoIdx: 0,
+    photoFirstCaptured: {},
+
+    mockPhotos: [
+        'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect fill="%232E9E5F" width="72" height="72" rx="4"/><text x="36" y="40" text-anchor="middle" fill="white" font-size="10" font-family="sans-serif">IMG_01</text></svg>',
+        'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72"><rect fill="%231A1A1A" width="72" height="72" rx="4"/><text x="36" y="40" text-anchor="middle" fill="white" font-size="10" font-family="sans-serif">IMG_02</text></svg>',
+    ],
+
+    autoSaveFlash() {
+        var chip = document.getElementById('autosaveChip');
+        var text = document.getElementById('autosaveText');
+        chip.classList.add('saving');
+        text.textContent = 'Sparar...';
+        setTimeout(function() {
+            text.textContent = 'Sparad';
+            setTimeout(function() { chip.classList.remove('saving'); }, 1800);
+        }, 400);
+    },
+
+    flashGps() {
+        var gps = document.getElementById('gpsChip');
+        gps.classList.remove('locked');
+        gps.classList.add('searching', 'show-lock');
+        document.getElementById('gpsText').textContent = 'Söker...';
+        setTimeout(function() {
+            gps.classList.remove('searching');
+            gps.classList.add('locked', 'show-lock');
+            document.getElementById('gpsText').textContent = 'GPS';
+            setTimeout(function() { gps.classList.remove('show-lock'); }, 3000);
+        }, 1500);
+    },
+
+    reset() {
+        this.cur = 0;
+        this.ans = {};
+        this.sigInk = false;
+        this.sigLocked = false;
+        this.visited = new Set();
+        this.extras = { comments: {}, photos: {} };
+        this.completionShown = false;
+        // Pre-fill repeater with 2 entries for richer demo
+        this.rptData = [
+            { depth: '12.5', dev: '2.1', note: 'Lera, berg vid 8m' },
+            { depth: '15.0', dev: '0.8', note: '' },
+        ];
+        this.photoIdx = 0;
+        this.photoFirstCaptured = {};
+        var wizView = document.getElementById('view-wizard');
+        wizView.querySelectorAll('.tri').forEach(function(b) { b.classList.remove('s-ok','s-fail','s-na'); });
+        wizView.querySelectorAll('.bin').forEach(function(b) { b.classList.remove('s-yes','s-no'); });
+        wizView.querySelectorAll('.conf').forEach(function(b) { b.classList.remove('on'); });
+        wizView.querySelectorAll('.fi').forEach(function(el) { el.classList.remove('filled'); });
+        wizView.querySelectorAll('.date-input').forEach(function(el) { el.classList.remove('filled'); el.value = ''; });
+        wizView.querySelectorAll('.cmt').forEach(function(el) { el.value = ''; });
+        wizView.querySelectorAll('.photo-thumb').forEach(function(el) { el.remove(); });
+        wizView.querySelectorAll('.cmt-area').forEach(function(el) { el.classList.remove('show'); });
+        // Reset photo-first states
+        [5, 6].forEach(function(n) {
+            var pf = document.getElementById('photoFirst' + n);
+            var ac = document.getElementById('afterCapture' + n);
+            if (pf) pf.style.display = '';
+            if (ac) ac.style.display = 'none';
+        });
+        this.renderRptEntries();
+        var fc = document.getElementById('forcedCmt9');
+        if (fc) fc.style.display = 'none';
+        document.getElementById('sigW').classList.remove('inked', 'locked');
+        document.getElementById('sigInfo').classList.remove('show');
+        document.getElementById('successOverlay').classList.remove('show');
+        document.getElementById('completeOverlay').classList.remove('show');
+        this.go(0);
+    },
+
+    go(i) {
+        this.cur = Math.max(0, Math.min(this.STEPS - 1, i));
+        document.getElementById('track').style.transform = 'translateX(-' + (this.cur * 100) + '%)';
+        this.updNav();
+        this.updProg();
+        if (this.cur === 13) this.initSig();
+        if (this.cur === 14) this.updSum();
+        var card = document.querySelector('#view-wizard .card:nth-child(' + (this.cur + 1) + ')');
+        if (card) card.scrollTop = 0;
+    },
+
+    goNext() {
+        if (this.cur === this.STEPS - 1) { this.submit(); return; }
+        this.go(this.cur + 1);
+    },
+
+    getBlockReason() {
+        var step = this.cur;
+        var required = [1, 2, 3, 5, 6, 7, 9, 12];
+        var photoReqSteps = [5, 6];
+        // Photo required but not yet captured
+        if (photoReqSteps.indexOf(step) >= 0 && !this.photoFirstCaptured[step]) {
+            return 'Ta foto först';
+        }
+        // Photo captured but tristate not yet answered
+        if (photoReqSteps.indexOf(step) >= 0 && this.photoFirstCaptured[step] && !this.ans[step]) {
+            return 'Välj Godkänt eller Ej godkänt';
+        }
+        // Regular required step unanswered
+        if (required.indexOf(step) >= 0 && !this.ans[step]) {
+            return 'Svar krävs för denna punkt';
+        }
+        return null;
+    },
+
+    updNav() {
+        document.getElementById('pBtn').disabled = this.cur === 0;
+        var n = document.getElementById('nBtn');
+        var isLast = this.cur === this.STEPS - 1;
+        n.className = 'nb ' + (isLast ? 'nb-submit' : 'nb-next');
+        // Check if current required step is unanswered
+        var reason = this.getBlockReason();
+        if (reason && !isLast) {
+            n.disabled = true;
+            n.innerHTML = 'Nästa &#8594;<span class="nb-reason">' + reason + '</span>';
+        } else if (isLast) {
+            n.disabled = false;
+            n.innerHTML = 'Skicka in &#10003;';
+        } else {
+            n.disabled = false;
+            n.innerHTML = 'Nästa &#8594;';
+        }
+        // Step counter
+        document.getElementById('stepCounter').textContent = 'Steg ' + (this.cur + 1) + ' / ' + this.STEPS;
+    },
+
+    updProg() {
+        this.visited.add(this.cur);
+        var t = document.getElementById('progTrack');
+        t.innerHTML = '';
+        for (var i = 0; i < this.STEPS; i++) {
+            var s = document.createElement('div');
+            s.className = 'prog-seg';
+            if (i === this.cur) {
+                s.classList.add('active');
+            } else if (this.ans[i] || (i === 0 && this.cur > 0) || (i === 13 && this.sigLocked)) {
+                s.classList.add('done');
+            } else if ([4, 8, 10, 11].indexOf(i) >= 0 && this.visited.has(i)) {
+                s.classList.add('done');
+            } else {
+                s.classList.add('empty');
+            }
+            (function(idx) { s.onclick = function() { Wiz.go(idx); }; })(i);
+            t.appendChild(s);
+        }
+    },
+
+    haptic(ms) { if (navigator.vibrate) navigator.vibrate(ms || 10); },
+
+    autoAdvance(stepFrom) {
+        clearTimeout(this.autoAdvanceTimer);
+        if (stepFrom >= 13 || stepFrom < 1) return;
+        this.autoAdvanceTimer = setTimeout(function() {
+            Wiz.showUndo(stepFrom);
+            Wiz.go(Wiz.cur + 1);
+        }, 600);
+    },
+
+    showUndo(stepFrom) {
+        var labels = {ok:'Godkänt',fail:'Ej godkänt',na:'Ej relevant',yes:'Ja',no:'Nej'};
+        var v = this.ans[stepFrom];
+        this.lastAction = { step: stepFrom, value: v };
+        var el = document.getElementById('undoToast');
+        document.getElementById('undoText').textContent = 'Punkt ' + stepFrom + ': ' + (labels[v] || v);
+        el.classList.add('show');
+        clearTimeout(this.undoTimer);
+        this.undoTimer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+    },
+
+    undoAction() {
+        if (!this.lastAction) return;
+        var step = this.lastAction.step;
+        delete this.ans[step];
+        var cards = document.querySelectorAll('#view-wizard .card');
+        var card = cards[step];
+        if (card) {
+            card.querySelectorAll('.tri').forEach(function(b) { b.classList.remove('s-ok','s-fail','s-na'); });
+            card.querySelectorAll('.bin').forEach(function(b) { b.classList.remove('s-yes','s-no'); });
+        }
+        document.getElementById('undoToast').classList.remove('show');
+        this.go(step);
+        this.updProg();
+        this.haptic(20);
+        this.lastAction = null;
+    },
+
+    checkCompletion() {
+        if (this.completionShown) return;
+        var optional = [4, 8, 10, 11];
+        var done = 0;
+        for (var i = 1; i <= 13; i++) {
+            if (this.ans[i] || optional.indexOf(i) >= 0) done++;
+        }
+        if (done >= 13) {
+            this.completionShown = true;
+            this.showCompletion();
+        }
+    },
+
+    showCompletion() {
+        var ol = document.getElementById('completeOverlay');
+        this.spawnParticles();
+        ol.classList.add('show');
+        this.haptic(50);
+        setTimeout(function() {
+            ol.classList.remove('show');
+            Wiz.go(11);
+        }, 1800);
+    },
+
+    spawnParticles() {
+        var c = document.getElementById('particles');
+        c.innerHTML = '';
+        var colors = ['#2E9E5F','#1A1A1A','#FFFFFF','#E9F2EC','#C07800'];
+        for (var i = 0; i < 30; i++) {
+            var p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.top = '-10px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.animationDelay = Math.random() * 0.5 + 's';
+            p.style.animationDuration = (1 + Math.random()) + 's';
+            p.style.width = (4 + Math.random() * 8) + 'px';
+            p.style.height = (4 + Math.random() * 8) + 'px';
+            c.appendChild(p);
+        }
+    },
+
+    tri(n, v, el) {
+        var card = el.closest('.card');
+        card.querySelectorAll('.tri').forEach(function(b) { b.classList.remove('s-ok','s-fail','s-na'); });
+        el.classList.add('s-' + v);
+        this.ans[n] = v;
+        this.haptic();
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.autoAdvance(n);
+        this.checkCompletion();
+    },
+
+    binSel(n, v, el) {
+        var row = el.parentElement;
+        row.querySelectorAll('.bin').forEach(function(b) { b.classList.remove('s-yes','s-no'); });
+        el.classList.add(v === 'yes' ? 's-yes' : 's-no');
+        this.ans[n] = v;
+        this.haptic();
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.autoAdvance(n);
+        this.checkCompletion();
+    },
+
+    dateSet(n, el) {
+        this.ans[n] = el.value || undefined;
+        if (!this.ans[n]) { delete this.ans[n]; el.classList.remove('filled'); }
+        else { el.classList.add('filled'); this.haptic(); }
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.checkCompletion();
+    },
+
+    textSet(n, el) {
+        this.ans[n] = el.value.trim() || undefined;
+        if (!this.ans[n]) { delete this.ans[n]; el.classList.remove('filled'); }
+        else el.classList.add('filled');
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.checkCompletion();
+    },
+
+    numSet(n, el) {
+        this.ans[n] = el.value ? el.value : undefined;
+        if (!this.ans[n]) { delete this.ans[n]; el.classList.remove('filled'); }
+        else { el.classList.add('filled'); this.haptic(); }
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.checkCompletion();
+    },
+
+    confTog(el, n) {
+        el.classList.toggle('on');
+        this.ans[n] = el.classList.contains('on') ? 'ok' : undefined;
+        if (!this.ans[n]) delete this.ans[n];
+        this.haptic();
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.checkCompletion();
+    },
+
+    toggleComment(n) {
+        var area = document.getElementById('cmtArea' + n);
+        if (area) {
+            area.classList.toggle('show');
+            if (area.classList.contains('show')) {
+                var cmt = area.querySelector('.cmt');
+                if (cmt) cmt.focus();
+            }
+        }
+    },
+
+    toggleMicChip(n) {
+        this.toggleComment(n);
+        var area = document.getElementById('cmtArea' + n);
+        if (area && area.classList.contains('show')) {
+            var mic = area.querySelector('.mic-btn');
+            if (mic) mic.click();
+        }
+    },
+
+    toggleMic(btn) {
+        if (btn.classList.contains('recording')) {
+            btn.classList.remove('recording');
+            var cmt = btn.parentElement.querySelector('.cmt');
+            cmt.value = (cmt.value ? cmt.value + ' ' : '') + 'Skåpet ser bra ut, inga anmärkningar.';
+            cmt.dispatchEvent(new Event('input'));
+            this.haptic(20);
+            App.toast('Röstanteckning tillagd');
+        } else {
+            btn.classList.add('recording');
+            this.haptic();
+            App.toast('Lyssnar...');
+            setTimeout(function() {
+                if (btn.classList.contains('recording')) {
+                    btn.classList.remove('recording');
+                    var cmt = btn.parentElement.querySelector('.cmt');
+                    cmt.value = (cmt.value ? cmt.value + ' ' : '') + 'Skåpet ser bra ut, inga anmärkningar.';
+                    cmt.dispatchEvent(new Event('input'));
+                    App.toast('Röstanteckning tillagd');
+                }
+            }, 2500);
+        }
+    },
+
+    capturePhotoFirst(n) {
+        this.photoFirstCaptured[n] = true;
+        this.extras.photos[n] = true;
+        // Hide photo-first, show after-capture with fade
+        var pf = document.getElementById('photoFirst' + n);
+        var ac = document.getElementById('afterCapture' + n);
+        if (pf) pf.style.display = 'none';
+        if (ac) { ac.style.display = ''; ac.style.animation = 'fadeIn 0.3s ease'; }
+        // Add a mock photo thumb
+        var grid = document.getElementById('capturedPhotos' + n);
+        if (grid) {
+            var thumb = document.createElement('div');
+            thumb.className = 'photo-thumb';
+            var img = document.createElement('img');
+            img.src = this.mockPhotos[this.photoIdx % this.mockPhotos.length];
+            this.photoIdx++;
+            thumb.appendChild(img);
+            grid.insertBefore(thumb, grid.firstChild);
+        }
+        this.updProg();
+        this.updNav();
+        App.toast('Foto tillagt');
+        this.haptic();
+    },
+
+    addPhoto(btn, stepIdx) {
+        // Show photo area if hidden
+        var area = document.getElementById('photoArea' + stepIdx);
+        if (area) area.style.display = '';
+        // Find the photo grid
+        var grid = btn.closest('.photo-grid') || btn.closest('.photo-captured-row');
+        if (!grid) return;
+        var thumb = document.createElement('div');
+        thumb.className = 'photo-thumb';
+        var img = document.createElement('img');
+        img.src = this.mockPhotos[this.photoIdx % this.mockPhotos.length];
+        this.photoIdx++;
+        thumb.appendChild(img);
+        var del = document.createElement('div');
+        del.className = 'photo-del';
+        del.textContent = '\u00d7';
+        var self = this;
+        del.onclick = function(e) {
+            e.stopPropagation();
+            thumb.remove();
+            var remaining = grid.querySelectorAll('.photo-thumb').length;
+            if (!remaining) { delete self.extras.photos[stepIdx]; self.updProg(); }
+        };
+        thumb.appendChild(del);
+        grid.insertBefore(thumb, grid.querySelector('.photo-add'));
+        this.extras.photos[stepIdx] = true;
+        this.updProg();
+        App.toast('Foto tillagt');
+    },
+
+    initSig() {
+        if (this.sigLocked) return;
+        var w = document.getElementById('sigW');
+        var c = document.getElementById('sigC');
+        var r = w.getBoundingClientRect();
+        c.width = r.width; c.height = r.height;
+        var ctx = c.getContext('2d');
+        ctx.strokeStyle = '#1A1A1A'; ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        var self = this;
+        function pos(e) {
+            var b = c.getBoundingClientRect();
+            var t = e.touches ? e.touches[0] : e;
+            return { x: t.clientX - b.left, y: t.clientY - b.top };
+        }
+        c.onpointerdown = function(e) {
+            if (self.sigLocked) return;
+            self.drawing = true;
+            var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
+            c.setPointerCapture(e.pointerId);
+            w.classList.add('inked'); self.sigInk = true; self.updProg();
+        };
+        c.onpointermove = function(e) {
+            if (!self.drawing) return;
+            var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke();
+        };
+        c.onpointerup = function() { self.drawing = false; };
+    },
+
+    sigClear() {
+        if (this.sigLocked) return;
+        var c = document.getElementById('sigC');
+        c.getContext('2d').clearRect(0, 0, c.width, c.height);
+        document.getElementById('sigW').classList.remove('inked');
+        this.sigInk = false; this.updProg();
+        document.getElementById('sigInfo').classList.remove('show');
+    },
+
+    sigLock() {
+        if (!this.sigInk) { App.toast('Rita din signatur först'); return; }
+        this.sigLocked = true;
+        document.getElementById('sigW').classList.add('locked');
+        var info = document.getElementById('sigInfo');
+        info.classList.add('show');
+        var now = new Date();
+        document.getElementById('sigTime').textContent =
+            now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        App.toast('Signatur låst');
+    },
+
+    updSum() {
+        var ok = 0, fail = 0, na = 0, miss = 0, other = 0;
+        var missSteps = [];
+        var optSum = [4, 8, 10, 11];
+        for (var i = 1; i <= 13; i++) {
+            if (optSum.indexOf(i) >= 0 && !this.ans[i]) { ok++; continue; }
+            var a = this.ans[i];
+            if (!a) { miss++; missSteps.push(i); }
+            else if (a === 'ok' || a === 'yes') ok++;
+            else if (a === 'fail' || a === 'no') fail++;
+            else if (a === 'na') na++;
+            else other++;
+        }
+        var self = this;
+        var sigBg = this.sigLocked ? 'var(--okb)' : 'var(--eb)';
+        var sigColor = this.sigLocked ? 'var(--ok)' : 'var(--e)';
+        var sigIcon = this.sigLocked ? '&#10003;' : '&#10007;';
+        var sigLabel = this.sigLocked ? 'Signerad' : 'Ej signerad';
+        var missStyle = miss ? 'cursor:pointer;' : '';
+        document.getElementById('sumGrid').innerHTML =
+            '<div class="sum-grid">' +
+                '<div class="sum-cell" style="background:var(--okb);">' +
+                    '<div class="sum-num" style="color:var(--ok);">' + ok + '</div>' +
+                    '<div class="sum-lbl" style="color:var(--ok);">Godkända</div>' +
+                '</div>' +
+                '<div class="sum-cell" style="background:var(--eb);">' +
+                    '<div class="sum-num" style="color:var(--e);">' + fail + '</div>' +
+                    '<div class="sum-lbl" style="color:var(--e);">Ej godkända</div>' +
+                '</div>' +
+                '<div class="sum-cell" style="background:var(--bg2);">' +
+                    '<div class="sum-num" style="color:var(--tm);">' + (na + other) + '</div>' +
+                    '<div class="sum-lbl" style="color:var(--tm);">Ej relevant</div>' +
+                '</div>' +
+                '<div class="sum-cell" id="sumMissTile" style="background:' + (miss ? 'var(--wb)' : 'var(--bg2)') + ';' + missStyle + '">' +
+                    '<div class="sum-num" style="color:' + (miss ? 'var(--w)' : 'var(--tm)') + ';">' + miss + '</div>' +
+                    '<div class="sum-lbl" style="color:' + (miss ? 'var(--w)' : 'var(--tm)') + ';">Ej ifyllda' + (miss ? ' &#8594;' : '') + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="sum-cell" style="background:' + sigBg + ';margin-bottom:16px;' + (!this.sigLocked ? 'cursor:pointer;' : '') + '" ' +
+                (!this.sigLocked ? 'id="sumSigTile"' : '') + '>' +
+                '<div class="sum-num" style="color:' + sigColor + ';">' + sigIcon + '</div>' +
+                '<div class="sum-lbl" style="color:' + sigColor + ';">' + sigLabel + (!this.sigLocked ? ' &#8594;' : '') + '</div>' +
+            '</div>';
+        // Make "Ej ifyllda" tile tappable — jump to first unanswered
+        if (miss > 0) {
+            document.getElementById('sumMissTile').onclick = function() {
+                self.go(missSteps[0]);
+            };
+        }
+        // Make unsigned sig tile tappable — jump to signature
+        var sigTile = document.getElementById('sumSigTile');
+        if (sigTile) {
+            sigTile.onclick = function() { self.go(13); };
+        }
+    },
+
+    submit() {
+        var miss = 0;
+        var optional = [4, 8, 10, 11];
+        for (var i = 1; i <= 13; i++) { if (!this.ans[i] && optional.indexOf(i) < 0) miss++; }
+        if (miss > 0) { App.toast(miss + ' kontrollpunkter saknas'); return; }
+        if (!this.sigLocked) { App.toast('Signatur krävs — lås signaturen först'); this.go(13); return; }
+        var inspName = App.selectedInspection ? App.selectedInspection.name : 'Checklista';
+        var instName = App.selectedInstallation ? App.selectedInstallation.name : '';
+        document.getElementById('successSub').textContent = inspName + ' \u2014 ' + instName;
+        document.getElementById('successProgress').textContent = 'Installation: ' +
+            (App.selectedInstallation ? App.selectedInstallation.done + '/' + App.selectedInstallation.total : '?') + ' klara';
+        document.getElementById('successOverlay').classList.add('show');
+        this.haptic(50);
+    },
+
+    openLandscapeSig() {
+        document.getElementById('sigLandscape').classList.add('show');
+        var self = this;
+        setTimeout(function() { self.initLandscapeCanvas(); }, 100);
+    },
+
+    closeLandscapeSig() {
+        document.getElementById('sigLandscape').classList.remove('show');
+    },
+
+    clearLandscapeSig() {
+        var c = document.getElementById('sigLsCanvas');
+        c.getContext('2d').clearRect(0, 0, c.width, c.height);
+    },
+
+    saveLandscapeSig() {
+        this.sigInk = true; this.sigLocked = true;
+        document.getElementById('sigW').classList.add('inked', 'locked');
+        var info = document.getElementById('sigInfo');
+        info.classList.add('show');
+        var now = new Date();
+        document.getElementById('sigTime').textContent = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+        this.closeLandscapeSig();
+        this.updProg();
+        this.haptic(20);
+        App.toast('Signatur låst');
+    },
+
+    initLandscapeCanvas() {
+        var c = document.getElementById('sigLsCanvas');
+        var w = c.parentElement;
+        var r = w.getBoundingClientRect();
+        c.width = r.width; c.height = r.height;
+        var ctx = c.getContext('2d');
+        ctx.strokeStyle = '#1A1A1A'; ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        var self = this;
+        function pos(e) { var b = c.getBoundingClientRect(); var t = e.touches ? e.touches[0] : e; return { x: t.clientX - b.left, y: t.clientY - b.top }; }
+        c.onpointerdown = function(e) { self.lsDrawing = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); c.setPointerCapture(e.pointerId); };
+        c.onpointermove = function(e) { if (!self.lsDrawing) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+        c.onpointerup = function() { self.lsDrawing = false; };
+    },
+
+    binForced(n, v, el) {
+        var row = el.parentElement;
+        row.querySelectorAll('.bin').forEach(function(b) { b.classList.remove('s-yes','s-no'); });
+        el.classList.add(v === 'yes' ? 's-yes' : 's-no');
+        this.ans[n] = v;
+        this.haptic();
+        var fc = document.getElementById('forcedCmt' + n);
+        if (fc) fc.style.display = v === 'no' ? 'block' : 'none';
+        this.updProg();
+        this.updNav();
+        this.autoSaveFlash();
+        this.autoAdvance(n);
+        this.checkCompletion();
+    },
+
+    addRptEntry() {
+        var depth = document.getElementById('rptDepth').value;
+        var dev = document.getElementById('rptDev').value;
+        var note = document.getElementById('rptNote').value;
+        if (!depth) { App.toast('Ange djup'); return; }
+        var idx = this.rptData.length + 1;
+        this.rptData.push({ depth: depth, dev: dev, note: note });
+        this.renderRptEntries();
+        document.getElementById('rptDepth').value = '';
+        document.getElementById('rptDev').value = '';
+        document.getElementById('rptNote').value = '';
+        document.getElementById('rptDepth').focus();
+        this.haptic();
+        App.toast('Stång ' + idx + ' tillagd');
+    },
+
+    removeRptEntry(i) {
+        this.rptData.splice(i, 1);
+        this.renderRptEntries();
+        this.haptic(20);
+    },
+
+    renderRptEntries() {
+        var c = document.getElementById('rptEntries');
+        if (this.rptData.length === 0) {
+            c.innerHTML = '<div class="rpt-empty" id="rptEmpty">Inga stänger registrerade ännu</div>';
+            return;
+        }
+        var html = '';
+        this.rptData.forEach(function(e, i) {
+            var sub = (e.dev ? e.dev + '% avvikelse' : 'Ingen avvikelse') + (e.note ? ' \u00b7 ' + e.note : '');
+            html += '<div class="rpt-entry">' +
+                '<div class="rpt-entry-num">' + (i + 1) + '</div>' +
+                '<div class="rpt-entry-data">' +
+                    '<div class="rpt-entry-main">' + e.depth + ' m djup</div>' +
+                    '<div class="rpt-entry-sub">' + sub + '</div>' +
+                '</div>' +
+                '<button class="rpt-entry-del" onclick="Wiz.removeRptEntry(' + i + ')">&#10005;</button>' +
+            '</div>';
+        });
+        c.innerHTML = html;
+    },
+
+    openQR() {
+        document.getElementById('qrOverlay').classList.add('show');
+        document.getElementById('qrResult').classList.remove('show');
+        document.getElementById('qrScanline').style.display = '';
+        document.getElementById('qrLabel').textContent = 'Rikta kameran mot QR-koden på utrustningen';
+        var self = this;
+        setTimeout(function() {
+            document.getElementById('qrScanline').style.display = 'none';
+            document.getElementById('qrLabel').textContent = '';
+            document.getElementById('qrMac').textContent = 'AA:BB:CC:DD:EE:F1';
+            document.getElementById('qrResult').classList.add('show');
+            self.haptic(30);
+            setTimeout(function() { self.closeQR(); }, 1800);
+        }, 2500);
+    },
+
+    closeQR() {
+        document.getElementById('qrOverlay').classList.remove('show');
+    },
+
+    openPDF() {
+        var labels = {ok:'Godkänt',fail:'Ej godkänt',na:'Ej relevant',yes:'Ja',no:'Nej'};
+        var questions = ['','Skåp monterat i våg och lod','Utbildning finns','Instrumentkontroll','Nätobjekt (valfritt)','KUP monterad + foto','Placering foto + QR','Djup sökband','Avvikelse/incident','Centralsmörjning','Borrprotokoll','Villkor kontroll','Fotodokumentation','Signaturer'];
+        var checks = '';
+        for (var i = 1; i <= 13; i++) {
+            var a = this.ans[i];
+            var color = (a === 'ok' || a === 'yes') ? '#2E9E5F' : (a === 'fail' || a === 'no') ? '#C53030' : a === 'na' ? '#71717A' : '#C07800';
+            var icon = (a === 'ok' || a === 'yes') ? '&#10003;' : (a === 'fail' || a === 'no') ? '&#10007;' : a === 'na' ? '&mdash;' : '?';
+            var label = labels[a] || 'Ej ifylld';
+            checks += '<div class="pdf-check"><div class="pdf-check-icon" style="background:' + color + '">' + icon + '</div><span>' + i + '. ' + questions[i] + '</span><span style="margin-left:auto;color:' + color + ';font-weight:600;">' + label + '</span></div>';
+        }
+        document.getElementById('pdfSheet').innerHTML =
+            '<button class="pdf-close" onclick="document.getElementById(\'pdfModal\').classList.remove(\'show\')">&#10005;</button>' +
+            '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Förhandsvisning — Objektsdokumentation</div>' +
+            '<div class="pdf-page">' +
+                '<div class="pdf-page-header">' +
+                    '<div class="pdf-logo">Network Solutions</div>' +
+                    '<div class="pdf-docnr">O-11801:37QQL1</div>' +
+                '</div>' +
+                '<div class="pdf-h1">' + (App.selectedInspection ? App.selectedInspection.name : 'Checklista') + '</div>' +
+                '<div class="pdf-row"><div class="pdf-label">Installation</div><div class="pdf-val">I-11809</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Fastighet</div><div class="pdf-val">Östra Göinge Immeln 5:3</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Skåps-ID</div><div class="pdf-val">FOS-42-A</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Datum</div><div class="pdf-val">' + new Date().toISOString().slice(0, 10) + '</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Koordinater</div><div class="pdf-val">63.039781, 18.093539</div></div>' +
+                '<div style="border-top:1px solid #e0e0e0;margin:8px 0;"></div>' +
+                checks +
+                '<div style="border-top:1px solid #e0e0e0;margin:8px 0;"></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Signatur</div><div class="pdf-val">' + (this.sigLocked ? '&#10003; Signerad' : 'Ej signerad') + '</div></div>' +
+            '</div>' +
+            '<div style="font-size:9px;color:#999;text-align:center;margin-top:8px;">Sida 1 av 1 &middot; Network Solutions &middot; NSChecks</div>';
+        document.getElementById('pdfModal').classList.add('show');
+    },
+
+    initSwipe() {
+        var sx = 0, sy = 0;
+        var vp = document.getElementById('wizardVp');
+        if (!vp) return;
+        var self = this;
+        vp.addEventListener('touchstart', function(e) {
+            sx = e.touches[0].clientX;
+            sy = e.touches[0].clientY;
+        }, { passive: true });
+        vp.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - sx;
+            var dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dy) > Math.abs(dx)) return;
+            if (Math.abs(dx) < 80) return;
+            if (self.cur >= 1 && self.cur <= 9 && !self.ans[self.cur]) {
+                if (dx > 0) {
+                    var cards = document.querySelectorAll('#view-wizard .card');
+                    var card = cards[self.cur];
+                    var okBtn = card.querySelector('.tri:first-child') || card.querySelector('.bin:first-child');
+                    if (okBtn) { okBtn.click(); return; }
+                }
+            }
+            if (dx > 0) self.go(self.cur - 1); else self.goNext();
+        });
+    },
+
+    initCommentTracking() {
+        document.querySelectorAll('#view-wizard .cmt').forEach(function(el) {
+            el.addEventListener('input', function() {
+                var card = el.closest('.card');
+                var idx = Array.from(card.parentElement.children).indexOf(card);
+                if (el.value.trim()) Wiz.extras.comments[idx] = true;
+                else delete Wiz.extras.comments[idx];
+                Wiz.updProg();
+                // Update chip state
+                var chip = card.querySelector('.attach-chip');
+                if (chip && el.value.trim()) chip.classList.add('has-content');
+            });
+        });
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════════ */
+InstList.init();
+Wiz.initSwipe();
+Wiz.initCommentTracking();
+Wiz.go(0);
+</script>
+</body>
+</html>

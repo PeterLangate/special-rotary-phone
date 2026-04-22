@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Synkroniseringar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .stat-mini {
+            background: white;
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-mini-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .stat-mini-value {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--lg-gray-900);
+            letter-spacing: -0.3px;
+        }
+        .stat-mini-value .unit { color: var(--lg-teal); font-weight: 500; font-size: 12px; }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+        }
+        .log-table thead th {
+            text-align: left;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--lg-teal);
+            padding: 10px 14px;
+            background: var(--lg-gray-50);
+            border-bottom: 1px solid var(--lg-gray-200);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            cursor: pointer;
+            user-select: none;
+        }
+        .log-table thead th:hover { background: var(--lg-gray-100); }
+        .log-table thead th.sorted { color: var(--lg-blue); }
+        .log-table thead th .arr { opacity: 0.5; font-size: 9px; margin-left: 3px; }
+        .log-table tbody tr {
+            cursor: pointer;
+            transition: background 0.06s;
+        }
+        .log-table tbody tr:hover { background: var(--lg-blue-light); }
+        .log-table tbody tr.selected { background: var(--lg-green-light); }
+        .log-table tbody td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--lg-gray-100);
+            color: var(--lg-gray-900);
+            vertical-align: middle;
+        }
+        .log-table tbody td.time {
+            font-variant-numeric: tabular-nums;
+            color: var(--lg-teal);
+            white-space: nowrap;
+            width: 150px;
+        }
+        .log-table tbody td.entity {
+            font-weight: 600;
+            color: var(--lg-gray-900);
+        }
+        .log-table tbody td.resource code {
+            background: var(--lg-gray-100);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 11.5px;
+            font-family: 'Consolas', monospace;
+            color: var(--lg-blue);
+        }
+        .log-table tbody td.dur {
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            color: var(--lg-teal);
+            width: 110px;
+        }
+        .log-table tbody td.status { width: 100px; }
+        .dir-arrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--lg-teal);
+            background: var(--lg-gray-100);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .dir-arrow svg { width: 12px; height: 10px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+        .pager {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 18px;
+            border-top: 1px solid var(--lg-gray-200);
+            font-size: 12px;
+            color: var(--lg-teal);
+        }
+        .pager .pages {
+            display: inline-flex;
+            gap: 4px;
+        }
+        .pager .pages button {
+            min-width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            border: 1px solid var(--lg-gray-200);
+            background: white;
+            color: var(--lg-teal);
+            font-family: inherit;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .pager .pages button:hover { border-color: var(--lg-blue); color: var(--lg-blue); }
+        .pager .pages button.cur {
+            background: var(--lg-blue);
+            color: white;
+            border-color: var(--lg-blue);
+        }
+
+        /* Retry gauge */
+        .retry-pips {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 4px;
+        }
+        .retry-pips span {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--lg-gray-200);
+        }
+        .retry-pips span.on { background: var(--lg-gold); }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html" class="active">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Synkroniseringar</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök efter kundnummer, order-ID, artikelnummer...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Synkroniseringar</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Synkroniseringslogg</h1>
+                    <p>Alla synkroniseringsförsök med filtrering, detaljinspektion och export.</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Exportera CSV
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Kör ny synk
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-strip">
+                <div class="stat-mini">
+                    <div>
+                        <div class="stat-mini-label">Totalt idag</div>
+                        <div class="stat-mini-value">1&thinsp;247</div>
+                    </div>
+                    <svg class="spark" viewBox="0 0 60 18" fill="none" stroke="#02B896" stroke-width="1.5"><polyline points="0,14 8,12 14,13 20,10 26,11 32,7 38,5 44,6 50,4 56,5 60,3"/></svg>
+                </div>
+                <div class="stat-mini">
+                    <div>
+                        <div class="stat-mini-label">Lyckade</div>
+                        <div class="stat-mini-value">1&thinsp;243</div>
+                    </div>
+                    <span class="badge badge-green">99.7 %</span>
+                </div>
+                <div class="stat-mini">
+                    <div>
+                        <div class="stat-mini-label">Retry pågår</div>
+                        <div class="stat-mini-value">2</div>
+                    </div>
+                    <span class="dot dot-gold pulse"></span>
+                </div>
+                <div class="stat-mini">
+                    <div>
+                        <div class="stat-mini-label">Misslyckade</div>
+                        <div class="stat-mini-value">2</div>
+                    </div>
+                    <span class="badge badge-red">Felkö</span>
+                </div>
+                <div class="stat-mini">
+                    <div>
+                        <div class="stat-mini-label">Median-tid</div>
+                        <div class="stat-mini-value">285<span class="unit">ms</span></div>
+                    </div>
+                    <svg class="spark" viewBox="0 0 60 18" fill="none" stroke="#00517e" stroke-width="1.5"><polyline points="0,8 8,9 14,7 20,10 26,8 32,11 38,9 44,8 50,9 56,8 60,7"/></svg>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <button class="active">Alla <span class="count">1 247</span></button>
+                        <button>Lyckade <span class="count">1 243</span></button>
+                        <button>Retry <span class="count">2</span></button>
+                        <button>Misslyckade <span class="count">2</span></button>
+                    </div>
+                    <div class="filter-group">
+                        <button class="active">Alla entiteter</button>
+                        <button>Kund</button>
+                        <button>Artikel</button>
+                        <button>Offert</button>
+                        <button>Order</button>
+                        <button>Betalning</button>
+                    </div>
+                    <div class="filter-group">
+                        <button class="active">
+                            <svg width="14" height="10" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7h20M17 2l5 5-5 5M7 12L2 7l5-5"/></svg>
+                            Alla
+                        </button>
+                        <button>D365 &rarr; Fortnox</button>
+                        <button>Fortnox &rarr; D365</button>
+                    </div>
+                    <div style="margin-left:auto;display:flex;gap:8px;">
+                        <div class="filter-group">
+                            <button class="active">24h</button>
+                            <button>7d</button>
+                            <button>30d</button>
+                            <button>Anpassad</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;padding:10px 20px;border-bottom:1px solid var(--lg-gray-200);align-items:center;font-size:12px;color:var(--lg-teal);">
+                    <span style="font-weight:600;">Aktiva filter:</span>
+                    <span class="chip">Status: Alla <span class="x">&times;</span></span>
+                    <span class="chip">Period: Senaste 24 tim <span class="x">&times;</span></span>
+                    <span class="chip clear">Rensa alla</span>
+                    <span style="margin-left:auto;">Visar 1&ndash;20 av 1&thinsp;247</span>
+                </div>
+
+                <div style="max-height:560px;overflow:auto;">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th style="width:34px;"><input class="check" type="checkbox"></th>
+                                <th class="sorted">Tid <span class="arr">&darr;</span></th>
+                                <th>Entitet</th>
+                                <th>Resurs</th>
+                                <th>Riktning</th>
+                                <th style="text-align:right;">Varaktighet</th>
+                                <th>Försök</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="syncBody">
+                            <tr onclick="openDrawer(this)" class="selected">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:42:11.203</td>
+                                <td class="entity">Order</td>
+                                <td class="resource"><code>SO-2041</code> &middot; Nordia AB</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">280 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:41:58.114</td>
+                                <td class="entity">Kund</td>
+                                <td class="resource"><code>Nordia AB</code></td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">210 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:41:44.988</td>
+                                <td class="entity">Betalning</td>
+                                <td class="resource"><code>INV-1188</code> &middot; 18 450 kr</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg> Fx &rarr; D365</span></td>
+                                <td class="dur">395 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:41:29.452</td>
+                                <td class="entity">Offert</td>
+                                <td class="resource"><code>Q-2021</code> &middot; 12 rader</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur" style="color:var(--lg-gold-dark);font-weight:600;">740 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:41:15.771</td>
+                                <td class="entity">Artikel</td>
+                                <td class="resource"><code>ART-445</code> &middot; Kabel 5m</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg> Fx &rarr; D365</span></td>
+                                <td class="dur">170 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:40:52.021</td>
+                                <td class="entity">Order</td>
+                                <td class="resource"><code>SO-2040</code> &middot; Vinterdal AB</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur" style="color:var(--lg-red);font-weight:600;">2 140 ms</td>
+                                <td><div class="retry-pips"><span class="on"></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-gold">Retry 1/3</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:40:41.203</td>
+                                <td class="entity">Kund</td>
+                                <td class="resource"><code>Fn-00412</code> &middot; Björnlund HB</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg> Fx &rarr; D365</span></td>
+                                <td class="dur">305 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:40:22.845</td>
+                                <td class="entity">Order</td>
+                                <td class="resource"><code>SO-2039</code> &middot; Lindqvist &amp; Söner</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">265 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:40:08.441</td>
+                                <td class="entity">Offert</td>
+                                <td class="resource"><code>Q-2020</code> &middot; 5 rader</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">380 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:39:55.102</td>
+                                <td class="entity">Kund</td>
+                                <td class="resource"><code>Sydström &amp; Co AB</code></td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">250 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:39:37.774</td>
+                                <td class="entity">Artikel</td>
+                                <td class="resource"><code>ART-446</code> &middot; Kontakt M12</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg> Fx &rarr; D365</span></td>
+                                <td class="dur">195 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:39:18.992</td>
+                                <td class="entity">Betalning</td>
+                                <td class="resource"><code>INV-1187</code> &middot; 4 200 kr</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M22 5H4M9 1L4 5l5 4"/></svg> Fx &rarr; D365</span></td>
+                                <td class="dur">430 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:38:47.105</td>
+                                <td class="entity">Order</td>
+                                <td class="resource"><code>SO-2038</code> &middot; Kullen AB</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur">275 ms</td>
+                                <td><div class="retry-pips"><span></span><span></span><span></span></div></td>
+                                <td class="status"><span class="badge badge-green">OK</span></td>
+                            </tr>
+                            <tr onclick="openDrawer(this)">
+                                <td><input class="check" type="checkbox" onclick="event.stopPropagation()"></td>
+                                <td class="time">14:28:05.332</td>
+                                <td class="entity">Order</td>
+                                <td class="resource"><code>SO-2040</code> &middot; Vinterdal AB</td>
+                                <td><span class="dir-arrow"><svg viewBox="0 0 24 10"><path d="M2 5h18M15 1l5 4-5 4"/></svg> D365 &rarr; Fx</span></td>
+                                <td class="dur" style="color:var(--lg-red);font-weight:600;">3 200 ms</td>
+                                <td><div class="retry-pips"><span class="on"></span><span class="on"></span><span class="on"></span></div></td>
+                                <td class="status"><span class="badge badge-red">Misslyckad</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pager">
+                    <div>Visar 1&ndash;14 av 1&thinsp;247 &middot; uppdateras <strong style="color:var(--lg-green);">live</strong></div>
+                    <div class="pages">
+                        <button>&laquo;</button>
+                        <button class="cur">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>...</button>
+                        <button>63</button>
+                        <button>&raquo;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="drawer-backdrop" id="backdrop" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+    <div class="drawer-head">
+        <div>
+            <h2>Order &middot; SO-2041</h2>
+            <p>Synkronisering 14:42:11.203 &middot; D365 &rarr; Fortnox</p>
+        </div>
+        <button class="icon-btn" onclick="closeDrawer()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+    <div class="drawer-body">
+        <div class="detail-section">
+            <h3>Översikt</h3>
+            <dl class="detail-kv">
+                <dt>Status</dt><dd><span class="badge badge-green">Lyckad</span></dd>
+                <dt>Varaktighet</dt><dd>280 ms (P50: 285 ms)</dd>
+                <dt>Event ID</dt><dd><code>evt-7c2f8a3e-4b11</code></dd>
+                <dt>Trigger</dt><dd>Dataverse Webhook</dd>
+                <dt>Idempotens-nyckel</dt><dd><code>d365:so:2041:v3</code></dd>
+            </dl>
+        </div>
+
+        <div class="detail-section">
+            <h3>Tidsfördelning</h3>
+            <div style="display:flex;height:22px;border-radius:4px;overflow:hidden;margin-bottom:6px;">
+                <div style="flex:18;background:#02B896;"></div>
+                <div style="flex:32;background:#00517e;"></div>
+                <div style="flex:140;background:#c07800;"></div>
+                <div style="flex:68;background:#537780;"></div>
+                <div style="flex:22;background:#B55852;"></div>
+            </div>
+            <dl class="detail-kv" style="grid-template-columns:1fr auto;">
+                <dt style="color:#02B896;">&bull; Webhook-mottagning</dt><dd>18 ms</dd>
+                <dt style="color:#00517e;">&bull; Mappning &amp; validering</dt><dd>32 ms</dd>
+                <dt style="color:#c07800;">&bull; POST /3/orders</dt><dd>140 ms</dd>
+                <dt style="color:#537780;">&bull; Svar + parse</dt><dd>68 ms</dd>
+                <dt style="color:#B55852;">&bull; Skriv tillbaka ID</dt><dd>22 ms</dd>
+            </dl>
+        </div>
+
+        <div class="detail-section">
+            <h3>Payload (D365 &rarr; Fortnox)</h3>
+            <div class="code-block">{
+  <span class="k">"CustomerNumber"</span>: <span class="s">"4721"</span>,
+  <span class="k">"OrderDate"</span>: <span class="s">"2026-04-21"</span>,
+  <span class="k">"DeliveryDate"</span>: <span class="s">"2026-04-28"</span>,
+  <span class="k">"OrderRows"</span>: [
+    {
+      <span class="k">"ArticleNumber"</span>: <span class="s">"ART-445"</span>,
+      <span class="k">"OrderedQuantity"</span>: <span class="n">12</span>,
+      <span class="k">"Price"</span>: <span class="n">185.50</span>,
+      <span class="k">"Unit"</span>: <span class="s">"st"</span>
+    },
+    {
+      <span class="k">"ArticleNumber"</span>: <span class="s">"ART-501"</span>,
+      <span class="k">"OrderedQuantity"</span>: <span class="n">3</span>,
+      <span class="k">"Price"</span>: <span class="n">2400</span>,
+      <span class="k">"Unit"</span>: <span class="s">"st"</span>
+    }
+  ]
+}</div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Relaterade händelser</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="tl-time">14:42:11.203 &middot; nu</div>
+                    <div class="tl-title">Order SO-2041 skapad i Fortnox</div>
+                    <div class="tl-body">Fortnox DocumentNumber: 2041 &middot; 280 ms</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="tl-time">14:41:58.114 &middot; 13 sek sedan</div>
+                    <div class="tl-title">Kund Nordia AB synkad</div>
+                    <div class="tl-body">Förutsättning för order &mdash; kundnummer 4721 bekräftat</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="tl-time">14:41:29.452 &middot; 42 sek sedan</div>
+                    <div class="tl-title">Offert Q-2021 skapad (föregångare)</div>
+                    <div class="tl-body">Status ändrad till Aktiv &rarr; order genererad</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="drawer-foot">
+        <button class="btn btn-ghost" onclick="closeDrawer()">Stäng</button>
+        <button class="btn btn-secondary">Visa i Fortnox</button>
+        <button class="btn btn-primary">Kör om synk</button>
+    </div>
+</aside>
+
+<script>
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('backdrop');
+    function openDrawer(row) {
+        document.querySelectorAll('#syncBody tr').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        drawer.classList.add('open');
+        backdrop.classList.add('open');
+    }
+    function closeDrawer() {
+        drawer.classList.remove('open');
+        backdrop.classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+</script>
+</body>
+</html>

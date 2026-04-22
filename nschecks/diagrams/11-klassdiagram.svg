@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 520" font-family="'DM Sans',sans-serif">
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">NSChecks — KLASSDIAGRAM</text>
+  <line x1="180" y1="30" x2="500" y2="30" stroke="#E5E5E5"/>
+
+  <!-- Legend -->
+  <rect x="10" y="42" width="12" height="12" rx="2" fill="#1F1E20"/>
+  <text x="28" y="53" fill="#4A494B" font-size="9">Domänklass</text>
+  <rect x="110" y="42" width="12" height="12" rx="2" fill="#2D8653"/>
+  <text x="128" y="53" fill="#4A494B" font-size="9">Samling (kObjectArray)</text>
+  <rect x="260" y="42" width="12" height="12" rx="2" fill="#746355"/>
+  <text x="278" y="53" fill="#4A494B" font-size="9">Tjänst (kSPRest2)</text>
+  <rect x="400" y="42" width="12" height="12" rx="2" fill="#C07800"/>
+  <text x="418" y="53" fill="#4A494B" font-size="9">SPFX WebPart</text>
+
+  <!-- DOMAIN: NSProject -->
+  <rect x="10" y="70" width="155" height="90" rx="6" fill="#1F1E20"/>
+  <text x="88" y="90" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSProject</text>
+  <line x1="20" y1="96" x2="155" y2="96" stroke="rgba(255,255,255,0.15)"/>
+  <text x="20" y="110" fill="#C8C8CA" font-size="8">Title, ProjectNumber</text>
+  <text x="20" y="122" fill="#C8C8CA" font-size="8">SiteUrl, Status, Manager</text>
+  <text x="20" y="134" fill="#C8C8CA" font-size="8">TemplateIds[], Budget</text>
+  <text x="20" y="148" fill="#746355" font-size="8">GetInstallations(), GetProgress()</text>
+
+  <!-- DOMAIN: NSInstallation -->
+  <rect x="10" y="175" width="155" height="90" rx="6" fill="#1F1E20"/>
+  <text x="88" y="195" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSInstallation</text>
+  <line x1="20" y1="201" x2="155" y2="201" stroke="rgba(255,255,255,0.15)"/>
+  <text x="20" y="215" fill="#C8C8CA" font-size="8">ObjectNumber, CustomerName</text>
+  <text x="20" y="227" fill="#C8C8CA" font-size="8">Address, ObjectType, FOS</text>
+  <text x="20" y="239" fill="#C8C8CA" font-size="8">Phone, Email, PostalCode</text>
+  <text x="20" y="253" fill="#746355" font-size="8">GetChecklists(), GetProgress()</text>
+
+  <!-- DOMAIN: NSChecklist -->
+  <rect x="10" y="280" width="155" height="90" rx="6" fill="#1F1E20"/>
+  <text x="88" y="300" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSChecklist</text>
+  <line x1="20" y1="306" x2="155" y2="306" stroke="rgba(255,255,255,0.15)"/>
+  <text x="20" y="320" fill="#C8C8CA" font-size="8">TemplateId, Status</text>
+  <text x="20" y="332" fill="#C8C8CA" font-size="8">CompletedBy, GPS</text>
+  <text x="20" y="344" fill="#C8C8CA" font-size="8">NotifyManager, NotifyClient</text>
+  <text x="20" y="358" fill="#746355" font-size="8">GetChecks(), CanSubmit(), Submit()</text>
+
+  <!-- DOMAIN: NSCheckItem -->
+  <rect x="10" y="385" width="155" height="120" rx="6" fill="#1F1E20" stroke="#746355" stroke-width="1.5"/>
+  <text x="88" y="405" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSCheckItem</text>
+  <line x1="20" y1="411" x2="155" y2="411" stroke="rgba(255,255,255,0.15)"/>
+  <text x="20" y="425" fill="#C8C8CA" font-size="8">ControlType, Result</text>
+  <text x="20" y="437" fill="#C8C8CA" font-size="8">DateValue, TextValue</text>
+  <text x="20" y="449" fill="#C8C8CA" font-size="8">NumericValue, Note</text>
+  <text x="20" y="461" fill="#C8C8CA" font-size="8">RepeaterData[], SignatureSVG</text>
+  <text x="20" y="473" fill="#C8C8CA" font-size="8">SignedBy, SignedDate, QRData</text>
+  <text x="20" y="490" fill="#746355" font-size="8">SetValue(), Validate(), IsAnswered()</text>
+
+  <!-- Arrows domain hierarchy -->
+  <line x1="88" y1="160" x2="88" y2="173" stroke="#746355" stroke-width="1.5"/>
+  <polygon points="82,173 88,180 94,173" fill="#746355"/>
+  <text x="96" y="170" fill="#746355" font-size="8" font-weight="600">1:N</text>
+
+  <line x1="88" y1="265" x2="88" y2="278" stroke="#746355" stroke-width="1.5"/>
+  <polygon points="82,278 88,285 94,278" fill="#746355"/>
+  <text x="96" y="275" fill="#746355" font-size="8" font-weight="600">1:N</text>
+
+  <line x1="88" y1="370" x2="88" y2="383" stroke="#746355" stroke-width="1.5"/>
+  <polygon points="82,383 88,390 94,383" fill="#746355"/>
+  <text x="96" y="380" fill="#746355" font-size="8" font-weight="600">1:N</text>
+
+  <!-- DOMAIN: NSTemplate -->
+  <rect x="185" y="70" width="155" height="80" rx="6" fill="#1F1E20"/>
+  <text x="263" y="90" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSTemplate</text>
+  <line x1="195" y1="96" x2="330" y2="96" stroke="rgba(255,255,255,0.15)"/>
+  <text x="195" y="110" fill="#C8C8CA" font-size="8">Name, DocumentNumber, Version</text>
+  <text x="195" y="122" fill="#C8C8CA" font-size="8">Category, ChangeLog</text>
+  <text x="195" y="138" fill="#746355" font-size="8">CreateChecklist(), GetFields()</text>
+
+  <!-- DOMAIN: NSTemplateField -->
+  <rect x="185" y="165" width="155" height="80" rx="6" fill="#1F1E20"/>
+  <text x="263" y="185" text-anchor="middle" fill="white" font-size="11" font-weight="700">NSTemplateField</text>
+  <line x1="195" y1="191" x2="330" y2="191" stroke="rgba(255,255,255,0.15)"/>
+  <text x="195" y="205" fill="#C8C8CA" font-size="8">ControlType, IsRequired, Hint</text>
+  <text x="195" y="217" fill="#C8C8CA" font-size="8">ChoiceLabels[], NumericUnit</text>
+  <text x="195" y="233" fill="#C8C8CA" font-size="8">RepeaterColumns[], InfoText</text>
+
+  <line x1="263" y1="150" x2="263" y2="163" stroke="#746355" stroke-width="1.5"/>
+  <polygon points="257,163 263,170 269,163" fill="#746355"/>
+  <text x="271" y="160" fill="#746355" font-size="8" font-weight="600">1:N</text>
+
+  <!-- Arrow template → checklist -->
+  <path d="M185,120 Q170,120 170,290 Q170,300 175,300" fill="none" stroke="#746355" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="172" y="210" fill="#746355" font-size="7" transform="rotate(-90 172 210)">skapar</text>
+
+  <!-- COLLECTIONS -->
+  <rect x="185" y="280" width="155" height="60" rx="6" fill="#2D8653"/>
+  <text x="263" y="300" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSCheckItemCollection</text>
+  <text x="195" y="318" fill="#E8F5EE" font-size="8">extends kObjectArray</text>
+  <text x="195" y="330" fill="#E8F5EE" font-size="8">ByType(), Answered(), Progress()</text>
+
+  <rect x="185" y="355" width="155" height="50" rx="6" fill="#2D8653"/>
+  <text x="263" y="375" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSInstallationCollection</text>
+  <text x="195" y="393" fill="#E8F5EE" font-size="8">Search(), SortByProgress()</text>
+
+  <rect x="185" y="420" width="155" height="50" rx="6" fill="#2D8653"/>
+  <text x="263" y="440" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSChecklistCollection</text>
+  <text x="195" y="458" fill="#E8F5EE" font-size="8">ByStatus(), ByTemplate()</text>
+
+  <!-- SERVICES -->
+  <rect x="365" y="70" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="90" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSProjectService</text>
+  <text x="375" y="108" fill="#F8F4EC" font-size="8">via kSPRest2 + kSPList</text>
+
+  <rect x="365" y="135" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="155" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSInstallationService</text>
+  <text x="375" y="173" fill="#F8F4EC" font-size="8">via kSPRest2 + kSPItem</text>
+
+  <rect x="365" y="200" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="220" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSChecklistService</text>
+  <text x="375" y="238" fill="#F8F4EC" font-size="8">via kSPRest2 + kSPItem</text>
+
+  <rect x="365" y="265" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="285" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSCheckItemService</text>
+  <text x="375" y="303" fill="#F8F4EC" font-size="8">via kSPRest2 + kSPItem</text>
+
+  <rect x="365" y="330" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="350" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSDocumentService</text>
+  <text x="375" y="368" fill="#F8F4EC" font-size="8">via kSPRestFiles</text>
+
+  <rect x="365" y="395" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="415" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSExcelImportService</text>
+  <text x="375" y="433" fill="#F8F4EC" font-size="8">Azure OpenAI + kSPBatchRest</text>
+
+  <rect x="365" y="460" width="155" height="50" rx="6" fill="#746355"/>
+  <text x="443" y="480" text-anchor="middle" fill="white" font-size="10" font-weight="700">NSFortnoxService</text>
+  <text x="375" y="498" fill="#F8F4EC" font-size="8">Azure Function trigger</text>
+
+  <!-- SPFX WebParts -->
+  <rect x="545" y="70" width="130" height="44" rx="6" fill="#C07800"/>
+  <text x="610" y="90" text-anchor="middle" fill="white" font-size="9" font-weight="700">ProjectList</text>
+  <text x="610" y="104" text-anchor="middle" fill="#FFF8E6" font-size="8">Hubb</text>
+
+  <rect x="545" y="125" width="130" height="44" rx="6" fill="#C07800"/>
+  <text x="610" y="145" text-anchor="middle" fill="white" font-size="9" font-weight="700">InstallationList</text>
+  <text x="610" y="159" text-anchor="middle" fill="#FFF8E6" font-size="8">Projekt</text>
+
+  <rect x="545" y="180" width="130" height="44" rx="6" fill="#C07800"/>
+  <text x="610" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">ChecklistView</text>
+  <text x="610" y="214" text-anchor="middle" fill="#FFF8E6" font-size="8">Projekt</text>
+
+  <rect x="545" y="235" width="130" height="44" rx="6" fill="#C07800"/>
+  <text x="610" y="255" text-anchor="middle" fill="white" font-size="9" font-weight="700">ChecklistWizard</text>
+  <text x="610" y="269" text-anchor="middle" fill="#FFF8E6" font-size="8">Projekt</text>
+
+  <!-- Shared base -->
+  <rect x="545" y="320" width="130" height="70" rx="6" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="610" y="340" text-anchor="middle" fill="#999" font-size="8" font-weight="700" style="text-transform:uppercase">Delad kodbas</text>
+  <text x="555" y="356" fill="#4A494B" font-size="8">kObjectArray, kObject</text>
+  <text x="555" y="368" fill="#4A494B" font-size="8">kSPRest2, kSPItem, kSPList</text>
+  <text x="555" y="380" fill="#4A494B" font-size="8">ks, kTime, kSPRestFiles</text>
+</svg>

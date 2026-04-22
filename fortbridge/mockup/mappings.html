@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FortBridge — Fältmappning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="_shared.css">
+    <style>
+        .map-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .mapping-table thead th {
+            text-align: left;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--lg-teal);
+            background: var(--lg-gray-50);
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--lg-gray-200);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .mapping-table tbody td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--lg-gray-100);
+            font-size: 12.5px;
+            vertical-align: top;
+        }
+        .mapping-table tbody tr:hover { background: var(--lg-gray-50); }
+        .mapping-table tbody tr:last-child td { border-bottom: none; }
+
+        .field-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 8px 3px 6px;
+            border-radius: 5px;
+            background: var(--lg-gray-100);
+            font-family: 'Consolas', monospace;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--lg-gray-900);
+        }
+        .field-pill .src {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: white;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+        }
+        .src-d365 { background: #00517e; }
+        .src-fortnox { background: var(--lg-green); }
+        .src-derived { background: var(--lg-gold); }
+
+        .field-type {
+            font-size: 10.5px;
+            font-weight: 500;
+            color: var(--lg-teal);
+            font-family: 'Consolas', monospace;
+            padding: 2px 6px;
+            background: var(--lg-gray-100);
+            border-radius: 3px;
+        }
+
+        .transform-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            background: var(--lg-blue-light);
+            color: var(--lg-blue);
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 10px;
+            border: 1px solid rgba(0,81,126,0.15);
+        }
+        .transform-pill.none {
+            background: transparent;
+            color: var(--lg-teal);
+            border: 1px dashed var(--lg-gray-200);
+        }
+        .transform-pill svg {
+            width: 11px;
+            height: 11px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .map-arrow {
+            color: var(--lg-gray-500);
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .entity-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+        }
+        .entity-picker a {
+            padding: 9px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--lg-gray-900);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid transparent;
+        }
+        .entity-picker a:hover { background: var(--lg-gray-50); }
+        .entity-picker a.active {
+            background: var(--lg-blue-light);
+            border-left-color: var(--lg-blue);
+            color: var(--lg-blue);
+            font-weight: 600;
+        }
+        .entity-picker a .ic {
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            background: var(--lg-gray-100);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10.5px;
+            color: var(--lg-teal);
+        }
+        .entity-picker a.active .ic { background: var(--lg-blue); color: white; }
+        .entity-picker a .count {
+            margin-left: auto;
+            font-size: 10.5px;
+            font-weight: 600;
+            background: var(--lg-gray-100);
+            color: var(--lg-teal);
+            padding: 1px 6px;
+            border-radius: 8px;
+        }
+        .entity-picker a.active .count { background: var(--lg-blue); color: white; }
+
+        .preview-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 14px;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--lg-gray-100);
+        }
+        .preview-row:last-child { border-bottom: none; }
+        .preview-cell {
+            background: var(--lg-gray-50);
+            border: 1px solid var(--lg-gray-200);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'Consolas', monospace;
+            font-size: 11.5px;
+            color: var(--lg-gray-900);
+        }
+        .preview-cell .lbl {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--lg-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .validation-row {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--lg-gray-100);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        .validation-row:last-child { border-bottom: none; }
+        .validation-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .validation-icon.ok { background: var(--lg-green-light); color: var(--lg-green); }
+        .validation-icon.warn { background: #fff4de; color: var(--lg-gold-dark); }
+        .validation-icon svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-mark">F</div>
+            <div class="sidebar-brand-text">FortBridge<small>Langate</small></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html">
+                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                Dashboard
+            </a>
+            <a href="sync-log.html">
+                <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Synkroniseringar
+            </a>
+            <a href="error-queue.html">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Felkö
+                <span style="margin-left:auto;background:var(--lg-red);color:white;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;">2</span>
+            </a>
+            <a href="alerts.html">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Larm
+            </a>
+            <a href="mappings.html" class="active">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Mappningar
+            </a>
+            <a href="settings.html">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Inställningar
+            </a>
+        </nav>
+        <div class="sidebar-foot">
+            <strong>Miljö: Produktion</strong>
+            Version 1.4.2 &middot; West Europe
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div class="topbar-title">Fältmappning</div>
+            <div class="topbar-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input placeholder="Sök efter fält...">
+                <kbd>Ctrl K</kbd>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-btn" title="Notifikationer">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                    <span class="notif-dot"></span>
+                </button>
+                <div class="topbar-user">
+                    <span class="avatar">PK</span>
+                    Peter Kalmström
+                </div>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="breadcrumb">
+                <a href="dashboard.html">FortBridge</a>
+                <span class="sep">/</span>
+                <span class="current">Fältmappning</span>
+                <span class="sep">/</span>
+                <span class="current">Order</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <h1>Fältmappning &middot; Order</h1>
+                    <p>Kopplar fält mellan D365 SalesOrder och Fortnox Order. Inkluderar transformationer och villkor.</p>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg>
+                        Versionshistorik (v7)
+                    </button>
+                    <button class="btn btn-secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Testa mappning
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Lägg till fält
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:230px 1fr;gap:18px;margin-bottom:18px;">
+                <div class="card">
+                    <div class="card-head">
+                        <h2 style="font-size:13px;">Entiteter</h2>
+                    </div>
+                    <div class="entity-picker">
+                        <a href="#">
+                            <span class="ic">Kd</span>
+                            Kund
+                            <span class="count">9</span>
+                        </a>
+                        <a href="#">
+                            <span class="ic">Ar</span>
+                            Artikel
+                            <span class="count">6</span>
+                        </a>
+                        <a href="#">
+                            <span class="ic">Of</span>
+                            Offert
+                            <span class="count">11</span>
+                        </a>
+                        <a href="#" class="active">
+                            <span class="ic">Or</span>
+                            Order
+                            <span class="count">13</span>
+                        </a>
+                        <a href="#">
+                            <span class="ic">Be</span>
+                            Betalning
+                            <span class="count">4</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head" style="gap:14px;">
+                        <div>
+                            <h2>Order &mdash; 13 mappade fält</h2>
+                            <p>D365 SalesOrder &rarr; Fortnox Order (enkelriktad)</p>
+                        </div>
+                        <div style="display:flex;gap:10px;align-items:center;">
+                            <span class="badge badge-green"><span class="dot dot-green"></span>Valid</span>
+                            <span style="font-size:12px;color:var(--lg-teal);">Senast redigerad: igår 16:22 av Peter K.</span>
+                        </div>
+                    </div>
+
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th style="width:34%;">D365 SalesOrder</th>
+                                <th style="width:8%;"></th>
+                                <th style="width:28%;">Fortnox Order</th>
+                                <th>Transformation / villkor</th>
+                                <th style="width:90px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>lg_fortnoxordernumber</span>
+                                    <div style="margin-top:4px;"><span class="field-type">string(10)</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>DocumentNumber</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                                        Nyckel &middot; genereras av Fortnox
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>customerid_account@odata.bind</span>
+                                    <div style="margin-top:4px;"><span class="field-type">lookup</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>CustomerNumber</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m6 6v-4.8m0 4.8h-4.8M3 3l6 6M3 3v4.8M3 3h4.8"/></svg>
+                                        Slå upp via lg_fortnoxcustomernumber
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>createdon</span>
+                                    <div style="margin-top:4px;"><span class="field-type">datetime</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>OrderDate</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                                        formatDate(&quot;YYYY-MM-DD&quot;)
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>requestdeliveryby</span>
+                                    <div style="margin-top:4px;"><span class="field-type">datetime (nullable)</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>DeliveryDate</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>
+                                        formatDate(&quot;YYYY-MM-DD&quot;) &middot; om null: +14 dagar
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>name</span>
+                                    <div style="margin-top:4px;"><span class="field-type">string(100)</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>YourOrderNumber</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                                        trim() &middot; maxlen(50)
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>salesorderdetail[]</span>
+                                    <div style="margin-top:4px;"><span class="field-type">collection</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>OrderRows[]</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                                        map(row =&gt; rowMapping())
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr style="background:var(--lg-gray-50);">
+                                <td colspan="5" style="font-size:10.5px;font-weight:700;color:var(--lg-teal);text-transform:uppercase;letter-spacing:0.4px;">Rad-mappning (OrderRow)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:28px;">
+                                    <span class="field-pill"><span class="src src-d365">D365</span>productid (via lg_fortnoxarticlenumber)</span>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>ArticleNumber</span></td>
+                                <td><span class="transform-pill">Slå upp på produkt.lg_fortnoxarticlenumber</span></td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:28px;">
+                                    <span class="field-pill"><span class="src src-d365">D365</span>quantity</span>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>OrderedQuantity</span></td>
+                                <td><span class="transform-pill none">&mdash; direkt &mdash;</span></td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:28px;">
+                                    <span class="field-pill"><span class="src src-d365">D365</span>priceperunit</span>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>Price</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/></svg>
+                                        round(2) &middot; kräver ispriceoverridden:true
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:28px;">
+                                    <span class="field-pill"><span class="src src-d365">D365</span>uomid.name</span>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>Unit</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+                                        Mappa via UOM-lookup (st, tim, m², kg)
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left:28px;">
+                                    <span class="field-pill"><span class="src src-derived">Fn</span>Total (beräknad)</span>
+                                </td>
+                                <td class="map-arrow">&larr;</td>
+                                <td><span class="field-pill"><span class="src src-d365">D365</span>lg_foreign_total</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Återkoppling: skrivs när order bekräftats
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-green">Aktiv</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="field-pill"><span class="src src-d365">D365</span>description</span>
+                                    <div style="margin-top:4px;"><span class="field-type">memo</span></div>
+                                </td>
+                                <td class="map-arrow">&rarr;</td>
+                                <td><span class="field-pill"><span class="src src-fortnox">Fx</span>Remarks</span></td>
+                                <td>
+                                    <span class="transform-pill">
+                                        <svg viewBox="0 0 24 24"><path d="M20 14.66V20a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                                        stripHtml() &middot; maxlen(500)
+                                    </span>
+                                </td>
+                                <td><span class="badge badge-gold">Varning</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="map-grid">
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Förhandsgranskning med exempeldata</h2>
+                            <p>Order SO-2041 &middot; Nordia AB &middot; 14:42:11</p>
+                        </div>
+                        <button class="btn btn-secondary">Byt exempel</button>
+                    </div>
+                    <div>
+                        <div class="preview-row">
+                            <div class="preview-cell">
+                                <span class="lbl">D365 createdon</span>
+                                2026-04-21T14:42:11Z
+                            </div>
+                            <div class="map-arrow">&rarr;</div>
+                            <div class="preview-cell">
+                                <span class="lbl">Fortnox OrderDate</span>
+                                &quot;2026-04-21&quot;
+                            </div>
+                        </div>
+                        <div class="preview-row">
+                            <div class="preview-cell">
+                                <span class="lbl">D365 customerid (GUID)</span>
+                                {a3f81b2e-...-4721}
+                            </div>
+                            <div class="map-arrow">&rarr;</div>
+                            <div class="preview-cell">
+                                <span class="lbl">Fortnox CustomerNumber</span>
+                                &quot;4721&quot;
+                            </div>
+                        </div>
+                        <div class="preview-row">
+                            <div class="preview-cell">
+                                <span class="lbl">D365 priceperunit</span>
+                                185.500000
+                            </div>
+                            <div class="map-arrow">&rarr;</div>
+                            <div class="preview-cell">
+                                <span class="lbl">Fortnox Price</span>
+                                185.50
+                            </div>
+                        </div>
+                        <div class="preview-row">
+                            <div class="preview-cell">
+                                <span class="lbl">D365 uomid.name</span>
+                                &quot;Stycken&quot;
+                            </div>
+                            <div class="map-arrow">&rarr;</div>
+                            <div class="preview-cell">
+                                <span class="lbl">Fortnox Unit</span>
+                                &quot;st&quot;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-head">
+                        <div>
+                            <h2>Valideringsregler</h2>
+                            <p>Körs före varje sync</p>
+                        </div>
+                        <button class="btn btn-ghost">Hantera</button>
+                    </div>
+                    <div>
+                        <div class="validation-row">
+                            <div class="validation-icon ok">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-weight:600;font-size:12.5px;color:var(--lg-gray-900);">CustomerNumber är obligatoriskt</strong>
+                                <div style="font-size:11px;color:var(--lg-teal);">Ordern avvisas om kund inte finns i Fortnox</div>
+                            </div>
+                            <span class="badge badge-green">Pass</span>
+                        </div>
+                        <div class="validation-row">
+                            <div class="validation-icon ok">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-weight:600;font-size:12.5px;color:var(--lg-gray-900);">Alla orderrader måste ha uomid</strong>
+                                <div style="font-size:11px;color:var(--lg-teal);">Fortnox kräver enhet på varje rad</div>
+                            </div>
+                            <span class="badge badge-green">Pass</span>
+                        </div>
+                        <div class="validation-row">
+                            <div class="validation-icon ok">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-weight:600;font-size:12.5px;color:var(--lg-gray-900);">ispriceoverridden = true</strong>
+                                <div style="font-size:11px;color:var(--lg-teal);">Säkerställer att rabatterat pris skickas vidare</div>
+                            </div>
+                            <span class="badge badge-green">Pass</span>
+                        </div>
+                        <div class="validation-row">
+                            <div class="validation-icon warn">
+                                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-weight:600;font-size:12.5px;color:var(--lg-gray-900);">Remarks &gt; 500 tecken trunkeras</strong>
+                                <div style="font-size:11px;color:var(--lg-teal);">Varning &mdash; lång text från D365 description klipps</div>
+                            </div>
+                            <span class="badge badge-gold">Varning</span>
+                        </div>
+                        <div class="validation-row">
+                            <div class="validation-icon ok">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <strong style="font-weight:600;font-size:12.5px;color:var(--lg-gray-900);">Kreditgräns-kontroll innan post</strong>
+                                <div style="font-size:11px;color:var(--lg-teal);">Avbryter tidigt istället för att få fel från Fortnox</div>
+                            </div>
+                            <span class="badge badge-green">Pass</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
