@@ -200,6 +200,16 @@ body.is-project main { padding-top: 52px; padding-bottom: 80px; }
 	object-position: top center;
 	display: block;
 }
+.project-thumb.has-icon {
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px var(--border), 0 2px 8px rgba(0, 81, 126, 0.08);
+}
+.project-thumb.has-icon img {
+	object-fit: contain;
+	object-position: center;
+	padding: 14px;
+	background: transparent;
+}
 .project-thumb svg {
 	width: 36px; height: 36px;
 	color: var(--accent-green-d);
