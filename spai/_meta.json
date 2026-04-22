@@ -1,14 +1,14 @@
 {
-  "syncedAt": "2026-04-22T16:51:19Z",
+  "syncedAt": "2026-04-22T17:19:09Z",
   "files": {
-    "01-spai-demo.html": {
-      "updated": "2026-03-25"
-    },
     "index.html": {
       "updated": "2026-04-22"
     },
+    "01-spai-demo.html": {
+      "updated": "2026-03-25"
+    },
     "SPAI-Architecture.html": {
-      "updated": "2026-03-27"
+      "updated": "2026-04-22"
     }
   }
 }
