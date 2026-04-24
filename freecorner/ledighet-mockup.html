@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ledighetsansökan — Cornerstone mockup</title>
+<title>FreeCorner — Cornerstone mockup</title>
 <meta name="author" content="Kalmstrom Enterprise Solutions AB" />
-<meta name="description" content="Interaktiv mockup av Ledighetsansökan inbäddad som SharePoint-webpart" />
+<meta name="description" content="Interaktiv mockup av FreeCorner inbäddad som SharePoint-webpart" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -236,37 +236,48 @@ body {
         var(--cs-warning-bg) 0 10px,
         #fbeec9 10px 20px
     );
-    border-bottom: 2px dashed var(--cs-warning);
-    padding: 8px 18px;
-    display: flex; align-items: center; gap: 14px;
-    font-size: 12.5px; color: var(--cs-warning);
+    border-bottom: 3px dashed var(--cs-warning);
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: var(--cs-warning);
     flex-wrap: wrap;
+    box-shadow: inset 0 -1px 0 rgba(192, 130, 0, 0.15);
 }
 .demo-banner-label {
-    font-weight: 800; letter-spacing: 0.1em;
-    text-transform: uppercase; font-size: 11px;
+    font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; font-size: 12px;
     background: var(--cs-warning); color: white;
-    padding: 3px 8px; border-radius: 3px;
+    padding: 5px 10px; border-radius: 3px;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
-.demo-banner-text { color: var(--cs-text-muted); flex: 1; min-width: 240px; }
-.demo-banner-text strong { color: var(--cs-warning); }
+.demo-banner-text { color: #3d2d00; flex: 1; min-width: 240px; font-weight: 500; }
+.demo-banner-text strong { color: var(--cs-warning); font-weight: 700; }
+.demo-banner-prefix {
+    font-size: 11px; font-weight: 700;
+    color: var(--cs-warning);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-right: 2px;
+}
 .role-switch {
     display: inline-flex; background: white;
-    border-radius: 20px; padding: 3px;
-    border: 1.5px dashed var(--cs-warning);
+    border-radius: 22px; padding: 3px;
+    border: 2px solid var(--cs-warning);
+    box-shadow: 0 2px 6px rgba(192, 130, 0, 0.25);
     flex-shrink: 0;
 }
 .role-switch button {
     border: none; background: transparent;
-    font: 500 12px 'IBM Plex Sans', sans-serif;
-    color: var(--cs-text-muted);
-    padding: 5px 12px; border-radius: 16px;
+    font: 600 12.5px 'IBM Plex Sans', sans-serif;
+    color: #3d2d00;
+    padding: 6px 14px; border-radius: 16px;
     cursor: pointer;
+    transition: background 120ms ease;
 }
+.role-switch button:hover { background: var(--cs-warning-bg); }
 .role-switch button.active {
     background: var(--cs-warning); color: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .webpart-tabs {
@@ -577,10 +588,9 @@ body {
 <div class="demo-banner" id="demo-banner">
     <span class="demo-banner-label">Demo-läge</span>
     <span class="demo-banner-text">
-        Den här banderollen finns <strong>bara i mockupen</strong>. I den riktiga SharePoint-appen ser
-        användaren bara webbdelen nedan &mdash; inget rollval. Växla här bara för att se hur olika
-        roller upplever appen.
+        Den här banderollen finns <strong>bara i mockupen</strong> &mdash; i den riktiga SharePoint-appen finns inget rollval.
     </span>
+    <span class="demo-banner-prefix">Visa som:</span>
     <div class="role-switch" id="role-switch">
         <button data-role="employee" class="active">Anna (medarbetare)</button>
         <button data-role="manager">Per (chef)</button>
@@ -642,7 +652,7 @@ body {
         <div class="sp-nav-item"><svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"/></svg> Noteringar</div>
 
         <div class="sp-leftnav-heading">HR-appar</div>
-        <div class="sp-nav-item active"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> Ledighetsansökan</div>
+        <div class="sp-nav-item active"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> FreeCorner</div>
         <div class="sp-nav-item"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Tidrapport</div>
         <div class="sp-nav-item"><svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42A6.92 6.92 0 0119 12c0 3.87-3.13 7-7 7S5 15.87 5 12c0-1.96.81-3.74 2.12-5.02L5.71 5.56A8.96 8.96 0 003 12a9 9 0 0018 0c0-2.8-1.28-5.29-3.17-6.83z"/></svg> Resekostnader</div>
         <div class="sp-nav-item"><svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM7 10h5v5H7z"/></svg> Kurskatalog</div>
@@ -655,7 +665,7 @@ body {
 
     <!-- Main content area - where SP webpart lives -->
     <main class="sp-content">
-        <h1 class="sp-page-title">Ledighetsansökan</h1>
+        <h1 class="sp-page-title">FreeCorner</h1>
 
         <!-- =================  WEBPART  ================= -->
         <div class="webpart">

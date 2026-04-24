@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <title>Ledighetsansökan — Systembeskrivning</title>
+    <title>FreeCorner — Systembeskrivning</title>
     <style>
 @page { size: A4; margin: 0; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -294,7 +294,7 @@ pre code { background: transparent; padding: 0; }
         </div>
         <div class="cover-main">
             <div class="cover-tagline">Intern systembeskrivning</div>
-            <div class="cover-title">Ledighetsansökan</div>
+            <div class="cover-title">FreeCorner</div>
             <div class="cover-subtitle">SharePoint-baserad ansökan, chefsattestering via Entra och automatisk synk till Kleer</div>
             <div class="cover-divider"></div>
         </div>
@@ -310,7 +310,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Innehåll</div>
@@ -352,9 +352,26 @@ pre code { background: transparent; padding: 0; }
         <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Chefens godkännandevy<div class="toc-dots"></div><span class="toc-page">11</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">7.5</span>Avslag med motivering<div class="toc-dots"></div><span class="toc-page">11</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">7.6</span>HR-vy &mdash; Kleer-synk<div class="toc-dots"></div><span class="toc-page">11</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">8</span>Mailnotiser<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.1</span>Översikt av notiser<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.2</span>Mail 1 &mdash; Ansökan till chefen<div class="toc-dots"></div><span class="toc-page">13</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.3</span>Mail 2 &mdash; Godkänd till medarbetaren<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.4</span>Mail 3 &mdash; Avslag till medarbetaren<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.5</span>Mail 4 &mdash; Kleer-synkfel till HR<div class="toc-dots"></div><span class="toc-page">15</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.6</span>Säkerhet kring mail-länkar<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.7</span>Mallförvaltning<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.8</span>Distribution och revisionsspår<div class="toc-dots"></div><span class="toc-page">16</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">9</span>Varianter<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.1</span>Översikt av varianter<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.2</span>Variant B &mdash; utan lönesystem-synk<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.3</span>Variant C &mdash; AI-chatt (SPAI-baserad)<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.4</span>Implementationsskillnader<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.5</span>Prissättning och leveransordning<div class="toc-dots"></div><span class="toc-page">19</span></div>
         </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 2</div>
     </div>
 </div>
@@ -364,7 +381,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 1 &mdash; Syfte</div>
@@ -376,7 +393,7 @@ pre code { background: transparent; padding: 0; }
         <div class="chapter-rule"></div>
 
         <div class="chapter-intro">
-            <p>Ledighetsansökan är en intern SharePoint-lösning för Cornerstone som digitaliserar
+            <p>FreeCorner är en intern SharePoint-lösning för Cornerstone som digitaliserar
             hela flödet från att en medarbetare ansöker om semester eller annan ledighet, via
             chefens attestering i Microsoft&nbsp;365, till att den godkända ledigheten
             automatiskt registreras i löne&shy;systemet <strong>Kleer</strong> (tidigare PE
@@ -423,7 +440,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 3</div>
     </div>
 </div>
@@ -432,7 +449,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 1 &mdash; Syfte</div>
@@ -466,7 +483,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 4</div>
     </div>
 </div>
@@ -476,7 +493,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 2 &mdash; Arkitektur</div>
@@ -568,7 +585,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 5</div>
     </div>
 </div>
@@ -578,7 +595,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 3 &mdash; Flöde</div>
@@ -633,7 +650,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 6</div>
     </div>
 </div>
@@ -643,7 +660,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 4 &mdash; Datamodell</div>
@@ -697,7 +714,7 @@ pre code { background: transparent; padding: 0; }
   vacation-saved-days    (sum year-1&hellip;year-5) &mdash; used = sparade</code></pre>
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 7</div>
     </div>
 </div>
@@ -705,7 +722,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 5 &mdash; Kleer</div>
@@ -773,7 +790,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 8</div>
     </div>
 </div>
@@ -783,7 +800,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 6 &mdash; Leverans</div>
@@ -843,7 +860,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 9</div>
     </div>
 </div>
@@ -853,7 +870,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 7 &mdash; Skärmbilder</div>
@@ -887,7 +904,7 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 10</div>
     </div>
 </div>
@@ -896,7 +913,7 @@ pre code { background: transparent; padding: 0; }
     <div class="page-header">
         <div class="page-header-accent"></div>
         <div class="page-header-inner">
-            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
             <div class="page-header-dot"></div>
             <div class="page-header-line"></div>
             <div class="page-header-section">Kapitel 7 &mdash; Skärmbilder</div>
@@ -925,8 +942,554 @@ pre code { background: transparent; padding: 0; }
 
     </div>
     <div class="page-footer">
-        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Mailnotiser</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch8"><span class="chapter-num">Kapitel 8</span>Mailnotiser</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>FreeCorner driver hela flödet via <strong>mailnotiser med signerade länkar</strong>.
+            Chefen behöver inte logga in i SharePoint för att godkänna eller avslå &mdash; länken i
+            mailet räcker. Detta är medvetet: minsta möjliga friktion är nyckeln till att ansökningar
+            inte blir liggande.</p>
+        </div>
+
+        <h2>8.1 Översikt av notiser</h2>
+        <table>
+            <tr><th>#</th><th>Trigger</th><th>Mottagare</th><th>Ämne</th><th>Länkar till</th></tr>
+            <tr>
+                <td>1</td>
+                <td>Medarbetare skickar ansökan</td>
+                <td>Chef (via Entra <code>/me/manager</code>)</td>
+                <td>FreeCorner väntar på ditt beslut</td>
+                <td><code>Approve.aspx?t=&hellip;</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Chef godkänner</td>
+                <td>Medarbetaren</td>
+                <td>Din ledighet är godkänd</td>
+                <td><code>Apply.aspx</code> (Mina ansökningar)</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Chef avslår</td>
+                <td>Medarbetaren</td>
+                <td>Din ledighetsansökan behöver justeras</td>
+                <td><code>Apply.aspx</code> (ny ansökan)</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Kleer-synk misslyckas</td>
+                <td>HR (distributionslista)</td>
+                <td>Kleer-synk misslyckades &mdash; kräver åtgärd</td>
+                <td><code>Apply.aspx</code> (Synkstatus)</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Ingen chefsattest inom 7 dagar <span class="badge badge-gray">Fas 4</span></td>
+                <td>Chef</td>
+                <td>Påminnelse: ledighetsansökan väntar</td>
+                <td><code>Approve.aspx?t=&hellip;</code></td>
+            </tr>
+        </table>
+
+        <div class="tip-box">
+            <strong>Avsändare:</strong> Alla mail skickas från <code>no-reply@cornerstone.se</code> via
+            Microsoft Graph <code>/sendMail</code> från Function App. Svar på mailet landar inte i
+            någon inkorg &mdash; medarbetare hänvisas i mail-foten till HR vid frågor.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Mailnotiser</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>8.2 Mail 1 &mdash; Ansökan till chefen</h2>
+
+        <div style="border: 1px solid var(--cs-border-light); border-radius: 6px; overflow: hidden; background: white; margin: 4mm 0;">
+            <div style="background: var(--cs-stripe); padding: 3mm 5mm; border-bottom: 1px solid var(--cs-border-light); font-size: 9pt;">
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Från:</strong> Cornerstone HR &lt;no-reply@cornerstone.se&gt;</div>
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Till:</strong> per.lundqvist@cornerstone.se</div>
+                <div style="color: var(--cs-text-muted);"><strong style="color: var(--cs-text)">Ämne:</strong> FreeCorner väntar på ditt beslut &mdash; Anna Karlsson, 2026-07-06 → 2026-07-31</div>
+            </div>
+            <div style="padding: 5mm 6mm; font-size: 10pt; line-height: 1.55;">
+                <p style="margin: 0 0 3mm;">Hej Per,</p>
+                <p style="margin: 0 0 3mm;"><strong>Anna Karlsson</strong> har lämnat in en ledighetsansökan som väntar på ditt beslut.</p>
+                <table style="width: 100%; margin: 3mm 0; border: 1px solid var(--cs-border-light); background: var(--cs-stripe); border-radius: 4px;">
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Medarbetare</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">Anna Karlsson (Utbildningskoordinator)</td></tr>
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Period</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">2026-07-06 → 2026-07-31 (4 veckor)</td></tr>
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Arbetsdagar</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">20 &middot; röda dagar och helger är redan avräknade</td></tr>
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Typ</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">Betald semester</td></tr>
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Saldo efter</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">&minus;3 dagar (tar 3 sparade dagar i anspråk)</td></tr>
+                </table>
+                <div style="display: flex; gap: 3mm; margin: 5mm 0;">
+                    <span style="display: inline-block; background: #0157ff; color: white; font-weight: 600; padding: 3mm 6mm; border-radius: 4px; font-size: 10pt; text-decoration: none;">Godkänn ansökan →</span>
+                    <span style="display: inline-block; background: white; color: #2b338f; border: 1.5px solid #2b338f; font-weight: 600; padding: 2.7mm 6mm; border-radius: 4px; font-size: 10pt; text-decoration: none;">Avslå ansökan</span>
+                </div>
+                <p style="margin: 3mm 0; font-size: 9pt; color: var(--cs-text-muted);">
+                    Länkarna går till Cornerstone SharePoint och kräver ingen ytterligare inloggning.
+                    Du kan också öppna ärendet direkt i appen: <a href="#" style="color: #0157ff;">cornerstone.sharepoint.com/sites/HR/&hellip;/Approve.aspx</a>
+                </p>
+                <p style="margin: 3mm 0 0; font-size: 8.5pt; color: var(--cs-text-soft); border-top: 1px solid var(--cs-border-light); padding-top: 2mm;">
+                    Länken är giltig i 14 dagar. Vid frågor, kontakta <a href="#" style="color: #0157ff;">hr@cornerstone.se</a>.
+                </p>
+            </div>
+        </div>
+
+        <p style="font-size: 9.5pt; color: var(--cs-text-muted);">
+            Knappen <em>Godkänn ansökan</em> är en GET-länk till
+            <code>Approve.aspx?t=&lt;base64-url-encoded HMAC-SHA256&gt;</code>. Token kapslar in
+            <code>(spItemId, applicantUpn, managerUpn, issuedAt, decision='approve')</code>. Klicket
+            landar i Function App <code>ApproveApplication</code> som verifierar token, vänder SP-posten,
+            skickar mail 2 och triggar Kleer-synk.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Mailnotiser</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>8.3 Mail 2 &mdash; Godkänd till medarbetaren</h2>
+
+        <div style="border: 1px solid var(--cs-border-light); border-radius: 6px; overflow: hidden; background: white; margin: 4mm 0;">
+            <div style="background: var(--cs-stripe); padding: 3mm 5mm; border-bottom: 1px solid var(--cs-border-light); font-size: 9pt;">
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Från:</strong> Cornerstone HR &lt;no-reply@cornerstone.se&gt;</div>
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Till:</strong> anna.karlsson@cornerstone.se</div>
+                <div style="color: var(--cs-text-muted);"><strong style="color: var(--cs-text)">Ämne:</strong> Din ledighet är godkänd &mdash; 2026-07-06 → 2026-07-31</div>
+            </div>
+            <div style="padding: 5mm 6mm; font-size: 10pt; line-height: 1.55;">
+                <div style="background: #e3f3ea; border-left: 3px solid #0a7a3f; padding: 3mm 5mm; margin-bottom: 4mm; border-radius: 0 4px 4px 0;">
+                    <strong style="color: #0a7a3f;">Godkänd av Per Lundqvist</strong><br>
+                    <span style="font-size: 9pt; color: var(--cs-text-muted);">2026-03-19 kl. 14:22</span>
+                </div>
+                <p style="margin: 0 0 3mm;">Hej Anna,</p>
+                <p style="margin: 0 0 3mm;">Din ledighet <strong>2026-07-06 → 2026-07-31</strong> är godkänd och registrerad i Kleer. Ha det fint!</p>
+                <p style="margin: 0 0 3mm; font-size: 9.5pt; color: var(--cs-text-muted);">
+                    Saldot uppdateras när lönekörningen för juli är klar.
+                    Se dina ansökningar: <a href="#" style="color: #0157ff;">cornerstone.sharepoint.com/sites/HR/SitePages/Ledighet.aspx</a>
+                </p>
+                <p style="margin: 3mm 0 0; font-size: 8.5pt; color: var(--cs-text-soft); border-top: 1px solid var(--cs-border-light); padding-top: 2mm;">
+                    Vid frågor, kontakta <a href="#" style="color: #0157ff;">hr@cornerstone.se</a>.
+                </p>
+            </div>
+        </div>
+
+        <h2>8.4 Mail 3 &mdash; Avslag till medarbetaren</h2>
+
+        <div style="border: 1px solid var(--cs-border-light); border-radius: 6px; overflow: hidden; background: white; margin: 4mm 0;">
+            <div style="background: var(--cs-stripe); padding: 3mm 5mm; border-bottom: 1px solid var(--cs-border-light); font-size: 9pt;">
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Från:</strong> Cornerstone HR &lt;no-reply@cornerstone.se&gt;</div>
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Till:</strong> johan.hedberg@cornerstone.se</div>
+                <div style="color: var(--cs-text-muted);"><strong style="color: var(--cs-text)">Ämne:</strong> Din ledighetsansökan behöver justeras &mdash; 2026-07-13 → 2026-08-07</div>
+            </div>
+            <div style="padding: 5mm 6mm; font-size: 10pt; line-height: 1.55;">
+                <div style="background: #f9e4e0; border-left: 3px solid #9a2617; padding: 3mm 5mm; margin-bottom: 4mm; border-radius: 0 4px 4px 0;">
+                    <strong style="color: #9a2617;">Avslag från Per Lundqvist</strong><br>
+                    <span style="font-size: 9pt; color: var(--cs-text-muted);">2026-04-22 kl. 08:41</span>
+                </div>
+                <p style="margin: 0 0 3mm;">Hej Johan,</p>
+                <p style="margin: 0 0 3mm;">Din ansökan <strong>2026-07-13 → 2026-08-07</strong> är tyvärr avslagen. Motivering:</p>
+                <blockquote style="margin: 3mm 5mm; padding: 2mm 4mm; background: var(--cs-sand); border-left: 3px solid var(--cs-text-soft); font-style: italic; font-size: 9.5pt; color: var(--cs-text);">
+                    "Perioden krockar med en kritisk kundleverans för RISE. Välkommen tillbaka med ny ansökan för v. 32&ndash;35, då är vi klara."
+                </blockquote>
+                <div style="margin: 4mm 0;">
+                    <span style="display: inline-block; background: #0157ff; color: white; font-weight: 600; padding: 3mm 6mm; border-radius: 4px; font-size: 10pt;">Skicka ny ansökan →</span>
+                </div>
+                <p style="margin: 3mm 0 0; font-size: 8.5pt; color: var(--cs-text-soft); border-top: 1px solid var(--cs-border-light); padding-top: 2mm;">
+                    Vid frågor, prata först med din chef. HR svarar också på <a href="#" style="color: #0157ff;">hr@cornerstone.se</a>.
+                </p>
+            </div>
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Mailnotiser</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>8.5 Mail 4 &mdash; Kleer-synkfel till HR</h2>
+
+        <div style="border: 1px solid var(--cs-border-light); border-radius: 6px; overflow: hidden; background: white; margin: 4mm 0;">
+            <div style="background: var(--cs-stripe); padding: 3mm 5mm; border-bottom: 1px solid var(--cs-border-light); font-size: 9pt;">
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Från:</strong> Cornerstone HR &lt;no-reply@cornerstone.se&gt;</div>
+                <div style="color: var(--cs-text-muted); margin-bottom: 1mm;"><strong style="color: var(--cs-text)">Till:</strong> hr@cornerstone.se</div>
+                <div style="color: var(--cs-text-muted);"><strong style="color: var(--cs-text)">Ämne:</strong> [ÅTGÄRD] Kleer-synk misslyckades &mdash; Maja Sjögren</div>
+            </div>
+            <div style="padding: 5mm 6mm; font-size: 10pt; line-height: 1.55;">
+                <div style="background: #f9e4e0; border-left: 3px solid #9a2617; padding: 3mm 5mm; margin-bottom: 4mm; border-radius: 0 4px 4px 0;">
+                    <strong style="color: #9a2617;">Kleer-fel:</strong> 403 Forbidden på <code>POST /event/</code> &mdash; försökt 3 gånger
+                </div>
+                <p style="margin: 0 0 3mm;">Automatisk synkning av en godkänd ledighet till Kleer har misslyckats:</p>
+                <table style="width: 100%; margin: 3mm 0; border: 1px solid var(--cs-border-light); background: var(--cs-stripe); border-radius: 4px;">
+                    <tr><td style="padding: 2mm 4mm; width: 38%; color: var(--cs-text-muted); font-size: 9pt;">Medarbetare</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">Maja Sjögren (<code>maja.sjogren@cornerstone.se</code>)</td></tr>
+                    <tr><td style="padding: 2mm 4mm; color: var(--cs-text-muted); font-size: 9pt;">Period</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">2026-03-24 (1 dag)</td></tr>
+                    <tr><td style="padding: 2mm 4mm; color: var(--cs-text-muted); font-size: 9pt;">Typ</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">Övrig &mdash; vård av närstående</td></tr>
+                    <tr><td style="padding: 2mm 4mm; color: var(--cs-text-muted); font-size: 9pt;">Godkänd av</td><td style="padding: 2mm 4mm; font-size: 9.5pt;">Per Lundqvist, 2026-03-23</td></tr>
+                    <tr><td style="padding: 2mm 4mm; color: var(--cs-text-muted); font-size: 9pt;">HTTP-svar</td><td style="padding: 2mm 4mm; font-size: 9.5pt;"><code>403 Forbidden &mdash; user not mapped</code></td></tr>
+                </table>
+                <p style="margin: 3mm 0;">Trolig orsak: Maja har ännu ingen Kleer-användarkoppling. Kontrollera att hon finns i
+                <a href="#" style="color: #0157ff;">Kleer-medarbetarregistret</a> och att e-postadressen matchar Entra.</p>
+                <div style="margin: 4mm 0;">
+                    <span style="display: inline-block; background: #9a2617; color: white; font-weight: 600; padding: 3mm 6mm; border-radius: 4px; font-size: 10pt;">Öppna i admin-vyn →</span>
+                </div>
+                <p style="margin: 3mm 0 0; font-size: 8.5pt; color: var(--cs-text-soft); border-top: 1px solid var(--cs-border-light); padding-top: 2mm;">
+                    Automatisk retry försöker igen varje natt kl. 02:15. Efter 5 failade försök stängs denna post som blockerad.
+                </p>
+            </div>
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 15</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 8 &mdash; Mailnotiser</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+<h2>8.6 Säkerhet kring mail-länkar</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>HMAC-signerad token</h4>
+                <p>Varje länk till <code>Approve.aspx</code> bär en HMAC-SHA256-signerad token.
+                Secret-nyckeln lever i Azure Key Vault och roteras årligen. Tokenet kapslar in
+                SP-ID, applicant-UPN, manager-UPN, utfärdandetid och beslutstyp. Ingen användarinput
+                skickas i URL:en &mdash; bara signerade fält.</p>
+            </div>
+<div class="feature-card">
+                <h4>14 dagars TTL</h4>
+                <p>Function verifierar utfärdandetiden. En länk äldre än 14 dagar avvisas med
+                tydlig felsida och uppmanar chefen att öppna ärendet direkt i appen. Ingen
+                återanvändning &mdash; efter ett beslut kastas token i en blacklist-tabell.</p>
+            </div>
+<div class="feature-card">
+                <h4>Mottagarkontroll</h4>
+                <p>När chefen klickar länken kontrollerar Function även att den inloggade
+                användaren (SP-kontext) matchar <code>managerUpn</code> i token. Skickas länken
+                vidare till någon annan ger det en &ldquo;Inte din ansökan&rdquo;-sida &mdash;
+                inte en tyst godkännande.</p>
+            </div>
+<div class="feature-card">
+                <h4>Ingen känslig data i URL</h4>
+                <p>Personnummer, lönebelopp och övrig info är <em>inte</em> del av tokenet.
+                URL:en avslöjar bara id. Själva ansökningsinnehållet hämtas av Approve.aspx
+                via autentiserad SP-REST när sidan laddas.</p>
+            </div>
+        </div>
+<h2>8.7 Mallförvaltning</h2>
+        <p>Mailmallarna ligger i <code>LedighetFn/src/templates/*.html</code> (Fas 2) och är
+        HTML-mail med inline-CSS enligt e-post-best-practice (tabellbaserad layout för Outlook,
+        inline-stilar, max 600 px bred). Varje mall har en <strong>svensk</strong> och en
+        <strong>engelsk</strong> version &mdash; språk väljs utifrån mottagarens
+        <code>preferredLanguage</code> i Entra. Fallback är svenska.</p>
+<h2>8.8 Distribution och revisionsspår</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>HR-mailet (mail 4)</h4>
+                <p>Går till distributionslistan <code>hr@cornerstone.se</code> &mdash; <strong>inte</strong>
+                till enskild HR-partner per avdelning. Beslut lockat 2026-04-24. Om HR-teamet växer
+                eller delas per ort kan det brytas ut senare genom att mappa applicantens
+                <code>department</code>-attribut till olika listor, men det är inte nödvändigt nu.</p>
+            </div>
+<div class="feature-card">
+                <h4>Inget BCC på beslutsmail</h4>
+                <p>Mail 2 och 3 (godkänt / avslag till medarbetaren) BCC:ar <strong>inte</strong> HR.
+                SharePoint-listan <code>Ledighetsansökningar</code> är revisionsspåret &mdash; HR kan
+                alltid se Status, ManagerComment, DecidedAt, ApprovalToken per post. Ingen anledning
+                att fylla HR:s inkorg med kopior. Beslut lockat 2026-04-24.</p>
+            </div>
+        </div>
+<div class="note-box">
+            <strong>Obs vid utrullning:</strong> Mail kan ta upp till 3 minuter att nå inkorgen
+            (Graph-kö + Exchange). Informera cheferna i introduktionsmailet så ingen undrar
+            varför länken inte kom direkt. HR-synkfel-mail har högre prioritet och går via en
+            direkt SMTP-relay (Fas 3).
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 16</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Varianter</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch9"><span class="chapter-num">Kapitel 9</span>Varianter</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Samma grundfunktion &mdash; ansökan, chefsattest, revisionsspår &mdash; kan paketeras i
+            tre olika gränssnitt beroende på hur djupt integrerad lösningen ska vara och hur
+            användaren vill interagera. Alla tre delar backend (Azure Function + SharePoint-listan),
+            bara UI och integrationsdjup varierar.</p>
+        </div>
+
+        <h2>9.1 Översikt av varianter</h2>
+        <table>
+            <tr><th>Variant</th><th>UI</th><th>Lönesystem-synk</th><th>Bäst för</th></tr>
+            <tr>
+                <td><strong>A &mdash; Primär</strong></td>
+                <td>Formulär</td>
+                <td>Kleer (automatiskt)</td>
+                <td>Cornerstones primära scenario &mdash; full automation, minsta manuella steg</td>
+            </tr>
+            <tr>
+                <td><strong>B &mdash; Utan synk</strong></td>
+                <td>Formulär</td>
+                <td>Manuell (medarbetaren själv)</td>
+                <td>Kunder utan Kleer-avtal eller som vill piloteras innan synk aktiveras</td>
+            </tr>
+            <tr>
+                <td><strong>C &mdash; AI-chatt</strong></td>
+                <td>Conversational (SPAI)</td>
+                <td>Kleer (automatiskt)</td>
+                <td>Lägsta tröskel för användare &mdash; naturligt språk, ingen formulär-friktion</td>
+            </tr>
+        </table>
+
+        <div class="tip-box">
+            <strong>Delad backend:</strong> Alla tre varianter skickar samma <code>SubmitApplication</code>-anrop
+            till Azure Function. Det är bara vägen dit som skiljer sig. En kund kan börja med B,
+            lägga till Kleer-integrationen senare (blir A) och slutligen rulla ut C ovanpå
+            utan att någonting behöver byggas om.
+        </div>
+
+        <h2>9.2 Variant B &mdash; utan lönesystem-synk</h2>
+        <p>Identisk med A, förutom att:</p>
+        <ul>
+            <li>Fliken <em>Synkstatus mot Kleer</em> finns inte.</li>
+            <li>Saldokortet (&quot;du har 17 tillgängliga dagar&quot;) visas inte &mdash; vi har ingen
+            källa att läsa saldo från.</li>
+            <li><em>Mina ansökningar</em> har en extra kolumn <strong>Registrerad i lön</strong>
+            &mdash; en bockruta medarbetaren själv markerar efter manuell inmatning.</li>
+            <li>Mail 2 (godkänd) har ett tydligt "<strong>Kom ihåg att registrera i lönesystemet</strong>"-block.</li>
+            <li>HR gör stickprov mot kolumnen &quot;Registrerad i lön&quot; varje månadsskifte.</li>
+        </ul>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 17</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Varianter</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <img src="../Screenshots/20-no-kleer-apply.png" alt="Variant B — utan Kleer-synk, med påminnelsebanner"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Gul påminnelsebanner ersätter saldokortet:
+        <em>&quot;När din ansökan är godkänd måste du själv registrera ledigheten i ditt lönesystem.&quot;</em></p>
+
+        <h2>9.3 Variant C &mdash; AI-chatt (SPAI-baserad)</h2>
+
+        <p>Användaren interagerar med en AI-assistent i stället för att fylla i ett formulär.
+        Chattens &ldquo;tool-calls&rdquo; anropar exakt samma Azure Function som formuläret gör &mdash;
+        UI-lagret bytt, inte affärs&shy;logiken. Baserad på mönstret från
+        <a href="https://www.kalmstrom.com/SPAI/">SPAI-projektet</a> (kalmstroms AI-assistent för SharePoint).</p>
+
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Vad AI gör</h4>
+                <p>Tolkar naturligt språk (&quot;nästa vecka&quot;, &quot;v.24 och 25&quot;,
+                &quot;några dagar i maj&quot;), beräknar datum, kollar saldo mot Kleer, visar sammanfattning
+                innan allting skickas, ber om bekräftelse.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Vad AI <em>inte</em> gör</h4>
+                <p>Skickar aldrig ansökan utan ett explicit &quot;Ja&quot; från användaren. Hanterar inte
+                chefens godkännande &mdash; det sker fortfarande via mail-länk. Ändrar inget i Kleer
+                utan att Function har verifierat alla steg.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Tool-calls under huven</h4>
+                <p>Synliga för användaren som grå rader: &quot;Beräknar arbetsdagar&hellip;&quot;,
+                &quot;Läser saldo&hellip;&quot;, &quot;Slår upp chef i Entra&hellip;&quot;,
+                &quot;Signerar token&hellip;&quot;, &quot;Skickar mail&hellip;&quot;. Var och en
+                blir en grön checkmark när den är klar.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Fallback</h4>
+                <p>Knappen &quot;Använd klassiskt formulär&quot; finns alltid i chattens meny &mdash;
+                om AI:n inte förstår, eller användaren hellre vill klicka sig igenom, går de tillbaka
+                till Variant A utan att förlora sin påbörjade ansökan.</p>
+            </div>
+        </div>
+
+        <img src="../Screenshots/21-chat-conversation.png" alt="Variant C — chattkonversation mellan Anna och AI-assistenten"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">AI:n visar en <em>sammanfattning</em>
+        innan ansökan skickas &mdash; samma transparens som formulär-varianten ger i sitt
+        &quot;arbetsdagar&quot;-chip.</p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 18</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Varianter</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>9.4 Implementationsskillnader</h2>
+        <table>
+            <tr><th>Lager</th><th>A &mdash; Formulär</th><th>B &mdash; Utan synk</th><th>C &mdash; Chatt</th></tr>
+            <tr>
+                <td>ASPX-sida</td>
+                <td><code>Apply.aspx</code></td>
+                <td><code>Apply.aspx</code></td>
+                <td><code>Chat.aspx</code></td>
+            </tr>
+            <tr>
+                <td>JS-bundle</td>
+                <td><code>Ledighet.js</code></td>
+                <td><code>Ledighet.js</code></td>
+                <td><code>LedighetChat.js</code></td>
+            </tr>
+            <tr>
+                <td>Extra dependencies</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>SPAI copilot SDK, Azure OpenAI endpoint</td>
+            </tr>
+            <tr>
+                <td>Azure Function</td>
+                <td>SubmitApplication, ApproveApplication, KleerSync</td>
+                <td>SubmitApplication, ApproveApplication</td>
+                <td>Samma som A + <code>ChatOrchestrator</code></td>
+            </tr>
+            <tr>
+                <td>AI-endpoint</td>
+                <td>&mdash;</td>
+                <td>&mdash;</td>
+                <td>Azure OpenAI (GPT-4o) via SPAI:s proxy</td>
+            </tr>
+            <tr>
+                <td>Extra konfiguration</td>
+                <td>Kleer X-Token</td>
+                <td>&mdash;</td>
+                <td>Kleer X-Token + Azure OpenAI-nyckel + system-prompt</td>
+            </tr>
+        </table>
+
+        <h2>9.5 Prissättning och leveransordning</h2>
+        <p>Varianterna staplas &mdash; inget behöver rivas för att gå från en till nästa:</p>
+        <ul>
+            <li><strong>Fas 1&ndash;3</strong> levererar <strong>Variant B</strong> (utan synk) som MVP.
+            Kunden får ansökan + attest + revisionsspår i drift snabbt.</li>
+            <li><strong>Fas 3-tillägg</strong> aktiverar Kleer-synk och ger <strong>Variant A</strong>. Pris per
+            integrationsmål (i Cornerstones fall just Kleer).</li>
+            <li><strong>Fas 5 (option)</strong> lägger till chatt-varianten. Kräver aktivt SPAI-avtal och
+            Azure OpenAI-kvot hos kunden. Ingen påverkan på A eller B &mdash; båda fortsätter fungera
+            parallellt för användare som föredrar formulär.</li>
+        </ul>
+
+        <div class="note-box">
+            <strong>AI-ansvar:</strong> Även när Variant C är aktiv loggar Function exakt vad
+            AI:n &ldquo;bestämde sig för&rdquo; per användarinmatning (prompt + response + verktyg-kedja
+            + beslut). Revisionsspåret i SharePoint-listan inkluderar alltså inte bara vem som
+            skickade in ansökan, utan hur &mdash; viktigt för regulatoriska krav.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 19</div>
     </div>
 </div>
 

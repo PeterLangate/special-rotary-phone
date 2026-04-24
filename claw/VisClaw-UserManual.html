@@ -559,6 +559,19 @@ kbd {
         <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Cost and token tips<div class="toc-dots"></div><span class="toc-page">14</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Bug-report helpers<div class="toc-dots"></div><span class="toc-page">14</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Where to get help<div class="toc-dots"></div><span class="toc-page">15</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Advanced operations<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>Themes, quick styles, theme variants<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Masters and stencil authoring<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>Containers, callouts, and lists<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Connector glue<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.5</span>Hyperlinks and shape data<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.6</span>Data graphics and refresh<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.7</span>Layers<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.8</span>Selection and navigation<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.9</span>Drawing primitives<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.10</span>Page-level actions<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.11</span>Review and comments<div class="toc-dots"></div><span class="toc-page">18</span></div>
         </div>
     <div class="page-footer">
         <div class="brand-mark">kalmstrom.com</div>
@@ -1191,6 +1204,120 @@ kbd {
 <div class="tip-box">
     <strong>The chat panel is a client.</strong> VisClaw does not have a backend of its own. Every reply comes straight from Anthropic, and every action happens in Visio&#39;s process on your machine. Your data never visits kalmstrom.com.
 </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 7 &mdash; Advanced operations</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch7"><span class="chapter-num">Chapter 7</span>Advanced operations</h1>
+
+        <div class="chapter-intro">
+            <p>Chapter 4 covers the day-to-day surface: pages, shapes, connectors, data, stencils. This chapter covers the operations people reach for less often &mdash; masters authoring, themes &amp; quick styles, data-graphics refresh, containers and callouts, hyperlinks, and layers. Everything here still works through the chat prompt; VisClaw picks the right tool.</p>
+        </div>
+<h2>7.1 Themes, quick styles, theme variants</h2>
+        <p>Visio themes colour a whole drawing consistently. VisClaw lists, applies, and switches them from chat.</p>
+        <ul>
+            <li><strong>List available themes.</strong> "What themes does this drawing support?" Returns the built-in + custom themes.</li>
+            <li><strong>Apply a theme.</strong> "Apply the 'Organic' theme to the current page." Every themed shape re-colours; shapes set to "use theme colour" update automatically.</li>
+            <li><strong>Apply a variant.</strong> "Switch to the third variant of 'Organic'." Variants are the colour/accent subsets each theme ships.</li>
+            <li><strong>Apply a quick style.</strong> "Set shape 'Server 1' to quick style 'Subtle effect 2'." Quick styles are the named fill/line/shadow combinations from the Design tab.</li>
+        </ul>
+        <p class="note"><strong>Graceful degradation.</strong> Some older Visio builds don't expose the Theme API via COM dispatch. VisClaw detects that at call time and returns a "this Visio build doesn't support X" message rather than crashing the pane.</p>
+<h2>7.2 Masters and stencil authoring</h2>
+        <ul>
+            <li><strong>Create a master from the current selection.</strong> "Turn this selection into a new master called 'Standard server'." The master is added to the document stencil and the selection becomes an instance of it.</li>
+            <li><strong>List masters.</strong> "What masters are in this document's stencil?" / "List every master in the 'Basic Flowchart' stencil."</li>
+            <li><strong>Drop a master.</strong> "Drop a 'Decision' shape at 4,6 inches."</li>
+            <li><strong>Drop a legend.</strong> "Drop a legend for the data graphic at the top-right corner."</li>
+        </ul>
+<h2>7.3 Containers, callouts, and lists</h2>
+        <p>Containers are Visio's grouping primitive that behave as a single logical unit &mdash; move the container, the children follow.</p>
+        <ul>
+            <li><strong>Drop a container.</strong> "Drop a container around the three selected servers and label it 'Production tier'."</li>
+            <li><strong>Add a shape to an existing container.</strong> "Add 'Server 4' to the 'Production tier' container."</li>
+            <li><strong>Remove from container.</strong> "Remove 'Server 2' from 'Production tier' but keep it on the page."</li>
+            <li><strong>Drop a callout.</strong> "Add a callout pointing to 'Router' that says 'Failover pair &mdash; active/standby'."</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 7 &mdash; Advanced operations</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>7.4 Connector glue</h2>
+        <p>Glue is Visio's word for the endpoint connection between a connector and a shape. VisClaw manages glue directly.</p>
+        <ul>
+            <li><strong>Glue an endpoint.</strong> "Glue the end of connector C7 to the right side of 'Router'."</li>
+            <li><strong>Unglue an endpoint.</strong> "Unglue both ends of connector C7." Uses a FormulaU rewrite under the hood (not <code>Cell.GlueTo(null)</code>, which throws on some Visio builds).</li>
+            <li><strong>Trace glue.</strong> "What's glued to 'Router's right side?" Lists every connector touching the named shape, with direction.</li>
+        </ul>
+<h2>7.5 Hyperlinks and shape data</h2>
+        <ul>
+            <li><strong>Add a hyperlink.</strong> "Add a hyperlink on 'Design doc' shape pointing to <code>https://wiki/design</code> with sub-address 'architecture'."</li>
+            <li><strong>List hyperlinks.</strong> "What hyperlinks are on the 'Infrastructure' page?"</li>
+            <li><strong>Shape data rows.</strong> "List shape data on 'Server 1'" / "Set its 'Owner' property to 'Infra team'" / "Bulk-set 'Environment' to 'prod' across every server shape."</li>
+        </ul>
+<h2>7.6 Data graphics and refresh</h2>
+        <ul>
+            <li><strong>Refresh all data recordsets.</strong> "Refresh the data bindings." VisClaw walks every <em>DataRecordset</em> and calls <em>Refresh</em>, silently skipping any that don't expose the method on older Visio builds.</li>
+            <li><strong>Apply a data graphic.</strong> "Apply the 'Availability' data graphic to every server shape on this page." (Roadmap &mdash; not yet implemented; pending confirmation of the COM surface across Visio builds.)</li>
+        </ul>
+<h2>7.7 Layers</h2>
+        <p>Layers organise visibility, print, and lock state independently of shape geometry.</p>
+        <ul>
+            <li><strong>List layers.</strong> "What layers does this page have?"</li>
+            <li><strong>Create / delete.</strong> "Add a new layer called 'Annotations'." / "Delete the 'Scratch' layer."</li>
+            <li><strong>Assign shapes.</strong> "Put every callout on the 'Annotations' layer."</li>
+            <li><strong>Visibility and lock.</strong> "Hide the 'Annotations' layer" / "Lock the 'Network' layer so nobody edits it by accident."</li>
+            <li><strong>Set active layer.</strong> "Make 'Annotations' the active layer so new shapes land there."</li>
+        </ul>
+<h2>7.8 Selection and navigation</h2>
+        <ul>
+            <li><strong>Select by pattern.</strong> "Select every shape whose name contains 'Server'." / "Select all shapes on the 'Annotations' layer."</li>
+            <li><strong>Scroll to a shape.</strong> "Scroll to and centre 'Router'."</li>
+            <li><strong>Zoom.</strong> "Zoom to fit the whole page" / "Zoom to 150%." Uses <em>visFitPage</em> for fit-to-page (not the older <em>visFitToShapes</em>, which newer Visio builds rejected).</li>
+        </ul>
+<h2>7.9 Drawing primitives</h2>
+        <p>Chapter 4 covers dropping masters. VisClaw also drops raw geometric primitives for sketches.</p>
+        <ul>
+            <li><strong>Rect, ellipse, line.</strong> "Draw a rectangle from 0,0 to 4,3 inches" / "ellipse centred on 5,5 inches, 2 inches wide, 1 inch tall" / "line from 1,1 to 6,1."</li>
+            <li><strong>Bezier curve.</strong> "Draw a bezier curve through these four points: (1,1), (3,5), (5,1), (7,3)."</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>VisClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">VisClaw for Visio</div>
+        <div>Chapter 7 &mdash; Advanced operations</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>7.10 Page-level actions</h2>
+        <ul>
+            <li><strong>Page size and orientation.</strong> "Set this page to A3 landscape" / "custom size 20x14 inches." Uses FormulaU assignments with explicit inch units (not the older <em>ResultForceU[visInches]</em> indexer, which some Visio builds don't honour).</li>
+            <li><strong>Background pages.</strong> "Add a background page called 'Title block'" / "Set 'Sheet 1' to use 'Title block' as its background."</li>
+            <li><strong>Page setup &amp; print.</strong> "Print preview this page" / "Export this page to PDF at <code>C:\Diagrams\network.pdf</code>."</li>
+        </ul>
+<h2>7.11 Review and comments</h2>
+        <ul>
+            <li><strong>Add a review comment.</strong> "Add a comment on 'Router' saying 'Confirm this is the prod pair, not staging.'"</li>
+            <li><strong>List comments.</strong> "What open comments are on this drawing?"</li>
+        </ul>
     </div>
     <div class="page-footer">
         <div class="brand-mark">kalmstrom.com</div>

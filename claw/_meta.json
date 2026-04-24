@@ -1,49 +1,49 @@
 {
-  "syncedAt": "2026-04-24T09:39:51Z",
+  "syncedAt": "2026-04-24T11:18:11Z",
   "files": {
-    "VisClaw-UserManual.html": {
-      "updated": "2026-04-22"
-    },
-    "ClawSuite-Overview.html": {
-      "updated": "2026-04-21"
-    },
-    "icons/pointclaw.svg": {
-      "updated": "2026-04-21"
-    },
-    "icons/outclaw.svg": {
-      "updated": "2026-04-21"
-    },
     "icons/worclaw.svg": {
-      "updated": "2026-04-21"
-    },
-    "index.html": {
-      "updated": "2026-04-22"
-    },
-    "ExClaw-UserManual.html": {
-      "updated": "2026-04-21"
-    },
-    "icons/clawsuite.svg": {
-      "updated": "2026-04-21"
-    },
-    "ProjClaw-UserManual.html": {
-      "updated": "2026-04-24"
-    },
-    "icons/exclaw.svg": {
-      "updated": "2026-04-21"
-    },
-    "OutClaw-UserManual.html": {
-      "updated": "2026-04-21"
-    },
-    "WorClaw-UserManual.html": {
-      "updated": "2026-04-21"
-    },
-    "icons/visclaw.svg": {
       "updated": "2026-04-21"
     },
     "PointClaw-UserManual.html": {
       "updated": "2026-04-24"
     },
+    "icons/clawsuite.svg": {
+      "updated": "2026-04-21"
+    },
+    "icons/exclaw.svg": {
+      "updated": "2026-04-21"
+    },
+    "index.html": {
+      "updated": "2026-04-22"
+    },
+    "icons/visclaw.svg": {
+      "updated": "2026-04-21"
+    },
+    "VisClaw-UserManual.html": {
+      "updated": "2026-04-24"
+    },
+    "icons/outclaw.svg": {
+      "updated": "2026-04-21"
+    },
+    "icons/pointclaw.svg": {
+      "updated": "2026-04-21"
+    },
+    "ProjClaw-UserManual.html": {
+      "updated": "2026-04-24"
+    },
+    "OutClaw-UserManual.html": {
+      "updated": "2026-04-21"
+    },
+    "ClawSuite-Overview.html": {
+      "updated": "2026-04-21"
+    },
+    "ExClaw-UserManual.html": {
+      "updated": "2026-04-21"
+    },
     "icons/projclaw.svg": {
+      "updated": "2026-04-21"
+    },
+    "WorClaw-UserManual.html": {
       "updated": "2026-04-21"
     }
   }

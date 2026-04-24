@@ -335,6 +335,7 @@
             padding: 0 22mm;
             font-size: 7.5pt;
             color: var(--ns-gray-400);
+            gap: 4mm;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -342,6 +343,27 @@
             font-weight: 700;
             color: var(--ns-accent);
             font-family: 'Roboto Mono', monospace;
+        }
+        .page-footer .footer-rev {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            letter-spacing: 0.06em;
+            color: var(--ns-gray-400);
+        }
+        .page-footer a.toc-backlink {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--ns-gray-400);
+            padding-bottom: 0.3mm;
+        }
+        .page-footer a.toc-backlink:hover {
+            color: var(--ns-accent);
+            border-bottom-color: var(--ns-accent);
         }
 
         /* ═══════════════════════════════════════════════════════════════════
@@ -728,6 +750,20 @@
             text-align: right;
             line-height: 1.5;
         }
+        a.kp-backlink {
+            display: inline-block;
+            margin-top: 1.5mm;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--ns-gray-400);
+            padding-bottom: 0.4mm;
+        }
+        a.kp-backlink:hover { color: var(--ns-accent); border-bottom-color: var(--ns-accent); }
         .gps-link {
             display: inline-block;
             margin-top: 1.5mm;
@@ -779,6 +815,49 @@
             display: flex;
             flex-direction: column;
             gap: 0.5mm;
+        }
+
+        /* Arbetslag (crew) row — page 2 */
+        .crew-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4mm;
+            margin: 3mm 0 6mm;
+        }
+        .crew-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 3mm 2mm;
+            background: var(--ns-gray-50);
+            border: 1px solid var(--ns-gray-200);
+            border-radius: 4px;
+        }
+        .crew-avatar {
+            width: 11mm;
+            height: 11mm;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ns-white);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 2mm;
+        }
+        .crew-name {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: var(--ns-text-strong);
+            line-height: 1.2;
+        }
+        .crew-role {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 6.5pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+            margin-top: 1mm;
         }
 
         /* ═══════════════════════════════════════════════════════════════════
@@ -850,6 +929,49 @@
             display: flex;
             gap: 4mm;
             align-items: center;
+        }
+        .qr-block {
+            display: flex;
+            align-items: center;
+            gap: 5mm;
+            margin-top: 6mm;
+            padding: 4mm 5mm;
+            background: var(--ns-gray-50);
+            border: 1px solid var(--ns-gray-200);
+            border-radius: 4px;
+        }
+        .qr-block img {
+            width: 22mm;
+            height: 22mm;
+            border: 1px solid var(--ns-gray-200);
+            background: var(--ns-white);
+            padding: 1mm;
+            flex-shrink: 0;
+        }
+        .qr-block-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1mm;
+        }
+        .qr-block-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ns-accent);
+        }
+        .qr-block-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10pt;
+            font-weight: 700;
+            color: var(--ns-text-strong);
+        }
+        .qr-block-desc {
+            font-size: 8.5pt;
+            color: var(--ns-gray-500);
+            line-height: 1.4;
         }
         .approval-icon {
             width: 9mm;
@@ -1009,9 +1131,9 @@
         </div>
 
         <div class="cover-chips">
-            <div class="cover-chip">12 kontrollpunkter</div>
+            <div class="cover-chip" data-auto="kp-count">12 kontrollpunkter</div>
             <div class="cover-chip">6 avlämningspunkter</div>
-            <div class="cover-chip">12 bildbevis</div>
+            <div class="cover-chip" data-auto="bp-count">12 bildbevis</div>
             <div class="cover-chip">2 signaturer</div>
         </div>
     </div>
@@ -1076,6 +1198,43 @@
                 <span class="meta-label">Kontrollansvarig</span>
                 <span class="meta-value"><img class="avatar-inline" src="images/avatars/maria-forslund.jpg" alt="">Maria Forslund · Arbetsledare</span>
             </div>
+            <div class="meta-field">
+                <span class="meta-label">Väder</span>
+                <span class="meta-value">+12 °C · vindstilla · uppehåll</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Nederbörd</span>
+                <span class="meta-value">2 mm senaste 24 h (SMHI Bodafors)</span>
+            </div>
+        </div>
+
+        <h2>Arbetslag på plats</h2>
+        <div class="crew-row">
+            <div class="crew-card">
+                <img class="crew-avatar" src="images/avatars/anders-lindqvist.jpg" alt="Anders Lindqvist">
+                <div class="crew-name">Anders Lindqvist</div>
+                <div class="crew-role">Schaktare</div>
+            </div>
+            <div class="crew-card">
+                <img class="crew-avatar" src="images/avatars/erik-gunnarsson.jpg" alt="Erik Gunnarsson">
+                <div class="crew-name">Erik Gunnarsson</div>
+                <div class="crew-role">Maskinist</div>
+            </div>
+            <div class="crew-card">
+                <img class="crew-avatar" src="images/avatars/thomas-hedberg.jpg" alt="Thomas Hedberg">
+                <div class="crew-name">Thomas Hedberg</div>
+                <div class="crew-role">Rörläggare</div>
+            </div>
+            <div class="crew-card">
+                <img class="crew-avatar" src="images/avatars/lars-holm.jpg" alt="Lars Holm">
+                <div class="crew-name">Lars Holm</div>
+                <div class="crew-role">Skyddsombud</div>
+            </div>
+            <div class="crew-card">
+                <img class="crew-avatar" src="images/avatars/maria-forslund.jpg" alt="Maria Forslund">
+                <div class="crew-name">Maria Forslund</div>
+                <div class="crew-role">Arbetsledare</div>
+            </div>
         </div>
 
         <h2>Sammanfattning</h2>
@@ -1098,7 +1257,7 @@
             </div>
         </div>
 
-        <h2>Innehåll</h2>
+        <h2 id="toc">Innehåll</h2>
         <div class="toc">
             <a class="toc-entry" href="#rapportoversikt">
                 <span class="toc-num">1</span>
@@ -1159,6 +1318,7 @@
 
     <div class="page-footer">
         <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="footer-rev">Rev 1 · 2026-04-24 18:46</span>
         <span class="page-num">2 / 10</span>
     </div>
 </div>
@@ -1231,7 +1391,9 @@
     </div>
 
     <div class="page-footer">
-        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span>Egenkontroll · BD-2026-003</span>
+        <a class="toc-backlink" href="#toc">↑ Innehåll</a>
+        <span class="footer-rev">Rev 1 · 2026-04-24 18:46</span>
         <span class="page-num">3 / 10</span>
     </div>
 </div>
@@ -1255,7 +1417,7 @@
             <div class="section-header-ref">Mall T3836-12 · 6C</div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-01">
             <div class="kontrollpunkt-num">01</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Schaktsträcka enligt karta</div>
@@ -1266,7 +1428,7 @@
             <div class="kontrollpunkt-thumbs"></div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-02">
             <div class="kontrollpunkt-num">02</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Arbete utfört enligt gällande tillstånd/TA-plan</div>
@@ -1283,7 +1445,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-03">
             <div class="kontrollpunkt-num">03</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Arbete utfört enligt gällande schaktdjup</div>
@@ -1305,7 +1467,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-04">
             <div class="kontrollpunkt-num">04</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Rätt fyllningsmaterial enligt normer/krav</div>
@@ -1323,7 +1485,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-05">
             <div class="kontrollpunkt-num">05</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Foto som styrker schaktdjup och återställande</div>
@@ -1354,7 +1516,9 @@
     </div>
 
     <div class="page-footer">
-        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span>Egenkontroll · BD-2026-003</span>
+        <a class="toc-backlink" href="#toc">↑ Innehåll</a>
+        <span class="footer-rev">Rev 1 · 2026-04-24 18:46</span>
         <span class="page-num">4 / 10</span>
     </div>
 </div>
@@ -1378,7 +1542,7 @@
             <div class="section-header-ref">Mall 11 · Markarbeten</div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-06">
             <div class="kontrollpunkt-num">06</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Veckonummer och delsträcka</div>
@@ -1389,7 +1553,7 @@
             <div class="kontrollpunkt-thumbs"></div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-07">
             <div class="kontrollpunkt-num">07</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Uppfylls fyllnadshöjden för rådande markförhållande?</div>
@@ -1407,7 +1571,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-08">
             <div class="kontrollpunkt-num">08</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Fraktion/sort på ledningsbädd och kringfyllnad</div>
@@ -1429,7 +1593,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-09">
             <div class="kontrollpunkt-num">09</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Foto på öppen ledningsgrav</div>
@@ -1446,7 +1610,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-10">
             <div class="kontrollpunkt-num">10</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Är markeringsnät förlagt enligt anvisning?</div>
@@ -1467,7 +1631,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-11">
             <div class="kontrollpunkt-num">11</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Är distanspåle placerad på berörd sträcka?</div>
@@ -1484,7 +1648,7 @@
             </div>
         </div>
 
-        <div class="kontrollpunkt">
+        <div class="kontrollpunkt" id="kp-12">
             <div class="kontrollpunkt-num">12</div>
             <div class="kontrollpunkt-body">
                 <div class="kontrollpunkt-question">Är söktråden funktionstestad?</div>
@@ -1504,7 +1668,9 @@
     </div>
 
     <div class="page-footer">
-        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span>Egenkontroll · BD-2026-003</span>
+        <a class="toc-backlink" href="#toc">↑ Innehåll</a>
+        <span class="footer-rev">Rev 1 · 2026-04-24 18:46</span>
         <span class="page-num">5 / 10</span>
     </div>
 </div>
@@ -1574,6 +1740,19 @@
             </div>
         </div>
 
+        <div class="qr-block">
+            <img src="images/qr-report.svg" alt="QR-kod till SharePoint-item">
+            <div class="qr-block-text">
+                <div class="qr-block-label">Skanna för verifiering</div>
+                <div class="qr-block-title">Öppna rapport i SharePoint</div>
+                <div class="qr-block-desc">
+                    Skanna QR-koden för att nå denna egenkontroll direkt i projektets
+                    SharePoint-bibliotek. Nästa arbetslag (fiberblåsning) kvitterar
+                    mottagande genom att öppna länken och markera rapporten som granskad.
+                </div>
+            </div>
+        </div>
+
         <h2>Bilagor &amp; spårbarhet</h2>
         <ul>
             <li>TA-plan TA-BD-26-003-V2 (PDF)</li>
@@ -1603,7 +1782,9 @@
     </div>
 
     <div class="page-footer">
-        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span>Egenkontroll · BD-2026-003</span>
+        <a class="toc-backlink" href="#toc">↑ Innehåll</a>
+        <span class="footer-rev">Rev 1 · 2026-04-24 18:46</span>
         <span class="page-num">6 / 10</span>
     </div>
 </div>
@@ -1623,7 +1804,10 @@
     </div>
 
     <div class="photo-caption">
-        <div class="photo-caption-ref">BILD&nbsp;01 · P2</div>
+        <div class="photo-caption-ref">
+            BILD&nbsp;01 · P2<br>
+            <a class="kp-backlink" href="#kp-05">Kontrollpunkt 05 ↗</a>
+        </div>
         <div class="photo-caption-title">Öppen schakt med synligt schaktdjup, V2B +80 m mot V2C</div>
         <div class="photo-caption-meta">
             2026-04-24 · 11:38<br>
@@ -1648,7 +1832,10 @@
     </div>
 
     <div class="photo-caption">
-        <div class="photo-caption-ref">BILD&nbsp;02 · P3</div>
+        <div class="photo-caption-ref">
+            BILD&nbsp;02 · P3<br>
+            <a class="kp-backlink" href="#kp-03">Kontrollpunkt 03 ↗</a>
+        </div>
         <div class="photo-caption-title">Schaktdjup och stenfri ledningsbädd, V2B +98 m</div>
         <div class="photo-caption-meta">
             2026-04-24 · 13:05<br>
@@ -1673,7 +1860,10 @@
     </div>
 
     <div class="photo-caption">
-        <div class="photo-caption-ref">BILD&nbsp;03 · P4</div>
+        <div class="photo-caption-ref">
+            BILD&nbsp;03 · P4<br>
+            <a class="kp-backlink" href="#kp-10">Kontrollpunkt 10 ↗</a>
+        </div>
         <div class="photo-caption-title">Markeringsnät och söktråd förlagt 30 cm över rör, V2B +140 m</div>
         <div class="photo-caption-meta">
             2026-04-24 · 14:21<br>
@@ -1698,7 +1888,10 @@
     </div>
 
     <div class="photo-caption">
-        <div class="photo-caption-ref">BILD&nbsp;04 · P5</div>
+        <div class="photo-caption-ref">
+            BILD&nbsp;04 · P5<br>
+            <a class="kp-backlink" href="#kp-05">Kontrollpunkt 05 ↗</a>
+        </div>
         <div class="photo-caption-title">Färdig återställning med packningsgrus, V2B +190 m mot V2C</div>
         <div class="photo-caption-meta">
             2026-04-24 · 15:47<br>
@@ -1707,6 +1900,67 @@
         </div>
     </div>
 </div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// Render-time derivations — run in Chromium before page.pdf() serializes.
+// Any field that is computable from the DOM should be derived here
+// rather than hardcoded, so the template stays self-consistent even as
+// content grows or status cells change.
+// ════════════════════════════════════════════════════════════════════
+(function autoPageNumbers() {
+    const pages = document.querySelectorAll('.page');
+    const totalPages = pages.length;
+    pages.forEach((page, index) => {
+        const pageNumEl = page.querySelector('.page-footer .page-num');
+        if (pageNumEl) { pageNumEl.textContent = (index + 1) + ' / ' + totalPages; }
+    });
+}());
+
+(function autoSummaryCounts() {
+    const statuses = document.querySelectorAll('.kontrollpunkt .status');
+    let ok = 0, notOk = 0, na = 0;
+    statuses.forEach((el) => {
+        if (el.classList.contains('status-ok')) { ok += 1; }
+        else if (el.classList.contains('status-not-ok')) { notOk += 1; }
+        else if (el.classList.contains('status-na')) { na += 1; }
+    });
+    const thumbs = document.querySelectorAll('.thumb, .photo-row img').length;
+
+    const summaryCards = document.querySelectorAll('.summary-card');
+    if (summaryCards.length >= 4) {
+        const okEl    = summaryCards[0].querySelector('.summary-number');
+        const naEl    = summaryCards[1].querySelector('.summary-number');
+        const notOkEl = summaryCards[2].querySelector('.summary-number');
+        const photoEl = summaryCards[3].querySelector('.summary-number');
+        if (okEl)    { okEl.textContent    = ok; }
+        if (naEl)    { naEl.textContent    = na; }
+        if (notOkEl) { notOkEl.textContent = notOk; }
+        if (photoEl) { photoEl.textContent = thumbs; }
+    }
+
+    // Mirror the same counts in the approval-banner body text.
+    const body = document.querySelector('.approval-body');
+    if (body) {
+        const bedomda = ok + notOk + na;
+        body.innerHTML =
+            ok + ' av ' + bedomda + ' bedömda kontrollpunkter godkända, ' +
+            na + ' markerad' + (na === 1 ? '' : 'e') + ' som ej relevant' +
+            (na === 1 ? ' (distanspåle)' : '') + '. ' +
+            (notOk === 0 ? 'Inga ej-godkända punkter.' : notOk + ' ej-godkänd' + (notOk === 1 ? '' : 'a') + '.') +
+            ' Sträckan V2B–V2C frisläpps för fiberblåsning. ' +
+            'Rapporten arkiveras i projektets SharePoint-bibliotek ' +
+            '<strong>BD-2026-003 · Egenkontroller</strong>.';
+    }
+
+    // Mirror the count in the cover chip as well so the cover stays honest.
+    const kpChip = document.querySelector('.cover-chip[data-auto="kp-count"]');
+    const bpChip = document.querySelector('.cover-chip[data-auto="bp-count"]');
+    const total = ok + notOk + na + document.querySelectorAll('.kontrollpunkt:not(:has(.status))').length;
+    if (kpChip) { kpChip.textContent = total + ' kontrollpunkter'; }
+    if (bpChip) { bpChip.textContent = thumbs + ' bildbevis'; }
+}());
+</script>
 
 </body>
 </html>
