@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FreeCorner (utan Kleer-synk) — Cornerstone mockup</title>
+<meta name="description" content="Lättare variant utan lönesystem-integration — ansökan + attest, medarbetaren registrerar själv i lönesystemet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+    --cs-primary:      #2b338f;
+    --cs-action:       #0157ff;
+    --cs-sky:          #87d5ff;
+    --cs-navy:         #1b363f;
+    --cs-cream:        #faf8f3;
+    --cs-sand:         #ece9e0;
+    --cs-stripe:       #f5f5f5;
+    --cs-text:         #4a4a46;
+    --cs-text-muted:   #565151;
+    --cs-text-soft:    #8b8675;
+    --cs-border:       #c4c4c4;
+    --cs-border-light: #ece9e0;
+    --cs-success:      #0a7a3f;
+    --cs-success-bg:   #e3f3ea;
+    --cs-warning:      #c08200;
+    --cs-warning-bg:   #fff6dd;
+    --cs-error:        #9a2617;
+    --cs-error-bg:     #f9e4e0;
+    --cs-info-bg:      #e3ecff;
+    --sp-suite-bg:     #2b338f;
+    --sp-chrome-line:  #edebe9;
+    --sp-nav-bg:       #fafafa;
+    --sp-hover:        #f3f2f1;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+    font-family: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+    color: var(--cs-text); background: #e8e8ea;
+    font-size: 14px; line-height: 1.55;
+}
+
+.demo-banner {
+    background: repeating-linear-gradient(-45deg, var(--cs-warning-bg) 0 10px, #fbeec9 10px 20px);
+    border-bottom: 3px dashed var(--cs-warning);
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; flex-wrap: wrap;
+}
+.demo-banner-label {
+    font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; font-size: 12px;
+    background: var(--cs-warning); color: white;
+    padding: 5px 10px; border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.demo-banner-text { color: #3d2d00; flex: 1; min-width: 240px; font-weight: 500; }
+.demo-banner-text strong { color: var(--cs-warning); font-weight: 700; }
+.demo-banner a.variant-link {
+    color: var(--cs-action); font-weight: 600;
+    text-decoration: underline;
+}
+.variant-badge {
+    display: inline-block;
+    background: var(--cs-primary); color: white;
+    font-weight: 700; font-size: 10.5px;
+    padding: 3px 8px; border-radius: 3px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-right: 4px;
+}
+
+.sp-suite-bar {
+    background: var(--sp-suite-bg); color: white;
+    height: 48px; display: flex; align-items: center;
+    padding: 0 12px; gap: 14px; font-size: 14px;
+}
+.sp-waffle { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 4px; }
+.sp-waffle svg { width: 16px; height: 16px; fill: white; }
+.sp-suite-title { font-weight: 600; font-size: 15px; }
+.sp-suite-search {
+    flex: 1; max-width: 640px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px; padding: 6px 12px;
+    color: rgba(255,255,255,0.75); font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+}
+.sp-suite-search svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.75); }
+.sp-suite-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.sp-suite-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 12px; color: white;
+    margin-left: 4px;
+}
+
+.sp-site-header {
+    background: white; border-bottom: 1px solid var(--sp-chrome-line);
+    padding: 14px 28px 10px;
+    display: flex; align-items: center; gap: 16px;
+}
+.sp-site-icon {
+    width: 40px; height: 40px;
+    background: var(--cs-primary); color: white; font-weight: 700;
+    display: grid; place-items: center;
+    border-radius: 4px; font-size: 20px;
+}
+.sp-site-meta h1 { margin: 0; font-size: 18px; font-weight: 600; color: var(--cs-text); }
+.sp-site-meta .sp-site-sub { font-size: 12px; color: var(--cs-text-soft); margin-top: 2px; }
+
+.sp-body {
+    display: flex;
+    min-height: calc(100vh - 48px - 65px - 60px);
+    background: white;
+}
+.sp-leftnav {
+    width: 228px; flex-shrink: 0;
+    background: var(--sp-nav-bg);
+    border-right: 1px solid var(--sp-chrome-line);
+    padding: 18px 12px; font-size: 14px;
+}
+.sp-leftnav-heading {
+    font-size: 11px; font-weight: 700; color: var(--cs-text-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 4px 10px; margin: 10px 0 4px;
+}
+.sp-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: 3px;
+    color: var(--cs-text); cursor: pointer;
+    font-size: 13.5px;
+}
+.sp-nav-item.active {
+    background: var(--cs-info-bg); color: var(--cs-primary);
+    font-weight: 600;
+}
+.sp-nav-item svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+.sp-content {
+    flex: 1; background: var(--cs-cream);
+    padding: 24px 28px 48px; overflow: auto;
+}
+.sp-page-title {
+    font-size: 28px; font-weight: 600; color: var(--cs-primary);
+    margin: 4px 0 20px; letter-spacing: -0.01em;
+}
+
+.webpart {
+    background: white; border-radius: 8px;
+    border: 1px solid var(--cs-border-light);
+    box-shadow: 0 1px 6px rgba(27,54,63,0.06);
+    overflow: hidden;
+    max-width: 1080px; margin: 0 auto;
+    position: relative;
+}
+.webpart-stripe {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--cs-action);
+}
+.webpart-header {
+    padding: 18px 24px 14px 28px;
+    border-bottom: 1px solid var(--cs-border-light);
+}
+.webpart-title {
+    font-size: 17px; font-weight: 700;
+    color: var(--cs-primary); letter-spacing: -0.005em;
+    display: flex; align-items: center; gap: 10px;
+}
+.webpart-title-sub { font-size: 12px; color: var(--cs-text-soft); margin-top: 3px; }
+
+.webpart-tabs {
+    display: flex; gap: 4px;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--cs-border-light);
+}
+.webpart-tab {
+    padding: 12px 16px 10px;
+    font-size: 13.5px; font-weight: 500;
+    color: var(--cs-text-muted);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: -1px;
+}
+.webpart-tab.active {
+    color: var(--cs-action);
+    border-bottom-color: var(--cs-action);
+    font-weight: 600;
+}
+.webpart-panel { padding: 24px 28px 30px; }
+.webpart-panel.hidden { display: none; }
+
+/* Form bits shared with primary mockup — condensed */
+.applicant-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    background: var(--cs-sand); border-radius: 6px;
+    margin-bottom: 20px;
+}
+.avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center; color: white;
+    font-weight: 700; font-size: 15px;
+    background: linear-gradient(135deg, #2b338f, #5b64cf);
+}
+.applicant-name { font-weight: 600; font-size: 14.5px; }
+.applicant-title { font-size: 12.5px; color: var(--cs-text-soft); margin-top: 1px; }
+
+.no-sync-notice {
+    background: var(--cs-warning-bg);
+    border-left: 4px solid var(--cs-warning);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: #3d2d00;
+    margin-bottom: 18px;
+}
+.no-sync-notice strong { color: var(--cs-warning); }
+
+.form-row-dates { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.field { display: flex; flex-direction: column; }
+.field-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--cs-text-muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 5px;
+}
+.field input[type="date"], .field textarea {
+    font-family: inherit; font-size: 14px;
+    color: var(--cs-text); background: white;
+    border: none; border-bottom: 1.5px solid var(--cs-border);
+    padding: 6px 2px; outline: none;
+}
+.field input[type="date"]:focus { border-bottom-color: var(--cs-action); }
+.field textarea {
+    border: 1.5px solid var(--cs-border); border-radius: 4px;
+    padding: 8px 10px; resize: vertical; min-height: 72px;
+}
+
+.computed-chip {
+    display: flex; align-items: center;
+    background: var(--cs-info-bg); color: var(--cs-primary);
+    font-weight: 600; font-size: 13.5px;
+    padding: 10px 14px; border-radius: 6px;
+    border-left: 3px solid var(--cs-action); gap: 10px;
+}
+.computed-chip .big { font-size: 22px; font-weight: 700; line-height: 1; }
+.computed-chip .detail { font-size: 12px; font-weight: 400; color: var(--cs-text-muted); }
+
+.radio-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 18px; }
+.radio-chip {
+    padding: 7px 14px;
+    border: 1.5px solid var(--cs-border);
+    border-radius: 20px;
+    font-size: 13px; font-weight: 500;
+    color: var(--cs-text); background: white;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+.radio-chip input { display: none; }
+.radio-chip.checked {
+    background: var(--cs-action); color: white; border-color: var(--cs-action);
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cs-border); }
+.radio-chip.checked .dot { background: white; }
+
+.btn {
+    font: 600 13.5px 'IBM Plex Sans', sans-serif;
+    padding: 10px 22px; border-radius: 6px;
+    border: none; cursor: pointer;
+}
+.btn-primary { background: var(--cs-action); color: white; }
+.btn-primary:hover { background: #014ae0; }
+
+.form-actions {
+    display: flex; gap: 10px;
+    margin-top: 20px; padding-top: 18px;
+    border-top: 1px solid var(--cs-border-light);
+}
+
+.data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13.5px; background: white;
+}
+.data-table th {
+    text-align: left;
+    background: var(--cs-stripe);
+    color: var(--cs-text-muted);
+    font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--cs-border-light);
+}
+.data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--cs-border-light);
+}
+
+.badge {
+    display: inline-block;
+    font-size: 10.5px; font-weight: 700;
+    padding: 2px 9px; border-radius: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+}
+.badge-yellow { background: var(--cs-warning-bg); color: var(--cs-warning); }
+.badge-green  { background: var(--cs-success-bg); color: var(--cs-success); }
+.badge-indigo { background: #e3e5f5; color: var(--cs-primary); }
+
+.toast-stack {
+    position: fixed; bottom: 18px; right: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 9999; max-width: 420px;
+}
+.toast {
+    padding: 12px 18px; border-radius: 6px;
+    box-shadow: 0 4px 18px rgba(27,54,63,0.18);
+    font-size: 13.5px; font-weight: 500;
+    background: white; color: var(--cs-text);
+    border-left: 4px solid var(--cs-action);
+    animation: slideIn 220ms cubic-bezier(0.2, 0.9, 0.4, 1);
+}
+.toast.success { border-left-color: var(--cs-success); }
+.toast.warn    { border-left-color: var(--cs-warning); }
+.toast-title { font-weight: 700; color: var(--cs-primary); display: block; margin-bottom: 2px; font-size: 13px; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+    <span class="demo-banner-label">Demo-läge</span>
+    <span class="demo-banner-text">
+        <span class="variant-badge">Variant B</span>
+        <strong>Utan lönesystem-synk.</strong> Medarbetaren registrerar själv godkänd ledighet i sitt lönesystem.
+        Jämför med
+        <a class="variant-link" href="ledighet-mockup.html">primär mockup (med Kleer-synk) →</a>
+        eller
+        <a class="variant-link" href="ledighet-mockup-chat.html">AI-chatt-variant →</a>
+    </span>
+</div>
+
+<div class="sp-suite-bar">
+    <div class="sp-waffle">
+        <svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zm0 7h5v5H4zm0 7h5v5H4zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5z"/></svg>
+    </div>
+    <span class="sp-suite-title">SharePoint</span>
+    <div class="sp-suite-search">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+        Sök i denna webbplats
+    </div>
+    <div class="sp-suite-right"><div class="sp-suite-avatar">AK</div></div>
+</div>
+
+<div class="sp-site-header">
+    <div class="sp-site-icon">C<span style="color: var(--cs-action)">.</span></div>
+    <div class="sp-site-meta">
+        <h1>Cornerstone HR</h1>
+        <div class="sp-site-sub">Grupp &middot; Privat &middot; 87 medlemmar</div>
+    </div>
+</div>
+
+<div class="sp-body">
+    <nav class="sp-leftnav">
+        <div class="sp-leftnav-heading">HR-appar</div>
+        <div class="sp-nav-item active"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> FreeCorner</div>
+        <div class="sp-nav-item">Tidrapport</div>
+        <div class="sp-nav-item">Resekostnader</div>
+        <div class="sp-nav-item">Kurskatalog</div>
+    </nav>
+
+    <main class="sp-content">
+        <h1 class="sp-page-title">FreeCorner <span style="font-size:13px;color:var(--cs-text-soft);font-weight:400;">(utan lönesystem-synk)</span></h1>
+
+        <div class="webpart">
+            <div class="webpart-stripe"></div>
+            <div class="webpart-header">
+                <div class="webpart-title">Ansök och godkänn &mdash; registrering i lönesystem sker manuellt</div>
+                <div class="webpart-title-sub">SharePoint-webpart &middot; Samma ansöknings- och attestflöde, men <strong>ingen</strong> automatisk bokning i lönesystemet</div>
+            </div>
+
+            <div class="webpart-tabs">
+                <div class="webpart-tab active" data-tab="apply">Ansök</div>
+                <div class="webpart-tab" data-tab="mine">Mina ansökningar</div>
+            </div>
+
+            <section class="webpart-panel" id="panel-apply">
+                <div class="no-sync-notice">
+                    <strong>Obs:</strong> När din ansökan är godkänd måste du själv registrera
+                    ledigheten i ditt lönesystem &mdash; den här appen skickar inte datan vidare
+                    automatiskt. Du får ett tydligt mail med påminnelse efter godkännandet.
+                </div>
+
+                <div class="applicant-card">
+                    <div class="avatar">AK</div>
+                    <div>
+                        <div class="applicant-name">Anna Karlsson</div>
+                        <div class="applicant-title">Utbildningskoordinator &middot; Chef: Per Lundqvist</div>
+                    </div>
+                </div>
+
+                <div class="form-row-dates">
+                    <div class="field">
+                        <span class="field-label">Från</span>
+                        <input type="date" id="start-date" value="2026-05-11" />
+                    </div>
+                    <div class="field">
+                        <span class="field-label">Till</span>
+                        <input type="date" id="end-date" value="2026-05-15" />
+                    </div>
+                    <div class="field">
+                        <span class="field-label">Arbetsdagar</span>
+                        <div class="computed-chip">
+                            <span class="big" id="workday-count">4</span>
+                            <span class="detail" id="workday-detail">arbetsdagar &middot; röda dagar utelämnade</span>
+                        </div>
+                    </div>
+                </div>
+
+                <span class="field-label">Typ av ledighet</span>
+                <div class="radio-row" id="type-row">
+                    <label class="radio-chip checked" data-type="Paid"><span class="dot"></span> Betald semester</label>
+                    <label class="radio-chip" data-type="Unpaid"><span class="dot"></span> Obetald</label>
+                    <label class="radio-chip" data-type="Other"><span class="dot"></span> Övrig</label>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="submit-btn">Skicka ansökan →</button>
+                    <span style="margin-left: auto; font-size: 12px; color: var(--cs-text-soft); align-self: center;">
+                        Din chef får ett mail med Godkänn/Avslå-länk
+                    </span>
+                </div>
+            </section>
+
+            <section class="webpart-panel hidden" id="panel-mine">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th><th>Typ</th><th>Dagar</th><th>Chef</th><th>Status</th><th>Registrerad i lön</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mine-tbody">
+                        <tr><td><strong>2026-07-06 → 2026-07-31</strong></td><td>Betald semester</td><td>20</td><td>Per Lundqvist</td><td><span class="badge badge-green">Godkänd</span></td><td><span class="badge badge-green">Ja, 2026-07-01</span></td></tr>
+                        <tr><td><strong>2026-05-29</strong></td><td>Betald semester</td><td>1</td><td>Per Lundqvist</td><td><span class="badge badge-green">Godkänd</span></td><td><span class="badge badge-yellow">Ej registrerad</span></td></tr>
+                        <tr><td><strong>2026-04-27</strong></td><td>Övrig</td><td>1</td><td>Per Lundqvist</td><td><span class="badge badge-yellow">Skickad</span></td><td><span class="badge badge-indigo">Inväntar godkännande</span></td></tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 14px; font-size: 12.5px; color: var(--cs-text-soft);">
+                    "Registrerad i lön" är en manuell bockruta som du själv markerar efter att du
+                    har matat in ledigheten i ditt lönesystem. HR gör stickprov mot denna kolumn
+                    varje månadsskifte.
+                </p>
+            </section>
+        </div>
+
+        <p style="margin-top: 18px; font-size: 11.5px; color: var(--cs-text-soft); text-align: center;">
+            Variant B &middot; Utan lönesystem-synk &middot; Mockup
+        </p>
+    </main>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+(function () {
+    'use strict';
+    var HOLIDAYS = { 2026: new Set(['2026-01-01','2026-01-06','2026-04-03','2026-04-05','2026-04-06','2026-05-01','2026-05-14','2026-06-06','2026-06-19','2026-10-31','2026-12-25','2026-12-26']) };
+    function iso(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    function countWorkdays(s, e) {
+        if (!s || !e) return { count: 0, holiday: false, weekend: false };
+        var a = new Date(s + 'T00:00'), b = new Date(e + 'T00:00');
+        if (a > b) return { count: 0, holiday: false, weekend: false };
+        var c = new Date(a), n = 0, h = false, w = false;
+        while (c <= b) {
+            var d = c.getDay();
+            if (d === 0 || d === 6) w = true;
+            else if ((HOLIDAYS[c.getFullYear()] || new Set()).has(iso(c))) h = true;
+            else n++;
+            c.setDate(c.getDate()+1);
+        }
+        return { count: n, holiday: h, weekend: w };
+    }
+    function refresh() {
+        var r = countWorkdays(document.getElementById('start-date').value, document.getElementById('end-date').value);
+        document.getElementById('workday-count').textContent = r.count;
+        var parts = ['arbetsdagar'];
+        if (r.weekend) parts.push('helger utelämnade');
+        if (r.holiday) parts.push('röda dagar utelämnade');
+        document.getElementById('workday-detail').textContent = parts.join(' · ');
+    }
+    document.getElementById('start-date').addEventListener('change', refresh);
+    document.getElementById('end-date').addEventListener('change', refresh);
+
+    var typeRow = document.getElementById('type-row');
+    typeRow.addEventListener('click', function (e) {
+        var chip = e.target.closest('.radio-chip');
+        if (!chip) return;
+        typeRow.querySelectorAll('.radio-chip').forEach(function (c) { c.classList.remove('checked'); });
+        chip.classList.add('checked');
+    });
+
+    function toast(title, msg, kind) {
+        var el = document.createElement('div');
+        el.className = 'toast ' + (kind || '');
+        el.innerHTML = '<div><span class="toast-title">' + title + '</span>' + msg + '</div>';
+        document.getElementById('toast-stack').appendChild(el);
+        setTimeout(function () { el.style.transition = 'all 260ms'; el.style.opacity = '0'; el.style.transform = 'translateX(24px)'; setTimeout(function () { el.remove(); }, 300); }, 5500);
+    }
+
+    document.getElementById('submit-btn').addEventListener('click', function () {
+        toast('Ansökan skickad', 'Mailat till Per Lundqvist. <strong>Kom ihåg:</strong> när den är godkänd behöver du själv registrera ledigheten i ert lönesystem.', 'warn');
+    });
+
+    document.querySelectorAll('.webpart-tab').forEach(function (t) {
+        t.addEventListener('click', function () {
+            document.querySelectorAll('.webpart-tab').forEach(function (x) { x.classList.remove('active'); });
+            t.classList.add('active');
+            document.querySelectorAll('.webpart-panel').forEach(function (p) { p.classList.add('hidden'); });
+            document.getElementById('panel-' + t.dataset.tab).classList.remove('hidden');
+        });
+    });
+
+    refresh();
+    setTimeout(function () { toast('Välkommen Anna', 'Den här varianten synkar <strong>inte</strong> mot lönesystemet. Du själv registrerar godkänd ledighet där.', 'warn'); }, 400);
+})();
+</script>
+</body>
+</html>

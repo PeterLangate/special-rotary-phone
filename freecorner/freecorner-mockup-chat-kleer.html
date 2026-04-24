@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FreeCorner (AI + Kleer) — Cornerstone mockup</title>
+<meta name="description" content="Variant D: AI-chatt + full Kleer-integration för alla roller (medarbetare, chef, HR)" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+    --cs-primary:      #2b338f;
+    --cs-action:       #0157ff;
+    --cs-sky:          #87d5ff;
+    --cs-navy:         #1b363f;
+    --cs-cream:        #faf8f3;
+    --cs-sand:         #ece9e0;
+    --cs-stripe:       #f5f5f5;
+    --cs-text:         #4a4a46;
+    --cs-text-muted:   #565151;
+    --cs-text-soft:    #8b8675;
+    --cs-border:       #c4c4c4;
+    --cs-border-light: #ece9e0;
+    --cs-success:      #0a7a3f;
+    --cs-success-bg:   #e3f3ea;
+    --cs-warning:      #c08200;
+    --cs-warning-bg:   #fff6dd;
+    --cs-error:        #9a2617;
+    --cs-error-bg:     #f9e4e0;
+    --cs-info-bg:      #e3ecff;
+    --sp-suite-bg:     #2b338f;
+    --sp-chrome-line:  #edebe9;
+    --sp-nav-bg:       #fafafa;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+    font-family: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+    color: var(--cs-text); background: #e8e8ea;
+    font-size: 14px; line-height: 1.55;
+}
+
+.demo-banner {
+    background: repeating-linear-gradient(-45deg, var(--cs-warning-bg) 0 10px, #fbeec9 10px 20px);
+    border-bottom: 3px dashed var(--cs-warning);
+    padding: 12px 20px;
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; flex-wrap: wrap;
+}
+.demo-banner-label {
+    font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; font-size: 12px;
+    background: var(--cs-warning); color: white;
+    padding: 5px 10px; border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.demo-banner-text { color: #3d2d00; flex: 1; min-width: 240px; font-weight: 500; }
+.demo-banner-text strong { color: var(--cs-warning); font-weight: 700; }
+.demo-banner a.variant-link { color: var(--cs-action); font-weight: 600; text-decoration: underline; }
+.demo-banner-prefix {
+    font-size: 11px; font-weight: 700;
+    color: var(--cs-warning);
+    text-transform: uppercase; letter-spacing: 0.08em;
+}
+.role-switch {
+    display: inline-flex; background: white;
+    border-radius: 22px; padding: 3px;
+    border: 2px solid var(--cs-warning);
+    box-shadow: 0 2px 6px rgba(192, 130, 0, 0.25);
+}
+.role-switch button {
+    border: none; background: transparent;
+    font: 600 12.5px 'IBM Plex Sans', sans-serif;
+    color: #3d2d00;
+    padding: 6px 14px; border-radius: 16px;
+    cursor: pointer;
+}
+.role-switch button.active { background: var(--cs-warning); color: white; }
+
+.variant-badge {
+    display: inline-block;
+    background: var(--cs-primary); color: white;
+    font-weight: 700; font-size: 10.5px;
+    padding: 3px 8px; border-radius: 3px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-right: 4px;
+}
+
+.sp-suite-bar {
+    background: var(--sp-suite-bg); color: white;
+    height: 48px; display: flex; align-items: center;
+    padding: 0 12px; gap: 14px; font-size: 14px;
+}
+.sp-waffle { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 4px; }
+.sp-waffle svg { width: 16px; height: 16px; fill: white; }
+.sp-suite-title { font-weight: 600; font-size: 15px; }
+.sp-suite-search {
+    flex: 1; max-width: 640px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 4px; padding: 6px 12px;
+    color: rgba(255,255,255,0.75); font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+}
+.sp-suite-search svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.75); }
+.sp-suite-right { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.sp-suite-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
+    display: grid; place-items: center;
+    font-weight: 700; font-size: 12px; color: white;
+    margin-left: 4px;
+}
+.sp-site-header {
+    background: white; border-bottom: 1px solid var(--sp-chrome-line);
+    padding: 14px 28px 10px;
+    display: flex; align-items: center; gap: 16px;
+}
+.sp-site-icon {
+    width: 40px; height: 40px;
+    background: var(--cs-primary); color: white; font-weight: 700;
+    display: grid; place-items: center;
+    border-radius: 4px; font-size: 20px;
+}
+.sp-site-meta h1 { margin: 0; font-size: 18px; font-weight: 600; color: var(--cs-text); }
+.sp-site-meta .sp-site-sub { font-size: 12px; color: var(--cs-text-soft); margin-top: 2px; }
+
+.sp-body {
+    display: flex;
+    min-height: calc(100vh - 48px - 65px - 60px);
+    background: white;
+}
+.sp-leftnav {
+    width: 228px; flex-shrink: 0;
+    background: var(--sp-nav-bg);
+    border-right: 1px solid var(--sp-chrome-line);
+    padding: 18px 12px; font-size: 14px;
+}
+.sp-leftnav-heading {
+    font-size: 11px; font-weight: 700; color: var(--cs-text-soft);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 4px 10px; margin: 10px 0 4px;
+}
+.sp-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: 3px;
+    color: var(--cs-text); font-size: 13.5px;
+}
+.sp-nav-item.active {
+    background: var(--cs-info-bg); color: var(--cs-primary);
+    font-weight: 600;
+}
+.sp-nav-item svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+.sp-content {
+    flex: 1; background: var(--cs-cream);
+    padding: 24px 28px 48px; overflow: auto;
+}
+.sp-page-title {
+    font-size: 28px; font-weight: 600; color: var(--cs-primary);
+    margin: 4px 0 20px;
+}
+
+.webpart {
+    background: white; border-radius: 8px;
+    border: 1px solid var(--cs-border-light);
+    box-shadow: 0 1px 6px rgba(27,54,63,0.06);
+    overflow: hidden;
+    max-width: 900px; margin: 0 auto;
+    position: relative;
+}
+.webpart-stripe {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; background: var(--cs-action);
+}
+.webpart-header {
+    padding: 18px 24px 14px 28px;
+    border-bottom: 1px solid var(--cs-border-light);
+    display: flex; align-items: center; gap: 12px;
+}
+.ai-badge {
+    background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
+    color: white; font-weight: 700; font-size: 10.5px;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+}
+.kleer-badge {
+    background: var(--cs-success); color: white;
+    font-weight: 700; font-size: 10.5px;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+}
+.webpart-title {
+    font-size: 17px; font-weight: 700; color: var(--cs-primary);
+}
+.webpart-title-sub {
+    font-size: 12px; color: var(--cs-text-soft); margin-top: 2px;
+}
+.webpart-demo-role {
+    margin-left: auto; display: flex; align-items: center; gap: 8px;
+}
+.chat-role-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--cs-sand);
+    border-radius: 14px;
+    padding: 4px 10px 4px 4px;
+    font-size: 12px; color: var(--cs-text);
+}
+.chat-role-chip .avatar-mini {
+    width: 22px; height: 22px; border-radius: 50%;
+    color: white; font-weight: 700; font-size: 10px;
+    display: grid; place-items: center;
+}
+.avatar-anna { background: linear-gradient(135deg, #2b338f, #5b64cf); }
+.avatar-per  { background: linear-gradient(135deg, #0a7a3f, #46b7f3); }
+.avatar-lisa { background: linear-gradient(135deg, #9a2617, #c08200); }
+
+.chat-window {
+    display: flex; flex-direction: column;
+    height: 580px;
+    background: #fcfbf7;
+}
+.chat-messages {
+    flex: 1; overflow-y: auto;
+    padding: 22px 28px;
+    display: flex; flex-direction: column; gap: 14px;
+}
+.msg-row {
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.msg-row.visible { opacity: 1; transform: translateY(0); }
+.msg-row.user-row { align-items: flex-end; }
+.msg-row.ai-row, .msg-row.tool-row { align-items: flex-start; }
+
+.bubble {
+    max-width: 88%;
+    padding: 11px 15px;
+    font-size: 14px; line-height: 1.55;
+}
+.bubble-user {
+    background: var(--cs-primary); color: white;
+    border-radius: 18px 18px 4px 18px;
+    font-weight: 500;
+}
+.bubble-ai {
+    background: white;
+    border: 1px solid rgba(1, 87, 255, 0.22);
+    border-radius: 4px 18px 18px 18px;
+    color: var(--cs-text);
+    box-shadow: 0 1px 3px rgba(27,54,63,0.04);
+}
+.bubble-ai strong { color: var(--cs-primary); font-weight: 600; }
+.bubble-ai code {
+    background: var(--cs-stripe); padding: 1px 5px;
+    border-radius: 3px; font-size: 12.5px;
+    font-family: 'Cascadia Code', Consolas, monospace;
+}
+.bubble-tool {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--cs-sand);
+    border: 1px solid var(--cs-border-light);
+    border-radius: 12px;
+    padding: 7px 12px;
+    font-size: 12px; font-style: italic;
+    color: var(--cs-text-muted);
+}
+.bubble-tool.tool-kleer {
+    background: var(--cs-success-bg);
+    border-color: rgba(10, 122, 63, 0.3);
+    color: var(--cs-success);
+    font-weight: 600; font-style: normal;
+}
+.bubble-tool.tool-kleer .tool-spinner { border-top-color: var(--cs-success); }
+.tool-spinner {
+    width: 13px; height: 13px;
+    border: 2px solid var(--cs-border-light);
+    border-top-color: var(--cs-action);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.tool-done .tool-spinner {
+    border: none; background: transparent;
+    animation: none; font-size: 14px;
+}
+.tool-done .tool-spinner::after { content: '✓'; color: var(--cs-success); }
+
+.summary-card {
+    margin-top: 10px;
+    border: 1px solid var(--cs-border-light);
+    border-left: 3px solid var(--cs-action);
+    background: var(--cs-stripe);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+.summary-card .row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dashed var(--cs-border-light);
+}
+.summary-card .row:last-child { border-bottom: none; }
+.summary-card .row .label { color: var(--cs-text-muted); }
+.summary-card .row .value { font-weight: 600; color: var(--cs-text); }
+
+.kleer-card {
+    margin-top: 10px;
+    border: 1px solid rgba(10, 122, 63, 0.25);
+    border-left: 3px solid var(--cs-success);
+    background: var(--cs-success-bg);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #053a1e;
+}
+.kleer-card .kleer-heading {
+    font-weight: 700; color: var(--cs-success);
+    font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+}
+.kleer-card .kleer-heading::before {
+    content: '●'; color: var(--cs-success);
+}
+.kleer-card .row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dashed rgba(10, 122, 63, 0.25);
+}
+.kleer-card .row:last-child { border-bottom: none; }
+.kleer-card .row .label { color: #2d5a3f; }
+.kleer-card .row .value { font-weight: 600; color: #053a1e; }
+
+.quick-replies {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px;
+}
+.quick-reply {
+    background: white; color: var(--cs-action);
+    border: 1.5px solid var(--cs-action);
+    border-radius: 18px;
+    padding: 5px 14px;
+    font-size: 12.5px; font-weight: 600;
+    cursor: pointer;
+}
+.quick-reply:hover { background: var(--cs-info-bg); }
+
+.chat-input-row {
+    border-top: 1px solid var(--cs-border-light);
+    padding: 14px 22px;
+    background: white;
+    display: flex; gap: 10px; align-items: center;
+}
+.chat-input {
+    flex: 1;
+    font-family: inherit; font-size: 14px;
+    color: var(--cs-text);
+    border: 1.5px solid var(--cs-border);
+    border-radius: 22px;
+    padding: 9px 18px;
+    outline: none;
+}
+.chat-input:focus { border-color: var(--cs-action); }
+.chat-send {
+    background: var(--cs-action); color: white;
+    border: none; border-radius: 50%;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    cursor: pointer;
+}
+.chat-send:hover { background: #014ae0; }
+.chat-send svg { width: 16px; height: 16px; fill: white; }
+.chat-hint {
+    text-align: center;
+    font-size: 11px; color: var(--cs-text-soft);
+    padding: 6px 0 10px;
+    background: white;
+    border-top: 1px solid var(--cs-border-light);
+}
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+    <span class="demo-banner-label">Demo-läge</span>
+    <span class="demo-banner-text">
+        <span class="variant-badge">Variant D</span>
+        <strong>AI-chatt med full Kleer-integration.</strong> Alla tre roller (medarbetare, chef, HR)
+        pratar med samma AI-assistent &mdash; Kleer-synk, saldon och synkfel är live-data i chatten.
+        <br>
+        Jämför med
+        <a class="variant-link" href="ledighet-mockup.html">A: formulär + Kleer →</a> ·
+        <a class="variant-link" href="ledighet-mockup-no-kleer.html">B: formulär utan synk →</a> ·
+        <a class="variant-link" href="ledighet-mockup-chat.html">C: AI-chatt (bas) →</a>
+    </span>
+    <span class="demo-banner-prefix">Visa som:</span>
+    <div class="role-switch" id="role-switch">
+        <button data-role="employee" class="active">Anna</button>
+        <button data-role="manager">Per</button>
+        <button data-role="hr">Lisa</button>
+    </div>
+</div>
+
+<div class="sp-suite-bar">
+    <div class="sp-waffle">
+        <svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zm0 7h5v5H4zm0 7h5v5H4zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5z"/></svg>
+    </div>
+    <span class="sp-suite-title">SharePoint</span>
+    <div class="sp-suite-search">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+        Sök i denna webbplats
+    </div>
+    <div class="sp-suite-right"><div class="sp-suite-avatar" id="suite-avatar">AK</div></div>
+</div>
+
+<div class="sp-site-header">
+    <div class="sp-site-icon">C<span style="color: var(--cs-action)">.</span></div>
+    <div class="sp-site-meta">
+        <h1>Cornerstone HR</h1>
+        <div class="sp-site-sub">Grupp &middot; Privat &middot; 87 medlemmar</div>
+    </div>
+</div>
+
+<div class="sp-body">
+    <nav class="sp-leftnav">
+        <div class="sp-leftnav-heading">HR-appar</div>
+        <div class="sp-nav-item active"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> FreeCorner AI</div>
+        <div class="sp-nav-item">Tidrapport</div>
+        <div class="sp-nav-item">Resekostnader</div>
+    </nav>
+
+    <main class="sp-content">
+        <h1 class="sp-page-title">FreeCorner — Ledighetsassistent med Kleer</h1>
+
+        <div class="webpart">
+            <div class="webpart-stripe"></div>
+            <div class="webpart-header">
+                <span class="ai-badge">AI · SPAI</span>
+                <span class="kleer-badge">Kleer</span>
+                <div>
+                    <div class="webpart-title">FreeCorner — full automation via AI</div>
+                    <div class="webpart-title-sub">Samma chatt för alla roller &middot; läser saldo och skriver event mot Kleer direkt</div>
+                </div>
+                <div class="webpart-demo-role">
+                    <span class="chat-role-chip" id="chat-role-chip">
+                        <span class="avatar-mini avatar-anna" id="role-avatar">AK</span>
+                        <span id="role-name">Anna Karlsson</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="chat-window">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Skriv ett meddelande..." />
+                    <button class="chat-send" id="chat-send" aria-label="Skicka">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+                <div class="chat-hint">
+                    <strong>Tips:</strong> växla roll i banderollen &mdash; AI:n anpassar samtalet efter vem du är
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 18px; font-size: 11.5px; color: var(--cs-text-soft); text-align: center;">
+            Variant D &middot; AI-chatt + full Kleer-integration &middot; Mockup
+        </p>
+    </main>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var scripts = {
+        employee: {
+            name: 'Anna Karlsson', initials: 'AK', avatarClass: 'avatar-anna',
+            steps: [
+                { type: 'ai', text: 'Hej <strong>Anna</strong>! Jag är FreeCorner AI. Jag kan ansöka om ledighet, kolla ditt Kleer-saldo eller hämta dina tidigare ansökningar. Vad vill du göra?', quick: ['Ansök om ledighet', 'Vad har jag för saldo?', 'Visa tidigare'] },
+                { type: 'user', text: 'Vad har jag för saldo?' },
+                { type: 'tool-kleer', text: 'GET /user/2104 från Kleer...' },
+                { type: 'tool-kleer-done', text: 'Saldo läst från Kleer' },
+                { type: 'ai', text: 'Här kommer ditt saldo direkt från lönesystemet:', kleer: [
+                    { label: 'Betalda dagar tillgängliga', value: '17 dagar' },
+                    { label: 'Använda i år', value: '8 dagar' },
+                    { label: 'Sparade från tidigare år', value: '3 dagar' },
+                    { label: 'Totalt tillgängligt', value: '20 dagar' }
+                ], quickText: 'Vill du ansöka om ledighet, eller ska jag visa mina senaste ansökningar?', quick: ['Ansök om ledighet', 'Senaste ansökningarna'] },
+                { type: 'user', text: 'Ansök om ledighet 6 juli till 31 juli' },
+                { type: 'tool', text: 'Tolkar datum...' },
+                { type: 'tool-done', text: 'Period: 2026-07-06 → 2026-07-31' },
+                { type: 'tool', text: 'Beräknar arbetsdagar (helger + röda dagar)...' },
+                { type: 'tool-done', text: 'Arbetsdagar: 20' },
+                { type: 'tool-kleer', text: 'Kontrollerar Kleer-saldo täcker 20 dagar...' },
+                { type: 'tool-kleer-done', text: 'OK &mdash; täcks av 17 + 3 sparade' },
+                { type: 'ai', text: 'Perfekt &mdash; det går jämnt ut.', summary: [
+                    { label: 'Period', value: '2026-07-06 → 2026-07-31' },
+                    { label: 'Arbetsdagar', value: '20' },
+                    { label: 'Saldo före', value: '20 dagar' },
+                    { label: 'Saldo efter', value: '0 dagar' }
+                ], quickText: 'Ska jag skicka den till Per för godkännande?', quick: ['Ja, skicka', 'Avbryt'] },
+                { type: 'user', text: 'Ja, skicka' },
+                { type: 'tool', text: 'Slår upp chef i Entra ID...' },
+                { type: 'tool-done', text: 'Per Lundqvist' },
+                { type: 'tool', text: 'Skapar SP-post + signerar HMAC-token...' },
+                { type: 'tool-done', text: 'Post ID 247 skapad' },
+                { type: 'tool', text: 'Skickar mail till Per...' },
+                { type: 'tool-done', text: 'Mail levererat' },
+                { type: 'ai', text: '<strong>Klart!</strong> Ansökan är skickad. När Per godkänner synkar jag <strong>automatiskt</strong> mot Kleer &mdash; du behöver inte göra något. Jag pingar dig här när det är klart.' }
+            ]
+        },
+        manager: {
+            name: 'Per Lundqvist', initials: 'PL', avatarClass: 'avatar-per',
+            steps: [
+                { type: 'ai', text: 'Hej <strong>Per</strong>! Du har <strong>3 ansökningar</strong> som väntar på ditt beslut. Vill du gå igenom dem här i chatten eller öppna listan?', quick: ['Gå igenom här', 'Öppna listan', 'Visa teamets saldo'] },
+                { type: 'user', text: 'Visa teamets saldo' },
+                { type: 'tool-kleer', text: 'Hämtar saldon för ditt team (8 personer) från Kleer...' },
+                { type: 'tool-kleer-done', text: '8 saldon lästa' },
+                { type: 'ai', text: 'Här är nuläget för ditt team:', kleer: [
+                    { label: 'Anna Karlsson', value: '17 + 3 sparade = 20' },
+                    { label: 'Johan Hedberg', value: '19 + 0 sparade = 19' },
+                    { label: 'Maja Sjögren', value: '15 + 2 sparade = 17' },
+                    { label: 'Erik Nilsson', value: '11 + 5 sparade = 16' },
+                    { label: 'Klas Berg (föräldraledig)', value: '25 + 5 sparade = 30' },
+                    { label: '&hellip;och 3 till', value: 'snitt 18 dagar' }
+                ], quickText: 'Nu till ansökningarna &mdash; ska jag ta dem i tur och ordning?', quick: ['Ja, tur och ordning', 'Visa bara brådskande'] },
+                { type: 'user', text: 'Ja, tur och ordning' },
+                { type: 'ai', text: 'Först ut:', summary: [
+                    { label: 'Från', value: 'Anna Karlsson' },
+                    { label: 'Period', value: '2026-07-06 → 2026-07-31 (4 veckor)' },
+                    { label: 'Arbetsdagar', value: '20' },
+                    { label: 'Typ', value: 'Betald semester' },
+                    { label: 'Annas saldo efter', value: '0 dagar (täcks av 17+3)' }
+                ], quickText: 'Godkänn?', quick: ['Godkänn', 'Avslå med kommentar', 'Hoppa över'] },
+                { type: 'user', text: 'Godkänn' },
+                { type: 'tool', text: 'Verifierar HMAC-token och manager-upn...' },
+                { type: 'tool-done', text: 'Token giltig' },
+                { type: 'tool', text: 'Flippar SP-post till Approved...' },
+                { type: 'tool-done', text: 'Status uppdaterad' },
+                { type: 'tool-kleer', text: 'Skickar 20 absence-events till Kleer, en per arbetsdag...' },
+                { type: 'tool-kleer-done', text: '20/20 events registrerade i Kleer' },
+                { type: 'tool', text: 'Skickar mail till Anna...' },
+                { type: 'tool-done', text: 'Mail skickat' },
+                { type: 'ai', text: '<strong>Godkänd och synkad i Kleer.</strong> Annas semester är nu bokad dag för dag. Nästa ansökan &mdash; Johan, 19 arbetsdagar i juli&ndash;aug. Godkänna?', quick: ['Godkänn', 'Avslå', 'Pausa genomgången'] }
+            ]
+        },
+        hr: {
+            name: 'Lisa Ahlgren', initials: 'LA', avatarClass: 'avatar-lisa',
+            steps: [
+                { type: 'ai', text: 'Hej <strong>Lisa</strong>! Jag har nyheter om Kleer-synken idag.', quickText: 'Vad vill du börja med?', quick: ['Visa synkstatus', 'Något som failat?', 'Statistik per avdelning'] },
+                { type: 'user', text: 'Något som failat?' },
+                { type: 'tool-kleer', text: 'Söker genom dagens Kleer-synk-försök...' },
+                { type: 'tool-kleer-done', text: '47 försök &middot; 46 ok &middot; 1 fel' },
+                { type: 'ai', text: '<strong>1 misslyckad synk:</strong>', kleer: [
+                    { label: 'Medarbetare', value: 'Maja Sjögren' },
+                    { label: 'Period', value: '2026-03-24 (1 dag)' },
+                    { label: 'Typ', value: 'Övrig &mdash; vård av närstående' },
+                    { label: 'HTTP-svar', value: '403 Forbidden' },
+                    { label: 'Trolig orsak', value: 'Maja saknar Kleer-user-koppling' }
+                ], quickText: 'Vill du att jag försöker igen, öppnar admin-vyn eller skickar mail till Per (Majas chef)?', quick: ['Försök igen', 'Öppna admin-vyn', 'Mail till Per'] },
+                { type: 'user', text: 'Försök igen' },
+                { type: 'tool-kleer', text: 'Retry: POST /event/ för 2026-03-24...' },
+                { type: 'tool-kleer-done', text: 'Fortfarande 403' },
+                { type: 'ai', text: 'Samma fel. Jag har redan retryat 3 gånger automatiskt under natten utan att komma igenom &mdash; det är en konto&shy;kopplingsfråga som kräver manuell åtgärd. Vill du att jag skickar en tydlig instruktion till Per och Maja om vad som behöver göras i Kleer-adminen?', quick: ['Skicka instruktion', 'Öppna admin-vyn i stället'] }
+            ]
+        }
+    };
+
+    var state = {
+        role: 'employee',
+        step: 0,
+        messages: document.getElementById('chat-messages'),
+        input: document.getElementById('chat-input'),
+        send: document.getElementById('chat-send'),
+        suiteAvatar: document.getElementById('suite-avatar'),
+        roleAvatar: document.getElementById('role-avatar'),
+        roleName: document.getElementById('role-name')
+    };
+
+    function appendMessage(msg) {
+        var row = document.createElement('div');
+        var rowClass = msg.type === 'user' ? 'user-row'
+                     : (msg.type === 'tool' || msg.type === 'tool-done' || msg.type === 'tool-kleer' || msg.type === 'tool-kleer-done') ? 'tool-row'
+                     : 'ai-row';
+        row.className = 'msg-row ' + rowClass;
+
+        if (msg.type === 'tool' || msg.type === 'tool-done' || msg.type === 'tool-kleer' || msg.type === 'tool-kleer-done') {
+            var tool = document.createElement('div');
+            var isKleer = msg.type.startsWith('tool-kleer');
+            var isDone = msg.type.endsWith('-done');
+            tool.className = 'bubble-tool' + (isKleer ? ' tool-kleer' : '') + (isDone ? ' tool-done' : '');
+            tool.innerHTML = '<span class="tool-spinner"></span><span>' + msg.text + '</span>';
+            row.appendChild(tool);
+        } else {
+            var bubble = document.createElement('div');
+            bubble.className = 'bubble ' + (msg.type === 'user' ? 'bubble-user' : 'bubble-ai');
+            bubble.innerHTML = msg.text;
+
+            if (msg.summary) {
+                var card = document.createElement('div');
+                card.className = 'summary-card';
+                msg.summary.forEach(function (s) {
+                    var r = document.createElement('div');
+                    r.className = 'row';
+                    r.innerHTML = '<span class="label">' + s.label + '</span><span class="value">' + s.value + '</span>';
+                    card.appendChild(r);
+                });
+                bubble.appendChild(card);
+            }
+            if (msg.kleer) {
+                var kcard = document.createElement('div');
+                kcard.className = 'kleer-card';
+                var h = document.createElement('div');
+                h.className = 'kleer-heading';
+                h.textContent = 'Från Kleer (live)';
+                kcard.appendChild(h);
+                msg.kleer.forEach(function (s) {
+                    var r = document.createElement('div');
+                    r.className = 'row';
+                    r.innerHTML = '<span class="label">' + s.label + '</span><span class="value">' + s.value + '</span>';
+                    kcard.appendChild(r);
+                });
+                bubble.appendChild(kcard);
+            }
+            if (msg.quickText) {
+                var p = document.createElement('p');
+                p.style.marginTop = '10px';
+                p.innerHTML = msg.quickText;
+                bubble.appendChild(p);
+            }
+            if (msg.quick) {
+                var qr = document.createElement('div');
+                qr.className = 'quick-replies';
+                msg.quick.forEach(function (text) {
+                    var btn = document.createElement('button');
+                    btn.className = 'quick-reply';
+                    btn.textContent = text;
+                    btn.addEventListener('click', function () { handleUserInput(text); });
+                    qr.appendChild(btn);
+                });
+                bubble.appendChild(qr);
+            }
+            row.appendChild(bubble);
+        }
+        state.messages.appendChild(row);
+        requestAnimationFrame(function () { row.classList.add('visible'); });
+        state.messages.scrollTop = state.messages.scrollHeight;
+    }
+
+    function playNext() {
+        var script = scripts[state.role].steps;
+        if (state.step >= script.length) return;
+        var next = script[state.step];
+        if (next.type === 'user') return;
+        appendMessage(next);
+        state.step++;
+
+        var delay = next.type === 'ai' ? 900
+                  : next.type.endsWith('-done') ? 320
+                  : next.type.startsWith('tool') ? 500
+                  : 600;
+
+        if (state.step < script.length && script[state.step].type !== 'user') {
+            setTimeout(playNext, delay);
+        }
+    }
+
+    function handleUserInput(text) {
+        var script = scripts[state.role].steps;
+        if (state.step >= script.length) return;
+        appendMessage({ type: 'user', text: text });
+        state.step++;
+        while (state.step < script.length && script[state.step].type === 'user') { state.step++; }
+        setTimeout(playNext, 500);
+    }
+
+    function resetChat() {
+        state.messages.innerHTML = '';
+        state.step = 0;
+        var profile = scripts[state.role];
+        state.suiteAvatar.textContent = profile.initials;
+        state.roleAvatar.className = 'avatar-mini ' + profile.avatarClass;
+        state.roleAvatar.textContent = profile.initials;
+        state.roleName.textContent = profile.name;
+        setTimeout(playNext, 300);
+    }
+
+    state.send.addEventListener('click', function () {
+        var v = state.input.value.trim();
+        if (v.length === 0) return;
+        state.input.value = '';
+        handleUserInput(v);
+    });
+    state.input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); state.send.click(); }
+    });
+
+    document.getElementById('role-switch').addEventListener('click', function (evt) {
+        var btn = evt.target.closest('button');
+        if (!btn) return;
+        this.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.role = btn.dataset.role;
+        resetChat();
+    });
+
+    resetChat();
+})();
+</script>
+</body>
+</html>

@@ -364,11 +364,13 @@ pre code { background: transparent; padding: 0; }
         <div class="toc-entry toc-h2"><span class="toc-num">8.8</span>Distribution och revisionsspår<div class="toc-dots"></div><span class="toc-page">16</span></div>
 
         <div class="toc-entry toc-h1"><span class="toc-num">9</span>Varianter<div class="toc-dots"></div><span class="toc-page">17</span></div>
-        <div class="toc-entry toc-h2"><span class="toc-num">9.1</span>Översikt av varianter<div class="toc-dots"></div><span class="toc-page">17</span></div>
-        <div class="toc-entry toc-h2"><span class="toc-num">9.2</span>Variant B &mdash; utan lönesystem-synk<div class="toc-dots"></div><span class="toc-page">17</span></div>
-        <div class="toc-entry toc-h2"><span class="toc-num">9.3</span>Variant C &mdash; AI-chatt (SPAI-baserad)<div class="toc-dots"></div><span class="toc-page">18</span></div>
-        <div class="toc-entry toc-h2"><span class="toc-num">9.4</span>Implementationsskillnader<div class="toc-dots"></div><span class="toc-page">19</span></div>
-        <div class="toc-entry toc-h2"><span class="toc-num">9.5</span>Prissättning och leveransordning<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.1</span>2×2-matrisen<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.2</span>Översiktstabell<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.3</span>Variant B &mdash; utan lönesystem-synk<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.4</span>Variant C &mdash; AI-chatt, lätt<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.5</span>Variant D &mdash; Full AI (AI + Kleer)<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.6</span>Implementationsskillnader<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.7</span>Prissättning och leveransordning<div class="toc-dots"></div><span class="toc-page">20</span></div>
         </div>
     <div class="page-footer">
         <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
@@ -1294,53 +1296,82 @@ pre code { background: transparent; padding: 0; }
         <div class="chapter-rule"></div>
 
         <div class="chapter-intro">
-            <p>Samma grundfunktion &mdash; ansökan, chefsattest, revisionsspår &mdash; kan paketeras i
-            tre olika gränssnitt beroende på hur djupt integrerad lösningen ska vara och hur
-            användaren vill interagera. Alla tre delar backend (Azure Function + SharePoint-listan),
-            bara UI och integrationsdjup varierar.</p>
+            <p>Samma grundfunktion &mdash; ansökan, chefsattest, revisionsspår &mdash; kan paketeras
+            i fyra varianter beroende på UI (formulär eller AI-chatt) och integrationsdjup
+            (automatisk Kleer-synk eller manuell). Alla fyra delar backend (Azure Function +
+            SharePoint-listan). UI-lager och integrations&shy;djup är de enda axlarna som
+            varierar.</p>
         </div>
 
-        <h2>9.1 Översikt av varianter</h2>
+        <h2>9.1 2×2-matrisen</h2>
         <table>
-            <tr><th>Variant</th><th>UI</th><th>Lönesystem-synk</th><th>Bäst för</th></tr>
             <tr>
-                <td><strong>A &mdash; Primär</strong></td>
-                <td>Formulär</td>
-                <td>Kleer (automatiskt)</td>
-                <td>Cornerstones primära scenario &mdash; full automation, minsta manuella steg</td>
+                <th>&nbsp;</th>
+                <th>Formulär-UI</th>
+                <th>AI-chatt-UI</th>
             </tr>
             <tr>
-                <td><strong>B &mdash; Utan synk</strong></td>
-                <td>Formulär</td>
-                <td>Manuell (medarbetaren själv)</td>
-                <td>Kunder utan Kleer-avtal eller som vill piloteras innan synk aktiveras</td>
+                <td><strong>Auto Kleer-synk</strong></td>
+                <td>
+                    <strong>A &mdash; Primär</strong><br>
+                    <span style="font-size: 9.5pt; color: var(--cs-text-muted)">Klassiskt formulär, full automation. Cornerstones primära scenario.</span>
+                </td>
+                <td>
+                    <strong>D &mdash; Full AI</strong><br>
+                    <span style="font-size: 9.5pt; color: var(--cs-text-muted)">Alla tre roller pratar med AI:n. Kleer-saldon och synkfel är live i chatten.</span>
+                </td>
             </tr>
             <tr>
-                <td><strong>C &mdash; AI-chatt</strong></td>
-                <td>Conversational (SPAI)</td>
-                <td>Kleer (automatiskt)</td>
-                <td>Lägsta tröskel för användare &mdash; naturligt språk, ingen formulär-friktion</td>
+                <td><strong>Manuell synk</strong></td>
+                <td>
+                    <strong>B &mdash; Utan synk</strong><br>
+                    <span style="font-size: 9.5pt; color: var(--cs-text-muted)">Formulär + attest. Medarbetaren matar själv in i lönesystemet.</span>
+                </td>
+                <td>
+                    <strong>C &mdash; AI-chatt, lätt</strong><br>
+                    <span style="font-size: 9.5pt; color: var(--cs-text-muted)">AI för användaren, men ingen automatisk bokning &mdash; pilot innan Kleer är på plats.</span>
+                </td>
             </tr>
         </table>
 
         <div class="tip-box">
-            <strong>Delad backend:</strong> Alla tre varianter skickar samma <code>SubmitApplication</code>-anrop
-            till Azure Function. Det är bara vägen dit som skiljer sig. En kund kan börja med B,
-            lägga till Kleer-integrationen senare (blir A) och slutligen rulla ut C ovanpå
-            utan att någonting behöver byggas om.
+            <strong>Staplas, byts inte:</strong> En kund kan börja på B, lägga till Kleer och
+            hamna i A, och senare aktivera D ovanpå utan att riva något. C är ett tredje
+            parallellt alternativ som också kan aktiveras när som helst utan att påverka A/B/D.
         </div>
 
-        <h2>9.2 Variant B &mdash; utan lönesystem-synk</h2>
-        <p>Identisk med A, förutom att:</p>
-        <ul>
-            <li>Fliken <em>Synkstatus mot Kleer</em> finns inte.</li>
-            <li>Saldokortet (&quot;du har 17 tillgängliga dagar&quot;) visas inte &mdash; vi har ingen
-            källa att läsa saldo från.</li>
-            <li><em>Mina ansökningar</em> har en extra kolumn <strong>Registrerad i lön</strong>
-            &mdash; en bockruta medarbetaren själv markerar efter manuell inmatning.</li>
-            <li>Mail 2 (godkänd) har ett tydligt "<strong>Kom ihåg att registrera i lönesystemet</strong>"-block.</li>
-            <li>HR gör stickprov mot kolumnen &quot;Registrerad i lön&quot; varje månadsskifte.</li>
-        </ul>
+        <h2>9.2 Översiktstabell</h2>
+        <table>
+            <tr><th>Variant</th><th>UI</th><th>Lönesystem</th><th>Roller i appen</th><th>Bäst för</th></tr>
+            <tr>
+                <td><strong>A &mdash; Primär</strong></td>
+                <td>Formulär</td>
+                <td>Kleer (auto)</td>
+                <td>Medarbetare · chef · HR</td>
+                <td>Cornerstones primära scenario</td>
+            </tr>
+            <tr>
+                <td><strong>B &mdash; Utan synk</strong></td>
+                <td>Formulär</td>
+                <td>Manuell</td>
+                <td>Medarbetare · chef · HR</td>
+                <td>Kunder utan Kleer eller pilot</td>
+            </tr>
+            <tr>
+                <td><strong>C &mdash; AI-chatt lätt</strong></td>
+                <td>Conversational</td>
+                <td>Manuell</td>
+                <td>Bara medarbetare</td>
+                <td>Lägsta tröskel, pilot-stadium</td>
+            </tr>
+            <tr>
+                <td><strong>D &mdash; Full AI</strong></td>
+                <td>Conversational</td>
+                <td>Kleer (auto)</td>
+                <td>Medarbetare · chef · HR &mdash; alla chattar</td>
+                <td>Maximerad automation &mdash; AI tar hand om allt</td>
+            </tr>
+        </table>
 
     </div>
     <div class="page-footer">
@@ -1361,51 +1392,23 @@ pre code { background: transparent; padding: 0; }
     </div>
     <div class="page-content" style="padding-top: 0">
 
+        <h2>9.3 Variant B &mdash; utan lönesystem-synk</h2>
+        <p>Identisk med A, förutom att Synkstatus-fliken och saldokortet inte finns. <em>Mina
+        ansökningar</em> har en extra kolumn <strong>Registrerad i lön</strong> &mdash; en bockruta
+        medarbetaren själv markerar efter manuell inmatning. Mail 2 har ett tydligt
+        &quot;<strong>Kom ihåg att registrera i lönesystemet</strong>&quot;-block.</p>
+
         <img src="../Screenshots/20-no-kleer-apply.png" alt="Variant B — utan Kleer-synk, med påminnelsebanner"
              style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
-        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Gul påminnelsebanner ersätter saldokortet:
-        <em>&quot;När din ansökan är godkänd måste du själv registrera ledigheten i ditt lönesystem.&quot;</em></p>
 
-        <h2>9.3 Variant C &mdash; AI-chatt (SPAI-baserad)</h2>
-
-        <p>Användaren interagerar med en AI-assistent i stället för att fylla i ett formulär.
-        Chattens &ldquo;tool-calls&rdquo; anropar exakt samma Azure Function som formuläret gör &mdash;
-        UI-lagret bytt, inte affärs&shy;logiken. Baserad på mönstret från
-        <a href="https://www.kalmstrom.com/SPAI/">SPAI-projektet</a> (kalmstroms AI-assistent för SharePoint).</p>
-
-        <div class="two-col">
-            <div class="feature-card">
-                <h4>Vad AI gör</h4>
-                <p>Tolkar naturligt språk (&quot;nästa vecka&quot;, &quot;v.24 och 25&quot;,
-                &quot;några dagar i maj&quot;), beräknar datum, kollar saldo mot Kleer, visar sammanfattning
-                innan allting skickas, ber om bekräftelse.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Vad AI <em>inte</em> gör</h4>
-                <p>Skickar aldrig ansökan utan ett explicit &quot;Ja&quot; från användaren. Hanterar inte
-                chefens godkännande &mdash; det sker fortfarande via mail-länk. Ändrar inget i Kleer
-                utan att Function har verifierat alla steg.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Tool-calls under huven</h4>
-                <p>Synliga för användaren som grå rader: &quot;Beräknar arbetsdagar&hellip;&quot;,
-                &quot;Läser saldo&hellip;&quot;, &quot;Slår upp chef i Entra&hellip;&quot;,
-                &quot;Signerar token&hellip;&quot;, &quot;Skickar mail&hellip;&quot;. Var och en
-                blir en grön checkmark när den är klar.</p>
-            </div>
-            <div class="feature-card">
-                <h4>Fallback</h4>
-                <p>Knappen &quot;Använd klassiskt formulär&quot; finns alltid i chattens meny &mdash;
-                om AI:n inte förstår, eller användaren hellre vill klicka sig igenom, går de tillbaka
-                till Variant A utan att förlora sin påbörjade ansökan.</p>
-            </div>
-        </div>
+        <h2>9.4 Variant C &mdash; AI-chatt, lätt</h2>
+        <p>En enda roll (medarbetaren) pratar med assistenten. Samma ansöknings- och attestflöde
+        bakom, men utan automatisk Kleer-synk. Bra för kunder som vill testa AI-gränssnittet
+        innan man lyfter Kleer-integrationen. Baserad på mönstret från
+        <a href="https://www.kalmstrom.com/SPAI/">SPAI-projektet</a>.</p>
 
         <img src="../Screenshots/21-chat-conversation.png" alt="Variant C — chattkonversation mellan Anna och AI-assistenten"
              style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
-        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">AI:n visar en <em>sammanfattning</em>
-        innan ansökan skickas &mdash; samma transparens som formulär-varianten ger i sitt
-        &quot;arbetsdagar&quot;-chip.</p>
 
     </div>
     <div class="page-footer">
@@ -1426,70 +1429,123 @@ pre code { background: transparent; padding: 0; }
     </div>
     <div class="page-content" style="padding-top: 0">
 
-        <h2>9.4 Implementationsskillnader</h2>
-        <table>
-            <tr><th>Lager</th><th>A &mdash; Formulär</th><th>B &mdash; Utan synk</th><th>C &mdash; Chatt</th></tr>
-            <tr>
-                <td>ASPX-sida</td>
-                <td><code>Apply.aspx</code></td>
-                <td><code>Apply.aspx</code></td>
-                <td><code>Chat.aspx</code></td>
-            </tr>
-            <tr>
-                <td>JS-bundle</td>
-                <td><code>Ledighet.js</code></td>
-                <td><code>Ledighet.js</code></td>
-                <td><code>LedighetChat.js</code></td>
-            </tr>
-            <tr>
-                <td>Extra dependencies</td>
-                <td>&mdash;</td>
-                <td>&mdash;</td>
-                <td>SPAI copilot SDK, Azure OpenAI endpoint</td>
-            </tr>
-            <tr>
-                <td>Azure Function</td>
-                <td>SubmitApplication, ApproveApplication, KleerSync</td>
-                <td>SubmitApplication, ApproveApplication</td>
-                <td>Samma som A + <code>ChatOrchestrator</code></td>
-            </tr>
-            <tr>
-                <td>AI-endpoint</td>
-                <td>&mdash;</td>
-                <td>&mdash;</td>
-                <td>Azure OpenAI (GPT-4o) via SPAI:s proxy</td>
-            </tr>
-            <tr>
-                <td>Extra konfiguration</td>
-                <td>Kleer X-Token</td>
-                <td>&mdash;</td>
-                <td>Kleer X-Token + Azure OpenAI-nyckel + system-prompt</td>
-            </tr>
-        </table>
+        <h2>9.5 Variant D &mdash; Full AI (AI + Kleer)</h2>
 
-        <h2>9.5 Prissättning och leveransordning</h2>
-        <p>Varianterna staplas &mdash; inget behöver rivas för att gå från en till nästa:</p>
-        <ul>
-            <li><strong>Fas 1&ndash;3</strong> levererar <strong>Variant B</strong> (utan synk) som MVP.
-            Kunden får ansökan + attest + revisionsspår i drift snabbt.</li>
-            <li><strong>Fas 3-tillägg</strong> aktiverar Kleer-synk och ger <strong>Variant A</strong>. Pris per
-            integrationsmål (i Cornerstones fall just Kleer).</li>
-            <li><strong>Fas 5 (option)</strong> lägger till chatt-varianten. Kräver aktivt SPAI-avtal och
-            Azure OpenAI-kvot hos kunden. Ingen påverkan på A eller B &mdash; båda fortsätter fungera
-            parallellt för användare som föredrar formulär.</li>
-        </ul>
+        <p>Alla tre roller pratar med AI:n. Medarbetaren ansöker, chefen godkänner, HR följer
+        upp synkstatus &mdash; allt via samma chatt. Kleer är djupt integrerat: saldo läses live
+        när användaren frågar, event-POST mot Kleer sker i realtid, och synkfel visas som
+        strukturerade kort direkt i HR-chatten.</p>
 
-        <div class="note-box">
-            <strong>AI-ansvar:</strong> Även när Variant C är aktiv loggar Function exakt vad
-            AI:n &ldquo;bestämde sig för&rdquo; per användarinmatning (prompt + response + verktyg-kedja
-            + beslut). Revisionsspåret i SharePoint-listan inkluderar alltså inte bara vem som
-            skickade in ansökan, utan hur &mdash; viktigt för regulatoriska krav.
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Medarbetare-chatten</h4>
+                <p>&quot;Vad har jag för saldo?&quot; &rarr; AI:n läser live från Kleer och svarar med
+                tillgängliga / använda / sparade dagar. &quot;Ansök 6&ndash;31 juli&quot; &rarr; AI:n
+                räknar arbetsdagar, verifierar att saldot täcker, skapar SP-post och mailar Per.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Chef-chatten</h4>
+                <p>&quot;Jag har 3 ansökningar till dig idag.&quot; &rarr; Per kan be AI:n visa hela
+                teamets saldon (Kleer-data för 8 personer på en gång), godkänna en efter en, och
+                se direkt att godkännandet har skrivit 20 events till Kleer &mdash; utan att
+                lämna chatten.</p>
+            </div>
+            <div class="feature-card">
+                <h4>HR-chatten</h4>
+                <p>AI:n rapporterar proaktivt synkfel: &quot;47 försök idag, 46 ok, 1 fel.&quot;
+                Lisa kan be om detaljer och instruera AI:n att försöka igen eller skicka ett
+                mail med instruktion till chefen för den misslyckade posten.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Gemensam bas</h4>
+                <p>Samma <code>ChatOrchestrator</code> Function, samma systemprompt, men
+                tool-kedjan anpassas efter inloggad roll (Entra group membership avgör vilka
+                verktyg AI:n får anropa). Inget extra kod-lager per roll.</p>
+            </div>
         </div>
+
+        <img src="../Screenshots/22-chat-kleer-balance.png" alt="Variant D — AI visar Kleer-saldo live i chatten"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Grönt &ldquo;Från Kleer (live)&rdquo;-kort
+        signalerar att värdena kommer direkt från lönesystemet &mdash; inte från cache eller
+        användarminne.</p>
 
     </div>
     <div class="page-footer">
         <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
         <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 19</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; FreeCorner</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 9 &mdash; Varianter</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>9.6 Implementationsskillnader</h2>
+        <table>
+            <tr><th>Lager</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+            <tr>
+                <td>ASPX-sida</td>
+                <td>Apply</td><td>Apply</td><td>Chat</td><td>Chat</td>
+            </tr>
+            <tr>
+                <td>JS-bundle</td>
+                <td>FreeCorner.js</td><td>FreeCorner.js</td><td>FreeCornerChat.js</td><td>FreeCornerChat.js</td>
+            </tr>
+            <tr>
+                <td>Azure Function</td>
+                <td>Submit/Approve/KleerSync</td>
+                <td>Submit/Approve</td>
+                <td>Samma som B + ChatOrchestrator</td>
+                <td>Samma som A + ChatOrchestrator (+ rollanpassade verktyg)</td>
+            </tr>
+            <tr>
+                <td>AI-endpoint</td>
+                <td>&mdash;</td><td>&mdash;</td>
+                <td>Azure OpenAI (GPT-4o)</td>
+                <td>Azure OpenAI (GPT-4o)</td>
+            </tr>
+            <tr>
+                <td>Kleer-nyckel</td>
+                <td>Ja</td><td>&mdash;</td><td>&mdash;</td><td>Ja</td>
+            </tr>
+            <tr>
+                <td>Extra Entra-grupper</td>
+                <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td>
+                <td>HR + Chef-grupper (styr AI:s verktygsåtkomst)</td>
+            </tr>
+        </table>
+
+        <h2>9.7 Prissättning och leveransordning</h2>
+        <ul>
+            <li><strong>Fas 1&ndash;3</strong> levererar <strong>Variant B</strong> (utan synk) som MVP.</li>
+            <li><strong>Fas 3-tillägg</strong> aktiverar Kleer-synk &rarr; <strong>Variant A</strong>.</li>
+            <li><strong>Fas 5 (option)</strong> lägger till chatt-lagret &mdash; kan levereras som
+            <strong>C</strong> ovanpå B (om Kleer inte är aktivt) eller <strong>D</strong> ovanpå A
+            (om Kleer är aktivt). Priset styrs av vilken du stackar på.</li>
+            <li>Variant D kräver dessutom Entra-grupper konfigurerade så AI:n vet vem som är
+            chef respektive HR innan den väljer verktygsset.</li>
+        </ul>
+
+        <div class="note-box">
+            <strong>AI-revisionsspår:</strong> I både C och D loggar Function exakt vad AI:n
+            &ldquo;bestämde sig för&rdquo; per meddelande (prompt + response + verktyg-kedja +
+            beslut). Revisionsspåret i SP-listan inkluderar alltså inte bara vem som skickade
+            in ansökan utan hur &mdash; viktigt för regulatoriska krav och för att spåra AI-fel.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">FreeCorner &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 20</div>
     </div>
 </div>
 
