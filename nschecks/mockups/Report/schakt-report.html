@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Egenkontroll – Schakt &amp; Markarbeten | NSChecks</title>
+    <meta name="author" content="NSChecks">
+    <meta name="description" content="Egenkontrollsrapport — Schakt &amp; Markarbeten, Delsträcka V2B-V2C, Projekt Bodafors Etapp 3">
+    <meta name="date" content="2026-04-24">
+    <meta name="generator" content="NSChecks-ReportRenderer (mockup)">
+
+    <!--
+      NSChecks egenkontrollsrapport — HTML mockup (light / business theme)
+      ====================================================================
+      Källa:   NSChecks/Templates/templates.json  (Egenkontroll Schakt utförande
+               + Markarbeten, kategori "Schakt")
+      Mall:    printing-html-docs skill (A4 page-div pattern, CSS paged media)
+      Brand:   branding-networksolutions — monokrom svart + varmbrun accent
+               #746355. Ljus variant för rapport-användning: vit bakgrund,
+               svart text, brun accent. Mörk variant sparad för framtida bruk.
+      Renderas i produktion av NSChecks-ReportRenderer (Azure Function, B1-plan,
+      Playwright/Chromium → chromium.pdf()).
+      Se NSChecks/Documentation/AI/07-report-rendering.md.
+
+      Bilder (images/01–10):
+      Stock-foton från Flickr via loremflickr.com, CC-BY-SA / CC-BY-ND.
+      I produktion ersätts dessa med installatörens uppladdade foton från
+      SharePoint (photo library på projekt-sub-siten).
+    -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=Roboto+Condensed:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ═══════════════════════════════════════════════════════════════════
+           NSChecks — brand tokens (from branding-networksolutions skill)
+           Light / business variant for report rendering
+           ═══════════════════════════════════════════════════════════════════ */
+        :root {
+            --ns-black:        #1F1E20;
+            --ns-white:        #FFFFFF;
+            --ns-gray-50:      #FAFAFA;
+            --ns-gray-100:     #F5F5F5;
+            --ns-gray-200:     #E5E5E5;
+            --ns-gray-300:     #CFCFCF;
+            --ns-gray-400:     #888888;
+            --ns-gray-500:     #6A6A6A;
+            --ns-text:         #4A494B;
+            --ns-text-strong:  #1F1E20;
+            --ns-accent:       #746355;
+            --ns-accent-soft:  #9C8672;
+            --ns-badge-bg:     #F8F4EC;
+            --ns-badge-text:   #2B2B2B;
+
+            --ns-success:      #2D8653;
+            --ns-success-bg:   #E8F5EE;
+            --ns-warning:      #C07800;
+            --ns-warning-bg:   #FFF8E6;
+            --ns-error:        #B55852;
+            --ns-error-bg:     #FBEEED;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           PAGE / PRINT SETUP
+           ═══════════════════════════════════════════════════════════════════ */
+        @page { size: A4; margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.65;
+            color: var(--ns-text);
+            background: #d9d8d6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--ns-white);
+            margin: 8mm auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        @media print {
+            body { background: white; }
+            .page { margin: 0; box-shadow: none; page-break-after: always; }
+            .page:last-child { page-break-after: avoid; }
+        }
+
+        /* Page-break control */
+        h1, h2, h3            { break-after: avoid; }
+        p, li, tr             { break-inside: avoid; }
+        .kontrollpunkt,
+        .note-box, .tip-box,
+        .meta-grid,
+        .photo-row,
+        table, img            { break-inside: avoid; }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           COVER PAGE — light / business
+           ═══════════════════════════════════════════════════════════════════ */
+        .cover-page {
+            background: var(--ns-white);
+            color: var(--ns-text-strong);
+            display: flex;
+            flex-direction: column;
+            min-height: 297mm;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .cover-accent-bar {
+            height: 3mm;
+            background: var(--ns-accent);
+            flex-shrink: 0;
+        }
+
+        .cover-photo {
+            height: 145mm;
+            background-image:
+                linear-gradient(180deg, rgba(255,255,255,0.0) 65%, rgba(255,255,255,0.3) 100%),
+                url('images/02-excavator-urban.jpg');
+            background-size: cover;
+            background-position: center 45%;
+            position: relative;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .cover-logo-row {
+            position: absolute;
+            top: 10mm;
+            left: 22mm;
+            right: 22mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cover-logo {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14pt;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            color: var(--ns-white);
+            background: rgba(31,30,32,0.85);
+            padding: 2.5mm 5mm;
+            border-left: 2mm solid var(--ns-accent);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .cover-doc-type {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ns-white);
+            background: rgba(116,99,85,0.9);
+            padding: 2mm 4mm;
+            border-radius: 2px;
+        }
+
+        .cover-body {
+            flex: 1;
+            padding: 14mm 22mm 10mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .cover-tag {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 8.5pt;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ns-accent);
+            margin-bottom: 4mm;
+        }
+
+        .cover-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 34pt;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            color: var(--ns-text-strong);
+            margin-bottom: 3mm;
+            max-width: 160mm;
+        }
+
+        .cover-subtitle {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13pt;
+            font-weight: 400;
+            color: var(--ns-gray-500);
+            margin-bottom: 9mm;
+            max-width: 150mm;
+        }
+
+        .cover-divider {
+            width: 18mm;
+            height: 2px;
+            background: var(--ns-accent);
+            margin-bottom: 8mm;
+        }
+
+        .cover-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4mm 8mm;
+            margin-bottom: 9mm;
+        }
+        .cover-meta-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 6.5pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ns-gray-400);
+            margin-bottom: 1.5mm;
+        }
+        .cover-meta-value {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10pt;
+            font-weight: 600;
+            color: var(--ns-text-strong);
+        }
+
+        .cover-chips {
+            display: flex;
+            gap: 2.5mm;
+            flex-wrap: wrap;
+        }
+        .cover-chip {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            padding: 1.5mm 4mm;
+            background: var(--ns-gray-100);
+            border: 1px solid var(--ns-gray-200);
+            border-radius: 20px;
+            color: var(--ns-text);
+        }
+        .cover-chip.approved {
+            background: var(--ns-success-bg);
+            border-color: var(--ns-success);
+            color: var(--ns-success);
+            font-weight: 700;
+        }
+
+        .cover-footer-strip {
+            flex-shrink: 0;
+            padding: 5mm 22mm;
+            background: var(--ns-gray-50);
+            border-top: 1px solid var(--ns-gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ns-gray-400);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           STANDARD PAGE — header, content, footer (light)
+           ═══════════════════════════════════════════════════════════════════ */
+        .page-header {
+            height: 13mm;
+            background: var(--ns-white);
+            color: var(--ns-text-strong);
+            display: flex;
+            align-items: center;
+            padding: 0 22mm 0 25mm;
+            position: relative;
+            border-bottom: 1px solid var(--ns-gray-200);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3mm;
+            background: var(--ns-accent);
+        }
+        .page-header-brand {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10pt;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            color: var(--ns-text-strong);
+        }
+        .page-header-dot {
+            width: 3px; height: 3px;
+            background: var(--ns-accent);
+            border-radius: 50%;
+            margin: 0 3mm;
+            display: inline-block;
+            align-self: center;
+        }
+        .page-header-section {
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 8pt;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+        }
+
+        .page-content {
+            padding: 12mm 22mm 22mm;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 11mm;
+            background: var(--ns-gray-50);
+            border-top: 1px solid var(--ns-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22mm;
+            font-size: 7.5pt;
+            color: var(--ns-gray-400);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .page-footer .page-num {
+            font-weight: 700;
+            color: var(--ns-accent);
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           TYPOGRAPHY
+           ═══════════════════════════════════════════════════════════════════ */
+        h1 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 19pt;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--ns-text-strong);
+            margin-bottom: 5mm;
+            line-height: 1.1;
+        }
+        h1 .chapter-num {
+            display: block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--ns-accent);
+            margin-bottom: 3mm;
+        }
+        .chapter-rule {
+            height: 2px;
+            background: linear-gradient(90deg, var(--ns-text-strong) 0%, var(--ns-gray-200) 100%);
+            margin-bottom: 7mm;
+        }
+
+        h2 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12pt;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--ns-text-strong);
+            margin: 7mm 0 3mm;
+            padding-left: 4mm;
+            position: relative;
+            line-height: 1.2;
+        }
+        h2::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 1mm; bottom: 1mm;
+            width: 3px;
+            background: var(--ns-accent);
+        }
+
+        h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: var(--ns-text);
+            margin: 4mm 0 2mm;
+        }
+
+        p {
+            margin-bottom: 3mm;
+            color: var(--ns-text);
+        }
+
+        ul, ol {
+            margin: 2mm 0 3mm 5mm;
+            padding-left: 4mm;
+        }
+        li { margin-bottom: 1mm; }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           METADATA & SUMMARY
+           ═══════════════════════════════════════════════════════════════════ */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm 10mm;
+            padding: 5mm 0;
+            border-top: 1px solid var(--ns-gray-200);
+            border-bottom: 1px solid var(--ns-gray-200);
+            margin-bottom: 8mm;
+        }
+        .meta-field { display: flex; flex-direction: column; gap: 1mm; }
+        .meta-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ns-gray-400);
+        }
+        .meta-value {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10.5pt;
+            font-weight: 600;
+            color: var(--ns-text-strong);
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4mm;
+            margin-bottom: 6mm;
+        }
+        .summary-card {
+            background: var(--ns-white);
+            border: 1px solid var(--ns-gray-200);
+            border-radius: 4px;
+            padding: 4mm 4mm 4mm 5mm;
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 2mm;
+            background: var(--ns-accent);
+        }
+        .summary-card.ok::before      { background: var(--ns-success); }
+        .summary-card.not-ok::before  { background: var(--ns-error); }
+        .summary-card.na::before      { background: var(--ns-gray-400); }
+
+        .summary-number {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 26pt;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            color: var(--ns-text-strong);
+        }
+        .summary-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ns-gray-400);
+            margin-top: 2mm;
+        }
+
+        /* TOC */
+        .toc { margin-top: 5mm; }
+        .toc-entry {
+            display: flex;
+            align-items: baseline;
+            padding: 1.8mm 0;
+            font-size: 9.5pt;
+            text-decoration: none;
+            color: inherit;
+        }
+        a.toc-entry:hover .toc-title { color: var(--ns-accent); }
+
+        /* Internal cross-reference links (inline in body text / values) */
+        a.xref {
+            color: var(--ns-accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--ns-accent);
+        }
+        a.xref:hover { border-bottom-style: solid; }
+        .toc-num {
+            min-width: 10mm;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8pt;
+            color: var(--ns-accent);
+            font-weight: 700;
+        }
+        .toc-title { color: var(--ns-text-strong); font-weight: 500; }
+        .toc-dots {
+            flex: 1;
+            border-bottom: 1px dotted var(--ns-gray-300);
+            margin: 0 3mm 1.5mm;
+        }
+        .toc-page {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8pt;
+            color: var(--ns-gray-500);
+            font-weight: 700;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           KONTROLLPUNKT — core checklist row
+           ═══════════════════════════════════════════════════════════════════ */
+        .kontrollpunkt {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 4mm;
+            padding: 4mm 0;
+            border-bottom: 1px solid var(--ns-gray-200);
+            align-items: start;
+        }
+        .kontrollpunkt:last-child { border-bottom: none; }
+        .kontrollpunkt-num {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8pt;
+            font-weight: 700;
+            color: var(--ns-gray-400);
+            min-width: 9mm;
+            padding-top: 0.5mm;
+        }
+        .kontrollpunkt-body { display: flex; flex-direction: column; gap: 2mm; }
+        .kontrollpunkt-question {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10pt;
+            font-weight: 600;
+            color: var(--ns-text-strong);
+            line-height: 1.3;
+        }
+        .kontrollpunkt-meta {
+            display: flex;
+            gap: 4mm;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .kontrollpunkt-note {
+            font-size: 8.5pt;
+            color: var(--ns-gray-500);
+            font-style: italic;
+            max-width: 95mm;
+            line-height: 1.4;
+        }
+        .kontrollpunkt-thumbs {
+            display: flex;
+            gap: 2mm;
+            flex-shrink: 0;
+            align-items: flex-start;
+        }
+        .thumb {
+            display: block;
+            width: 20mm;
+            height: 20mm;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid var(--ns-gray-200);
+        }
+        .thumb-ref {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 6pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--ns-gray-400);
+            margin-top: 0.8mm;
+            text-align: center;
+        }
+        .thumb-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+        a.thumb-wrap:hover .thumb,
+        .photo-row a:hover img {
+            box-shadow: 0 0 0 2px var(--ns-accent);
+        }
+        .photo-row a {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.8mm;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 1.6mm 3.5mm;
+            border-radius: 3px;
+        }
+        .status::before {
+            content: '';
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-ok     { background: var(--ns-success-bg); color: var(--ns-success); }
+        .status-ok::before { background: var(--ns-success); }
+        .status-not-ok { background: var(--ns-error-bg); color: var(--ns-error); }
+        .status-not-ok::before { background: var(--ns-error); }
+        .status-na     { background: var(--ns-gray-100); color: var(--ns-gray-500); }
+        .status-na::before { background: var(--ns-gray-400); }
+
+        .value-pill {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            padding: 1mm 3mm;
+            background: var(--ns-badge-bg);
+            color: var(--ns-badge-text);
+            border-radius: 3px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 7mm 0 3mm;
+            padding-bottom: 2mm;
+            border-bottom: 2px solid var(--ns-text-strong);
+        }
+        .section-header:first-child { margin-top: 2mm; }
+        .section-header-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11pt;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--ns-text-strong);
+        }
+        .section-header-ref {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ns-accent);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           FULL-PAGE PHOTO (light)
+           ═══════════════════════════════════════════════════════════════════ */
+        .photo-page {
+            background: var(--ns-white);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 297mm;
+        }
+
+        .photo-stage {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8mm 15mm 4mm;
+            background: var(--ns-white);
+        }
+        .photo-stage img {
+            max-width: 100%;
+            max-height: 200mm;
+            object-fit: contain;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+            border-radius: 2px;
+            border: 1px solid var(--ns-gray-200);
+        }
+        .photo-stage.landscape img { width: 100%; height: auto; max-height: 165mm; }
+        .photo-stage.portrait  img { height: 100%; width: auto; max-width: 150mm; max-height: 210mm; }
+
+        .photo-caption {
+            padding: 6mm 22mm 8mm;
+            background: var(--ns-gray-50);
+            border-top: 1px solid var(--ns-gray-200);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 8mm;
+            align-items: center;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .photo-caption-ref {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: var(--ns-accent);
+        }
+        .photo-caption-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11pt;
+            font-weight: 600;
+            color: var(--ns-text-strong);
+        }
+        .photo-caption-meta {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+            text-align: right;
+            line-height: 1.5;
+        }
+        .gps-link {
+            display: inline-block;
+            margin-top: 1.5mm;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ns-accent);
+            text-decoration: none;
+            border-bottom: 1px solid var(--ns-accent);
+            padding-bottom: 0.5mm;
+            white-space: nowrap;
+        }
+        .gps-link .gps-arrow {
+            font-weight: 400;
+            letter-spacing: 0;
+            margin-left: 1mm;
+        }
+
+        /* Person avatars — inline (small, meta contexts) + signature (medium) */
+        .avatar-inline {
+            display: inline-block;
+            width: 5mm;
+            height: 5mm;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--ns-gray-200);
+            vertical-align: middle;
+            margin-right: 1.8mm;
+            margin-top: -0.8mm;
+        }
+        .signature-person {
+            display: flex;
+            align-items: flex-start;
+            gap: 3mm;
+        }
+        .signature-avatar {
+            width: 12mm;
+            height: 12mm;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ns-white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+        .signature-person-text {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5mm;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           SIGNATURE PAGE
+           ═══════════════════════════════════════════════════════════════════ */
+        .signature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8mm;
+            margin-top: 6mm;
+        }
+        .signature-card {
+            border: 1px solid var(--ns-gray-200);
+            border-radius: 4px;
+            padding: 6mm;
+            background: var(--ns-gray-50);
+        }
+        .signature-card-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--ns-gray-400);
+            margin-bottom: 3mm;
+        }
+        .signature-box {
+            height: 22mm;
+            background: var(--ns-white);
+            border: 1px dashed var(--ns-gray-300);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3mm;
+        }
+        .signature-mark {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 16pt;
+            color: var(--ns-text-strong);
+            transform: rotate(-3deg);
+        }
+        .signature-name {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 10pt;
+            font-weight: 700;
+            color: var(--ns-text-strong);
+        }
+        .signature-role {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 9pt;
+            font-weight: 400;
+            color: var(--ns-gray-500);
+        }
+        .signature-date {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 8pt;
+            color: var(--ns-gray-400);
+            margin-top: 2mm;
+        }
+
+        .approval-banner {
+            margin-top: 6mm;
+            padding: 4mm 5mm;
+            background: var(--ns-success-bg);
+            border: 1px solid var(--ns-success);
+            border-left: 4px solid var(--ns-success);
+            border-radius: 4px;
+            display: flex;
+            gap: 4mm;
+            align-items: center;
+        }
+        .approval-icon {
+            width: 9mm;
+            height: 9mm;
+            border-radius: 50%;
+            background: var(--ns-success);
+            color: var(--ns-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14pt;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .approval-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--ns-text-strong);
+            letter-spacing: -0.02em;
+            margin-bottom: 1mm;
+        }
+        .approval-body {
+            font-size: 9pt;
+            color: var(--ns-text);
+            line-height: 1.5;
+        }
+
+        .note-box {
+            background: var(--ns-warning-bg);
+            border-left: 3px solid var(--ns-accent);
+            padding: 3mm 5mm;
+            margin: 4mm 0;
+            font-size: 9pt;
+        }
+        .note-box strong { color: var(--ns-text-strong); }
+
+        .tip-box {
+            background: var(--ns-gray-100);
+            border-left: 3px solid var(--ns-text-strong);
+            padding: 3mm 5mm;
+            margin: 4mm 0;
+            font-size: 9pt;
+        }
+
+        .photo-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3mm;
+            margin: 3mm 0 5mm;
+        }
+        .photo-row figure { display: flex; flex-direction: column; }
+        .photo-row img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid var(--ns-gray-200);
+        }
+        .photo-row figcaption {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 6.5pt;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ns-gray-500);
+            margin-top: 1.2mm;
+        }
+
+        .map-block {
+            width: 100%;
+            height: 70mm;
+            background:
+                linear-gradient(180deg, rgba(31,30,32,0.02) 0%, rgba(31,30,32,0.08) 100%),
+                url('images/00-aerial-map.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+            border: 1px solid var(--ns-gray-200);
+            position: relative;
+            margin: 4mm 0 5mm;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .map-pin {
+            position: absolute;
+            width: 7mm; height: 7mm;
+            background: var(--ns-accent);
+            border: 2px solid var(--ns-white);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ns-white);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 7.5pt;
+            font-weight: 700;
+        }
+        .map-legend {
+            position: absolute;
+            bottom: 3mm;
+            right: 3mm;
+            background: rgba(255,255,255,0.95);
+            padding: 2mm 3mm;
+            border-radius: 3px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 6.5pt;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ns-text);
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 1 — COVER (light / business)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+
+    <div class="cover-photo">
+        <div class="cover-logo-row">
+            <div class="cover-logo">NSCHECKS</div>
+            <div class="cover-doc-type">Egenkontrollsrapport</div>
+        </div>
+    </div>
+
+    <div class="cover-body">
+        <div class="cover-tag">Mall T3836-12 · 6C &nbsp;+&nbsp; Mall 11 · Markarbeten</div>
+
+        <div class="cover-title">Schakt &amp; Markarbeten</div>
+        <div class="cover-subtitle">
+            Delsträcka V2B–V2C · Etapp 3 Bodafors · Vecka 17, 2026
+        </div>
+
+        <div class="cover-divider"></div>
+
+        <div class="cover-meta-grid">
+            <div>
+                <div class="cover-meta-label">Projekt</div>
+                <div class="cover-meta-value">BD-2026-003</div>
+            </div>
+            <div>
+                <div class="cover-meta-label">Beställare</div>
+                <div class="cover-meta-value">Nässjö Affärsverk</div>
+            </div>
+            <div>
+                <div class="cover-meta-label">Utfört av</div>
+                <div class="cover-meta-value"><img class="avatar-inline" src="images/avatars/anders-lindqvist.jpg" alt="">Anders Lindqvist</div>
+            </div>
+            <div>
+                <div class="cover-meta-label">Rapportdatum</div>
+                <div class="cover-meta-value">2026-04-24</div>
+            </div>
+        </div>
+
+        <div class="cover-chips">
+            <div class="cover-chip">12 kontrollpunkter</div>
+            <div class="cover-chip">6 avlämningspunkter</div>
+            <div class="cover-chip">12 bildbevis</div>
+            <div class="cover-chip">2 signaturer</div>
+        </div>
+    </div>
+
+    <div class="cover-footer-strip">
+        <div>NSChecks · Egenkontrollsrapport</div>
+        <div>BD-2026-003-EK-v17-001</div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 2 — PROJECT METADATA + SUMMARY + TOC
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Projektdata &amp; Sammanfattning</span>
+    </div>
+
+    <div class="page-content">
+        <h1 id="rapportoversikt"><span class="chapter-num">Del 1 · Projektdata</span>Rapportöversikt</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Denna rapport dokumenterar egenkontroll av schaktarbete och
+        markförläggning av fiberkanalisation utfört längs delsträckan
+        V2B–V2C i Bodafors (Etapp 3) under vecka 17, 2026. Samtliga
+        kontrollpunkter har utförts enligt mall <strong>T3836-12 · 6C</strong>
+        (Egenkontroll Schakt utförande) samt mall <strong>11</strong>
+        (Markarbeten).</p>
+
+        <div class="meta-grid">
+            <div class="meta-field">
+                <span class="meta-label">Projektnummer</span>
+                <span class="meta-value">BD-2026-003 · Bodafors Etapp 3</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Beställare</span>
+                <span class="meta-value">Nässjö Affärsverk AB</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Delsträcka</span>
+                <span class="meta-value">V2B–V2C · 238 m</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Schaktdjup</span>
+                <span class="meta-value">0,65 m (min) · 0,92 m (max)</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Markförhållande</span>
+                <span class="meta-value">Åkermark · silt · inslag av morän</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">TA-plan</span>
+                <span class="meta-value">TA-BD-26-003-V2 (giltig 2026-04-12 – 2026-07-01)</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Schaktare</span>
+                <span class="meta-value"><img class="avatar-inline" src="images/avatars/anders-lindqvist.jpg" alt="">Anders Lindqvist · Cert nr 48291</span>
+            </div>
+            <div class="meta-field">
+                <span class="meta-label">Kontrollansvarig</span>
+                <span class="meta-value"><img class="avatar-inline" src="images/avatars/maria-forslund.jpg" alt="">Maria Forslund · Arbetsledare</span>
+            </div>
+        </div>
+
+        <h2>Sammanfattning</h2>
+        <div class="summary-row">
+            <div class="summary-card ok">
+                <div class="summary-number">10</div>
+                <div class="summary-label">Godkänt</div>
+            </div>
+            <div class="summary-card na">
+                <div class="summary-number">1</div>
+                <div class="summary-label">Ej relevant</div>
+            </div>
+            <div class="summary-card not-ok">
+                <div class="summary-number">0</div>
+                <div class="summary-label">Ej godkänt</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-number">12</div>
+                <div class="summary-label">Bildbevis</div>
+            </div>
+        </div>
+
+        <h2>Innehåll</h2>
+        <div class="toc">
+            <a class="toc-entry" href="#rapportoversikt">
+                <span class="toc-num">1</span>
+                <span class="toc-title">Rapportöversikt &amp; sammanfattning</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">2</span>
+            </a>
+            <a class="toc-entry" href="#karta">
+                <span class="toc-num">2</span>
+                <span class="toc-title">Schaktsträcka &amp; avlämningspunkter på karta</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">3</span>
+            </a>
+            <a class="toc-entry" href="#schakt-utforande">
+                <span class="toc-num">3</span>
+                <span class="toc-title">Kontrollpunkter — Schakt utförande</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">4</span>
+            </a>
+            <a class="toc-entry" href="#markarbeten">
+                <span class="toc-num">4</span>
+                <span class="toc-title">Kontrollpunkter — Markarbeten</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">5</span>
+            </a>
+            <a class="toc-entry" href="#signaturer">
+                <span class="toc-num">5</span>
+                <span class="toc-title">Signaturer &amp; godkännande</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">6</span>
+            </a>
+            <a class="toc-entry" href="#bild-01">
+                <span class="toc-num">6</span>
+                <span class="toc-title">Bildbilaga — Öppen schakt, V2B+80m</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">7</span>
+            </a>
+            <a class="toc-entry" href="#bild-02">
+                <span class="toc-num">7</span>
+                <span class="toc-title">Bildbilaga — Schaktdjup &amp; rörbädd</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">8</span>
+            </a>
+            <a class="toc-entry" href="#bild-03">
+                <span class="toc-num">8</span>
+                <span class="toc-title">Bildbilaga — Markeringsnät &amp; söktråd</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">9</span>
+            </a>
+            <a class="toc-entry" href="#bild-04">
+                <span class="toc-num">9</span>
+                <span class="toc-title">Bildbilaga — Färdig återställning</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">10</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="page-num">2 / 10</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 3 — MAP + PHOTO CONTEXT
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Avlämningspunkter &amp; foto­bevis</span>
+    </div>
+
+    <div class="page-content">
+        <h1 id="karta"><span class="chapter-num">Del 2 · Platsdata</span>Delsträcka V2B–V2C på karta</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Schaktsträckan följer befintlig vägkant längs Skogsvägen
+        mellan kabelbrunn <strong>V2B</strong> och kabelbrunn
+        <strong>V2C</strong>. Totalt har 6 avlämningspunkter
+        dokumenterats med foto och GPS-koordinat. Punkterna
+        numreras P1–P6 nedan och återfinns i kontrollpunkterna
+        på sida 4 och 7.</p>
+
+        <div class="map-block">
+            <div class="map-pin" style="left: 12%; top: 55%;">1</div>
+            <div class="map-pin" style="left: 28%; top: 42%;">2</div>
+            <div class="map-pin" style="left: 44%; top: 48%;">3</div>
+            <div class="map-pin" style="left: 58%; top: 35%;">4</div>
+            <div class="map-pin" style="left: 74%; top: 50%;">5</div>
+            <div class="map-pin" style="left: 88%; top: 42%;">6</div>
+            <div class="map-legend">Ortofoto · Lantmäteriet 2025</div>
+        </div>
+
+        <h2>Avlämningspunkter i kronologisk ordning</h2>
+        <div class="photo-row">
+            <figure>
+                <img src="images/01-excavator-gravel.jpg" alt="P1 — Start V2B">
+                <figcaption>P1 · V2B start · 10:14</figcaption>
+            </figure>
+            <figure><a href="#bild-01">
+                <img src="images/03-volvo-trench.jpg" alt="P2 — Öppen grav 42m">
+                <figcaption>P2 · Öppen grav +42 m · 11:38</figcaption>
+            </a></figure>
+            <figure><a href="#bild-02">
+                <img src="images/04-trench-mud-closeup.jpg" alt="P3 — Rörbädd 98m">
+                <figcaption>P3 · Rörbädd +98 m · 13:05</figcaption>
+            </a></figure>
+            <figure><a href="#bild-03">
+                <img src="images/06-liebherr-drill.jpg" alt="P4 — Markeringsnät">
+                <figcaption>P4 · Markeringsnät +140 m · 14:21</figcaption>
+            </a></figure>
+            <figure><a href="#bild-04">
+                <img src="images/07-kobelco-landscape.jpg" alt="P5 — Återfyllnad">
+                <figcaption>P5 · Återfyllnad +190 m · 15:47</figcaption>
+            </a></figure>
+            <figure>
+                <img src="images/02-excavator-urban.jpg" alt="P6 — Avslut V2C">
+                <figcaption>P6 · V2C avslut · 16:52</figcaption>
+            </figure>
+        </div>
+
+        <div class="tip-box">
+            <strong>Obs:</strong> Samtliga foton är tagna med mobil enhet och
+            inkluderar EXIF-data (GPS-koordinat, tidsstämpel, riktning).
+            Rådata finns tillgänglig i projektets dokumentbibliotek
+            <em>Bildbank · BD-2026-003</em>.
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="page-num">3 / 10</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 4 — CHECKLIST: Schakt utförande
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Kontrollpunkter · Schakt utförande</span>
+    </div>
+
+    <div class="page-content">
+        <h1 id="schakt-utforande"><span class="chapter-num">Del 3 · Egenkontroll</span>Schakt utförande</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="section-header">
+            <div class="section-header-title">Schakt utförande</div>
+            <div class="section-header-ref">Mall T3836-12 · 6C</div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">01</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Schaktsträcka enligt karta</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="value-pill">V2B–V2C · 238 m</span>
+                </div>
+            </div>
+            <div class="kontrollpunkt-thumbs"></div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">02</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Arbete utfört enligt gällande tillstånd/TA-plan</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="kontrollpunkt-note">TA-BD-26-003-V2, giltig 2026-04-12 – 2026-07-01.</span>
+                </div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <div class="thumb-wrap">
+                    <img class="thumb" src="images/03-volvo-trench.jpg" alt="TA-plan skylt">
+                    <div class="thumb-ref">P1</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">03</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Arbete utfört enligt gällande schaktdjup</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">Min 0,65 m · Max 0,92 m</span>
+                </div>
+                <div class="kontrollpunkt-note">Djupet kontrollerat med tumstock på tre punkter (P2, P3, P5). Krav 0,55 m uppfyllt med god marginal. Maxdjup 0,92 m nått vid P3 där stenlinjen låg djupt — djupare schakt än nödvändigt accepterat enligt projektörens anvisning § 4.2.1 för att undvika upprepad sprängning.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-01">
+                    <img class="thumb" src="images/04-trench-mud-closeup.jpg" alt="Schaktdjup P2">
+                    <div class="thumb-ref">P2</div>
+                </a>
+                <a class="thumb-wrap" href="#bild-02">
+                    <img class="thumb" src="images/05-trench-measuring.jpg" alt="Schaktdjup P3">
+                    <div class="thumb-ref">P3</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">04</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Rätt fyllningsmaterial enligt normer/krav</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">0–8 mm natursand · ledningsbädd</span>
+                </div>
+                <div class="kontrollpunkt-note">Kringfyllnad med stenfritt material från samma täkt (Bodafors Grus AB, transportsedel 2026-B-4412). Inga stenar större än 16 mm observerade.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-02">
+                    <img class="thumb" src="images/01-excavator-gravel.jpg" alt="Ledningsbädd">
+                    <div class="thumb-ref">P3</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">05</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Foto som styrker schaktdjup och återställande</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">6 foton · P1–P6</span>
+                </div>
+                <div class="kontrollpunkt-note">Se bildbilagan <a class="xref" href="#bild-01">sida 7 (öppen schakt)</a> och <a class="xref" href="#bild-04">sida 10 (färdig återställning)</a>.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-01">
+                    <img class="thumb" src="images/03-volvo-trench.jpg" alt="Foto P2">
+                    <div class="thumb-ref">P2</div>
+                </a>
+                <a class="thumb-wrap" href="#bild-04">
+                    <img class="thumb" src="images/07-kobelco-landscape.jpg" alt="Foto P5">
+                    <div class="thumb-ref">P5</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="note-box">
+            <strong>Arbetsmiljö — påminnelse:</strong> Genomgång av incidenter,
+            tillbud och förbättringsförslag genomfördes i slutet av arbetspasset.
+            Inga incidenter rapporterade denna vecka (se separat logg för
+            systematiskt arbetsmiljöarbete, AFS 2001:1).
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="page-num">4 / 10</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 5 — CHECKLIST: Markarbeten
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Kontrollpunkter · Markarbeten</span>
+    </div>
+
+    <div class="page-content">
+        <h1 id="markarbeten"><span class="chapter-num">Del 4 · Egenkontroll</span>Markarbeten</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="section-header">
+            <div class="section-header-title">Markarbeten</div>
+            <div class="section-header-ref">Mall 11 · Markarbeten</div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">06</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Veckonummer och delsträcka</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="value-pill">v.17 · V2B–V2C · 238 m</span>
+                </div>
+            </div>
+            <div class="kontrollpunkt-thumbs"></div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">07</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Uppfylls fyllnadshöjden för rådande markförhållande?</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">Min 0,55 m över rör</span>
+                </div>
+                <div class="kontrollpunkt-note">Åkermark — fyllnadshöjd minst 0,55 m över rör enligt AMA-tabell. Uppmätt 0,58–0,65 m.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-02">
+                    <img class="thumb" src="images/04-trench-mud-closeup.jpg" alt="Fyllnadshöjd">
+                    <div class="thumb-ref">P3</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">08</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Fraktion/sort på ledningsbädd och kringfyllnad</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">Ledningsbädd 0–8 mm · Kringfyllnad 0–16 mm</span>
+                </div>
+                <div class="kontrollpunkt-note">Båda från Bodafors Grus AB. Transportsedlar arkiverade (BD-2026-B-4412, 4413).</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-02">
+                    <img class="thumb" src="images/01-excavator-gravel.jpg" alt="Ledningsbädd 0-8">
+                    <div class="thumb-ref">P3</div>
+                </a>
+                <a class="thumb-wrap" href="#bild-03">
+                    <img class="thumb" src="images/05-trench-measuring.jpg" alt="Kringfyllnad 0-16">
+                    <div class="thumb-ref">P4</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">09</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Foto på öppen ledningsgrav</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <a class="value-pill xref" href="#bild-01" style="border-bottom:none;">Se bildbilaga sida 7 →</a>
+                </div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-01">
+                    <img class="thumb" src="images/03-volvo-trench.jpg" alt="Öppen grav">
+                    <div class="thumb-ref">P2</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">10</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Är markeringsnät förlagt enligt anvisning?</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">30 cm över rör · hela sträckan</span>
+                </div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <a class="thumb-wrap" href="#bild-03">
+                    <img class="thumb" src="images/09-trench-detail.jpg" alt="Markeringsnät">
+                    <div class="thumb-ref">P4</div>
+                </a>
+                <a class="thumb-wrap" href="#bild-04">
+                    <img class="thumb" src="images/07-kobelco-landscape.jpg" alt="Markeringsnät 2">
+                    <div class="thumb-ref">P5</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">11</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Är distanspåle placerad på berörd sträcka?</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-na">Ej relevant</span>
+                </div>
+                <div class="kontrollpunkt-note">Sträckan följer befintlig vägkant inom befintligt ledningsstråk — distanspåle ej tillämpligt enligt projektörens anvisning § 4.2. Se foto av vägkant som dokumenterar befintligt stråk.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <div class="thumb-wrap">
+                    <img class="thumb" src="images/03-volvo-trench.jpg" alt="Vägkant med befintligt stråk">
+                    <div class="thumb-ref">P1</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kontrollpunkt">
+            <div class="kontrollpunkt-num">12</div>
+            <div class="kontrollpunkt-body">
+                <div class="kontrollpunkt-question">Är söktråden funktionstestad?</div>
+                <div class="kontrollpunkt-meta">
+                    <span class="status status-ok">Godkänt</span>
+                    <span class="value-pill">Resistans 4,2 Ω · OK</span>
+                </div>
+                <div class="kontrollpunkt-note">Test med RD7100-sändare vid V2B och V2C — signal mottagen utan avbrott längs hela sträckan. Markresistiviteten uppmätt till ca 800 Ωm (våt vårlera) — värdet ligger inom normalt intervall för 238 m stråk.</div>
+            </div>
+            <div class="kontrollpunkt-thumbs">
+                <div class="thumb-wrap">
+                    <img class="thumb" src="images/06-liebherr-drill.jpg" alt="Söktrådstest">
+                    <div class="thumb-ref">P6</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="page-num">5 / 10</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 6 — SIGNATURES & APPROVAL
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Signaturer &amp; godkännande</span>
+    </div>
+
+    <div class="page-content">
+        <h1 id="signaturer"><span class="chapter-num">Del 5 · Avslut</span>Signaturer &amp; godkännande</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Undertecknad schaktare intygar att ovanstående uppgifter stämmer
+        och att arbetet är utfört enligt gällande tillstånd, TA-plan och
+        interna egenkontrollprogram. Kontrollansvarig godkänner
+        egenkontrollen och frisläpper sträckan för nästa arbetsmoment.</p>
+
+        <div class="signature-grid">
+            <div class="signature-card">
+                <div class="signature-card-label">Schaktare — utförd av</div>
+                <div class="signature-box">
+                    <div class="signature-mark">A. Lindqvist</div>
+                </div>
+                <div class="signature-person">
+                    <img class="signature-avatar" src="images/avatars/anders-lindqvist.jpg" alt="Anders Lindqvist">
+                    <div class="signature-person-text">
+                        <div class="signature-name">Anders Lindqvist</div>
+                        <div class="signature-role">Schaktare · Cert 48291</div>
+                        <div class="signature-date">Signerat 2026-04-24 · 17:12</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="signature-card">
+                <div class="signature-card-label">Kontrollansvarig — godkänd av</div>
+                <div class="signature-box">
+                    <div class="signature-mark">M. Forslund</div>
+                </div>
+                <div class="signature-person">
+                    <img class="signature-avatar" src="images/avatars/maria-forslund.jpg" alt="Maria Forslund">
+                    <div class="signature-person-text">
+                        <div class="signature-name">Maria Forslund</div>
+                        <div class="signature-role">Arbetsledare · Projekt BD-2026-003</div>
+                        <div class="signature-date">Signerat 2026-04-24 · 18:45</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="approval-banner">
+            <div class="approval-icon">✓</div>
+            <div>
+                <div class="approval-title">Egenkontroll godkänd</div>
+                <div class="approval-body">
+                    10 av 11 bedömda kontrollpunkter godkända, 1 markerad som
+                    ej relevant (distanspåle). Inga ej-godkända punkter.
+                    Sträckan V2B–V2C frisläpps för fiberblåsning.
+                    Rapporten arkiveras i projektets SharePoint-bibliotek
+                    <strong>BD-2026-003 · Egenkontroller</strong>.
+                </div>
+            </div>
+        </div>
+
+        <h2>Bilagor &amp; spårbarhet</h2>
+        <ul>
+            <li>TA-plan TA-BD-26-003-V2 (PDF)</li>
+            <li>Transportsedlar Bodafors Grus AB (BD-2026-B-4412, 4413)</li>
+            <li>Söktrådsmätning RD7100 rålogg (CSV)</li>
+            <li>Samtliga 12 foton med EXIF-data (bildbank)</li>
+            <li>Incidentloggar vecka 17, 2026 (inga registrerade)</li>
+        </ul>
+
+        <div class="tip-box">
+            <strong>Rapport-ID:</strong> <code>BD-2026-003-EK-v17-001</code> ·
+            Genererad <code>2026-04-24 18:46</code> av
+            <code>NSChecks-ReportRenderer</code>.
+        </div>
+
+        <p style="margin-top: 4mm; font-size: 8pt; color: var(--ns-gray-400); line-height: 1.5;">
+            <strong style="color: var(--ns-gray-500);">Arkivering &amp; GDPR:</strong>
+            Denna rapport arkiveras i projektets SharePoint-bibliotek enligt
+            dataskyddsförordningen (EU 2016/679, GDPR) och bevaras i minst
+            10 år som anläggningsdokumentation. Personuppgifter (namn,
+            signaturer, GPS-koordinater) behandlas med stöd av berättigat
+            intresse för att fullgöra entreprenörsansvar enligt
+            Plan- och bygglagen (2010:900) och gallras vid projektavslut
+            om ingen rättslig skyldighet kräver fortsatt bevarande.
+            Fotografiska bildbevis följer som bilaga på sidorna 7–10.
+        </p>
+    </div>
+
+    <div class="page-footer">
+        <span>Egenkontroll · BD-2026-003 · Delsträcka V2B–V2C</span>
+        <span class="page-num">6 / 10</span>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 7 — BILDBILAGA (LANDSCAPE): Open excavation — BILD 01
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page photo-page" id="bild-01">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Bildbilaga · Bild 01 av 04</span>
+    </div>
+
+    <div class="photo-stage landscape">
+        <img src="images/02-excavator-urban.jpg" alt="Öppen schakt V2B+80m, mot V2C">
+    </div>
+
+    <div class="photo-caption">
+        <div class="photo-caption-ref">BILD&nbsp;01 · P2</div>
+        <div class="photo-caption-title">Öppen schakt med synligt schaktdjup, V2B +80 m mot V2C</div>
+        <div class="photo-caption-meta">
+            2026-04-24 · 11:38<br>
+            57°26'18"N · 14°44'02"E<br>
+            <a class="gps-link" href="https://www.google.com/maps/place/57.4383,14.7339/@57.4383,14.7339,18z/data=!3m1!1e3" target="_blank" rel="noopener">Visa på satellit<span class="gps-arrow">↗</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 8 — BILDBILAGA (PORTRAIT): Trench detail — BILD 02
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page photo-page" id="bild-02">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Bildbilaga · Bild 02 av 04</span>
+    </div>
+
+    <div class="photo-stage portrait">
+        <img src="images/05-trench-measuring.jpg" alt="Schaktdjup och rörbädd P3">
+    </div>
+
+    <div class="photo-caption">
+        <div class="photo-caption-ref">BILD&nbsp;02 · P3</div>
+        <div class="photo-caption-title">Schaktdjup och stenfri ledningsbädd, V2B +98 m</div>
+        <div class="photo-caption-meta">
+            2026-04-24 · 13:05<br>
+            57°26'24"N · 14°44'17"E<br>
+            <a class="gps-link" href="https://www.google.com/maps/place/57.4400,14.7381/@57.4400,14.7381,18z/data=!3m1!1e3" target="_blank" rel="noopener">Visa på satellit<span class="gps-arrow">↗</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 9 — BILDBILAGA (LANDSCAPE): Markeringsnät — BILD 03
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page photo-page" id="bild-03">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Bildbilaga · Bild 03 av 04</span>
+    </div>
+
+    <div class="photo-stage landscape">
+        <img src="images/06-liebherr-drill.jpg" alt="Markeringsnät och söktråd, P4">
+    </div>
+
+    <div class="photo-caption">
+        <div class="photo-caption-ref">BILD&nbsp;03 · P4</div>
+        <div class="photo-caption-title">Markeringsnät och söktråd förlagt 30 cm över rör, V2B +140 m</div>
+        <div class="photo-caption-meta">
+            2026-04-24 · 14:21<br>
+            57°26'31"N · 14°44'35"E<br>
+            <a class="gps-link" href="https://www.google.com/maps/place/57.4419,14.7431/@57.4419,14.7431,18z/data=!3m1!1e3" target="_blank" rel="noopener">Visa på satellit<span class="gps-arrow">↗</span></a>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE 10 — BILDBILAGA (LANDSCAPE): Completed work — BILD 04
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page photo-page" id="bild-04">
+    <div class="page-header">
+        <span class="page-header-brand">NSCHECKS</span>
+        <span class="page-header-dot"></span>
+        <span class="page-header-section">Bildbilaga · Bild 04 av 04</span>
+    </div>
+
+    <div class="photo-stage landscape">
+        <img src="images/07-kobelco-landscape.jpg" alt="Färdig återställning V2C">
+    </div>
+
+    <div class="photo-caption">
+        <div class="photo-caption-ref">BILD&nbsp;04 · P5</div>
+        <div class="photo-caption-title">Färdig återställning med packningsgrus, V2B +190 m mot V2C</div>
+        <div class="photo-caption-meta">
+            2026-04-24 · 15:47<br>
+            57°26'39"N · 14°44'48"E<br>
+            <a class="gps-link" href="https://www.google.com/maps/place/57.4442,14.7467/@57.4442,14.7467,18z/data=!3m1!1e3" target="_blank" rel="noopener">Visa på satellit<span class="gps-arrow">↗</span></a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

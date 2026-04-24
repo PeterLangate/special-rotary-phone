@@ -612,6 +612,135 @@ body {
 .glove .bin.s-no { background: #D00000; color: #fff; border-color: #D00000; }
 .glove .photo-add { border-style: solid; }
 
+/* ══════════════════════════════════════════════════
+   PROJECT LIST
+   ══════════════════════════════════════════════════ */
+.proj {
+    display: flex; align-items: stretch; gap: 12px; padding: 14px;
+    margin-bottom: 10px; background: var(--bg);
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    border-left: 4px solid var(--ns);
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+}
+.proj:active { transform: scale(0.99); }
+.proj:hover { border-color: var(--ns); }
+.proj.complete { border-left-color: var(--ok); }
+.proj.archived { border-left-color: var(--tm); opacity: 0.85; }
+.proj-main { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.proj-name { font-size: 15px; font-weight: 700; color: var(--ts); line-height: 1.25; }
+.proj-sub { font-size: 12px; color: var(--tm); }
+.proj-stats {
+    display: flex; gap: 14px; margin-top: 6px;
+    font-size: 11px; color: var(--tm); font-variant-numeric: tabular-nums;
+}
+.proj-stats b { color: var(--ts); font-weight: 700; }
+.proj-progress-bar { height: 4px; background: var(--b); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.proj-progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; background: var(--ns); }
+.proj-actions {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; flex-shrink: 0; padding-left: 6px; border-left: 1px dashed var(--b);
+}
+.proj-arrow { color: var(--b); font-size: 18px; }
+
+/* Quick-photo button (circular) — used on project + installation cards */
+.qp-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    color: var(--tm); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--tr); flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+.qp-btn:hover, .qp-btn.has-photos { border-color: var(--ns); color: var(--ns); background: var(--ns-light); }
+.qp-btn-count {
+    position: absolute; top: -4px; right: -4px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    background: var(--ns); color: #fff; border-radius: 9px;
+    font-size: 10px; font-weight: 700; line-height: 18px; text-align: center;
+    display: none;
+}
+.qp-btn-wrap { position: relative; flex-shrink: 0; }
+.qp-btn-wrap.has-photos .qp-btn-count { display: block; }
+
+/* ══════════════════════════════════════════════════
+   INCIDENT PROMPT (after checklist submit)
+   ══════════════════════════════════════════════════ */
+.extra-prompt {
+    margin: 0 20px 18px; padding: 16px 18px;
+    background: rgba(255,255,255,0.14);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    border-radius: var(--rl);
+    text-align: left;
+}
+.extra-prompt-title {
+    font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px;
+}
+.extra-prompt-sub {
+    font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.4;
+}
+.extra-prompt-btns { display: flex; gap: 10px; margin-top: 14px; }
+.extra-btn {
+    flex: 1; padding: 12px 14px; border-radius: var(--r);
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    cursor: pointer; border: none; min-height: 48px;
+    transition: all var(--tr);
+}
+.extra-btn-yes { background: #fff !important; color: var(--ns-dark) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+.extra-btn-yes:hover { background: #f3f3f3 !important; }
+.extra-btn-no {
+    background: rgba(0,0,0,0.12) !important; color: #fff !important;
+    border: 1.5px solid rgba(255,255,255,0.55);
+}
+.extra-btn-no:hover { background: rgba(0,0,0,0.22) !important; }
+
+/* ══════════════════════════════════════════════════
+   RAPPORTERA INCIDENT button (on inspections view)
+   ══════════════════════════════════════════════════ */
+.report-incident-btn {
+    margin: 6px 16px 12px; padding: 12px 14px;
+    background: var(--bg-s); border: 1.5px dashed var(--w);
+    border-radius: var(--rl); color: var(--w);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all var(--tr); -webkit-tap-highlight-color: transparent;
+}
+.report-incident-btn:hover { background: var(--wb); }
+.report-incident-btn-icon { font-size: 18px; }
+.report-incident-btn-text { flex: 1; }
+.report-incident-btn-sub { font-size: 11px; color: var(--tm); font-weight: 500; margin-top: 1px; }
+
+/* ══════════════════════════════════════════════════
+   INCIDENT TYPE CHOOSER (Choice tiles)
+   ══════════════════════════════════════════════════ */
+.type-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.type-tile {
+    padding: 18px 12px; border-radius: var(--rl);
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    cursor: pointer; transition: all var(--tr); min-height: 90px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; text-align: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.type-tile:active { transform: scale(0.98); }
+.type-tile.selected {
+    background: var(--ns-light); border-color: var(--ns); color: var(--ns);
+}
+.type-tile-icon { font-size: 26px; line-height: 1; }
+.type-tile-label { font-size: 13px; font-weight: 700; color: var(--ts); }
+.type-tile.selected .type-tile-label { color: var(--ns-dark); }
+.type-tile.full-row { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 14px; padding: 14px 16px; min-height: 64px; }
+.type-tile.full-row .type-tile-icon { font-size: 24px; }
+
+/* Dark variants */
+.dark .proj { background: var(--bg); border-color: var(--b); }
+.dark .qp-btn { background: var(--bg-s); border-color: var(--b); color: var(--t); }
+.dark .extra-prompt { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.25); }
+.dark .report-incident-btn { background: var(--bg-s); }
+.dark .type-tile { background: var(--bg-s); border-color: var(--b); }
+
 @media (max-width: 420px) {
     body { padding: 0; }
     .phone { border-radius: 0; height: 100dvh; width: 100%; }
@@ -623,9 +752,9 @@ body {
 <div class="phone">
 
     <!-- ═══════════════════════════════════════════════
-         VIEW 1: INSTALLATION LIST
+         VIEW 0: PROJECT LIST
          ═══════════════════════════════════════════════ -->
-    <div class="spa-view active" id="view-installations">
+    <div class="spa-view active" id="view-projects">
         <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
         <div class="app-bar">
             <button class="app-bar-back" style="visibility:hidden;">&#8592;</button>
@@ -636,7 +765,37 @@ body {
                 <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
             </svg>
             <div class="app-bar-content">
-                <div class="app-bar-title">Installationer</div>
+                <div class="app-bar-title">Projekt</div>
+            </div>
+            <div class="app-bar-actions">
+                <button class="app-bar-btn" onclick="App.toggleDark()" title="Mörkt läge">&#9789;</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">&#128269;</span>
+                <input class="search" id="projSearch" placeholder="Sök projekt, ort..." />
+            </div>
+        </div>
+        <div class="list" id="projList"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 1: INSTALLATION LIST
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-installations">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="app-bar">
+            <button class="app-bar-back" onclick="App.navigateTo('view-projects')">&#8592;</button>
+            <svg class="ns-mark" viewBox="0 0 15 20" width="16" height="22" style="flex-shrink:0;">
+                <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+            </svg>
+            <div class="app-bar-content">
+                <div class="app-bar-title" id="instHdrTitle">Installationer</div>
+                <div class="app-bar-sub" id="instHdrSub">Projekt</div>
             </div>
             <div class="app-bar-actions">
                 <button class="app-bar-btn" id="gloveToggle" onclick="App.toggleGlove()" title="Handskläge">&#9758;</button>
@@ -644,9 +803,8 @@ body {
             </div>
         </div>
         <div class="project-meta">
-            <div class="project-meta-text"><b>Östra Göinge Knislinge Etapp 1</b> &middot; Fiber</div>
-            <div class="project-meta-text" style="font-variant-numeric:tabular-nums;">8/24 klara</div>
-            <!-- 8 complete, 1 active (tech is here), 11 contractor-prepped (3/7), 4 not started -->
+            <div class="project-meta-text" id="projMetaText"><b>Östra Göinge Knislinge Etapp 1</b> &middot; Fiber</div>
+            <div class="project-meta-text" id="projMetaProgress" style="font-variant-numeric:tabular-nums;">8/24 klara</div>
         </div>
         <div class="seg-progress" id="segProgress"></div>
         <div style="display:flex;gap:12px;padding:0 16px 6px;font-size:10px;color:var(--tm);font-weight:600;">
@@ -703,6 +861,7 @@ body {
                 <div class="cust-addr" id="inspCustAddr">Sjövägen 1, Immeln</div>
             </div>
             <div class="cust-icon-actions">
+                <button class="cust-icon-btn" onclick="App.quickPhoto('installation')" title="Lägg till foto på installation">&#128247;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Ringer...')" title="Ring">&#128222;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Öppnar karta...')" title="Navigera">&#128506;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Öppnar e-post...')" title="E-post">&#128231;</button>
@@ -713,7 +872,7 @@ body {
         <div class="progress-hero">
             <div class="progress-number" id="inspProgressNum">5<span>/7</span></div>
             <div class="progress-text">
-                <div class="progress-title" id="inspProgressTitle">5 av 7 checklistor klara</div>
+                <div class="progress-title" id="inspProgressTitle">Checklistor klara</div>
                 <div class="progress-sub" id="inspProgressSub">2 kvar att slutföra</div>
             </div>
         </div>
@@ -726,6 +885,16 @@ body {
         </div>
 
         <div class="list" id="inspList" style="margin-top:4px;"></div>
+
+        <!-- Rapportera incident — always available for the installation, not shown in dropdown -->
+        <div class="report-incident-btn" onclick="App.openIncidentWizard()">
+            <span class="report-incident-btn-icon">&#9888;</span>
+            <div class="report-incident-btn-text">
+                <div>Rapportera incident</div>
+                <div class="report-incident-btn-sub">Olycka, tillbud, idé, förbättringsförslag ...</div>
+            </div>
+            <span style="color:var(--tm);font-size:18px;">&#8250;</span>
+        </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════
@@ -1096,13 +1265,200 @@ body {
             <div class="success-title">Checklista inskickad!</div>
             <div class="success-sub" id="successSub">Egenkontroll kundinstallation — I-11809 Immeln 5:3</div>
             <div class="success-progress" id="successProgress">Installation: 6/7 klara</div>
-            <button class="success-btn" onclick="App.onWizardSubmitSuccess()">&#8592; Tillbaka till installationen</button>
+
+            <!-- Extra-report prompt (hidden for Incident checklist) -->
+            <div class="extra-prompt" id="extraPrompt">
+                <div class="extra-prompt-title">Några ytterligare att rapportera?</div>
+                <div class="extra-prompt-sub">Incidenter, avvikelser, insikter, idéer, anekdoter, lärdomar ...</div>
+                <div class="extra-prompt-btns">
+                    <button class="extra-btn extra-btn-no" onclick="App.onWizardSubmitSuccess()">Nej, klart</button>
+                    <button class="extra-btn extra-btn-yes" onclick="App.openIncidentWizardFromSuccess()">Ja, rapportera &#8594;</button>
+                </div>
+            </div>
+
+            <button class="success-btn" id="successBtn" onclick="App.onWizardSubmitSuccess()" style="display:none;">&#8592; Tillbaka till installationen</button>
         </div>
         <div class="completion-overlay" id="completeOverlay">
             <div class="completion-particles" id="particles"></div>
             <div class="completion-icon">&#10003;</div>
             <div class="completion-text">Alla punkter ifyllda!</div>
             <div class="completion-sub">Signera och skicka in</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 4: INCIDENT WIZARD (Tillbud / Avvikelse / Idé)
+         Available for every installation but not listed in
+         the regular inspection dropdown.
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-incident">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="wiz-header">
+            <div class="wiz-header-top">
+                <button class="app-bar-back" onclick="Incident.back()">&#8592;</button>
+                <svg class="ns-mark" viewBox="0 0 15 20" width="14" height="18" style="flex-shrink:0;">
+                    <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                    <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+                </svg>
+                <div class="wiz-header-info">
+                    <div class="wiz-title">Rapportera incident</div>
+                    <div class="wiz-sub" id="incHdrSub">I-11809 &middot; Immeln 5:3</div>
+                </div>
+            </div>
+            <div class="wiz-header-row2">
+                <div class="step-counter" id="incStepCounter">Steg 1 / 10</div>
+                <div class="wiz-header-chips">
+                    <div class="autosave-chip"><div class="autosave-dot"></div><span>Sparad</span></div>
+                </div>
+            </div>
+            <div class="prog-track" id="incProgTrack"></div>
+        </div>
+
+        <div class="vp" id="incVp">
+            <div class="track" id="incTrack">
+
+                <!-- Step 1: Type choice -->
+                <div class="card">
+                    <div class="card-label" style="margin-top:0;">Typ av rapport</div>
+                    <div class="nbadge">1 / 10</div>
+                    <div class="card-q">Vilken typ av händelse vill du rapportera?<span class="req-dot"></span></div>
+                    <div class="card-hint">Välj den kategori som bäst beskriver det du vill rapportera.</div>
+                    <div class="type-grid">
+                        <div class="type-tile" onclick="Incident.chooseType('olycka', this)">
+                            <div class="type-tile-icon">&#128680;</div>
+                            <div class="type-tile-label">Olycka</div>
+                        </div>
+                        <div class="type-tile" onclick="Incident.chooseType('nara-olycka', this)">
+                            <div class="type-tile-icon">&#9888;</div>
+                            <div class="type-tile-label">Nära olycka</div>
+                        </div>
+                        <div class="type-tile" onclick="Incident.chooseType('material', this)">
+                            <div class="type-tile-icon">&#128736;</div>
+                            <div class="type-tile-label">Materialproblem</div>
+                        </div>
+                        <div class="type-tile" onclick="Incident.chooseType('forbattring', this)">
+                            <div class="type-tile-icon">&#128161;</div>
+                            <div class="type-tile-label">Förbättringsförslag</div>
+                        </div>
+                        <div class="type-tile full-row" onclick="Incident.chooseType('ide', this)">
+                            <div class="type-tile-icon">&#10024;</div>
+                            <div class="type-tile-label">Idé / anekdot / lärdom</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="card">
+                    <div class="nbadge">2 / 10</div>
+                    <div class="card-q">Vad hände? Beskriv händelsen.<span class="req-dot"></span></div>
+                    <textarea class="cmt" id="incF2" placeholder="Beskriv så utförligt du kan..." rows="6" style="min-height:140px;font-size:16px;" oninput="Incident.textSet(2,this)"></textarea>
+                    <div class="attach-chips">
+                        <div class="attach-chip" onclick="Incident.addPhoto(this,2)"><span class="attach-chip-icon">&#128247;</span> Foto</div>
+                        <div class="attach-chip" onclick="Incident.toggleMic(this)"><span class="attach-chip-icon">&#127908;</span> Röst</div>
+                    </div>
+                    <div class="photo-area" id="incPhotoArea2" style="display:none;">
+                        <div class="photo-grid">
+                            <div class="photo-add" onclick="Incident.addPhoto(this,2)">&#128247;<span>Foto</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="card">
+                    <div class="nbadge">3 / 10</div>
+                    <div class="card-q">I vilket arbetsmoment inträffade det?<span class="req-dot"></span></div>
+                    <textarea class="cmt" id="incF3" placeholder="T.ex. Under grävning av schakt..." rows="4" style="min-height:100px;font-size:16px;" oninput="Incident.textSet(3,this)"></textarea>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="card">
+                    <div class="nbadge">4 / 10</div>
+                    <div class="card-q">Tid och plats?<span class="req-dot"></span></div>
+                    <div class="fi-group">
+                        <div class="fi-label">Plats / adress</div>
+                        <input class="fi" id="incF4a" placeholder="T.ex. Sjövägen 1, Immeln" oninput="Incident.textSet('4a',this)" />
+                    </div>
+                    <div class="fi-group">
+                        <div class="fi-label">Datum och tid</div>
+                        <input class="fi" type="datetime-local" id="incF4b" oninput="Incident.textSet('4b',this)" />
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="card">
+                    <div class="nbadge">5 / 10</div>
+                    <div class="card-q">Varför uppstod händelsen?</div>
+                    <div class="card-hint">Beskriv bakomliggande orsaker — gärna flera om de finns.</div>
+                    <textarea class="cmt" id="incF5" placeholder="Orsaker..." rows="4" style="min-height:100px;font-size:16px;" oninput="Incident.textSet(5,this)"></textarea>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="card">
+                    <div class="nbadge">6 / 10</div>
+                    <div class="card-q">Vad kunde händelsen resulterat i?</div>
+                    <div class="card-hint">Värsta troliga utfall — viktigt för riskbedömning.</div>
+                    <textarea class="cmt" id="incF6" placeholder="Möjliga konsekvenser..." rows="4" style="min-height:100px;font-size:16px;" oninput="Incident.textSet(6,this)"></textarea>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="card">
+                    <div class="nbadge">7 / 10</div>
+                    <div class="card-q">Vad kan göras för att förhindra upprepning?</div>
+                    <textarea class="cmt" id="incF7" placeholder="Förslag på åtgärder..." rows="4" style="min-height:100px;font-size:16px;" oninput="Incident.textSet(7,this)"></textarea>
+                </div>
+
+                <!-- Step 8 -->
+                <div class="card">
+                    <div class="nbadge">8 / 10</div>
+                    <div class="card-q">Vad behöver göras direkt?</div>
+                    <textarea class="cmt" id="incF8" placeholder="Omedelbara åtgärder..." rows="4" style="min-height:100px;font-size:16px;" oninput="Incident.textSet(8,this)"></textarea>
+                </div>
+
+                <!-- Step 9 -->
+                <div class="card">
+                    <div class="nbadge">9 / 10</div>
+                    <div class="card-q">Vem ansvarar för att det blir gjort?<span class="req-dot"></span></div>
+                    <div class="fi-group">
+                        <div class="fi-label">Ansvarig person</div>
+                        <input class="fi" id="incF9" placeholder="Namn" oninput="Incident.textSet(9,this)" />
+                    </div>
+                </div>
+
+                <!-- Step 10: Summary + signature -->
+                <div class="card">
+                    <div class="card-label">Signera och skicka</div>
+                    <div class="card-q" style="font-size:17px;">Signatur<span class="req-dot"></span></div>
+                    <div class="card-hint">Person med god kännedom av incidenten signerar.</div>
+                    <div class="sig-wrap" id="incSigW">
+                        <canvas class="sig-canvas" id="incSigC"></canvas>
+                        <div class="sig-base"></div>
+                        <div class="sig-ph">
+                            <div class="sig-ph-icon">&#9998;</div>
+                            <div class="sig-ph-text">Rita din signatur här</div>
+                        </div>
+                    </div>
+                    <div class="sig-btns">
+                        <button class="sbtn sbtn-sec" onclick="Incident.sigClear()">Rensa</button>
+                        <button class="sbtn sbtn-pri" onclick="Incident.submit()">Skicka in incident</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="bnav">
+            <button class="nb nb-prev" id="incPBtn" onclick="Incident.go(Incident.cur-1)" disabled>&#8592;</button>
+            <button class="nb nb-next" id="incNBtn" onclick="Incident.goNext()">Nästa &#8594;</button>
+        </div>
+
+        <!-- Incident success overlay -->
+        <div class="success-overlay" id="incSuccessOverlay">
+            <div class="success-icon">&#10003;</div>
+            <div class="success-title">Incident inskickad!</div>
+            <div class="success-sub" id="incSuccessSub">Tack för att du rapporterar — det hjälper oss att bli bättre.</div>
+            <button class="success-btn" onclick="Incident.close()">&#8592; Tillbaka till installationen</button>
         </div>
     </div>
 
@@ -1156,8 +1512,9 @@ body {
    APP — SPA Navigation Controller
    ══════════════════════════════════════════════════════════════ */
 const App = {
-    currentView: 'view-installations',
-    viewStack: ['view-installations'],
+    currentView: 'view-projects',
+    viewStack: ['view-projects'],
+    selectedProject: null,
     selectedInstallation: null,
     selectedInspection: null,
     currentFilter: '',
@@ -1167,7 +1524,7 @@ const App = {
         if (viewId === this.currentView) return;
         const current = document.getElementById(this.currentView);
         const target = document.getElementById(viewId);
-        const viewOrder = ['view-installations', 'view-inspections', 'view-wizard'];
+        const viewOrder = ['view-projects', 'view-installations', 'view-inspections', 'view-wizard', 'view-incident'];
         const currentIdx = viewOrder.indexOf(this.currentView);
         const targetIdx = viewOrder.indexOf(viewId);
         const goingForward = targetIdx > currentIdx;
@@ -1195,13 +1552,25 @@ const App = {
         this.currentView = viewId;
     },
 
+    openProject(projData) {
+        this.selectedProject = projData;
+        document.getElementById('instHdrTitle').textContent = projData.name;
+        document.getElementById('instHdrSub').textContent = projData.region + ' · ' + projData.category;
+        document.getElementById('projMetaText').innerHTML = '<b>' + projData.name + '</b> · ' + projData.category;
+        document.getElementById('projMetaProgress').textContent = projData.installationsDone + '/' + projData.installationsTotal + ' klara';
+        // In this mockup every project re-uses the same installation data set
+        InstList.render(this.currentFilter || null);
+        InstList.renderSegProgress();
+        this.navigateTo('view-installations');
+    },
+
     openInstallation(instData) {
         this.selectedInstallation = instData;
         // Save as last visited
         try { localStorage.setItem('nschecks_last', JSON.stringify({ idx: InstList.data.indexOf(instData), ts: Date.now() })); } catch(e) {}
 
         document.getElementById('inspHdrTitle').textContent = instData.name;
-        document.getElementById('inspHdrSub').textContent = 'Östra Göinge Knislinge Etapp 1';
+        document.getElementById('inspHdrSub').textContent = this.selectedProject ? this.selectedProject.name : 'Östra Göinge Knislinge Etapp 1';
         const parts = instData.addr.split(' \u00b7 ');
         document.getElementById('inspCustName').textContent = parts[0] || '';
         document.getElementById('inspCustAddr').textContent = parts[1] || '';
@@ -1213,11 +1582,12 @@ const App = {
         document.getElementById('inspAvatar').textContent = initials.toUpperCase();
         // Display-size progress
         document.getElementById('inspProgressNum').innerHTML = instData.done + '<span>/' + instData.total + '</span>';
-        document.getElementById('inspProgressTitle').textContent = instData.done + ' av ' + instData.total + ' checklistor klara';
         const remaining = instData.total - instData.done;
+        var title = 'Checklistor klara';
         var subText = 'Alla klara!';
         if (remaining === 1) subText = 'Sista checklistan kvar';
         else if (remaining > 1) subText = remaining + ' kvar att slutföra';
+        document.getElementById('inspProgressTitle').textContent = title;
         document.getElementById('inspProgressSub').textContent = subText;
         // Load inspection set for this installation's status
         InspList.loadForInstallation(instData);
@@ -1269,6 +1639,35 @@ const App = {
         this.navigateTo('view-inspections');
     },
 
+    openIncidentWizard() {
+        var sub = '';
+        if (this.selectedInstallation) sub = this.selectedInstallation.name;
+        else if (this.selectedProject) sub = this.selectedProject.name;
+        else sub = 'Ny incidentrapport';
+        document.getElementById('incHdrSub').textContent = sub;
+        Incident.reset();
+        this.navigateTo('view-incident');
+    },
+
+    openIncidentWizardFromSuccess() {
+        document.getElementById('successOverlay').classList.remove('show');
+        this.openIncidentWizard();
+    },
+
+    quickPhoto(scope) {
+        // scope: 'project' | 'installation'
+        var label = scope === 'project' ? 'projektet' : 'installationen';
+        if (scope === 'project' && this.selectedProject) {
+            this.selectedProject.photoCount = (this.selectedProject.photoCount || 0) + 1;
+            ProjList.render();
+        } else if (scope === 'installation' && this.selectedInstallation) {
+            this.selectedInstallation.photoCount = (this.selectedInstallation.photoCount || 0) + 1;
+            InstList.render(this.currentFilter || null);
+        }
+        this.toast('Foto tillagt på ' + label);
+        if (navigator.vibrate) navigator.vibrate(10);
+    },
+
     toggleDark() {
         document.body.classList.toggle('dark');
         if (navigator.vibrate) navigator.vibrate(10);
@@ -1301,6 +1700,105 @@ const App = {
         el.textContent = m; el.classList.add('show');
         clearTimeout(this._tt);
         this._tt = setTimeout(function() { el.classList.remove('show'); }, 2200);
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PROJECT LIST
+   ══════════════════════════════════════════════════════════════ */
+const ProjList = {
+    data: [
+        {
+            name: "Östra Göinge Knislinge Etapp 1",
+            region: "Skåne nord-öst",
+            category: "Fiber",
+            installationsTotal: 24,
+            installationsDone: 8,
+            photoCount: 3,
+            status: "progress"
+        },
+        {
+            name: "Kristianstad Centrum Etapp 3",
+            region: "Skåne öst",
+            category: "Fiber",
+            installationsTotal: 18,
+            installationsDone: 18,
+            photoCount: 12,
+            status: "complete"
+        },
+        {
+            name: "Hässleholm Nord",
+            region: "Skåne mitt",
+            category: "Fiber",
+            installationsTotal: 12,
+            installationsDone: 4,
+            photoCount: 1,
+            status: "progress"
+        },
+        {
+            name: "Bromölla Norra",
+            region: "Skåne syd-öst",
+            category: "Fiber",
+            installationsTotal: 9,
+            installationsDone: 0,
+            photoCount: 0,
+            status: "new"
+        },
+    ],
+
+    renderCard(p, idx) {
+        var pct = p.installationsTotal ? Math.round((p.installationsDone / p.installationsTotal) * 100) : 0;
+        var statusCls = p.status === 'complete' ? 'complete' : (p.status === 'new' ? 'archived' : '');
+        var hasPhotos = (p.photoCount || 0) > 0 ? ' has-photos' : '';
+        return '<div class="proj ' + statusCls + '" onclick="App.openProject(ProjList.data[' + idx + '])">' +
+            '<div class="proj-main">' +
+                '<div class="proj-name">' + p.name + '</div>' +
+                '<div class="proj-sub">' + p.region + ' &middot; ' + p.category + '</div>' +
+                '<div class="proj-stats">' +
+                    '<span><b>' + p.installationsDone + '/' + p.installationsTotal + '</b> installationer klara</span>' +
+                    '<span>&#128247; <b>' + (p.photoCount || 0) + '</b> foton</span>' +
+                '</div>' +
+                '<div class="proj-progress-bar"><div class="proj-progress-fill" style="width:' + pct + '%;"></div></div>' +
+            '</div>' +
+            '<div class="proj-actions">' +
+                '<div class="qp-btn-wrap' + hasPhotos + '" onclick="event.stopPropagation();ProjList.quickPhoto(' + idx + ',this);">' +
+                    '<button class="qp-btn" title="Lägg till foto på projekt">&#128247;</button>' +
+                    '<span class="qp-btn-count">' + (p.photoCount || 0) + '</span>' +
+                '</div>' +
+                '<div class="proj-arrow">&#8250;</div>' +
+            '</div>' +
+        '</div>';
+    },
+
+    quickPhoto(idx, wrapEl) {
+        var p = this.data[idx];
+        if (!p) return;
+        p.photoCount = (p.photoCount || 0) + 1;
+        this.render();
+        App.toast('Foto tillagt på projektet');
+        if (navigator.vibrate) navigator.vibrate(10);
+    },
+
+    render() {
+        var list = document.getElementById('projList');
+        if (!list) return;
+        var html = '';
+        var self = this;
+        this.data.forEach(function(p, i) { html += self.renderCard(p, i); });
+        list.innerHTML = html;
+    },
+
+    init() {
+        this.render();
+        var search = document.getElementById('projSearch');
+        if (search) {
+            search.addEventListener('input', function(e) {
+                var q = e.target.value.toLowerCase();
+                document.querySelectorAll('#projList .proj').forEach(function(el) {
+                    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+                });
+            });
+        }
     }
 };
 
@@ -1349,6 +1847,7 @@ const InstList = {
         var statusCls = 'status-' + d.status;
         var preppedLabel = d.status === 'prepped'
             ? '<div class="inst-prepped-label">Entreprenör 3/7</div>' : '';
+        var hasPhotos = (d.photoCount || 0) > 0 ? ' has-photos' : '';
         return '<div class="inst ' + statusCls + '" onclick="App.openInstallation(InstList.data[' + idx + '])">' +
             '<div class="inst-info">' +
                 '<div class="inst-name">' + d.name + '</div>' +
@@ -1357,8 +1856,21 @@ const InstList = {
                 '<div class="inst-progress-bar"><div class="inst-progress-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
             '</div>' +
             '<div class="inst-count">' + d.done + '/' + d.total + '</div>' +
+            '<div class="qp-btn-wrap' + hasPhotos + '" onclick="event.stopPropagation();InstList.quickPhoto(' + idx + ');" style="margin-right:4px;">' +
+                '<button class="qp-btn" title="Lägg till foto på installation">&#128247;</button>' +
+                '<span class="qp-btn-count">' + (d.photoCount || 0) + '</span>' +
+            '</div>' +
             '<div class="inst-arrow">&#8250;</div>' +
         '</div>';
+    },
+
+    quickPhoto(idx) {
+        var d = this.data[idx];
+        if (!d) return;
+        d.photoCount = (d.photoCount || 0) + 1;
+        this.render(App.currentFilter || null);
+        App.toast('Foto tillagt på installationen');
+        if (navigator.vibrate) navigator.vibrate(10);
     },
 
     renderSegProgress() {
@@ -2372,8 +2884,202 @@ const Wiz = {
 };
 
 /* ══════════════════════════════════════════════════════════════
+   INCIDENT WIZARD
+   ══════════════════════════════════════════════════════════════ */
+const Incident = {
+    STEPS: 10,
+    cur: 0,
+    ans: {},
+    sigInk: false,
+    sigLocked: false,
+    drawing: false,
+    photoIdx: 0,
+    typeLabels: {
+        'olycka': 'Olycka',
+        'nara-olycka': 'Nära olycka',
+        'material': 'Materialproblem',
+        'forbattring': 'Förbättringsförslag',
+        'ide': 'Idé / anekdot / lärdom'
+    },
+
+    reset() {
+        this.cur = 0;
+        this.ans = {};
+        this.sigInk = false;
+        this.sigLocked = false;
+        this.photoIdx = 0;
+        var view = document.getElementById('view-incident');
+        view.querySelectorAll('.type-tile').forEach(function(t) { t.classList.remove('selected'); });
+        view.querySelectorAll('textarea').forEach(function(t) { t.value = ''; });
+        view.querySelectorAll('input.fi').forEach(function(t) { t.value = ''; t.classList.remove('filled'); });
+        view.querySelectorAll('.photo-thumb').forEach(function(t) { t.remove(); });
+        view.querySelectorAll('.photo-area').forEach(function(a) { a.style.display = 'none'; });
+        var sigW = document.getElementById('incSigW');
+        if (sigW) sigW.classList.remove('inked', 'locked');
+        var sigC = document.getElementById('incSigC');
+        if (sigC) { var ctx = sigC.getContext('2d'); ctx.clearRect(0, 0, sigC.width, sigC.height); }
+        document.getElementById('incSuccessOverlay').classList.remove('show');
+        this.go(0);
+    },
+
+    go(i) {
+        this.cur = Math.max(0, Math.min(this.STEPS - 1, i));
+        document.getElementById('incTrack').style.transform = 'translateX(-' + (this.cur * 100) + '%)';
+        this.updNav();
+        this.updProg();
+        if (this.cur === this.STEPS - 1) this.initSig();
+    },
+
+    goNext() {
+        if (this.cur === this.STEPS - 1) { this.submit(); return; }
+        var reason = this.getBlockReason();
+        if (reason) { App.toast(reason); return; }
+        this.go(this.cur + 1);
+    },
+
+    getBlockReason() {
+        if (this.cur === 0 && !this.ans.type) return 'Välj typ av rapport';
+        if (this.cur === 1 && !this.ans[2]) return 'Beskriv vad som hände';
+        if (this.cur === 2 && !this.ans[3]) return 'Beskriv arbetsmomentet';
+        if (this.cur === 3 && (!this.ans['4a'] || !this.ans['4b'])) return 'Ange plats och tid';
+        if (this.cur === 8 && !this.ans[9]) return 'Ange ansvarig person';
+        return null;
+    },
+
+    updNav() {
+        var isLast = this.cur === this.STEPS - 1;
+        var n = document.getElementById('incNBtn');
+        var p = document.getElementById('incPBtn');
+        p.disabled = this.cur === 0;
+        n.className = 'nb ' + (isLast ? 'nb-submit' : 'nb-next');
+        var reason = this.getBlockReason();
+        if (isLast) {
+            n.disabled = false;
+            n.innerHTML = 'Skicka in &#10003;';
+        } else if (reason) {
+            n.disabled = true;
+            n.innerHTML = 'Nästa &#8594;<span class="nb-reason">' + reason + '</span>';
+        } else {
+            n.disabled = false;
+            n.innerHTML = 'Nästa &#8594;';
+        }
+        document.getElementById('incStepCounter').textContent = 'Steg ' + (this.cur + 1) + ' / ' + this.STEPS;
+    },
+
+    updProg() {
+        var t = document.getElementById('incProgTrack');
+        t.innerHTML = '';
+        for (var i = 0; i < this.STEPS; i++) {
+            var s = document.createElement('div');
+            s.className = 'prog-seg';
+            if (i === this.cur) s.classList.add('active');
+            else if (i < this.cur) s.classList.add('done');
+            else s.classList.add('empty');
+            (function(idx) { s.onclick = function() { Incident.go(idx); }; })(i);
+            t.appendChild(s);
+        }
+    },
+
+    chooseType(type, el) {
+        var grid = el.parentElement;
+        grid.querySelectorAll('.type-tile').forEach(function(t) { t.classList.remove('selected'); });
+        el.classList.add('selected');
+        this.ans.type = type;
+        if (navigator.vibrate) navigator.vibrate(10);
+        this.updNav();
+        var self = this;
+        setTimeout(function() { self.go(self.cur + 1); }, 400);
+    },
+
+    textSet(n, el) {
+        var v = el.value.trim();
+        if (v) { this.ans[n] = v; el.classList.add('filled'); }
+        else { delete this.ans[n]; el.classList.remove('filled'); }
+        this.updNav();
+    },
+
+    addPhoto(btn, stepIdx) {
+        var area = document.getElementById('incPhotoArea' + stepIdx);
+        if (area) area.style.display = '';
+        var grid = btn.closest('.photo-grid') || btn.closest('.photo-captured-row');
+        if (!grid) return;
+        var thumb = document.createElement('div');
+        thumb.className = 'photo-thumb';
+        var img = document.createElement('img');
+        img.src = Wiz.mockPhotos[this.photoIdx % Wiz.mockPhotos.length];
+        this.photoIdx++;
+        thumb.appendChild(img);
+        grid.insertBefore(thumb, grid.querySelector('.photo-add'));
+        App.toast('Foto tillagt');
+    },
+
+    toggleMic() {
+        App.toast('Lyssnar ...');
+        setTimeout(function() { App.toast('Röstanteckning tillagd'); }, 1200);
+    },
+
+    initSig() {
+        if (this.sigLocked) return;
+        var w = document.getElementById('incSigW');
+        var c = document.getElementById('incSigC');
+        var r = w.getBoundingClientRect();
+        c.width = r.width; c.height = r.height;
+        var ctx = c.getContext('2d');
+        ctx.strokeStyle = '#1A1A1A'; ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        var self = this;
+        function pos(e) {
+            var b = c.getBoundingClientRect();
+            var t = e.touches ? e.touches[0] : e;
+            return { x: t.clientX - b.left, y: t.clientY - b.top };
+        }
+        c.onpointerdown = function(e) {
+            if (self.sigLocked) return;
+            self.drawing = true;
+            var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y);
+            c.setPointerCapture(e.pointerId);
+            w.classList.add('inked'); self.sigInk = true;
+        };
+        c.onpointermove = function(e) {
+            if (!self.drawing) return;
+            var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke();
+        };
+        c.onpointerup = function() { self.drawing = false; };
+    },
+
+    sigClear() {
+        var c = document.getElementById('incSigC');
+        if (!c) return;
+        c.getContext('2d').clearRect(0, 0, c.width, c.height);
+        document.getElementById('incSigW').classList.remove('inked');
+        this.sigInk = false;
+    },
+
+    submit() {
+        if (!this.sigInk) { App.toast('Rita din signatur först'); return; }
+        this.sigLocked = true;
+        var typeLabel = this.typeLabels[this.ans.type] || 'Incident';
+        document.getElementById('incSuccessSub').textContent = typeLabel + ' — Tack för att du rapporterar.';
+        document.getElementById('incSuccessOverlay').classList.add('show');
+        if (navigator.vibrate) navigator.vibrate(50);
+    },
+
+    close() {
+        document.getElementById('incSuccessOverlay').classList.remove('show');
+        if (App.selectedInstallation) App.navigateTo('view-inspections');
+        else App.navigateTo('view-projects');
+    },
+
+    back() {
+        if (App.selectedInstallation) App.navigateTo('view-inspections');
+        else App.navigateTo('view-projects');
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════════════════ */
+ProjList.init();
 InstList.init();
 Wiz.initSwipe();
 Wiz.initCommentTracking();

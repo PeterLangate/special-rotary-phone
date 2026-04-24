@@ -563,6 +563,15 @@ kbd {
         <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Cost and token tips<div class="toc-dots"></div><span class="toc-page">15</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Bug-report helpers<div class="toc-dots"></div><span class="toc-page">15</span></div>
         <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Where to get help<div class="toc-dots"></div><span class="toc-page">16</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Advanced operations<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>Multi-project consolidation<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Saving a plan as a reusable template<div class="toc-dots"></div><span class="toc-page">17</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>Creating and editing calendars<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Scheduling mode<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.5</span>Manual vs auto recalculation<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.6</span>WBS renumbering<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.7</span>Built-in reports<div class="toc-dots"></div><span class="toc-page">18</span></div>
         </div>
     <div class="page-footer">
         <div class="brand-mark">kalmstrom.com</div>
@@ -1308,6 +1317,83 @@ kbd {
 <div class="tip-box">
     <strong>The chat panel is a client.</strong> ProjClaw does not have a backend of its own. Every reply comes straight from Anthropic, and every action happens in Project&#39;s process on your machine. Your data never visits kalmstrom.com.
 </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>ProjClaw &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">ProjClaw for Project</div>
+        <div>Chapter 7 &mdash; Advanced operations</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch7"><span class="chapter-num">Chapter 7</span>Advanced operations</h1>
+
+        <div class="chapter-intro">
+            <p>Chapter 4 covers the day-to-day surface: tasks, resources, assignments, baselines. This chapter covers the operations people reach for less often &mdash; cross-project consolidation, template authoring, calendar creation, scheduling mode, and built-in reports. Every operation here still goes through a normal chat prompt; ProjClaw picks the right tool from the wording.</p>
+        </div>
+<h2>7.1 Multi-project consolidation</h2>
+        <p>Project supports a master plan that inserts one or more sub-projects as rows. ProjClaw drives this from chat.</p>
+        <ul>
+            <li><strong>Insert a sub-project into the current master.</strong> "Insert <code>C:\Plans\Phase1.mpp</code> as a sub-project before the 'Integration' summary task." ProjClaw opens the file, links it into the active master, and preserves the link so both files update together.</li>
+            <li><strong>Consolidate several files into a brand-new master.</strong> "Create a new master plan and pull in these four .mpp files: Phase1.mpp, Phase2.mpp, Phase3.mpp, Phase4.mpp." ProjClaw creates an empty master and appends each path as an inserted sub-project.</li>
+            <li><strong>Read-only inserts.</strong> Add "<em>as read-only</em>" to the prompt when you want the sub-project to display without allowing edits to flow back to the source file.</li>
+        </ul>
+        <p class="note"><strong>Tip.</strong> Sub-project paths must be absolute. Relative paths like <code>..\Phase1.mpp</code> are rejected by Project's COM layer; ProjClaw surfaces that as an error rather than silently normalising.</p>
+<h2>7.2 Saving a plan as a reusable template</h2>
+        <p>A <code>.mpt</code> template is the shape of a plan &mdash; tasks, resources, calendars, views &mdash; without the values you've accumulated. Useful when you want to spin up next quarter's plan from last quarter's structure.</p>
+        <ul>
+            <li><strong>Plain save.</strong> "Save this as a template at <code>C:\Templates\Quarterly.mpt</code>."</li>
+            <li><strong>Scrub on the way out.</strong> "Save a template of this plan, but strip the baselines, actuals, resource rates, and fixed costs." Project applies each scrubber during the save so the template ships clean.</li>
+        </ul>
+        <p class="note"><strong>Environment caveat.</strong> Older Project builds reject the 14-argument <code>FileSaveAs</code> signature that carries the scrub flags. If that happens, ProjClaw falls back to a plain 2-argument save &mdash; the <code>.mpt</code> is still written, but the scrub flags aren't applied. The tool result string will say <em>"(fallback: 2-arg FileSaveAs; scrub flags not applied)"</em> so you know to clear the values manually.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>ProjClaw &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">ProjClaw for Project</div>
+        <div>Chapter 7 &mdash; Advanced operations</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>7.3 Creating and editing calendars</h2>
+        <p>Chapter 4 covers editing working time on an existing calendar. ProjClaw also creates calendars from scratch.</p>
+        <ul>
+            <li><strong>Create blank.</strong> "Create a new base calendar called 'Night shift'." The calendar starts with Project's default working week; edit working time afterwards.</li>
+            <li><strong>Create by copy.</strong> "Create a 'Client holidays' calendar based on the Standard calendar." The copy inherits the source calendar's working time and exceptions; you then add client-specific non-working days.</li>
+            <li><strong>Set working time.</strong> "On 'Night shift', set Monday&ndash;Friday shift 1 to 22:00&ndash;06:00." Multi-shift prompts work too: "shift 2 from 14:00 to 22:00."</li>
+            <li><strong>Non-working exceptions.</strong> "Add a non-working exception 'Client blackout' on 1&ndash;7 August to the 'Client holidays' calendar."</li>
+            <li><strong>Assign to the project.</strong> "Make 'Night shift' the project calendar" / "Set resource 'Alice' to use the 'Night shift' calendar."</li>
+        </ul>
+<h2>7.4 Scheduling mode</h2>
+        <p>Project lets you schedule forward from a start date or backward from a finish date. ProjClaw toggles this directly.</p>
+        <ul>
+            <li><strong>Schedule from start (default).</strong> "Schedule this project from its start date, 1 June." Tasks flow forward; the finish date is computed.</li>
+            <li><strong>Schedule from finish.</strong> "Schedule backward from the 'Go live' date, 30 September." Tasks flow backward; the start date is computed. Useful for fixed-deadline plans.</li>
+            <li><strong>Project start / finish date.</strong> Independent of mode: "Set the project start date to 1 July" or "set the project finish to 31 December."</li>
+        </ul>
+<h2>7.5 Manual vs auto recalculation</h2>
+        <ul>
+            <li><strong>Switch to manual calc.</strong> "Turn calculation off" &mdash; useful when you're about to make a large batch of edits and don't want Project recomputing after every one.</li>
+            <li><strong>Switch back to automatic.</strong> "Turn calculation back on."</li>
+            <li><strong>Force a recalc now.</strong> "Recalculate the project." No-op if auto-calc is on.</li>
+        </ul>
+<h2>7.6 WBS renumbering</h2>
+        <p>WBS codes rarely survive heavy editing intact. When they drift, ProjClaw re-applies the WBS mask across every task.</p>
+        <ul>
+            <li><strong>Renumber.</strong> "Renumber the WBS codes across the whole plan." Uses Project's own <em>WBSCodeRenumber</em>, so the result matches what the UI's Renumber command would produce.</li>
+        </ul>
+<h2>7.7 Built-in reports</h2>
+        <p>Project ships a catalogue of canned reports (Burndown, Cashflow, Cost overview, Resource overview, etc.). ProjClaw drives them by name.</p>
+        <ul>
+            <li><strong>List available reports.</strong> "What reports does this plan offer?"</li>
+            <li><strong>Open a report.</strong> "Show the 'Cashflow' report." Project opens the report in the active view; close it via Project's UI when done.</li>
+            <li><strong>Export a report to PDF.</strong> "Export the 'Cost overview' report as PDF to <code>C:\Reports\cost.pdf</code>." ProjClaw routes via <em>DocumentExport</em>, not <em>FileSaveAs</em>, because PDF isn't a PjFileFormat on modern Project builds.</li>
+        </ul>
     </div>
     <div class="page-footer">
         <div class="brand-mark">kalmstrom.com</div>

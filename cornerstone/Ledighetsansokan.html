@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Ledighetsansökan — Systembeskrivning</title>
+    <style>
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --cs-primary:      #2b338f;
+    --cs-action:       #0157ff;
+    --cs-sky:          #87d5ff;
+    --cs-navy:         #1b363f;
+    --cs-cream:        #faf8f3;
+    --cs-sand:         #ece9e0;
+    --cs-beige:        #ebe5d5;
+    --cs-stripe:       #f5f5f5;
+    --cs-text:         #4a4a46;
+    --cs-text-muted:   #565151;
+    --cs-text-soft:    #8b8675;
+    --cs-placeholder:  #bbbbb6;
+    --cs-border:       #c4c4c4;
+    --cs-border-light: #ece9e0;
+    --cs-success:      #0a7a3f;
+    --cs-success-bg:   #e3f3ea;
+    --cs-warning:      #c08200;
+    --cs-warning-bg:   #fff6dd;
+    --cs-error:        #9a2617;
+    --cs-error-bg:     #f9e4e0;
+    --cs-info-bg:      #e3ecff;
+}
+
+body {
+    font-family: 'IBM Plex Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--cs-text);
+    background: #e8edf2;
+    font-weight: 400;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: var(--cs-cream);
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 9mm 10mm 22mm 14mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+    .page-cover, .page-header, .page-footer,
+    .chapter-intro, .note-box, .tip-box, .info-box, .warn-box,
+    .feature-card, th {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+
+/* Page-break control */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col, .three-col  { break-inside: avoid; }
+table                 { break-inside: avoid; }
+img                   { break-inside: avoid; }
+
+/* ===== COVER PAGE ===== */
+.page-cover {
+    min-height: 297mm;
+    display: flex; flex-direction: column;
+    background: var(--cs-cream);
+}
+.cover-top-bar { background: var(--cs-action); height: 4mm; }
+.cover-body    {
+    background: var(--cs-primary); flex: 1;
+    padding: 20mm 18mm 14mm;
+    display: flex; flex-direction: column; justify-content: space-between;
+    color: white;
+}
+.cover-header-row {
+    display: flex; justify-content: space-between; align-items: center;
+    color: rgba(255,255,255,0.85);
+}
+.cover-logo {
+    font-size: 13pt; font-weight: 700; letter-spacing: 0.04em;
+}
+.cover-logo-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cs-action);
+    margin-left: 4px; vertical-align: middle;
+}
+.cover-date {
+    font-size: 8pt; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: rgba(255,255,255,0.6);
+}
+.cover-main { }
+.cover-tagline  {
+    font-size: 8pt; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--cs-sky);
+}
+.cover-title {
+    font-size: 36pt; font-weight: 700; line-height: 1.1;
+    color: white; margin-top: 6mm;
+}
+.cover-subtitle {
+    font-size: 14pt; font-weight: 300;
+    color: rgba(255,255,255,0.7); margin-top: 3mm;
+}
+.cover-divider {
+    width: 14mm; height: 3px;
+    background: var(--cs-sky); margin-top: 8mm;
+}
+.cover-footer-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    color: rgba(255,255,255,0.6);
+    font-size: 8pt;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    background: var(--cs-primary);
+    display: flex; align-items: stretch;
+    height: 13mm;
+}
+.page-header-accent {
+    width: 4mm; background: var(--cs-action); flex-shrink: 0;
+}
+.page-header-inner {
+    flex: 1; padding: 0 10mm;
+    display: flex; align-items: center; gap: 6mm;
+    color: white;
+}
+.page-header-brand  { font-size: 9.5pt; font-weight: 700; letter-spacing: 0.06em; }
+.page-header-dot    {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--cs-sky);
+}
+.page-header-line   { flex: 1; height: 1px; background: rgba(255,255,255,0.18); }
+.page-header-section{
+    color: rgba(255,255,255,0.65);
+    font-size: 7.5pt; font-weight: 500;
+}
+
+/* ===== PAGE FOOTER ===== */
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 3mm 10mm 3mm 14mm;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--cs-border);
+    background: var(--cs-cream);
+}
+.page-footer-left  { font-size: 7.5pt; color: var(--cs-text-soft); }
+.page-footer-right { font-size: 7.5pt; color: var(--cs-primary); font-weight: 600; }
+
+/* ===== TYPOGRAPHY ===== */
+h1 {
+    font-size: 20pt; font-weight: 700;
+    color: var(--cs-primary); margin-bottom: 4mm;
+}
+h1 .chapter-num {
+    display: block;
+    font-size: 8pt; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--cs-action);
+    margin-bottom: 2mm;
+}
+.chapter-rule {
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--cs-primary) 0%, var(--cs-cream) 100%);
+    margin: 3mm 0 7mm;
+}
+h2 {
+    font-size: 13pt; font-weight: 600;
+    color: var(--cs-primary);
+    margin: 7mm 0 2.5mm;
+    display: flex; align-items: center; gap: 2mm;
+}
+h2::before {
+    content: ''; display: inline-block;
+    width: 3px; height: 12pt;
+    background: var(--cs-action);
+    border-radius: 2px; flex-shrink: 0;
+}
+h3 { font-size: 11pt; font-weight: 600; color: var(--cs-text); margin: 4mm 0 1.5mm; }
+h4 { font-size: 10pt; font-weight: 600; color: var(--cs-primary); margin: 2mm 0 1mm; }
+
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--cs-action); text-decoration: none; }
+strong { color: var(--cs-primary); font-weight: 600; }
+
+/* ===== CALLOUTS ===== */
+.chapter-intro {
+    background: var(--cs-sand);
+    border-left: 4px solid var(--cs-primary);
+    padding: 4mm 6mm; margin-bottom: 6mm;
+    border-radius: 0 4px 4px 0;
+}
+.note-box { background: var(--cs-warning-bg); border-left: 3px solid var(--cs-warning); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.tip-box  { background: var(--cs-info-bg);     border-left: 3px solid var(--cs-action);  padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.info-box { background: var(--cs-sand);        border-left: 3px solid var(--cs-primary); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.warn-box { background: var(--cs-error-bg);    border-left: 3px solid var(--cs-error);   padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+
+/* ===== CARDS / COLUMNS ===== */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr;      gap: 6mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr;  gap: 5mm; margin: 3mm 0; }
+.feature-card {
+    background: white;
+    border: 1px solid var(--cs-border-light);
+    border-radius: 5px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 { color: var(--cs-primary); margin-bottom: 1.5mm; }
+
+/* ===== TABLES ===== */
+table {
+    width: 100%; border-collapse: collapse;
+    margin: 3mm 0; font-size: 9.5pt;
+    background: white;
+}
+th {
+    background: var(--cs-primary); color: white;
+    text-align: left; padding: 2mm 3mm;
+    font-weight: 600; font-size: 9pt;
+}
+td {
+    padding: 1.8mm 3mm;
+    border-bottom: 1px solid var(--cs-border-light);
+    color: var(--cs-text);
+}
+tr:nth-child(even) td { background: var(--cs-stripe); }
+
+/* ===== BADGES ===== */
+.badge {
+    display: inline-block;
+    font-size: 7.5pt; font-weight: 700;
+    padding: 0.5mm 2.5mm; border-radius: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+}
+.badge-indigo { background: #e3e5f5;               color: var(--cs-primary); }
+.badge-blue   { background: var(--cs-info-bg);     color: var(--cs-action); }
+.badge-green  { background: var(--cs-success-bg);  color: var(--cs-success); }
+.badge-yellow { background: var(--cs-warning-bg);  color: var(--cs-warning); }
+.badge-red    { background: var(--cs-error-bg);    color: var(--cs-error); }
+.badge-gray   { background: var(--cs-stripe);      color: var(--cs-text-muted); }
+
+/* ===== TOC ===== */
+.toc-title { font-size: 18pt; font-weight: 700; color: var(--cs-primary); margin: 0 0 6mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.5mm 0; }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; color: var(--cs-primary); }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.5pt; color: var(--cs-text-muted); }
+.toc-num  { min-width: 12mm; flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--cs-border); margin: 0 2mm 1.5mm; }
+.toc-page { color: var(--cs-action); font-size: 9pt; font-weight: 600; }
+
+/* ===== CODE ===== */
+code, pre {
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+    font-size: 9pt;
+    background: var(--cs-stripe);
+    color: var(--cs-text);
+    border-radius: 3px;
+}
+code { padding: 0.5mm 1.5mm; }
+pre  {
+    padding: 3mm 4mm; margin: 3mm 0;
+    border-left: 3px solid var(--cs-action);
+    overflow-x: hidden; white-space: pre-wrap;
+}
+pre code { background: transparent; padding: 0; }
+
+    </style>
+</head>
+<body>
+
+<div class="page page-cover">
+    <div class="cover-top-bar"></div>
+    <div class="cover-body">
+        <div class="cover-header-row">
+            <div class="cover-logo">Cornerstone<span class="cover-logo-dot"></span></div>
+            <div class="cover-date">2026 &middot; v1.0</div>
+        </div>
+        <div class="cover-main">
+            <div class="cover-tagline">Intern systembeskrivning</div>
+            <div class="cover-title">Ledighetsansökan</div>
+            <div class="cover-subtitle">SharePoint-baserad ansökan, chefsattestering via Entra och automatisk synk till Kleer</div>
+            <div class="cover-divider"></div>
+        </div>
+        <div class="cover-footer-row">
+            <div>Kalmstrom Enterprise Solutions AB &mdash; för Cornerstone</div>
+            <div>Fas 1 &mdash; Förstudie &amp; mockup</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Innehåll</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="toc-title">Innehåll</div>
+                        <div class="toc-entry toc-h1"><span class="toc-num">1</span>Syfte och bakgrund<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>Problemformulering<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>Mål<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>Avgränsningar<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>Målgrupper<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.5</span>Förväntat utfall<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Arkitektur<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>Komponentöversikt<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>Dataflöde i korthet<div class="toc-dots"></div><span class="toc-page">5</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>Ansöknings- och attestflöde<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>Formulär (medarbetare)<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>Arbetsdagsberäkning<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>Chefsattest<div class="toc-dots"></div><span class="toc-page">6</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>Datamodell<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>SharePoint-lista: Ledighetsansökningar<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Kleer-mappning (utgående)<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Kleer-mappning (inkommande)<div class="toc-dots"></div><span class="toc-page">7</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Integration mot Kleer<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Anrop som används<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Åtkomst och säkerhet<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Felhantering och rekoncilering<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>Mock-läge (Fas 1 och demo)<div class="toc-dots"></div><span class="toc-page">8</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Skärmbilder från mockupen<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>Ansökningsvyn (medarbetare)<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Övrig ledighet kräver motivering<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>Skickad ansökan<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Chefens godkännandevy<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.5</span>Avslag med motivering<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.6</span>HR-vy &mdash; Kleer-synk<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 1 &mdash; Syfte</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch1"><span class="chapter-num">Kapitel 1</span>Syfte och bakgrund</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Ledighetsansökan är en intern SharePoint-lösning för Cornerstone som digitaliserar
+            hela flödet från att en medarbetare ansöker om semester eller annan ledighet, via
+            chefens attestering i Microsoft&nbsp;365, till att den godkända ledigheten
+            automatiskt registreras i löne&shy;systemet <strong>Kleer</strong> (tidigare PE
+            Accounting). Målet är att eliminera det manuella steget där medarbetare idag måste
+            komma ihåg att själva registrera godkänd ledighet i Kleer &mdash; ett steg som
+            regelbundet missas och leder till att semestern inte räknas av och vanlig lön betalas ut.</p>
+        </div>
+
+        <h2>1.1 Problemformulering</h2>
+        <p>I dagsläget godkänns ansökningar oftast manuellt via mail eller chatt. Chefen godkänner,
+        men när månaden är slut glömmer medarbetaren att mata in ledigheten i Kleer. Resultat:
+        vanlig lön betalas ut och semester räknas inte av. Administrativ rättning i efterhand är
+        tidskrävande och felbenägen.</p>
+
+        <h2>1.2 Mål</h2>
+        <ul>
+            <li>Ett enkelt formulär där medarbetare ansöker om ledighet (vem, när, betald/obetald, övrig info).</li>
+            <li>Automatisk routning till medarbetarens chef enligt <strong>Microsoft&nbsp;Entra&nbsp;ID</strong>.</li>
+            <li>Chef attesterar direkt i Teams eller via länk i mail &mdash; inget manuellt steg kvar.</li>
+            <li>Vid godkännande skickas ledigheten per dag till Kleer via deras API (<code>X-Token</code>).</li>
+            <li>Arbetsdagsberäkning &mdash; helger och röda dagar räknas bort automatiskt så
+            att "5 dagars ledighet över en helg" aldrig kostar fem betalda semesterdagar.</li>
+            <li>Medarbetaren ser i ansökningsvyn sitt aktuella saldo: "Du har 3 tillgängliga semesterdagar".</li>
+        </ul>
+
+        <h2>1.3 Avgränsningar</h2>
+        <div class="three-col">
+            <div class="feature-card">
+                <h4>Inom scope (v1)</h4>
+                <p>Semester (betald/obetald), föräldraledighet, övrig ledighet med fri text,
+                chefsattest, Kleer-synk, saldovisning, arbetsdagsberäkning.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Utanför scope (v1)</h4>
+                <p>Sjukanmälan, VAB-registrering, chefsöverblick över teamets samlade frånvaro,
+                automatisk vikarie&shy;bokning, semesterplanerings&shy;verktyg.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Framtida utbyggnad</h4>
+                <p>Flerstegs&shy;attest för långa perioder, kalender&shy;vy per avdelning,
+                Teams-bot för notiser, integration mot Outlook/kalender, sjuk&shy;anmälan via samma flöde.</p>
+            </div>
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 1 &mdash; Syfte</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+
+        <h2>1.4 Målgrupper</h2>
+        <table>
+            <tr><th>Roll</th><th>Gör i systemet</th><th>Behörighet</th></tr>
+            <tr><td>Medarbetare</td><td>Ansöker, ser eget saldo, ser egen historik</td><td>Läs/skriv på egna poster</td></tr>
+            <tr><td>Chef (enligt Entra)</td><td>Attesterar / avslår ansökningar från direktrapporter</td><td>Läs/skriv på teamets poster</td></tr>
+            <tr><td>HR / lön</td><td>Följer upp synk&shy;status mot Kleer, hanterar manuella undantag</td><td>Läs alla, skriv vid behov</td></tr>
+            <tr><td>IT (admin)</td><td>Ställer in Entra-koppling, Kleer-token, arbetsdags&shy;kalender</td><td>Site&shy;owner</td></tr>
+        </table>
+
+        <h2>1.5 Förväntat utfall</h2>
+        <p>När lösningen är i drift ska ingen godkänd ledighet hamna i glömska mellan chefens OK
+        och Kleers register. Antalet manuella korrigeringar från HR mot lön förväntas minska till
+        nära noll, och medarbetare får tydlig återkoppling på var en ansökan står
+        (<span class="badge badge-yellow">Skickad</span>
+        <span class="badge badge-green">Godkänd</span>
+        <span class="badge badge-red">Avslagen</span>
+        <span class="badge badge-blue">Synkad</span>).</p>
+
+        <div class="tip-box">
+            <strong>Presenterad för:</strong> denna systembeskrivning ligger till grund för
+            demonstrationen för Björn (ekonomichef) och Robban. Mock:upen visar inte hur det
+            ser ut i Kleer &mdash; bara att datan skickas dit.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 2 &mdash; Arkitektur</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch2"><span class="chapter-num">Kapitel 2</span>Arkitektur</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Lösningen består av en <strong>SharePoint-baserad front end</strong> (webpackad
+            TypeScript-bundle deployad via .wsp-lösning) och en <strong>Azure Function
+            back end</strong> (TypeScript, @azure/functions v4). Mönstret är återanvänt från
+            Templates&nbsp;Manager (front end) och Teamsgeneratorn (back end) &mdash; båda i
+            produktion hos andra Kalmstrom-kunder.</p>
+        </div>
+
+        <h2>2.1 Komponentöversikt</h2>
+
+        <svg viewBox="0 0 780 340" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; margin: 4mm 0;">
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#2b338f" />
+                </marker>
+            </defs>
+            <!-- SharePoint Online band -->
+            <rect x="20"  y="20"  width="740" height="130" fill="#ece9e0" stroke="#2b338f" stroke-width="1.5" rx="6" />
+            <text x="40"  y="42" font-family="IBM Plex Sans" font-size="11" font-weight="700" fill="#2b338f">SharePoint Online</text>
+
+            <!-- SP List -->
+            <rect x="50"  y="60"  width="180" height="70" fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="140" y="82" font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">Lista</text>
+            <text x="140" y="98" font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">Ledighetsansökningar</text>
+            <text x="140" y="114" font-family="IBM Plex Sans" font-size="8" fill="#565151" text-anchor="middle">Applicant, Start, End, Type,</text>
+            <text x="140" y="124" font-family="IBM Plex Sans" font-size="8" fill="#565151" text-anchor="middle">Status, Manager, KleerSynced</text>
+
+            <!-- ASPX + bundle -->
+            <rect x="260" y="60"  width="220" height="70" fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="370" y="82"  font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">ASPX-sidor + Ledighet.js</text>
+            <text x="370" y="98"  font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">Apply.aspx &middot; Approve.aspx</text>
+            <text x="370" y="114" font-family="IBM Plex Sans" font-size="8"   fill="#565151" text-anchor="middle">webpackad TS-bundle i siteassets</text>
+
+            <!-- User -->
+            <rect x="510" y="60"  width="220" height="70" fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="620" y="82"  font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">Browser</text>
+            <text x="620" y="98"  font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">Medarbetare &middot; Chef</text>
+            <text x="620" y="114" font-family="IBM Plex Sans" font-size="8"   fill="#565151" text-anchor="middle">Edge, Chrome, Safari</text>
+
+            <!-- Azure band -->
+            <rect x="20"  y="170" width="740" height="110" fill="#e3ecff" stroke="#0157ff" stroke-width="1.5" rx="6" />
+            <text x="40"  y="192" font-family="IBM Plex Sans" font-size="11" font-weight="700" fill="#0157ff">Azure</text>
+            <rect x="50"  y="210" width="220" height="60"  fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="160" y="232" font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">Function App (TS)</text>
+            <text x="160" y="248" font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">SubmitApplication</text>
+            <text x="160" y="260" font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">ApproveApplication, KleerSync</text>
+
+            <rect x="300" y="210" width="220" height="60" fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="410" y="232" font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">Graph (Entra)</text>
+            <text x="410" y="250" font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">/me/manager &middot; /users</text>
+
+            <rect x="550" y="210" width="180" height="60" fill="#ffffff" stroke="#c4c4c4" rx="4" />
+            <text x="640" y="232" font-family="IBM Plex Sans" font-size="10" font-weight="700" fill="#2b338f" text-anchor="middle">Key Vault</text>
+            <text x="640" y="250" font-family="IBM Plex Sans" font-size="8.5" fill="#4a4a46" text-anchor="middle">Kleer X-Token, HMAC-secret</text>
+
+            <!-- Kleer -->
+            <rect x="20"  y="300" width="740" height="32" fill="#faf8f3" stroke="#9a2617" stroke-width="1.5" rx="6" />
+            <text x="40"  y="321" font-family="IBM Plex Sans" font-size="10.5" font-weight="700" fill="#9a2617">Kleer API  &middot;  https://my.accounting.pe/api/v1/</text>
+
+            <!-- Arrows -->
+            <line x1="140" y1="130" x2="140" y2="208" stroke="#2b338f" stroke-width="1.3" marker-end="url(#arrow)"/>
+            <line x1="370" y1="130" x2="370" y2="208" stroke="#2b338f" stroke-width="1.3" marker-end="url(#arrow)"/>
+            <line x1="620" y1="130" x2="620" y2="208" stroke="#2b338f" stroke-width="1.3" marker-end="url(#arrow)"/>
+            <line x1="160" y1="270" x2="160" y2="298" stroke="#9a2617" stroke-width="1.3" marker-end="url(#arrow)"/>
+        </svg>
+
+        <h2>2.2 Dataflöde i korthet</h2>
+        <ol>
+            <li>Medarbetare öppnar <code>Apply.aspx</code> &mdash; bundlen läser profil och saldo.</li>
+            <li>Formuläret POSTar till Function App: <code>SubmitApplication</code>.</li>
+            <li>Function skapar SP-listpost, slår upp chefen via Graph, signerar en HMAC-token
+            och mejlar chefen en länk till <code>Approve.aspx?token=&hellip;</code>.</li>
+            <li>Chefen öppnar länken, klickar <em>Godkänn</em>; bundlen POSTar till
+            <code>ApproveApplication</code>.</li>
+            <li>Function verifierar HMAC, uppdaterar listan till <em>Godkänd</em>, mejlar
+            medarbetaren och anropar <code>KleerSync</code> som POSTar ett event per arbetsdag
+            mot Kleer. Status sätts till <em>Synkad</em>.</li>
+        </ol>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 3 &mdash; Flöde</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch3"><span class="chapter-num">Kapitel 3</span>Ansöknings- och attestflöde</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Ett flöde har fem status&shy;steg: <em>Utkast</em> &rarr; <em>Skickad</em>
+            &rarr; <em>Godkänd</em> eller <em>Avslagen</em> &rarr; <em>Synkad</em>. Varje
+            övergång utlöser antingen ett användar&shy;mail, en Kleer-anropskedja eller båda.
+            Avvisade ansökningar går inte till Kleer.</p>
+        </div>
+
+        <h2>3.1 Formulär (medarbetare)</h2>
+        <table>
+            <tr><th>Fält</th><th>Typ</th><th>Beskrivning</th></tr>
+            <tr><td>Vem</td><td>Förvalt</td><td>Aktuell användare, upplåst endast för HR</td></tr>
+            <tr><td>Startdatum</td><td>Datum</td><td>Obligatoriskt, minst idag</td></tr>
+            <tr><td>Slutdatum</td><td>Datum</td><td>Obligatoriskt, &ge; startdatum</td></tr>
+            <tr><td>Typ</td><td>Radio</td><td>Betald semester (förvald) / Obetald / Övrig (kräver övrig info)</td></tr>
+            <tr><td>Övrig info</td><td>Textarea</td><td>Fri text, t.ex. "begravning", "föräldra&shy;ledighet 50&thinsp;%"</td></tr>
+            <tr><td>Antal arbetsdagar</td><td>Visas</td><td>Beräknas live utifrån svensk arbetsdags&shy;kalender</td></tr>
+            <tr><td>Aktuellt saldo</td><td>Visas</td><td>"Du har N tillgängliga betalda dagar" &mdash; hämtas via Kleer</td></tr>
+        </table>
+
+        <h2>3.2 Arbetsdagsberäkning</h2>
+        <p>När användaren väljer 2026-06-05 till 2026-06-09 (måndag&ndash;fredag med Sveriges
+        nationaldag mitt i) räknar systemet bara 4 arbetsdagar, inte 5. Logiken lever i
+        <code>WorkdayCalculator.ts</code> och använder i Fas&nbsp;1 en hårdkodad kalender som
+        senare byts ut mot <code>sholiday.faboul.se/dagar/v2.1/&lt;år&gt;</code> (Fas&nbsp;4).</p>
+
+        <div class="note-box">
+            <strong>Obs:</strong> Helger (lör/sön) räknas alltid bort. Röda dagar räknas bort
+            för betald semester men <em>inte</em> för obetald ledighet &mdash; där räknas
+            hela perioden i dagar per Kleers regel. Denna distinktion ligger i
+            <code>WorkdayCalculator.countPaidDays()</code> vs <code>countTotalDays()</code>.
+        </div>
+
+        <h2>3.3 Chefsattest</h2>
+        <ol>
+            <li>Function slår upp chefen via Graph <code>GET /users/{upn}/manager</code>.</li>
+            <li>Om chef saknas i Entra: ansökan stoppas med tydligt felmeddelande till
+            medarbetaren &mdash; IT kontaktas.</li>
+            <li>Mail till chefen med länk: <code>https://&lt;tenant&gt;.sharepoint.com/sites/&hellip;/Approve.aspx?token=&lt;hmac&gt;</code>.</li>
+            <li>Token har 14 dagars TTL. Kort mejlpåminnelse (Fas&nbsp;4) efter 7 dagar.</li>
+            <li>Chef klickar Godkänn/Avslå. Kommentar är obligatorisk vid avslag.</li>
+        </ol>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 4 &mdash; Datamodell</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="ch4"><span class="chapter-num">Kapitel 4</span>Datamodell</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>All lokal data lagras i en SharePoint-lista som provisioneras automatiskt första
+            gången lösningen körs. Kleer är externt system och äger den fullständiga
+            löne&shy;informationen &mdash; vi cachar endast det saldo som visas i UI.</p>
+        </div>
+<h2>4.1 SharePoint-lista: Ledighetsansökningar</h2>
+<table>
+            <tr><th>Kolumn</th><th>Typ</th><th>Obligatorisk</th><th>Kommentar</th></tr>
+            <tr><td>Title</td><td>Text</td><td>Ja</td><td>Genererad: "SemAnna 2026-06-05&rarr;09"</td></tr>
+            <tr><td>Applicant</td><td>Person</td><td>Ja</td><td>Entra-kopplad</td></tr>
+            <tr><td>StartDate</td><td>DateTime</td><td>Ja</td><td>Svensk tidszon, 00:00</td></tr>
+            <tr><td>EndDate</td><td>DateTime</td><td>Ja</td><td>Inkluderande (t.o.m.)</td></tr>
+            <tr><td>LeaveType</td><td>Choice</td><td>Ja</td><td>Paid / Unpaid / Other</td></tr>
+            <tr><td>OtherInfo</td><td>Note</td><td>Nej</td><td>Obligatorisk om LeaveType=Other</td></tr>
+            <tr><td>WorkDays</td><td>Number</td><td>Ja</td><td>Beräknad vid skapande</td></tr>
+            <tr><td>Manager</td><td>Person</td><td>Ja</td><td>Snapshot från Graph</td></tr>
+            <tr><td>Status</td><td>Choice</td><td>Ja</td><td>Draft/Submitted/Approved/Rejected/Synced</td></tr>
+            <tr><td>ManagerComment</td><td>Note</td><td>Nej</td><td>Obligatorisk vid Rejected</td></tr>
+            <tr><td>ApprovalToken</td><td>Text</td><td>Ja</td><td>HMAC-signerad, sätts vid Submitted</td></tr>
+            <tr><td>SubmittedAt</td><td>DateTime</td><td>Ja</td><td>UTC</td></tr>
+            <tr><td>DecidedAt</td><td>DateTime</td><td>Nej</td><td>Sätts vid Approved/Rejected</td></tr>
+            <tr><td>KleerSyncedAt</td><td>DateTime</td><td>Nej</td><td>Sätts när sista dagen postats OK</td></tr>
+            <tr><td>KleerError</td><td>Note</td><td>Nej</td><td>Sätts vid synkfel (läses av HR-vy)</td></tr>
+        </table>
+<h2>4.2 Kleer-mappning (utgående)</h2>
+        <p>En ansökan i <em>Approved</em> delas upp i <code>WorkDays</code> separata
+        API-anrop &mdash; ett per kalender&shy;dag &mdash; enligt Kleers &ldquo;event&rdquo;-modell
+        (verifierat mot Simployer- och HaileyHR-integrationerna, XSD:n på <code>api.kleer.se/v1/xsd</code>).</p>
+<table>
+            <tr><th>Kleer-fält</th><th>Värde</th><th>Kommentar</th></tr>
+            <tr><td>date</td><td>kalenderdag (ISO)</td><td>En POST per arbetsdag, helger/röda dagar hoppas över för Paid</td></tr>
+            <tr><td>hours</td><td>8</td><td>Hel arbetsdag &mdash; deltid hanteras i Fas&nbsp;4</td></tr>
+            <tr><td>type</td><td>semester / obetald / &hellip;</td><td>Mappas från LeaveType; OtherInfo ger finare indelning</td></tr>
+            <tr><td>comment</td><td>OtherInfo</td><td>Om satt, annars tom</td></tr>
+            <tr><td>user-id</td><td>Kleer-userId</td><td>Cachas vid första uppslag per Applicant</td></tr>
+        </table>
+<h2>4.3 Kleer-mappning (inkommande)</h2>
+        <p>Saldo läses ad hoc vid ansökan:</p>
+        <pre><code>GET /user/{id}
+  vacation-paid-days     &mdash; vacation-paid-days-used       = tillgängliga betalda
+  vacation-advance-days  &mdash; vacation-advance-days-used    = förskotterade
+  vacation-saved-days    (sum year-1&hellip;year-5) &mdash; used = sparade</code></pre>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 5 &mdash; Kleer</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch5"><span class="chapter-num">Kapitel 5</span>Integration mot Kleer</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Kleer (f.d. PE Accounting) är Cornerstones ekonomi- och lönesystem. Integrationen
+            sker från Function App till Kleers öppna API med <code>X-Token</code>-autentisering.
+            Token lagras i Key Vault; ingen klient&shy;sida ser token. Bas-URL:
+            <code>https://my.accounting.pe/api/v1/</code>.</p>
+        </div>
+
+        <h2>5.1 Anrop som används</h2>
+        <table>
+            <tr><th>Metod</th><th>Sökväg</th><th>Används för</th></tr>
+            <tr><td>GET</td><td>/user/{id}</td><td>Läsa saldo (vacation-*-days)</td></tr>
+            <tr><td>POST</td><td>/event/</td><td>Registrera en dags frånvaro</td></tr>
+            <tr><td>POST</td><td>/event/approve</td><td>Markera registrerad frånvaro som attestad</td></tr>
+        </table>
+
+        <h2>5.2 Åtkomst och säkerhet</h2>
+        <ul>
+            <li><strong>Nyckel-provisionering:</strong> Kleer lämnar ut API-nyckel + testbolag
+            per avtal. Cornerstones IT begär in denna före Fas&nbsp;3.</li>
+            <li><strong>Förvaring:</strong> Token lagras i Azure Key Vault, hämtas av Function
+            App via managed identity. Rotation var 12:e månad.</li>
+            <li><strong>Nätverk:</strong> Bara Function App får prata med Kleer &mdash; klient&shy;sidan
+            går aldrig direkt dit.</li>
+            <li><strong>Loggning:</strong> Varje anrop loggas till Application Insights med
+            request-id men <em>utan</em> personnummer eller lönebelopp.</li>
+        </ul>
+
+        <h2>5.3 Felhantering och rekoncilering</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Direkta fel</h4>
+                <p>401/403 &rarr; larm till IT, token trasig. 4xx övrigt &rarr;
+                <code>KleerError</code> sätts på posten, HR ser i admin-vy. 5xx &rarr; automatisk
+                retry med exponentiell backoff (<code>kRetryCore</code> från shared).</p>
+            </div>
+            <div class="feature-card">
+                <h4>Nattlig sweep</h4>
+                <p>Timer-trigger i Function scannar poster där <code>Status=Approved</code>
+                och <code>KleerSyncedAt=null</code>. Försöker igen. Rapporterar sammanfattning
+                i veckovis mail till HR (Fas&nbsp;4).</p>
+            </div>
+        </div>
+
+        <h2>5.4 Mock-läge (Fas 1 och demo)</h2>
+        <p>I Fas&nbsp;1-mock:upen anropas Kleer inte alls. <code>KleerClient.ts</code> har en
+        <code>mockMode = true</code>-flagga som i stället returnerar sekvensen
+        <em>"8 av 25 dagar tillgängliga"</em> för saldo och en fördröjd success för event-POST.
+        Detta räcker för demonstrationen för Björn och Robban utan att behöva avtal med Kleer.</p>
+
+        <div class="warn-box">
+            <strong>Obs:</strong> När Kleer API-nyckeln är på plats, sätt <code>KLEER_MOCK=false</code>
+            i Function App Configuration. Verifiera i testbolaget först &mdash; direktskrivning mot
+            skarpt Kleer utan test kan förstöra lönedata.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 6 &mdash; Leverans</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch6"><span class="chapter-num">Kapitel 6</span>Leverans och drift</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Lösningen levereras i fyra faser. Varje fas är självbärande &mdash; fas&nbsp;1
+            kan demonstreras även utan beslut om fortsättning, och senare faser staplas på
+            utan att riva det som redan är gjort.</p>
+        </div>
+
+        <h2>6.1 Faser</h2>
+        <table>
+            <tr><th>Fas</th><th>Innehåll</th><th>Status</th></tr>
+            <tr><td>0. Hygien</td><td>Workspace, CLAUDE.md, brand-skill, denna systembeskrivning</td><td><span class="badge badge-green">Klar</span></td></tr>
+            <tr><td>1. Mock:up</td><td>SP-lösning, ansöknings&shy;formulär, arbetsdags&shy;math, fake-chef &amp; fake-Kleer &mdash; för demo till Björn &amp; Robban</td><td><span class="badge badge-yellow">Pågår</span></td></tr>
+            <tr><td>2. Attest</td><td>Azure Function, Graph manager-lookup, HMAC-mail&shy;länk, Approve-sidan live</td><td><span class="badge badge-gray">Väntar beslut</span></td></tr>
+            <tr><td>3. Kleer</td><td>KleerClient, event-POST per dag, saldo-read, retry &amp; rekoncilering</td><td><span class="badge badge-gray">Väntar beslut + API-nyckel</span></td></tr>
+            <tr><td>4. Polish</td><td>Riktiga röda dagar, mailmallar, Playwright-smoke, admin-vy</td><td><span class="badge badge-gray">Option</span></td></tr>
+        </table>
+
+        <h2>6.2 Drift</h2>
+        <div class="three-col">
+            <div class="feature-card">
+                <h4>SharePoint</h4>
+                <p>.wsp deployas till Cornerstones SP Online-tenant. Uppdateringar via omdeploy
+                av bundlen till <code>siteassets/Ledighet.js</code>.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Azure Function</h4>
+                <p>Förvaltas i Cornerstones Azure-prenumeration. GitHub Actions eller
+                VS Code-deploy. Managed identity mot Key Vault och Graph.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Övervakning</h4>
+                <p>Application Insights för Function. SP-listans Views ger HR direkt överblick
+                över synk&shy;status utan separat dashboard.</p>
+            </div>
+        </div>
+
+        <h2>6.3 Beroenden och oklara punkter</h2>
+        <ul>
+            <li><strong>Kleer API-nyckel</strong> &mdash; krävs före Fas&nbsp;3. Begäran skickas av IT till Kleers support.</li>
+            <li><strong>Graph-behörighet</strong> &mdash; Function App behöver <code>User.Read.All</code>
+            (applikations&shy;behörighet) för att läsa chef för godtycklig användare. Kräver
+            global admin-samtycke.</li>
+            <li><strong>HMAC-hemlighet</strong> &mdash; genereras vid första deploy och läggs i
+            Key Vault. Rotation vid behov.</li>
+            <li><strong>Delarbetstid</strong> &mdash; Fas&nbsp;1&ndash;3 antar heltid (8 h/dag).
+            Deltidsstöd kräver att Kleer-user har korrekt kalender, kontrolleras i Fas&nbsp;4.</li>
+        </ul>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 7 &mdash; Skärmbilder</div>
+        </div>
+    </div>
+    <div class="page-content">
+
+        <h1 id="ch7"><span class="chapter-num">Kapitel 7</span>Skärmbilder från mockupen</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>Alla bilder i detta kapitel är autogenererade av Playwright-testsviten
+            (<code>Tests\e2e\mockup.spec.ts</code>) och visar faktiska klick i den körande
+            mockupen &mdash; inga ritade skisser. Varje gång sviten körs om skrivs bilderna
+            över, så dokumentationen håller sig synkroniserad med den riktiga HTML:en.</p>
+        </div>
+
+        <h2>7.1 Ansökningsvyn (medarbetare)</h2>
+        <img src="../Screenshots/02-apply-initial.png" alt="Ansökningsvyn med förifylld användare och betalt saldo"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Anna är inloggad. Inga kontaktuppgifter
+        behöver matas in &mdash; namn, titel, chef och saldo visas automatiskt från Entra-ID och Kleer.</p>
+
+        <h2>7.2 Övrig ledighet kräver motivering</h2>
+        <img src="../Screenshots/03-apply-ovrig-textarea.png" alt="Textfält för övrig info visas när Övrig är valt"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+
+        <h2>7.3 Skickad ansökan</h2>
+        <img src="../Screenshots/04-apply-submit-toast.png" alt="Toast bekräftar att ansökan är skickad till chefen"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Cornerstone &middot; Ledighetsansökan</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Kapitel 7 &mdash; Skärmbilder</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top: 0">
+
+        <h2>7.4 Chefens godkännandevy</h2>
+        <img src="../Screenshots/06-manager-pending.png" alt="Per ser tre väntande ansökningar i kortvyn"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Per ser bara ansökningar som kräver hans
+        beslut. Varje kort visar orsaken för Övrig-ansökningar, arbetsdagar och en
+        Godkänn/Avslå-rad.</p>
+
+        <h2>7.5 Avslag med motivering</h2>
+        <img src="../Screenshots/08-manager-reject-modal.png" alt="Modal för att skriva avslagsmotivering"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Tom motivering blockeras &mdash;
+        medarbetaren får alltid ett skäl.</p>
+
+        <h2>7.6 HR-vy &mdash; Kleer-synk</h2>
+        <img src="../Screenshots/10-hr-syncstatus.png" alt="HR ser Kleer-synkstatus med blandade lägen"
+             style="width: 100%; border: 1px solid var(--cs-border-light); border-radius: 4px; margin: 3mm 0;" />
+        <p style="font-size: 9.5pt; color: var(--cs-text-soft);">Gröna rader är klara,
+        gul = väntar nattlig retry, röd = Kleer-fel som kräver manuell åtgärd.</p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">Ledighetsansökan &middot; Systembeskrivning</div>
+        <div class="page-footer-right">Cornerstone &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+
+
+</body>
+</html>
