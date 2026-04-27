@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="nschecks-shared.css?v=20260424-1336">
+<link rel="stylesheet" href="nschecks-shared.css?v=20260427-1106">
 <style>
 /* ── App-specific styles (shared component styles in nschecks-shared.css) ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -734,7 +734,625 @@ body {
 .type-tile.full-row { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; gap: 14px; padding: 14px 16px; min-height: 64px; }
 .type-tile.full-row .type-tile-icon { font-size: 24px; }
 
+/* ══════════════════════════════════════════════════
+   CLIENT (BESTÄLLARE) LIST
+   ══════════════════════════════════════════════════ */
+.client-card {
+    display: flex; align-items: center; gap: 14px; padding: 16px;
+    margin-bottom: 10px; background: var(--bg);
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+}
+.client-card:active { transform: scale(0.99); }
+.client-card:hover { border-color: var(--ns); }
+.client-logo {
+    width: 48px; height: 48px; border-radius: 12px;
+    color: #fff; font-weight: 800; font-size: 18px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    letter-spacing: 0.01em;
+}
+.client-info { flex: 1; min-width: 0; }
+.client-name { font-size: 15px; font-weight: 700; color: var(--ts); line-height: 1.25; }
+.client-sub { font-size: 12px; color: var(--tm); margin-top: 2px; }
+.client-arrow { color: var(--b); font-size: 18px; flex-shrink: 0; }
+
+.proj-number {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--ns-dark); background: var(--ns-light);
+    padding: 1px 6px; border-radius: 4px;
+    margin-right: 4px; vertical-align: baseline;
+}
+
+/* ══════════════════════════════════════════════════
+   ROLE CHIP (app-bar)
+   ══════════════════════════════════════════════════ */
+.role-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 32px; padding: 0 12px; border-radius: 16px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+.role-chip:hover { background: rgba(255,255,255,0.2); }
+.role-chip-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ns);
+}
+.role-chip-caret { opacity: 0.7; font-size: 10px; }
+
+/* Role picker sheet */
+.role-sheet-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 400; display: none;
+}
+.role-sheet-backdrop.show { display: block; }
+.role-sheet {
+    position: fixed; left: 50%; bottom: 0;
+    transform: translateX(-50%) translateY(100%);
+    width: 100%; max-width: 420px;
+    background: var(--bg); border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
+    z-index: 401; padding: 20px 16px 32px;
+    transition: transform 0.25s cubic-bezier(0.22, 0.68, 0.35, 1.05);
+}
+.role-sheet.show { transform: translateX(-50%) translateY(0); }
+.role-sheet-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tm); margin-bottom: 12px;
+    text-align: center;
+}
+.role-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px; border-radius: var(--rl);
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    margin-bottom: 8px; cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent; min-height: 56px;
+}
+.role-option:active { transform: scale(0.99); }
+.role-option:hover { border-color: var(--ns); }
+.role-option.selected { border-color: var(--ns); background: var(--ns-light); }
+.role-option-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #fff; border: 1.5px solid var(--b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+}
+.role-option.selected .role-option-icon { border-color: var(--ns); }
+.role-option-info { flex: 1; min-width: 0; }
+.role-option-name { font-size: 14px; font-weight: 700; color: var(--ts); }
+.role-option-desc { font-size: 12px; color: var(--tm); margin-top: 1px; }
+.role-option-check {
+    color: var(--ns); font-size: 18px; display: none;
+}
+.role-option.selected .role-option-check { display: block; }
+
+/* ══════════════════════════════════════════════════
+   ANSLUTNINGSLISTA (phase tracker)
+   ══════════════════════════════════════════════════ */
+.phase-tracker {
+    margin: 4px 16px 10px; padding: 10px 12px;
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    border-radius: var(--rl);
+}
+.phase-tracker-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tm); margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.phase-steps { display: flex; gap: 4px; align-items: stretch; }
+.phase-step {
+    flex: 1; padding: 8px 4px; border-radius: 6px;
+    background: var(--bg); border: 1px solid var(--b);
+    font-size: 10px; font-weight: 600;
+    text-align: center; color: var(--tm);
+    cursor: pointer; transition: all var(--tr); line-height: 1.2;
+    position: relative;
+}
+.phase-step:hover { border-color: var(--ns); }
+.phase-step.active {
+    background: var(--ns); color: #fff; border-color: var(--ns);
+}
+.phase-step.done {
+    background: var(--ns-light); color: var(--ns-dark); border-color: var(--ns);
+}
+.phase-step-num {
+    display: block; font-size: 9px; opacity: 0.7; margin-bottom: 2px;
+}
+.phase-step.done::after {
+    content: '✓'; position: absolute; top: 2px; right: 4px; font-size: 9px;
+}
+
+/* ══════════════════════════════════════════════════
+   ASSET GROUPING (skarvbrunn, slingbrunn, fiberskåp)
+   ══════════════════════════════════════════════════ */
+.asset-group {
+    margin-top: 10px; padding: 8px 10px 4px;
+    background: var(--bg-s); border: 1px dashed var(--b);
+    border-radius: var(--r);
+}
+.asset-group-hdr {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tm);
+}
+.asset-group-hdr-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #fff;
+}
+.asset-group-hdr-icon.skarv { background: #62A84A; }
+.asset-group-hdr-icon.sling { background: #D63384; }
+.asset-group-hdr-icon.skap  { background: #F4B400; color: #000; }
+.asset-group-hdr-icon.borr  { background: #4FB0E5; }
+.asset-group-id {
+    color: var(--ts); font-weight: 700;
+}
+
+/* ══════════════════════════════════════════════════
+   DRILLER-ONLY MODE (role = Borrare)
+   ══════════════════════════════════════════════════ */
+.driller-card {
+    display: flex; align-items: center; gap: 14px; padding: 16px;
+    margin-bottom: 10px; background: var(--bg);
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    border-left: 4px solid #4FB0E5;
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+}
+.driller-card:hover { border-color: #4FB0E5; }
+.driller-card.done { border-left-color: var(--ok); }
+.driller-card.new  { border-left-color: var(--tm); }
+.driller-card-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: #E3F0F9; color: #2B6A8D;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+}
+.driller-card-info { flex: 1; min-width: 0; }
+.driller-card-name { font-size: 14px; font-weight: 700; color: var(--ts); }
+.driller-card-meta { font-size: 12px; color: var(--tm); margin-top: 2px; }
+.driller-card-status {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.03em; padding: 2px 8px; border-radius: 10px;
+    background: var(--bg-s); color: var(--tm); flex-shrink: 0;
+}
+.driller-card.done .driller-card-status { background: var(--okb); color: var(--ok); }
+.driller-card.new  .driller-card-status { background: var(--wb);  color: var(--w); }
+
+/* ══════════════════════════════════════════════════
+   ADMIN (role-management preview)
+   ══════════════════════════════════════════════════ */
+.admin-role-section {
+    padding: 12px 16px; background: var(--bg-s);
+    border: 1.5px solid var(--b); border-radius: var(--rl);
+    margin: 10px 16px;
+}
+.admin-role-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tm); margin-bottom: 8px;
+}
+.admin-role-members { display: flex; align-items: center; gap: -6px; flex-wrap: wrap; }
+.admin-role-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--ns-light); color: var(--ns-dark);
+    border: 2px solid var(--bg); font-weight: 700; font-size: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-left: -6px; flex-shrink: 0;
+}
+.admin-role-avatar:first-child { margin-left: 0; }
+
+/* ══════════════════════════════════════════════════
+   ASSET STRIP (skarvbrunn / slingbrunn / fiberskåp / borrning)
+   ══════════════════════════════════════════════════ */
+.asset-strip {
+    margin: 0 16px 8px; padding: 10px 12px;
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    border-radius: var(--rl);
+}
+.asset-strip-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+}
+.asset-strip-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--tm);
+}
+.asset-strip-add {
+    padding: 4px 10px; border-radius: 12px;
+    background: #fff; border: 1px dashed var(--ns);
+    color: var(--ns); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.asset-strip-add:hover { background: var(--ns); color: #fff; }
+.asset-strip-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+}
+.asset-strip-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 6px; background: #fff;
+    border: 1px solid var(--b); border-radius: 14px;
+    font-size: 12px; font-weight: 600; color: var(--ts);
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+}
+.asset-strip-chip:hover { border-color: var(--ns); }
+.asset-strip-chip-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    flex-shrink: 0; display: inline-block;
+}
+.asset-strip-chip-dot.skarvbrunn { background: #62A84A; }
+.asset-strip-chip-dot.slingbrunn { background: #D63384; }
+.asset-strip-chip-dot.fiberskåp  { background: #F4B400; }
+.asset-strip-chip-dot.borrning   { background: #4FB0E5; }
+.asset-strip-chip-id { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+.asset-strip-chip-count {
+    font-size: 10px; padding: 1px 5px; border-radius: 8px;
+    background: var(--bg-s); color: var(--tm); font-weight: 700;
+}
+.asset-strip-empty { font-size: 12px; color: var(--tm); font-style: italic; }
+
+/* Asset add modal (uses .role-sheet pattern) */
+.asset-modal-form { padding: 4px 0; }
+.asset-modal-types {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;
+}
+.asset-type-tile {
+    padding: 12px 10px; border-radius: var(--rl);
+    background: var(--bg-s); border: 1.5px solid var(--b);
+    cursor: pointer; text-align: center; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent; min-height: 64px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.asset-type-tile.selected {
+    background: var(--ns-light); border-color: var(--ns);
+}
+.asset-type-tile-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+}
+.asset-type-tile-label { font-size: 12px; font-weight: 700; color: var(--ts); }
+.asset-form-field { margin-bottom: 12px; }
+.asset-form-label {
+    display: block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--tm); margin-bottom: 4px;
+}
+.asset-form-input {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--b); border-radius: var(--r);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--ts); background: var(--bg);
+    outline: none; -webkit-appearance: none;
+}
+.asset-form-input:focus { border-color: var(--ns); }
+.asset-form-actions { display: flex; gap: 8px; margin-top: 14px; }
+.asset-form-actions button {
+    flex: 1; padding: 12px; border-radius: var(--r);
+    border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; cursor: pointer;
+}
+.asset-form-actions .btn-cancel { background: var(--bg-s); color: var(--t); }
+.asset-form-actions .btn-save { background: var(--ns); color: #fff; }
+
+/* ══════════════════════════════════════════════════
+   PROJEKTBILDER (Photo album view)
+   ══════════════════════════════════════════════════ */
+.photos-toolbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; background: var(--bg-s);
+    border-bottom: 1px solid var(--b); flex-shrink: 0;
+}
+.photos-view-toggle {
+    display: flex; gap: 2px;
+    background: var(--bg); padding: 2px;
+    border: 1px solid var(--b); border-radius: 18px;
+}
+.photos-view-toggle button {
+    padding: 5px 12px; border-radius: 14px;
+    border: none; background: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--tm);
+}
+.photos-view-toggle button.active { background: var(--ns); color: #fff; }
+.photos-filter-chips {
+    display: flex; gap: 6px; overflow-x: auto; flex: 1;
+    padding: 2px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.photos-filter-chips::-webkit-scrollbar { display: none; }
+.photos-filter-chip {
+    padding: 6px 10px; border-radius: 12px;
+    background: var(--bg); border: 1px solid var(--b);
+    font-size: 11px; font-weight: 600; color: var(--t);
+    white-space: nowrap; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.photos-filter-chip.active { background: var(--ns-light); border-color: var(--ns); color: var(--ns-dark); }
+.photos-export-btn {
+    padding: 6px 12px; border-radius: 14px;
+    background: var(--black); color: #fff;
+    border: none; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    cursor: pointer; flex-shrink: 0;
+}
+
+.photos-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 4px; padding: 4px; background: var(--bg-s);
+    flex: 1; overflow-y: auto; align-content: start;
+}
+.photo-cell {
+    position: relative; aspect-ratio: 1; background: var(--bg);
+    border-radius: 4px; overflow: hidden; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.photo-cell:active { transform: scale(0.98); }
+.photo-cell-img {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: rgba(255,255,255,0.85);
+    background-size: cover; background-position: center;
+}
+.photo-cell-role {
+    position: absolute; top: 4px; left: 4px;
+    padding: 2px 6px; border-radius: 8px;
+    background: rgba(0,0,0,0.65); color: #fff;
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.photo-cell-asset {
+    position: absolute; bottom: 4px; left: 4px; right: 4px;
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.9); color: var(--ts);
+    font-size: 9px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.photo-cell-date {
+    position: absolute; top: 4px; right: 4px;
+    padding: 2px 6px; border-radius: 8px;
+    background: rgba(0,0,0,0.65); color: #fff;
+    font-size: 9px; font-weight: 500;
+}
+
+/* Fake map view */
+.photos-map {
+    flex: 1; position: relative; overflow: hidden;
+    background:
+        linear-gradient(45deg, #e8f0e2 25%, transparent 25%),
+        linear-gradient(-45deg, #e8f0e2 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #e8f0e2 75%),
+        linear-gradient(-45deg, transparent 75%, #e8f0e2 75%),
+        #f5f9f3;
+    background-size: 24px 24px;
+    background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+}
+.photos-map-road {
+    position: absolute; background: #c8c8d0; border-radius: 2px;
+}
+.photos-map-road.horizontal { height: 14px; width: 70%; top: 40%; left: 5%; }
+.photos-map-road.diagonal { height: 10px; width: 50%; top: 18%; left: 20%; transform: rotate(22deg); transform-origin: center; }
+.photos-map-road.vertical { width: 12px; height: 60%; top: 20%; left: 62%; }
+.photos-map-label {
+    position: absolute; top: 8px; left: 10px;
+    background: rgba(255,255,255,0.85); padding: 4px 10px;
+    border-radius: 10px; font-size: 11px; font-weight: 600;
+    color: var(--ts); box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.photo-pin {
+    position: absolute; width: 28px; height: 28px; border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -100%) rotate(-45deg);
+    background: var(--ns); border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    cursor: pointer; transition: all var(--tr);
+    -webkit-tap-highlight-color: transparent;
+}
+.photo-pin:hover, .photo-pin.active { background: var(--ns-dark); transform: translate(-50%, -100%) rotate(-45deg) scale(1.15); z-index: 10; }
+.photo-pin::after {
+    content: ''; position: absolute; top: 4px; left: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; transform: rotate(45deg);
+}
+.photo-pin.role-Schakt { background: #C07800; }
+.photo-pin.role-Tekniker { background: #2E9E5F; }
+.photo-pin.role-Inmätare { background: #1E5BB8; }
+.photo-pin.role-Borrare { background: #2B6A8D; }
+.photo-pin.role-Fiberblåsare { background: #7B3FA0; }
+
+/* Photo detail overlay */
+.photo-detail-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 150;
+    display: none; flex-direction: column; color: #fff;
+}
+.photo-detail-overlay.show { display: flex; }
+.photo-detail-close {
+    position: absolute; top: 12px; right: 12px; z-index: 3;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.photo-detail-img {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: #111; font-size: 48px; color: rgba(255,255,255,0.5);
+}
+.photo-detail-meta {
+    padding: 16px 18px; background: #1a1a1c; flex-shrink: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+.photo-detail-name {
+    font-size: 15px; font-weight: 700; margin-bottom: 6px;
+}
+.photo-detail-note {
+    font-size: 13px; color: rgba(255,255,255,0.75);
+    margin-bottom: 10px; line-height: 1.4;
+}
+.photo-detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.photo-detail-tag {
+    padding: 3px 8px; border-radius: 10px;
+    background: rgba(255,255,255,0.12); color: #fff;
+    font-size: 11px; font-weight: 600;
+}
+.photo-detail-tag.role { background: rgba(46,158,95,0.3); }
+.photo-detail-meta-row {
+    font-size: 11px; color: rgba(255,255,255,0.6);
+    display: flex; justify-content: space-between; margin-top: 4px;
+}
+
+/* Photo capture viewfinder */
+.capture-overlay {
+    position: fixed; inset: 0; background: #000;
+    z-index: 220; display: none;
+    flex-direction: column;
+}
+.capture-overlay.show { display: flex; }
+.capture-header {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 4;
+    padding: 16px; display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, rgba(0,0,0,0.6), transparent);
+}
+.capture-close, .capture-flash {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+.capture-title {
+    font-size: 13px; font-weight: 700; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.05em;
+}
+.capture-viewfinder {
+    flex: 1; position: relative; display: flex;
+    align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+    overflow: hidden;
+}
+.capture-viewfinder.has-shot {
+    background-size: cover; background-position: center;
+}
+.capture-grid {
+    position: absolute; inset: 32px;
+    background-image:
+        linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
+    background-size: 33.33% 33.33%;
+    pointer-events: none;
+}
+.capture-viewfinder .corner {
+    position: absolute; width: 32px; height: 32px;
+    border-color: var(--ns); border-style: solid; border-width: 0;
+}
+.capture-viewfinder .corner.tl { top: 32px; left: 32px; border-top-width: 3px; border-left-width: 3px; }
+.capture-viewfinder .corner.tr { top: 32px; right: 32px; border-top-width: 3px; border-right-width: 3px; }
+.capture-viewfinder .corner.bl { bottom: 32px; left: 32px; border-bottom-width: 3px; border-left-width: 3px; }
+.capture-viewfinder .corner.br { bottom: 32px; right: 32px; border-bottom-width: 3px; border-right-width: 3px; }
+.capture-mock-photo {
+    font-size: 80px; color: rgba(255,255,255,0.7);
+}
+.capture-gps {
+    position: absolute; bottom: 16px; left: 16px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+}
+.capture-gps-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ns); animation: nscGpsPulse 1.4s infinite;
+}
+.capture-controls {
+    padding: 18px 16px 32px; background: #000; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 32px;
+}
+.capture-shutter {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: #fff; border: 4px solid rgba(255,255,255,0.4);
+    cursor: pointer; transition: transform 0.1s;
+    box-shadow: 0 0 0 2px #000;
+}
+.capture-shutter:active { transform: scale(0.92); }
+.capture-side-btn {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,0.12); border: none;
+    color: #fff; font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* Photo metadata form (after shutter) */
+.capture-meta-panel {
+    padding: 16px; background: #1a1a1c; flex-shrink: 0;
+    display: none; max-height: 60vh; overflow-y: auto;
+}
+.capture-overlay.review .capture-meta-panel { display: block; }
+.capture-overlay.review .capture-controls { display: none; }
+.capture-meta-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: rgba(255,255,255,0.6);
+    margin-bottom: 4px; display: block;
+}
+.capture-meta-input, .capture-meta-textarea, .capture-meta-select {
+    width: 100%; padding: 10px 12px; margin-bottom: 12px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; color: #fff; font-family: 'Inter', sans-serif; font-size: 14px;
+    outline: none; -webkit-appearance: none;
+}
+.capture-meta-input:focus, .capture-meta-textarea:focus, .capture-meta-select:focus {
+    border-color: var(--ns); background: rgba(46,158,95,0.12);
+}
+.capture-meta-textarea { resize: none; min-height: 60px; }
+.capture-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.capture-meta-actions { display: flex; gap: 8px; margin-top: 6px; }
+.capture-meta-actions button {
+    flex: 1; padding: 12px; border-radius: 8px;
+    border: none; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; cursor: pointer;
+}
+.capture-meta-cancel { background: rgba(255,255,255,0.1); color: #fff; }
+.capture-meta-save   { background: var(--ns); color: #fff; }
+
+/* PDF-underlag modal for photos */
+.photos-pdf-sheet { max-width: 420px; }
+.photos-pdf-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 6px; padding: 10px 0;
+}
+.photos-pdf-cell {
+    aspect-ratio: 1; background: #eee; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #999; position: relative;
+}
+.photos-pdf-cell .cap {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.7); color: #fff; padding: 3px 5px;
+    font-size: 8px; text-align: center;
+}
+
 /* Dark variants */
+.dark .photos-toolbar { background: var(--bg-s); }
+.dark .photo-detail-meta { background: #000; }
+
+.dark .client-card { background: var(--bg); border-color: var(--b); }
+.dark .role-sheet { background: var(--bg); }
+.dark .role-option { background: var(--bg-s); border-color: var(--b); }
+.dark .phase-tracker { background: var(--bg-s); }
+.dark .phase-step { background: var(--bg); border-color: var(--b); }
+.dark .asset-group { background: var(--bg-s); }
+.dark .driller-card { background: var(--bg); border-color: var(--b); }
+.dark .admin-role-section { background: var(--bg-s); }
+
+/* Existing dark overrides continue below */
 .dark .proj { background: var(--bg); border-color: var(--b); }
 .dark .qp-btn { background: var(--bg-s); border-color: var(--b); color: var(--t); }
 .dark .extra-prompt { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.25); }
@@ -752,9 +1370,9 @@ body {
 <div class="phone">
 
     <!-- ═══════════════════════════════════════════════
-         VIEW 0: PROJECT LIST
+         VIEW -1: BESTÄLLARE LIST (new root)
          ═══════════════════════════════════════════════ -->
-    <div class="spa-view active" id="view-projects">
+    <div class="spa-view active" id="view-bestallare">
         <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
         <div class="app-bar">
             <button class="app-bar-back" style="visibility:hidden;">&#8592;</button>
@@ -765,10 +1383,48 @@ body {
                 <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
             </svg>
             <div class="app-bar-content">
-                <div class="app-bar-title">Projekt</div>
+                <div class="app-bar-title">Beställare</div>
             </div>
             <div class="app-bar-actions">
-                <button class="app-bar-btn" onclick="App.toggleDark()" title="Mörkt läge">&#9789;</button>
+                <button class="role-chip" onclick="RolePicker.open()">
+                    <span class="role-chip-dot" id="roleChipDot"></span>
+                    <span id="roleChipLabel">Schakt</span>
+                    <span class="role-chip-caret">&#9660;</span>
+                </button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">&#128269;</span>
+                <input class="search" id="clientSearch" placeholder="Sök beställare..." />
+            </div>
+        </div>
+        <div class="list" id="clientList"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 0: PROJECT LIST (filtered by selected Beställare)
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-projects">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="app-bar">
+            <button class="app-bar-back" onclick="App.navigateTo('view-bestallare')">&#8592;</button>
+            <svg class="ns-mark" viewBox="0 0 15 20" width="16" height="22" style="flex-shrink:0;">
+                <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+            </svg>
+            <div class="app-bar-content">
+                <div class="app-bar-title">Projekt</div>
+                <div class="app-bar-sub" id="projHdrSub">Beställare</div>
+            </div>
+            <div class="app-bar-actions">
+                <button class="role-chip" onclick="RolePicker.open()">
+                    <span class="role-chip-dot"></span>
+                    <span id="roleChipLabel2">Schakt</span>
+                    <span class="role-chip-caret">&#9660;</span>
+                </button>
             </div>
         </div>
         <div class="filter-row">
@@ -803,7 +1459,7 @@ body {
             </div>
         </div>
         <div class="project-meta">
-            <div class="project-meta-text" id="projMetaText"><b>Östra Göinge Knislinge Etapp 1</b> &middot; Fiber</div>
+            <div class="project-meta-text" id="projMetaText"><b>22181 Emmaljunga öst</b> &middot; Hässleholm fibernät AB</div>
             <div class="project-meta-text" id="projMetaProgress" style="font-variant-numeric:tabular-nums;">8/24 klara</div>
         </div>
         <div class="seg-progress" id="segProgress"></div>
@@ -849,7 +1505,7 @@ body {
             </svg>
             <div class="app-bar-content">
                 <div class="app-bar-title" id="inspHdrTitle">I-11809 Immeln 5:3</div>
-                <div class="app-bar-sub" id="inspHdrSub">Östra Göinge Knislinge Etapp 1</div>
+                <div class="app-bar-sub" id="inspHdrSub">22181 Emmaljunga öst · Hässleholm fibernät AB</div>
             </div>
         </div>
 
@@ -861,7 +1517,7 @@ body {
                 <div class="cust-addr" id="inspCustAddr">Sjövägen 1, Immeln</div>
             </div>
             <div class="cust-icon-actions">
-                <button class="cust-icon-btn" onclick="App.quickPhoto('installation')" title="Lägg till foto på installation">&#128247;</button>
+                <button class="cust-icon-btn" onclick="Photos.open('view-inspections')" title="Visa alla bilder">&#128247;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Ringer...')" title="Ring">&#128222;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Öppnar karta...')" title="Navigera">&#128506;</button>
                 <button class="cust-icon-btn" onclick="App.toast('Öppnar e-post...')" title="E-post">&#128231;</button>
@@ -882,6 +1538,29 @@ body {
             <div class="continue-cta-icon">&#9654;</div>
             <div class="continue-cta-text" id="continueCtaText">Fortsätt nästa checklista</div>
             <div class="continue-cta-arrow">&#8250;</div>
+        </div>
+
+        <!-- Asset-strip: skarvbrunn / slingbrunn / fiberskåp / borrning -->
+        <div class="asset-strip" id="assetStrip">
+            <div class="asset-strip-hdr">
+                <span class="asset-strip-title" id="assetStripTitle">Anläggningar</span>
+                <button class="asset-strip-add" onclick="Assets.openAddModal()">+ Ny anläggning</button>
+            </div>
+            <div class="asset-strip-chips" id="assetStripChips"></div>
+        </div>
+
+        <!-- Anslutningslista — 4-phase tracker (template, editable per project) -->
+        <div class="phase-tracker" id="phaseTracker">
+            <div class="phase-tracker-title">
+                <span>Anslutningslista</span>
+                <span id="phaseTrackerStatus">Fas 3 av 4</span>
+            </div>
+            <div class="phase-steps" id="phaseSteps">
+                <div class="phase-step done" onclick="Anslutning.goPhase(0)"><span class="phase-step-num">1</span>Tomtprojektering</div>
+                <div class="phase-step done" onclick="Anslutning.goPhase(1)"><span class="phase-step-num">2</span>Tomtschakt</div>
+                <div class="phase-step active" onclick="Anslutning.goPhase(2)"><span class="phase-step-num">3</span>Installation</div>
+                <div class="phase-step" onclick="Anslutning.goPhase(3)"><span class="phase-step-num">4</span>Slutinstallation</div>
+            </div>
         </div>
 
         <div class="list" id="inspList" style="margin-top:4px;"></div>
@@ -1462,6 +2141,187 @@ body {
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         VIEW 5: DRILLER-ONLY MODE (role = Borrare)
+         Flat list of borrningar with no Beställare/Projekt navigation.
+         The app deliberately hides the full hierarchy — drillers
+         only ever see borrningar they are assigned to.
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-driller">
+        <div class="sbar"><span>09:45</span><span>NSChecks &middot; Borrloggen</span><span>78%</span></div>
+        <div class="app-bar" style="background:#2B6A8D;">
+            <button class="app-bar-back" style="visibility:hidden;">&#8592;</button>
+            <div style="width:20px;height:20px;background:#4FB0E5;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;">B</div>
+            <div class="app-bar-content">
+                <div class="app-bar-title">Borrloggen</div>
+                <div class="app-bar-sub">Borrningar tilldelade till dig</div>
+            </div>
+            <div class="app-bar-actions">
+                <button class="role-chip" onclick="RolePicker.open()">
+                    <span class="role-chip-dot" style="background:#4FB0E5;"></span>
+                    <span>Borrare</span>
+                    <span class="role-chip-caret">&#9660;</span>
+                </button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="search-wrap">
+                <span class="search-icon">&#128269;</span>
+                <input class="search" placeholder="Sök borrning, plats..." />
+            </div>
+        </div>
+        <div class="list" id="drillerList"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         VIEW 6: PROJEKTBILDER (photo album per project)
+         ═══════════════════════════════════════════════ -->
+    <div class="spa-view right" id="view-photos">
+        <div class="sbar"><span>09:45</span><span>NSChecks</span><span>78%</span></div>
+        <div class="app-bar">
+            <button class="app-bar-back" onclick="Photos.back()">&#8592;</button>
+            <svg class="ns-mark" viewBox="0 0 15 20" width="14" height="18" style="flex-shrink:0;">
+                <rect x="0" y="15.5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="10.25" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="10.5" y="5" width="4.5" height="4.5" fill="#2E9E5F"/>
+                <rect x="5.25" y="0" width="4.5" height="4.5" fill="rgba(46,158,95,0.5)"/>
+            </svg>
+            <div class="app-bar-content">
+                <div class="app-bar-title">Projektbilder</div>
+                <div class="app-bar-sub" id="photosHdrSub">Alla bilder i projektet</div>
+            </div>
+            <div class="app-bar-actions">
+                <button class="app-bar-btn" title="Ladda upp nytt foto" onclick="Photos.quickUpload()">&#128247;</button>
+            </div>
+        </div>
+        <div class="photos-toolbar">
+            <div class="photos-view-toggle">
+                <button class="active" id="photosViewGrid" onclick="Photos.setView('grid')">Rutnät</button>
+                <button id="photosViewMap" onclick="Photos.setView('map')">Karta</button>
+            </div>
+            <div class="photos-filter-chips" id="photosFilterChips"></div>
+            <button class="photos-export-btn" onclick="Photos.exportPDF()">PDF</button>
+        </div>
+        <div class="photos-grid" id="photosGrid"></div>
+        <div class="photos-map" id="photosMap" style="display:none;">
+            <div class="photos-map-label" id="photosMapLabel">0 bilder på kartan</div>
+            <div class="photos-map-road diagonal"></div>
+            <div class="photos-map-road horizontal"></div>
+            <div class="photos-map-road vertical"></div>
+        </div>
+
+        <!-- Photo detail overlay -->
+        <div class="photo-detail-overlay" id="photoDetailOverlay">
+            <button class="photo-detail-close" onclick="Photos.closeDetail()">&#10005;</button>
+            <div class="photo-detail-img" id="photoDetailImg">&#128247;</div>
+            <div class="photo-detail-meta">
+                <div class="photo-detail-name" id="photoDetailName">—</div>
+                <div class="photo-detail-note" id="photoDetailNote">—</div>
+                <div class="photo-detail-tags" id="photoDetailTags"></div>
+                <div class="photo-detail-meta-row">
+                    <span id="photoDetailUser">—</span>
+                    <span id="photoDetailGps">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Role picker sheet -->
+<div class="role-sheet-backdrop" id="roleSheetBackdrop" onclick="RolePicker.close()"></div>
+<div class="role-sheet" id="roleSheet">
+    <div class="role-sheet-title">Välj roll</div>
+    <div id="roleSheetOptions"></div>
+</div>
+
+<!-- Photo capture overlay -->
+<div class="capture-overlay" id="captureOverlay">
+    <div class="capture-header">
+        <button class="capture-close" onclick="Capture.cancel()">&#10005;</button>
+        <span class="capture-title" id="captureTitle">Ny bild</span>
+        <button class="capture-flash" title="Blixt" onclick="App.toast('Blixt: auto')">&#9889;</button>
+    </div>
+    <div class="capture-viewfinder" id="captureViewfinder">
+        <div class="capture-grid"></div>
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="capture-mock-photo" id="captureMockIcon">&#128247;</div>
+        <div class="capture-gps">
+            <span class="capture-gps-dot"></span>
+            <span id="captureGps">63.039781, 18.093539</span>
+        </div>
+    </div>
+    <div class="capture-controls">
+        <button class="capture-side-btn" title="Galleri" onclick="App.toast('Galleri: kommer snart')">&#127748;</button>
+        <button class="capture-shutter" onclick="Capture.shoot()" aria-label="Ta foto"></button>
+        <button class="capture-side-btn" title="Byt kamera" onclick="App.toast('Byter kamera...')">&#128259;</button>
+    </div>
+    <div class="capture-meta-panel">
+        <label class="capture-meta-label" for="captureMetaTitle">Titel</label>
+        <input type="text" id="captureMetaTitle" class="capture-meta-input" placeholder="T.ex. Skåp i våg och lod" />
+
+        <label class="capture-meta-label" for="captureMetaNote">Anteckning</label>
+        <textarea id="captureMetaNote" class="capture-meta-textarea" rows="3" placeholder="Valfri kommentar (visas i albumet och i PDF-underlag)"></textarea>
+
+        <div class="capture-meta-row">
+            <div>
+                <label class="capture-meta-label" for="captureMetaAsset">Anläggning (valfritt)</label>
+                <select id="captureMetaAsset" class="capture-meta-select"></select>
+            </div>
+            <div>
+                <label class="capture-meta-label" for="captureMetaRole">Roll</label>
+                <select id="captureMetaRole" class="capture-meta-select"></select>
+            </div>
+        </div>
+
+        <div class="capture-meta-actions">
+            <button class="capture-meta-cancel" onclick="Capture.retake()">&#8634; Ta om</button>
+            <button class="capture-meta-save" onclick="Capture.save()">Spara &#10003;</button>
+        </div>
+    </div>
+</div>
+
+<!-- Asset add sheet -->
+<div class="role-sheet-backdrop" id="assetSheetBackdrop" onclick="Assets.closeAddModal()"></div>
+<div class="role-sheet" id="assetSheet">
+    <div class="role-sheet-title">Ny anläggning</div>
+    <div class="asset-modal-form">
+        <div class="asset-form-label">Typ</div>
+        <div class="asset-modal-types" id="assetTypeTiles">
+            <div class="asset-type-tile selected" data-type="skarvbrunn" onclick="Assets.pickType(this)">
+                <span class="asset-type-tile-dot" style="background:#62A84A;"></span>
+                <span class="asset-type-tile-label">Skarvbrunn</span>
+            </div>
+            <div class="asset-type-tile" data-type="slingbrunn" onclick="Assets.pickType(this)">
+                <span class="asset-type-tile-dot" style="background:#D63384;"></span>
+                <span class="asset-type-tile-label">Slingbrunn</span>
+            </div>
+            <div class="asset-type-tile" data-type="fiberskåp" onclick="Assets.pickType(this)">
+                <span class="asset-type-tile-dot" style="background:#F4B400;"></span>
+                <span class="asset-type-tile-label">Fiberskåp</span>
+            </div>
+            <div class="asset-type-tile" data-type="borrning" onclick="Assets.pickType(this)">
+                <span class="asset-type-tile-dot" style="background:#4FB0E5;"></span>
+                <span class="asset-type-tile-label">Borrning</span>
+            </div>
+        </div>
+        <div class="asset-form-field">
+            <label class="asset-form-label" for="assetIdInput">Anläggnings-ID</label>
+            <input type="text" id="assetIdInput" class="asset-form-input" placeholder="T.ex. FOS-43-B" autocomplete="off" />
+        </div>
+        <div class="asset-form-field">
+            <label class="asset-form-label">Position</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="assetGpsInput" class="asset-form-input" value="63.039781, 18.093539" readonly style="background:var(--bg-s);" />
+                <button class="asset-strip-add" onclick="App.toast('GPS uppdaterad')" style="white-space:nowrap;">📍 GPS</button>
+            </div>
+        </div>
+        <div class="asset-form-actions">
+            <button class="btn-cancel" onclick="Assets.closeAddModal()">Avbryt</button>
+            <button class="btn-save" onclick="Assets.saveNew()">Lägg till</button>
+        </div>
+    </div>
 </div>
 
 <!-- Global overlays -->
@@ -1512,19 +2372,22 @@ body {
    APP — SPA Navigation Controller
    ══════════════════════════════════════════════════════════════ */
 const App = {
-    currentView: 'view-projects',
-    viewStack: ['view-projects'],
+    currentView: 'view-bestallare',
+    viewStack: ['view-bestallare'],
+    selectedClient: null,
     selectedProject: null,
     selectedInstallation: null,
     selectedInspection: null,
     currentFilter: '',
+    currentRole: 'Schakt',       // active user role — affects which templates are visible
+    currentPhase: 2,             // current Anslutnings-fas (0-3)
     _tt: null,
 
     navigateTo(viewId) {
         if (viewId === this.currentView) return;
         const current = document.getElementById(this.currentView);
         const target = document.getElementById(viewId);
-        const viewOrder = ['view-projects', 'view-installations', 'view-inspections', 'view-wizard', 'view-incident'];
+        const viewOrder = ['view-bestallare', 'view-projects', 'view-installations', 'view-inspections', 'view-wizard', 'view-incident', 'view-driller', 'view-photos'];
         const currentIdx = viewOrder.indexOf(this.currentView);
         const targetIdx = viewOrder.indexOf(viewId);
         const goingForward = targetIdx > currentIdx;
@@ -1552,11 +2415,25 @@ const App = {
         this.currentView = viewId;
     },
 
+    openClient(clientData) {
+        this.selectedClient = clientData;
+        document.getElementById('projHdrSub').textContent = clientData.shortName;
+        ProjList.render();
+        this.navigateTo('view-projects');
+    },
+
     openProject(projData) {
         this.selectedProject = projData;
-        document.getElementById('instHdrTitle').textContent = projData.name;
-        document.getElementById('instHdrSub').textContent = projData.region + ' · ' + projData.category;
-        document.getElementById('projMetaText').innerHTML = '<b>' + projData.name + '</b> · ' + projData.category;
+        // Ensure Beställare context is set when deep-linking.
+        if (!this.selectedClient || this.selectedClient.id !== projData.clientId) {
+            var c = ClientList.data.find(function(cc) { return cc.id === projData.clientId; });
+            if (c) this.selectedClient = c;
+        }
+        var hdr = projData.number + ' ' + projData.name;
+        document.getElementById('instHdrTitle').textContent = hdr;
+        var client = this.selectedClient ? this.selectedClient.shortName : '';
+        document.getElementById('instHdrSub').textContent = client + ' · ' + projData.category;
+        document.getElementById('projMetaText').innerHTML = '<b>' + hdr + '</b> · ' + projData.region;
         document.getElementById('projMetaProgress').textContent = projData.installationsDone + '/' + projData.installationsTotal + ' klara';
         // In this mockup every project re-uses the same installation data set
         InstList.render(this.currentFilter || null);
@@ -1570,7 +2447,7 @@ const App = {
         try { localStorage.setItem('nschecks_last', JSON.stringify({ idx: InstList.data.indexOf(instData), ts: Date.now() })); } catch(e) {}
 
         document.getElementById('inspHdrTitle').textContent = instData.name;
-        document.getElementById('inspHdrSub').textContent = this.selectedProject ? this.selectedProject.name : 'Östra Göinge Knislinge Etapp 1';
+        document.getElementById('inspHdrSub').textContent = this.selectedProject ? this.selectedProject.name : '22181 Emmaljunga öst';
         const parts = instData.addr.split(' \u00b7 ');
         document.getElementById('inspCustName').textContent = parts[0] || '';
         document.getElementById('inspCustAddr').textContent = parts[1] || '';
@@ -1601,6 +2478,7 @@ const App = {
             ctaEl.style.display = 'none';
         }
         InspList.render(instData);
+        Assets.render();
         this.navigateTo('view-inspections');
     },
 
@@ -1655,17 +2533,9 @@ const App = {
     },
 
     quickPhoto(scope) {
-        // scope: 'project' | 'installation'
-        var label = scope === 'project' ? 'projektet' : 'installationen';
-        if (scope === 'project' && this.selectedProject) {
-            this.selectedProject.photoCount = (this.selectedProject.photoCount || 0) + 1;
-            ProjList.render();
-        } else if (scope === 'installation' && this.selectedInstallation) {
-            this.selectedInstallation.photoCount = (this.selectedInstallation.photoCount || 0) + 1;
-            InstList.render(this.currentFilter || null);
-        }
-        this.toast('Foto tillagt på ' + label);
-        if (navigator.vibrate) navigator.vibrate(10);
+        // Opens the full capture viewfinder. Photo + metadata is saved into Photos.data
+        // and the per-object photoCount is bumped from Capture.save().
+        Capture.open(scope);
     },
 
     toggleDark() {
@@ -1704,56 +2574,161 @@ const App = {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   PROJECT LIST
+   CLIENT LIST (Beställare)
+   ══════════════════════════════════════════════════════════════ */
+const ClientList = {
+    data: [
+        { id: 1, name: "Hässleholm fibernät AB", shortName: "Hässleholm fibernät", projectCount: 1, activeProjects: 1, logoColor: "#2E9E5F" },
+        { id: 2, name: "Skanova AB",              shortName: "Skanova",              projectCount: 1, activeProjects: 1, logoColor: "#1E5BB8" },
+        { id: 3, name: "Global Connect AB",       shortName: "Global Connect",       projectCount: 1, activeProjects: 1, logoColor: "#D75A1F" },
+        { id: 4, name: "Öviks Energi AB",         shortName: "Öviks Energi",         projectCount: 1, activeProjects: 1, logoColor: "#7B3FA0" },
+    ],
+
+    renderCard(c, idx) {
+        var initials = c.shortName.split(' ').map(function(w) { return w[0]; }).slice(0, 2).join('').toUpperCase();
+        return '<div class="client-card" onclick="App.openClient(ClientList.data[' + idx + '])">' +
+            '<div class="client-logo" style="background:' + c.logoColor + ';">' + initials + '</div>' +
+            '<div class="client-info">' +
+                '<div class="client-name">' + c.name + '</div>' +
+                '<div class="client-sub">' + c.activeProjects + ' aktivt projekt &middot; ' + c.projectCount + ' totalt</div>' +
+            '</div>' +
+            '<div class="client-arrow">&#8250;</div>' +
+        '</div>';
+    },
+
+    render() {
+        var list = document.getElementById('clientList');
+        if (!list) return;
+        var html = '';
+        var self = this;
+        this.data.forEach(function(c, i) { html += self.renderCard(c, i); });
+        list.innerHTML = html;
+    },
+
+    init() {
+        this.render();
+        var search = document.getElementById('clientSearch');
+        if (search) {
+            search.addEventListener('input', function(e) {
+                var q = e.target.value.toLowerCase();
+                document.querySelectorAll('#clientList .client-card').forEach(function(el) {
+                    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+                });
+            });
+        }
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PROJECT LIST (filtered by active Beställare)
    ══════════════════════════════════════════════════════════════ */
 const ProjList = {
+    // Each project belongs to one Beställare (clientId). In production this is a
+    // LOOKUP column on the Project list. Role→template mapping lives in roleTemplates.
     data: [
         {
-            name: "Östra Göinge Knislinge Etapp 1",
-            region: "Skåne nord-öst",
+            id: 22181,
+            clientId: 1,
+            number: "22181",
+            name: "Emmaljunga öst",
+            region: "Hässleholm",
             category: "Fiber",
             installationsTotal: 24,
             installationsDone: 8,
             photoCount: 3,
-            status: "progress"
+            status: "progress",
+            // Per-role template assignment (matches customer's hierarkiska schema page 1)
+            roleTemplates: {
+                Schakt:        ["Egenkontroll skåp schakt", "Egenkontroll Schakt utförande"],
+                Tekniker:      ["Egenkontroll Installation i skåp – tätning, signering, märkning"],
+                Inmätare:      ["Egenkontroll – Geodetisk inmätning"],
+                Borrare:       ["Borrprotokoll"],
+                Fiberblåsare:  [],
+                Rolloberoende: ["Tillbud"],
+                Övrigt:        ["Projektspecifikt"]
+            }
         },
         {
-            name: "Kristianstad Centrum Etapp 3",
-            region: "Skåne öst",
+            id: 22190,
+            clientId: 2,
+            number: "22190",
+            name: "Bromölla 24",
+            region: "Bromölla",
             category: "Fiber",
             installationsTotal: 18,
             installationsDone: 18,
             photoCount: 12,
-            status: "complete"
+            status: "complete",
+            roleTemplates: {
+                Schakt:        ["Egenkontroll sättning skåp", "Egenkontroll skåp fibertekniskt", "Egenkontroll fiberarbete NOD", "Egenkontroll slingbrunn"],
+                Tekniker:      ["Egenkontroll skåp fibertekniskt", "Egenkontroll fiberarbete NOD"],
+                Inmätare:      ["Egenkontroll – Geodetisk inmätning"],
+                Borrare:       ["Borrprotokoll"],
+                Fiberblåsare:  ["Egenkontroll slingbrunn"],
+                Rolloberoende: ["Tillbud"],
+                Övrigt:        ["Projektspecifikt"]
+            }
         },
         {
-            name: "Hässleholm Nord",
-            region: "Skåne mitt",
+            id: 22156,
+            clientId: 3,
+            number: "22156",
+            name: "Almsjönäs",
+            region: "Glimåkra",
             category: "Fiber",
             installationsTotal: 12,
             installationsDone: 4,
             photoCount: 1,
-            status: "progress"
+            status: "progress",
+            roleTemplates: {
+                Schakt:        ["Egenkontroll sättning skåp", "Egenkontroll sättning brunn", "Egenkontroll schakt", "Underhåll grävmaskin", "Daglig tillsyn"],
+                Tekniker:      ["Egenkontroll skåp fibertekniskt", "Egenkontroll fiberarbete NOD", "Egenkontroll slingbrunn", "Egenkontroll brunn fibertekniskt"],
+                Inmätare:      ["Egenkontroll – Geodetisk inmätning"],
+                Borrare:       ["Borrprotokoll"],
+                Fiberblåsare:  ["Egenkontroll slingbrunn"],
+                Rolloberoende: ["Tillbud"],
+                Övrigt:        ["Projektspecifikt"]
+            }
         },
         {
-            name: "Bromölla Norra",
-            region: "Skåne syd-öst",
+            id: 22184,
+            clientId: 4,
+            number: "22184",
+            name: "Grundsunda",
+            region: "Örnsköldsvik",
             category: "Fiber",
             installationsTotal: 9,
             installationsDone: 0,
             photoCount: 0,
-            status: "new"
+            status: "new",
+            roleTemplates: {
+                Schakt:        ["Sättning skåp (övik)", "Egenkontroll sättning brunn", "Egenkontroll schakt och förläggning", "Egenkontroll packningsprotokoll", "Tolkprotokoll"],
+                Tekniker:      ["Egenkontroll fiberarbeten BRUNN", "Egenkontroll SLINGBRUNN", "Kontrollerade moment Egenkontroll fiberarbeten SKÅP", "Checklista installation (Öviks energi)"],
+                Inmätare:      ["Egenkontroll – Geodetisk inmätning"],
+                Borrare:       ["Borrprotokoll"],
+                Fiberblåsare:  ["Egenkontroll slingbrunn", "Tolkprotokoll"],
+                Rolloberoende: ["Tillbud"],
+                Övrigt:        ["Projektspecifikt"]
+            }
         },
     ],
+
+    // Returns the list filtered for the currently selected Beställare (if any).
+    forClient(clientId) {
+        if (!clientId) return this.data;
+        return this.data.filter(function(p) { return p.clientId === clientId; });
+    },
 
     renderCard(p, idx) {
         var pct = p.installationsTotal ? Math.round((p.installationsDone / p.installationsTotal) * 100) : 0;
         var statusCls = p.status === 'complete' ? 'complete' : (p.status === 'new' ? 'archived' : '');
         var hasPhotos = (p.photoCount || 0) > 0 ? ' has-photos' : '';
+        var client = ClientList.data.find(function(c) { return c.id === p.clientId; });
+        var clientLabel = client ? client.shortName : '';
         return '<div class="proj ' + statusCls + '" onclick="App.openProject(ProjList.data[' + idx + '])">' +
             '<div class="proj-main">' +
-                '<div class="proj-name">' + p.name + '</div>' +
-                '<div class="proj-sub">' + p.region + ' &middot; ' + p.category + '</div>' +
+                '<div class="proj-name"><span class="proj-number">' + p.number + '</span> ' + p.name + '</div>' +
+                '<div class="proj-sub">' + clientLabel + ' &middot; ' + p.region + ' &middot; ' + p.category + '</div>' +
                 '<div class="proj-stats">' +
                     '<span><b>' + p.installationsDone + '/' + p.installationsTotal + '</b> installationer klara</span>' +
                     '<span>&#128247; <b>' + (p.photoCount || 0) + '</b> foton</span>' +
@@ -1761,8 +2736,8 @@ const ProjList = {
                 '<div class="proj-progress-bar"><div class="proj-progress-fill" style="width:' + pct + '%;"></div></div>' +
             '</div>' +
             '<div class="proj-actions">' +
-                '<div class="qp-btn-wrap' + hasPhotos + '" onclick="event.stopPropagation();ProjList.quickPhoto(' + idx + ',this);">' +
-                    '<button class="qp-btn" title="Lägg till foto på projekt">&#128247;</button>' +
+                '<div class="qp-btn-wrap' + hasPhotos + '" onclick="event.stopPropagation();ProjList.openPhotos(' + idx + ');">' +
+                    '<button class="qp-btn" title="Projektbilder">&#128247;</button>' +
                     '<span class="qp-btn-count">' + (p.photoCount || 0) + '</span>' +
                 '</div>' +
                 '<div class="proj-arrow">&#8250;</div>' +
@@ -1770,13 +2745,22 @@ const ProjList = {
         '</div>';
     },
 
-    quickPhoto(idx, wrapEl) {
+    openPhotos(idx) {
         var p = this.data[idx];
         if (!p) return;
-        p.photoCount = (p.photoCount || 0) + 1;
-        this.render();
-        App.toast('Foto tillagt på projektet');
-        if (navigator.vibrate) navigator.vibrate(10);
+        App.selectedProject = p;
+        var c = ClientList.data.find(function(cc) { return cc.id === p.clientId; });
+        if (c) App.selectedClient = c;
+        Photos.open('view-projects');
+    },
+
+    quickPhoto(idx) {
+        var p = this.data[idx];
+        if (!p) return;
+        App.selectedProject = p;
+        var c = ClientList.data.find(function(cc) { return cc.id === p.clientId; });
+        if (c) App.selectedClient = c;
+        Capture.open('project');
     },
 
     render() {
@@ -1784,7 +2768,12 @@ const ProjList = {
         if (!list) return;
         var html = '';
         var self = this;
-        this.data.forEach(function(p, i) { html += self.renderCard(p, i); });
+        var activeClient = App.selectedClient ? App.selectedClient.id : null;
+        this.data.forEach(function(p, i) {
+            if (activeClient && p.clientId !== activeClient) return;
+            html += self.renderCard(p, i);
+        });
+        if (!html) html = '<div class="empty-state"><div class="empty-state-icon">&#128230;</div><div class="empty-state-title">Inga projekt</div><div class="empty-state-text">Den valda beställaren har inga projekt ännu.</div></div>';
         list.innerHTML = html;
     },
 
@@ -1867,10 +2856,8 @@ const InstList = {
     quickPhoto(idx) {
         var d = this.data[idx];
         if (!d) return;
-        d.photoCount = (d.photoCount || 0) + 1;
-        this.render(App.currentFilter || null);
-        App.toast('Foto tillagt på installationen');
-        if (navigator.vibrate) navigator.vibrate(10);
+        App.selectedInstallation = d;
+        Capture.open('installation');
     },
 
     renderSegProgress() {
@@ -2040,48 +3027,48 @@ const InstList = {
    INSPECTION LIST
    ══════════════════════════════════════════════════════════════ */
 const InspList = {
-    // Multiple inspection data sets based on installation state.
-    // All installations share the same 7 inspection types but at different completion levels.
+    // Each checklist now also carries:
+    //   roles[]  — which roles see/edit it (others may see it read-only or not at all)
+    //   asset    — { type: 'skarvbrunn'|'slingbrunn'|'fiberskåp'|'borrning', id: string } or null
+    //   phase    — 'tomtprojektering'|'tomtschakt'|'installation'|'slutinstallation' (optional)
+    // In the real implementation these map to NSTemplate.AllowedRoles, NSAsset (LOOKUP),
+    // and NSAnslutningPhase respectively.
     inspectionSets: {
-        // Complete installation (7/7): all done, mixed contractors
         complete: [
-            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-12", checks:5, total:5},
-            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:12, total:12},
-            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:8, total:8},
-            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson", date:"2026-03-20", checks:10, total:10},
-            {name:"Godkännande utförande", status:"done", by:"Albert Fransson", date:"2026-03-20", checks:3, total:3},
-            {name:"Egenkontroll kundinstallation", status:"done", by:"Albert Fransson", date:"2026-03-22", checks:8, total:8},
-            {name:"Godkännande bekräftelse", status:"done", by:"Anders Holm (kund)", date:"2026-03-22", checks:5, total:5},
+            {name:"Godkännande planering",      status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-12", checks:5,  total:5,  roles:['Schakt'],               asset:null,                                phase:'tomtprojektering'},
+            {name:"Egenkontroll schakt",        status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:12, total:12, roles:['Schakt'],               asset:null,                                phase:'tomtschakt'},
+            {name:"Egenkontroll sättning brunn",status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-14", checks:8,  total:8,  roles:['Schakt'],               asset:{type:'skarvbrunn', id:'SB-14'},      phase:'tomtschakt'},
+            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson",        date:"2026-03-20", checks:10, total:10, roles:['Schakt','Tekniker'],    asset:{type:'fiberskåp',  id:'FOS-42-A'},   phase:'installation'},
+            {name:"Godkännande utförande",      status:"done", by:"Albert Fransson",        date:"2026-03-20", checks:3,  total:3,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Egenkontroll kundinstallation",status:"done", by:"Albert Fransson",      date:"2026-03-22", checks:8,  total:8,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Godkännande bekräftelse",    status:"done", by:"Anders Holm (kund)",     date:"2026-03-22", checks:5,  total:5,  roles:['Tekniker'],             asset:null,                                phase:'slutinstallation'},
         ],
-        // Active installation (5/7): tech is here now
         progress: [
-            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-28", checks:5, total:5},
-            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:12, total:12},
-            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:8, total:8},
-            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson", date:"2026-04-18", checks:10, total:10},
-            {name:"Godkännande utförande", status:"done", by:"Albert Fransson", date:"2026-04-18", checks:3, total:3},
-            {name:"Egenkontroll kundinstallation", status:"progress", by:"", date:"", checks:4, total:8},
-            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+            {name:"Godkännande planering",      status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-28", checks:5,  total:5,  roles:['Schakt'],               asset:null,                                phase:'tomtprojektering'},
+            {name:"Egenkontroll schakt",        status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:12, total:12, roles:['Schakt'],               asset:null,                                phase:'tomtschakt'},
+            {name:"Egenkontroll sättning brunn",status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-03-29", checks:8,  total:8,  roles:['Schakt'],               asset:{type:'skarvbrunn', id:'SB-14'},      phase:'tomtschakt'},
+            {name:"Egenkontroll sättning skåp", status:"done", by:"Albert Fransson",        date:"2026-04-18", checks:10, total:10, roles:['Schakt','Tekniker'],    asset:{type:'fiberskåp',  id:'FOS-42-A'},   phase:'installation'},
+            {name:"Godkännande utförande",      status:"done", by:"Albert Fransson",        date:"2026-04-18", checks:3,  total:3,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Egenkontroll kundinstallation",status:"progress", by:"", date:"",        checks:4,  total:8,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Godkännande bekräftelse",    status:"new",  by:"",                       date:"",            checks:0,  total:5,  roles:['Tekniker'],             asset:null,                                phase:'slutinstallation'},
         ],
-        // Contractor-prepped (3/7): only Bylunds work done
         prepped: [
-            {name:"Godkännande planering", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-08", checks:5, total:5},
-            {name:"Egenkontroll schakt", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:12, total:12},
-            {name:"Egenkontroll sättning brunn", status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:8, total:8},
-            {name:"Egenkontroll sättning skåp", status:"new", by:"", date:"", checks:0, total:10},
-            {name:"Godkännande utförande", status:"new", by:"", date:"", checks:0, total:3},
-            {name:"Egenkontroll kundinstallation", status:"new", by:"", date:"", checks:0, total:8},
-            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+            {name:"Godkännande planering",      status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-08", checks:5,  total:5,  roles:['Schakt'],               asset:null,                                phase:'tomtprojektering'},
+            {name:"Egenkontroll schakt",        status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:12, total:12, roles:['Schakt'],               asset:null,                                phase:'tomtschakt'},
+            {name:"Egenkontroll sättning brunn",status:"done", by:"Kim Dahlgren (Bylunds)", date:"2026-04-09", checks:8,  total:8,  roles:['Schakt'],               asset:{type:'skarvbrunn', id:'SB-07'},      phase:'tomtschakt'},
+            {name:"Egenkontroll sättning skåp", status:"new",  by:"",                       date:"",            checks:0,  total:10, roles:['Schakt','Tekniker'],    asset:{type:'fiberskåp',  id:'FOS-42-A'},   phase:'installation'},
+            {name:"Godkännande utförande",      status:"new",  by:"",                       date:"",            checks:0,  total:3,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Egenkontroll kundinstallation",status:"new", by:"",                      date:"",            checks:0,  total:8,  roles:['Tekniker'],             asset:null,                                phase:'installation'},
+            {name:"Godkännande bekräftelse",    status:"new",  by:"",                       date:"",            checks:0,  total:5,  roles:['Tekniker'],             asset:null,                                phase:'slutinstallation'},
         ],
-        // Not started (0/7): completely empty
         new: [
-            {name:"Godkännande planering", status:"new", by:"", date:"", checks:0, total:5},
-            {name:"Egenkontroll schakt", status:"new", by:"", date:"", checks:0, total:12},
-            {name:"Egenkontroll sättning brunn", status:"new", by:"", date:"", checks:0, total:8},
-            {name:"Egenkontroll sättning skåp", status:"new", by:"", date:"", checks:0, total:10},
-            {name:"Godkännande utförande", status:"new", by:"", date:"", checks:0, total:3},
-            {name:"Egenkontroll kundinstallation", status:"new", by:"", date:"", checks:0, total:8},
-            {name:"Godkännande bekräftelse", status:"new", by:"", date:"", checks:0, total:5},
+            {name:"Godkännande planering",      status:"new",  by:"", date:"", checks:0, total:5,  roles:['Schakt'],            asset:null,                                phase:'tomtprojektering'},
+            {name:"Egenkontroll schakt",        status:"new",  by:"", date:"", checks:0, total:12, roles:['Schakt'],            asset:null,                                phase:'tomtschakt'},
+            {name:"Egenkontroll sättning brunn",status:"new",  by:"", date:"", checks:0, total:8,  roles:['Schakt'],            asset:{type:'skarvbrunn', id:'SB-02'},      phase:'tomtschakt'},
+            {name:"Egenkontroll sättning skåp", status:"new",  by:"", date:"", checks:0, total:10, roles:['Schakt','Tekniker'], asset:{type:'fiberskåp',  id:'FOS-19-B'},   phase:'installation'},
+            {name:"Godkännande utförande",      status:"new",  by:"", date:"", checks:0, total:3,  roles:['Tekniker'],          asset:null,                                phase:'installation'},
+            {name:"Egenkontroll kundinstallation",status:"new", by:"", date:"", checks:0, total:8, roles:['Tekniker'],          asset:null,                                phase:'installation'},
+            {name:"Godkännande bekräftelse",    status:"new",  by:"", date:"", checks:0, total:5,  roles:['Tekniker'],          asset:null,                                phase:'slutinstallation'},
         ],
     },
 
@@ -2122,14 +3109,44 @@ const InspList = {
         '</div>';
     },
 
+    // Return inspections visible to the current role.
+    // Schakt sees schakt-tagged + read-only on shared assets.
+    // Tekniker sees tekniker-tagged only (not schakt forms, per customer requirement page 2).
+    // Other roles see only their own.
+    visibleToCurrentRole() {
+        var role = App.currentRole;
+        return this.inspections.filter(function(d) {
+            if (!d.roles || d.roles.length === 0) return true;
+            return d.roles.indexOf(role) >= 0;
+        });
+    },
+
+    assetLabel(asset) {
+        if (!asset) return '';
+        var t = asset.type;
+        var cls = t === 'skarvbrunn' ? 'skarv' : t === 'slingbrunn' ? 'sling' : t === 'fiberskåp' ? 'skap' : 'borr';
+        var icon = t === 'skarvbrunn' ? '&#9632;' : t === 'slingbrunn' ? '&#9679;' : t === 'fiberskåp' ? '&#9633;' : '|';
+        return '<span class="asset-group-hdr-icon ' + cls + '">' + icon + '</span>' +
+               '<span>' + t.charAt(0).toUpperCase() + t.slice(1) + '</span>' +
+               '<span class="asset-group-id">· ' + asset.id + '</span>';
+    },
+
     render(instData) {
         var list = document.getElementById('inspList');
-        // Group: Atgarda (rejected), Att göra, Klara
-        var rejected = this.inspections.filter(function(d) { return d.status === 'rejected'; });
-        var todo = this.inspections.filter(function(d) { return d.status !== 'done' && d.status !== 'rejected'; });
-        var done = this.inspections.filter(function(d) { return d.status === 'done'; });
-        var html = '';
+        var visible = this.visibleToCurrentRole();
         var self = this;
+
+        if (visible.length === 0) {
+            list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#128274;</div>' +
+                '<div class="empty-state-title">Inga checklistor för rollen "' + App.currentRole + '"</div>' +
+                '<div class="empty-state-text">Byt roll via knappen uppe till höger för att se andra checklistor.</div></div>';
+            return;
+        }
+
+        var rejected = visible.filter(function(d) { return d.status === 'rejected'; });
+        var todo = visible.filter(function(d) { return d.status !== 'done' && d.status !== 'rejected'; });
+        var done = visible.filter(function(d) { return d.status === 'done'; });
+        var html = '';
 
         if (rejected.length > 0) {
             html += '<div class="group-label fail-group">&#9888; Atgarda (' + rejected.length + ')</div>';
@@ -2137,13 +3154,38 @@ const InspList = {
         }
         if (todo.length > 0) {
             html += '<div class="group-label">Att göra (' + todo.length + ')</div>';
-            todo.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+            html += self.renderGroupedByAsset(todo);
         }
         if (done.length > 0) {
             html += '<div class="group-label" style="margin-top:12px;">Klara (' + done.length + ')</div>';
-            done.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+            html += self.renderGroupedByAsset(done);
         }
         list.innerHTML = html;
+    },
+
+    // Render inspections, grouping those that share an asset under an asset header.
+    // Inspections without an asset are rendered flat.
+    renderGroupedByAsset(items) {
+        var self = this;
+        var nonAsset = items.filter(function(d) { return !d.asset; });
+        var assetItems = items.filter(function(d) { return !!d.asset; });
+        // Group by asset id
+        var byAsset = {};
+        assetItems.forEach(function(d) {
+            var key = d.asset.type + '::' + d.asset.id;
+            if (!byAsset[key]) byAsset[key] = { asset: d.asset, items: [] };
+            byAsset[key].items.push(d);
+        });
+        var html = '';
+        nonAsset.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+        Object.keys(byAsset).forEach(function(key) {
+            var group = byAsset[key];
+            html += '<div class="asset-group">' +
+                '<div class="asset-group-hdr">' + self.assetLabel(group.asset) + '</div>';
+            group.items.forEach(function(d) { html += self.renderCard(d, self.inspections.indexOf(d)); });
+            html += '</div>';
+        });
+        return html;
     }
 };
 
@@ -2818,6 +3860,10 @@ const Wiz = {
             var label = labels[a] || 'Ej ifylld';
             checks += '<div class="pdf-check"><div class="pdf-check-icon" style="background:' + color + '">' + icon + '</div><span>' + i + '. ' + questions[i] + '</span><span style="margin-left:auto;color:' + color + ';font-weight:600;">' + label + '</span></div>';
         }
+        var client = App.selectedClient ? App.selectedClient.name : '—';
+        var project = App.selectedProject ? (App.selectedProject.number + ' ' + App.selectedProject.name) : '—';
+        var installationLabel = App.selectedInstallation ? App.selectedInstallation.name : 'I-11809';
+        var installationAddr = App.selectedInstallation ? App.selectedInstallation.addr : 'Östra Göinge Immeln 5:3';
         document.getElementById('pdfSheet').innerHTML =
             '<button class="pdf-close" onclick="document.getElementById(\'pdfModal\').classList.remove(\'show\')">&#10005;</button>' +
             '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Förhandsvisning — Objektsdokumentation</div>' +
@@ -2827,9 +3873,12 @@ const Wiz = {
                     '<div class="pdf-docnr">O-11801:37QQL1</div>' +
                 '</div>' +
                 '<div class="pdf-h1">' + (App.selectedInspection ? App.selectedInspection.name : 'Checklista') + '</div>' +
-                '<div class="pdf-row"><div class="pdf-label">Installation</div><div class="pdf-val">I-11809</div></div>' +
-                '<div class="pdf-row"><div class="pdf-label">Fastighet</div><div class="pdf-val">Östra Göinge Immeln 5:3</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Beställare</div><div class="pdf-val"><b>' + client + '</b></div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Projekt</div><div class="pdf-val">' + project + '</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Installation</div><div class="pdf-val">' + installationLabel + '</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Fastighet</div><div class="pdf-val">' + installationAddr + '</div></div>' +
                 '<div class="pdf-row"><div class="pdf-label">Skåps-ID</div><div class="pdf-val">FOS-42-A</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Roll</div><div class="pdf-val">' + App.currentRole + '</div></div>' +
                 '<div class="pdf-row"><div class="pdf-label">Datum</div><div class="pdf-val">' + new Date().toISOString().slice(0, 10) + '</div></div>' +
                 '<div class="pdf-row"><div class="pdf-label">Koordinater</div><div class="pdf-val">63.039781, 18.093539</div></div>' +
                 '<div style="border-top:1px solid #e0e0e0;margin:8px 0;"></div>' +
@@ -2837,7 +3886,7 @@ const Wiz = {
                 '<div style="border-top:1px solid #e0e0e0;margin:8px 0;"></div>' +
                 '<div class="pdf-row"><div class="pdf-label">Signatur</div><div class="pdf-val">' + (this.sigLocked ? '&#10003; Signerad' : 'Ej signerad') + '</div></div>' +
             '</div>' +
-            '<div style="font-size:9px;color:#999;text-align:center;margin-top:8px;">Sida 1 av 1 &middot; Network Solutions &middot; NSChecks</div>';
+            '<div style="font-size:9px;color:#999;text-align:center;margin-top:8px;">Sida 1 av 1 &middot; Network Solutions &middot; NSChecks &middot; ' + client + '</div>';
         document.getElementById('pdfModal').classList.add('show');
     },
 
@@ -2880,6 +3929,531 @@ const Wiz = {
                 if (chip && el.value.trim()) chip.classList.add('has-content');
             });
         });
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ROLE PICKER
+   ══════════════════════════════════════════════════════════════ */
+const RolePicker = {
+    roles: [
+        { key: 'Schakt',        icon: '&#128675;', desc: 'Gräver stammen — skåp, brunnar, schakt' },
+        { key: 'Tekniker',      icon: '&#128221;', desc: 'Fibertekniskt arbete — svetsning, märkning' },
+        { key: 'Inmätare',      icon: '&#128205;', desc: 'Geodetisk inmätning' },
+        { key: 'Borrare',       icon: '&#128299;', desc: 'Borrningar — egen förenklad appvy' },
+        { key: 'Fiberblåsare',  icon: '&#128168;', desc: 'Blåsning av fiberkabel' },
+        { key: 'Rolloberoende', icon: '&#9888;',   desc: 'Tillbud, lärdomar — alla roller' },
+        { key: 'Övrigt',        icon: '&#128196;', desc: 'Projektspecifikt' }
+    ],
+
+    open() {
+        var html = '';
+        var self = this;
+        this.roles.forEach(function(r) {
+            var selected = App.currentRole === r.key ? 'selected' : '';
+            html += '<div class="role-option ' + selected + '" onclick="RolePicker.select(\'' + r.key + '\')">' +
+                '<div class="role-option-icon">' + r.icon + '</div>' +
+                '<div class="role-option-info">' +
+                    '<div class="role-option-name">' + r.key + '</div>' +
+                    '<div class="role-option-desc">' + r.desc + '</div>' +
+                '</div>' +
+                '<div class="role-option-check">&#10003;</div>' +
+            '</div>';
+        });
+        document.getElementById('roleSheetOptions').innerHTML = html;
+        document.getElementById('roleSheetBackdrop').classList.add('show');
+        document.getElementById('roleSheet').classList.add('show');
+    },
+
+    close() {
+        document.getElementById('roleSheetBackdrop').classList.remove('show');
+        document.getElementById('roleSheet').classList.remove('show');
+    },
+
+    select(role) {
+        App.currentRole = role;
+        this.updateChipLabels();
+        this.close();
+        if (navigator.vibrate) navigator.vibrate(10);
+
+        if (role === 'Borrare') {
+            // Driller-only mode — bypass the full hierarchy. They only ever see Borrloggen.
+            Driller.render();
+            App.navigateTo('view-driller');
+            App.toast('Borrare-läge aktiverat');
+        } else {
+            // Return from driller mode if active
+            if (App.currentView === 'view-driller') App.navigateTo('view-bestallare');
+            // Re-render inspection list if it's currently visible — role change may hide/show items
+            if (App.selectedInstallation) InspList.render(App.selectedInstallation);
+            App.toast('Roll: ' + role);
+        }
+    },
+
+    updateChipLabels() {
+        ['roleChipLabel', 'roleChipLabel2'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = App.currentRole;
+        });
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ASSETS — physical anchor units on the current installation
+   Derived from inspection list at first; user-added ones go into
+   InspList.inspections so they're picked up by renderGroupedByAsset.
+   ══════════════════════════════════════════════════════════════ */
+const Assets = {
+    _selectedType: 'skarvbrunn',
+
+    // Distinct assets present in the current inspection set
+    listForCurrent() {
+        var seen = {};
+        var out = [];
+        InspList.inspections.forEach(function(d) {
+            if (!d.asset) return;
+            var key = d.asset.type + '::' + d.asset.id;
+            if (seen[key]) { seen[key].count++; return; }
+            seen[key] = { type: d.asset.type, id: d.asset.id, count: 1 };
+            out.push(seen[key]);
+        });
+        return out;
+    },
+
+    render() {
+        var strip = document.getElementById('assetStrip');
+        if (!strip) return;
+        var list = this.listForCurrent();
+        document.getElementById('assetStripTitle').textContent = 'Anläggningar (' + list.length + ')';
+        var chipsEl = document.getElementById('assetStripChips');
+        if (list.length === 0) {
+            chipsEl.innerHTML = '<span class="asset-strip-empty">Inga anläggningar registrerade — lägg till en när du sätter en brunn eller ett skåp.</span>';
+            return;
+        }
+        chipsEl.innerHTML = list.map(function(a) {
+            return '<div class="asset-strip-chip" onclick="App.toast(\'' + a.type + ' ' + a.id + ' — ' + a.count + ' checklistor\')">' +
+                '<span class="asset-strip-chip-dot ' + a.type + '"></span>' +
+                '<span class="asset-strip-chip-id">' + a.id + '</span>' +
+                '<span class="asset-strip-chip-count">' + a.count + '</span>' +
+            '</div>';
+        }).join('');
+    },
+
+    openAddModal() {
+        document.getElementById('assetIdInput').value = '';
+        this._selectedType = 'skarvbrunn';
+        document.querySelectorAll('#assetTypeTiles .asset-type-tile').forEach(function(t) {
+            t.classList.toggle('selected', t.dataset.type === 'skarvbrunn');
+        });
+        document.getElementById('assetSheetBackdrop').classList.add('show');
+        document.getElementById('assetSheet').classList.add('show');
+        setTimeout(function() {
+            var inp = document.getElementById('assetIdInput');
+            if (inp) inp.focus();
+        }, 180);
+    },
+
+    closeAddModal() {
+        document.getElementById('assetSheetBackdrop').classList.remove('show');
+        document.getElementById('assetSheet').classList.remove('show');
+    },
+
+    pickType(el) {
+        document.querySelectorAll('#assetTypeTiles .asset-type-tile').forEach(function(t) { t.classList.remove('selected'); });
+        el.classList.add('selected');
+        this._selectedType = el.dataset.type;
+    },
+
+    saveNew() {
+        var id = (document.getElementById('assetIdInput').value || '').trim();
+        if (!id) { App.toast('Ange anläggnings-ID'); return; }
+        var type = this._selectedType;
+        // Add a placeholder checklist that hangs on this asset so it shows up
+        // in the asset strip + asset-grouped inspection list.
+        var phaseByType = { skarvbrunn:'tomtschakt', slingbrunn:'tomtschakt', fiberskåp:'installation', borrning:'tomtschakt' };
+        InspList.inspections.push({
+            name: 'Egenkontroll ' + type + ' — ' + id,
+            status: 'new', by: '', date: '',
+            checks: 0, total: 5,
+            roles: type === 'borrning' ? ['Borrare'] : ['Schakt','Tekniker'],
+            asset: { type: type, id: id },
+            phase: phaseByType[type]
+        });
+        this.closeAddModal();
+        this.render();
+        if (App.selectedInstallation) InspList.render(App.selectedInstallation);
+        App.toast('Anläggning ' + id + ' tillagd');
+        if (navigator.vibrate) navigator.vibrate(10);
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ANSLUTNING (phase tracker)
+   Default template: 4 fixed phases. Editable per project (see admin).
+   ══════════════════════════════════════════════════════════════ */
+const Anslutning = {
+    defaultPhases: [
+        { key: 'tomtprojektering',         label: 'Tomtprojektering',  done: true  },
+        { key: 'tomtschakt',               label: 'Tomtschakt',        done: true  },
+        { key: 'installation',             label: 'Installation',      done: false },
+        { key: 'slutinstallation-aktivering', label: 'Slutinstallation', done: false }
+    ],
+
+    goPhase(idx) {
+        App.currentPhase = idx;
+        var steps = document.querySelectorAll('#phaseSteps .phase-step');
+        for (var i = 0; i < steps.length; i++) {
+            steps[i].classList.remove('active');
+            if (i === idx) steps[i].classList.add('active');
+        }
+        document.getElementById('phaseTrackerStatus').textContent = 'Fas ' + (idx + 1) + ' av ' + this.defaultPhases.length;
+        App.toast('Fas: ' + this.defaultPhases[idx].label);
+        // Re-render inspections (phase can influence which checklists surface)
+        if (App.selectedInstallation) InspList.render(App.selectedInstallation);
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   DRILLER (flat borrlogg list — role = Borrare)
+   ══════════════════════════════════════════════════════════════ */
+const Driller = {
+    data: [
+        { id: 'B-22181-01', name: 'Emmaljunga öst · Mejerivägen 5', depth: '18.5 m', status: 'done',     date: '2026-04-21' },
+        { id: 'B-22181-02', name: 'Emmaljunga öst · Södra Industrivägen',  depth: '12.0 m', status: 'done',     date: '2026-04-22' },
+        { id: 'B-22156-03', name: 'Almsjönäs · Verkstadsvägen 2', depth: '24.3 m', status: 'progress', date: '2026-04-24' },
+        { id: 'B-22156-04', name: 'Almsjönäs · Plåtslagarevägen', depth: '',       status: 'new',      date: '' },
+        { id: 'B-22190-05', name: 'Bromölla 24 · Norra Industrivägen', depth: '',       status: 'new',      date: '' }
+    ],
+
+    statusLabel: { done: 'Klar', progress: 'Pågår', new: 'Kö' },
+
+    render() {
+        var list = document.getElementById('drillerList');
+        if (!list) return;
+        var html = '';
+        this.data.forEach(function(d) {
+            var meta = d.depth ? (d.depth + (d.date ? ' · ' + d.date : '')) : 'Ej påbörjad';
+            html += '<div class="driller-card ' + d.status + '" onclick="Driller.open(\'' + d.id + '\')">' +
+                '<div class="driller-card-icon">&#128299;</div>' +
+                '<div class="driller-card-info">' +
+                    '<div class="driller-card-name">' + d.id + ' · ' + d.name + '</div>' +
+                    '<div class="driller-card-meta">' + meta + '</div>' +
+                '</div>' +
+                '<div class="driller-card-status">' + Driller.statusLabel[d.status] + '</div>' +
+            '</div>';
+        });
+        list.innerHTML = html;
+    },
+
+    open(id) {
+        App.toast('Öppnar borrprotokoll för ' + id);
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PHOTO CAPTURE — viewfinder → shutter → metadata → save to Photos
+   ══════════════════════════════════════════════════════════════ */
+const Capture = {
+    _scope: 'project',     // 'project' | 'installation' | 'asset'
+    _hasShot: false,
+    _capturedBg: null,
+
+    open(scope) {
+        this._scope = scope || 'project';
+        this._hasShot = false;
+        this._capturedBg = null;
+        var ov = document.getElementById('captureOverlay');
+        ov.classList.remove('review');
+        ov.classList.add('show');
+        var vf = document.getElementById('captureViewfinder');
+        vf.classList.remove('has-shot');
+        vf.style.backgroundImage = '';
+        document.getElementById('captureMockIcon').style.display = '';
+        document.getElementById('captureMetaTitle').value = '';
+        document.getElementById('captureMetaNote').value = '';
+        // Title hint
+        var label = scope === 'installation' && App.selectedInstallation
+            ? App.selectedInstallation.name
+            : (App.selectedProject ? App.selectedProject.number + ' ' + App.selectedProject.name : 'Nytt foto');
+        document.getElementById('captureTitle').textContent = label;
+        // Asset dropdown
+        this.populateAssetDropdown();
+        this.populateRoleDropdown();
+        if (navigator.vibrate) navigator.vibrate(5);
+    },
+
+    populateAssetDropdown() {
+        var sel = document.getElementById('captureMetaAsset');
+        var opts = '<option value="">— Ingen tagg (synlig för alla) —</option>';
+        Assets.listForCurrent().forEach(function(a) {
+            opts += '<option value="' + a.type + '::' + a.id + '">' + a.type + ' · ' + a.id + '</option>';
+        });
+        sel.innerHTML = opts;
+    },
+
+    populateRoleDropdown() {
+        var sel = document.getElementById('captureMetaRole');
+        var roles = ['Schakt','Tekniker','Inmätare','Borrare','Fiberblåsare','Rolloberoende','Övrigt'];
+        sel.innerHTML = roles.map(function(r) {
+            var s = r === App.currentRole ? ' selected' : '';
+            return '<option' + s + '>' + r + '</option>';
+        }).join('');
+    },
+
+    cancel() {
+        document.getElementById('captureOverlay').classList.remove('show');
+    },
+
+    shoot() {
+        var colors = ['#2E9E5F', '#1E5BB8', '#D75A1F', '#7B3FA0', '#2B6A8D', '#C07800'];
+        var c = colors[Math.floor(Math.random() * colors.length)];
+        this._capturedBg = c;
+        var vf = document.getElementById('captureViewfinder');
+        vf.classList.add('has-shot');
+        vf.style.backgroundImage = 'linear-gradient(135deg, ' + c + ' 0%, ' + this._darken(c) + ' 100%)';
+        document.getElementById('captureMockIcon').style.display = 'none';
+        document.getElementById('captureOverlay').classList.add('review');
+        this._hasShot = true;
+        if (navigator.vibrate) navigator.vibrate(15);
+        // Auto-fill title from current install/project
+        var ti = document.getElementById('captureMetaTitle');
+        if (!ti.value) {
+            var defaultTitle = App.selectedInstallation
+                ? App.selectedInstallation.name + ' — ' + new Date().toTimeString().slice(0, 5)
+                : 'Nytt foto ' + new Date().toTimeString().slice(0, 5);
+            ti.value = defaultTitle;
+        }
+    },
+
+    _darken(hex) {
+        // crude darken: for the demo, just return black for the lower-right gradient
+        return '#1a1a1a';
+    },
+
+    retake() {
+        var vf = document.getElementById('captureViewfinder');
+        vf.classList.remove('has-shot');
+        vf.style.backgroundImage = '';
+        document.getElementById('captureMockIcon').style.display = '';
+        document.getElementById('captureOverlay').classList.remove('review');
+        this._hasShot = false;
+    },
+
+    save() {
+        if (!this._hasShot) { App.toast('Ta foto först'); return; }
+        var title = document.getElementById('captureMetaTitle').value.trim() || 'Namnlöst foto';
+        var note  = document.getElementById('captureMetaNote').value.trim();
+        var role  = document.getElementById('captureMetaRole').value || App.currentRole;
+        var assetVal = document.getElementById('captureMetaAsset').value;
+        var asset = null;
+        if (assetVal) {
+            var parts = assetVal.split('::');
+            asset = { type: parts[0], id: parts[1] };
+        }
+        var newId = 'p' + (Photos.data.length + 1);
+        var bg = this._capturedBg;
+        Photos.data.unshift({
+            id: newId, title: title, note: note, role: role, asset: asset,
+            user: 'Albert Fransson', date: new Date().toISOString().slice(0, 10),
+            lat: 56.276, lng: 13.784,
+            mapX: 30 + Math.random() * 50, mapY: 30 + Math.random() * 40,
+            _customBg: bg
+        });
+        // Bump project + installation photo count
+        if (App.selectedProject) App.selectedProject.photoCount = (App.selectedProject.photoCount || 0) + 1;
+        if (App.selectedInstallation) App.selectedInstallation.photoCount = (App.selectedInstallation.photoCount || 0) + 1;
+        // Rerender source views
+        if (typeof ProjList !== 'undefined') ProjList.render();
+        if (typeof InstList !== 'undefined') InstList.render(App.currentFilter || null);
+        document.getElementById('captureOverlay').classList.remove('show');
+        App.toast('Foto sparat: ' + title);
+        if (navigator.vibrate) navigator.vibrate(20);
+        // If photos view is open, refresh it
+        if (App.currentView === 'view-photos') Photos.render();
+    }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   PROJEKTBILDER (photo album per project)
+   Photos may be tagged to an asset (skarvbrunn/slingbrunn/fiberskåp/
+   borrning). Tagged photos inherit the asset's role-based permissions;
+   untagged ones are visible to every site member.
+   ══════════════════════════════════════════════════════════════ */
+const Photos = {
+    // Seed data — in production these come from the Projektbilder document library
+    data: [
+        { id:'p1',  title:'Översikt schakt start',     note:'Mejerivägen 5 — före schakt',       role:'Schakt',       asset:null,                          user:'Kim Dahlgren',  date:'2026-04-08', lat:56.275, lng:13.784, mapX:20, mapY:28 },
+        { id:'p2',  title:'Skarvbrunn SB-14 tätad',    note:'Packning klar, kontrollerad.',       role:'Schakt',       asset:{type:'skarvbrunn', id:'SB-14'}, user:'Kim Dahlgren',  date:'2026-04-09', lat:56.276, lng:13.783, mapX:32, mapY:38 },
+        { id:'p3',  title:'Fiberskåp FOS-42-A',         note:'Skåp monterat i våg och lod.',       role:'Schakt',       asset:{type:'fiberskåp',  id:'FOS-42-A'}, user:'Kim Dahlgren', date:'2026-04-09', lat:56.277, lng:13.785, mapX:47, mapY:48 },
+        { id:'p4',  title:'Inmätning sökband',          note:'GPS-punkt 63.04.',                   role:'Inmätare',     asset:null,                          user:'Maria Ahlgren', date:'2026-04-10', lat:56.278, lng:13.787, mapX:62, mapY:55 },
+        { id:'p5',  title:'Svetsade fibrer skåp',       note:'Alla 24 fibrer skarvade.',           role:'Tekniker',     asset:{type:'fiberskåp',  id:'FOS-42-A'}, user:'Albert Fransson', date:'2026-04-18', lat:56.277, lng:13.785, mapX:47, mapY:48 },
+        { id:'p6',  title:'Fiberbläsning slingbrunn',   note:'Kabel blåst, slingad 2,5 varv.',     role:'Fiberblåsare', asset:{type:'slingbrunn', id:'SB-07'}, user:'Sven Hultgren', date:'2026-04-19', lat:56.279, lng:13.781, mapX:76, mapY:28 },
+        { id:'p7',  title:'Borrning — stång 3',         note:'12 m djup, inga avvikelser.',        role:'Borrare',      asset:{type:'borrning',   id:'BR-03'}, user:'Lars Borgström', date:'2026-04-21', lat:56.275, lng:13.786, mapX:58, mapY:72 },
+        { id:'p8',  title:'Anekdot från fältet',        note:'Hittade gammal kabel från 90-talet.', role:'Rolloberoende', asset:null,                         user:'Erik Lindgren', date:'2026-04-22', lat:56.276, lng:13.784, mapX:38, mapY:62 },
+        { id:'p9',  title:'Kundsignering klar',         note:'Anders Holm signerade 22 april.',    role:'Tekniker',     asset:null,                          user:'Albert Fransson', date:'2026-04-22', lat:56.277, lng:13.785, mapX:50, mapY:42 }
+    ],
+
+    filters: ['Alla', 'Mina', 'Schakt', 'Tekniker', 'Inmätare', 'Borrare', 'Fiberblåsare', 'Senaste veckan', 'Med asset'],
+    activeFilter: 'Alla',
+    activeView: 'grid',  // 'grid' | 'map'
+    _returnView: 'view-projects',
+
+    /** Called from project card / installation view */
+    open(fromView) {
+        this._returnView = fromView || 'view-projects';
+        var label = App.selectedInstallation ? App.selectedInstallation.name : (App.selectedProject ? (App.selectedProject.number + ' ' + App.selectedProject.name) : 'Projekt');
+        document.getElementById('photosHdrSub').textContent = label;
+        this.render();
+        App.navigateTo('view-photos');
+    },
+
+    back() {
+        App.navigateTo(this._returnView || 'view-projects');
+    },
+
+    setView(view) {
+        this.activeView = view;
+        document.getElementById('photosViewGrid').classList.toggle('active', view === 'grid');
+        document.getElementById('photosViewMap').classList.toggle('active',  view === 'map');
+        document.getElementById('photosGrid').style.display = view === 'grid' ? '' : 'none';
+        document.getElementById('photosMap').style.display  = view === 'map'  ? ''  : 'none';
+        this.render();
+    },
+
+    setFilter(f) {
+        this.activeFilter = f;
+        this.render();
+    },
+
+    filtered() {
+        var f = this.activeFilter;
+        if (f === 'Alla') return this.data;
+        if (f === 'Mina') return this.data.filter(function(p) { return p.user === 'Albert Fransson'; }); // demo: current user
+        if (f === 'Med asset') return this.data.filter(function(p) { return !!p.asset; });
+        if (f === 'Senaste veckan') {
+            return this.data.filter(function(p) { return p.date >= '2026-04-17'; });
+        }
+        return this.data.filter(function(p) { return p.role === f; });
+    },
+
+    render() {
+        this.renderChips();
+        if (this.activeView === 'grid') this.renderGrid();
+        else this.renderMap();
+    },
+
+    renderChips() {
+        var html = '';
+        var self = this;
+        this.filters.forEach(function(f) {
+            var cls = self.activeFilter === f ? 'photos-filter-chip active' : 'photos-filter-chip';
+            html += '<div class="' + cls + '" onclick="Photos.setFilter(\'' + f + '\')">' + f + '</div>';
+        });
+        document.getElementById('photosFilterChips').innerHTML = html;
+    },
+
+    // Deterministic fake photo color per id (or stored _customBg from a fresh capture)
+    cellBg(p) {
+        if (p._customBg) return p._customBg;
+        var colors = ['#2E9E5F', '#1E5BB8', '#D75A1F', '#7B3FA0', '#2B6A8D', '#C07800', '#B55852'];
+        var h = 0;
+        for (var i = 0; i < p.id.length; i++) h = (h + p.id.charCodeAt(i)) % colors.length;
+        return colors[h];
+    },
+
+    renderGrid() {
+        var grid = document.getElementById('photosGrid');
+        var items = this.filtered();
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">&#128247;</div>' +
+                '<div class="empty-state-title">Inga bilder matchar filtret</div>' +
+                '<div class="empty-state-text">Byt filter eller ladda upp en ny bild.</div></div>';
+            return;
+        }
+        var html = '';
+        var self = this;
+        items.forEach(function(p) {
+            var assetLbl = p.asset ? (p.asset.type + ' · ' + p.asset.id) : '';
+            html += '<div class="photo-cell" onclick="Photos.openDetail(\'' + p.id + '\')">' +
+                '<div class="photo-cell-img" style="background:' + self.cellBg(p) + ';">&#128247;</div>' +
+                '<div class="photo-cell-role">' + p.role.substring(0, 4) + '</div>' +
+                '<div class="photo-cell-date">' + p.date.substring(5) + '</div>' +
+                (assetLbl ? '<div class="photo-cell-asset">' + assetLbl + '</div>' : '') +
+            '</div>';
+        });
+        grid.innerHTML = html;
+    },
+
+    renderMap() {
+        var map = document.getElementById('photosMap');
+        // keep the base background elements, just update label and pins
+        var existing = map.querySelectorAll('.photo-pin');
+        existing.forEach(function(el) { el.remove(); });
+        var items = this.filtered();
+        document.getElementById('photosMapLabel').textContent = items.length + ' bilder på kartan';
+        items.forEach(function(p) {
+            var pin = document.createElement('div');
+            pin.className = 'photo-pin role-' + p.role;
+            pin.style.left = p.mapX + '%';
+            pin.style.top  = p.mapY + '%';
+            pin.title = p.title;
+            pin.onclick = function() { Photos.openDetail(p.id); };
+            map.appendChild(pin);
+        });
+    },
+
+    openDetail(id) {
+        var p = this.data.find(function(x) { return x.id === id; });
+        if (!p) return;
+        document.getElementById('photoDetailName').textContent = p.title;
+        document.getElementById('photoDetailNote').textContent = p.note;
+        var tags = '<span class="photo-detail-tag role">' + p.role + '</span>';
+        if (p.asset) tags += '<span class="photo-detail-tag">' + p.asset.type + ' · ' + p.asset.id + '</span>';
+        else tags += '<span class="photo-detail-tag">Ingen asset — synlig för alla</span>';
+        document.getElementById('photoDetailTags').innerHTML = tags;
+        document.getElementById('photoDetailUser').textContent = p.user + ' · ' + p.date;
+        document.getElementById('photoDetailGps').textContent = p.lat.toFixed(4) + ', ' + p.lng.toFixed(4);
+        var img = document.getElementById('photoDetailImg');
+        img.style.background = this.cellBg(p);
+        document.getElementById('photoDetailOverlay').classList.add('show');
+    },
+
+    closeDetail() {
+        document.getElementById('photoDetailOverlay').classList.remove('show');
+    },
+
+    quickUpload() {
+        Capture.open(App.selectedInstallation ? 'installation' : 'project');
+    },
+
+    exportPDF() {
+        var items = this.filtered();
+        var cells = '';
+        for (var i = 0; i < Math.min(items.length, 8); i++) {
+            var p = items[i];
+            cells += '<div class="photos-pdf-cell" style="background:' + this.cellBg(p) + ';color:#fff;">&#128247;' +
+                '<div class="cap">' + p.title + '</div></div>';
+        }
+        var client = App.selectedClient ? App.selectedClient.name : '—';
+        var project = App.selectedProject ? (App.selectedProject.number + ' ' + App.selectedProject.name) : '—';
+        document.getElementById('pdfSheet').innerHTML =
+            '<button class="pdf-close" onclick="document.getElementById(\'pdfModal\').classList.remove(\'show\')">&#10005;</button>' +
+            '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">Förhandsvisning — Fotounderlag</div>' +
+            '<div class="pdf-page">' +
+                '<div class="pdf-page-header">' +
+                    '<div class="pdf-logo">Network Solutions</div>' +
+                    '<div class="pdf-docnr">Fotounderlag</div>' +
+                '</div>' +
+                '<div class="pdf-h1">Projektbilder — ' + this.activeFilter + '</div>' +
+                '<div class="pdf-row"><div class="pdf-label">Beställare</div><div class="pdf-val"><b>' + client + '</b></div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Projekt</div><div class="pdf-val">' + project + '</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Antal</div><div class="pdf-val">' + items.length + ' bilder</div></div>' +
+                '<div class="pdf-row"><div class="pdf-label">Datum</div><div class="pdf-val">' + new Date().toISOString().slice(0, 10) + '</div></div>' +
+                '<div style="border-top:1px solid #e0e0e0;margin:8px 0;"></div>' +
+                '<div class="photos-pdf-grid">' + cells + '</div>' +
+            '</div>' +
+            '<div style="font-size:9px;color:#999;text-align:center;margin-top:8px;">Sida 1 — Network Solutions · NSChecks · ' + client + '</div>';
+        document.getElementById('pdfModal').classList.add('show');
     }
 };
 
@@ -3079,8 +4653,11 @@ const Incident = {
 /* ══════════════════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════════════════ */
+ClientList.init();
 ProjList.init();
 InstList.init();
+Driller.render();
+RolePicker.updateChipLabels();
 Wiz.initSwipe();
 Wiz.initCommentTracking();
 Wiz.go(0);

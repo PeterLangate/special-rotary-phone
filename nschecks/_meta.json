@@ -1,68 +1,68 @@
 {
-  "syncedAt": "2026-04-24T11:25:13Z",
+  "syncedAt": "2026-04-27T09:06:02Z",
   "files": {
-    "mockups/wiz1-back.png": {
+    "mockups/wiz2-step3.png": {
       "updated": "2026-04-18"
     },
-    "diagrams": {
-      "updated": "2026-04-18"
-    },
-    "mockups/Report/schakt-report.html": {
-      "updated": "2026-04-24"
-    },
-    "mockups/wiz3-step6.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/nschecks-app.html": {
-      "updated": "2026-04-24"
-    },
-    "index.html": {
-      "updated": "2026-04-24"
-    },
-    "screenshots": {
-      "updated": "2026-04-24"
+    "nschecks-plan.html": {
+      "updated": "2026-04-25"
     },
     "mockups/wiz1-last.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz2-step1.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz3-step1.png": {
       "updated": "2026-04-18"
     },
     "mockups/wiz1-step2.png": {
       "updated": "2026-04-18"
     },
-    "mockups/nschecks-admin.html": {
+    "mockups/wiz4-step1.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz2-step2.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz1-back.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/nschecks-shared.js": {
       "updated": "2026-04-18"
     },
     "mockups/wiz1-step3.png": {
       "updated": "2026-04-18"
     },
-    "mockups/wiz2-step3.png": {
-      "updated": "2026-04-18"
-    },
-    "mockups/nschecks-shared.css": {
-      "updated": "2026-04-18"
-    },
-    "mockups/wiz1-step1.png": {
-      "updated": "2026-04-18"
-    },
-    "nschecks-plan.html": {
-      "updated": "2026-04-24"
-    },
-    "mockups/wiz4-step1.png": {
+    "mockups/wiz3-step6.png": {
       "updated": "2026-04-18"
     },
     "mockups/Report/images": {
       "updated": "2026-04-24"
     },
-    "mockups/wiz2-step2.png": {
+    "mockups/Report/schakt-report.html": {
+      "updated": "2026-04-24"
+    },
+    "mockups/nschecks-app.html": {
+      "updated": "2026-04-25"
+    },
+    "mockups/nschecks-shared.css": {
       "updated": "2026-04-18"
     },
-    "mockups/nschecks-shared.js": {
+    "index.html": {
+      "updated": "2026-04-24"
+    },
+    "mockups/wiz3-step1.png": {
       "updated": "2026-04-18"
+    },
+    "mockups/wiz2-step1.png": {
+      "updated": "2026-04-18"
+    },
+    "mockups/wiz1-step1.png": {
+      "updated": "2026-04-18"
+    },
+    "screenshots": {
+      "updated": "2026-04-25"
+    },
+    "diagrams": {
+      "updated": "2026-04-18"
+    },
+    "mockups/nschecks-admin.html": {
+      "updated": "2026-04-25"
     }
   }
 }

@@ -11,25 +11,36 @@
 
 <style>
 :root {
-    --cs-primary:      #2b338f;
-    --cs-action:       #0157ff;
-    --cs-sky:          #87d5ff;
-    --cs-navy:         #1b363f;
-    --cs-cream:        #faf8f3;
-    --cs-sand:         #ece9e0;
-    --cs-stripe:       #f5f5f5;
-    --cs-text:         #4a4a46;
-    --cs-text-muted:   #565151;
-    --cs-text-soft:    #8b8675;
-    --cs-border:       #c4c4c4;
-    --cs-border-light: #ece9e0;
-    --cs-success:      #0a7a3f;
-    --cs-success-bg:   #e3f3ea;
-    --cs-warning:      #c08200;
-    --cs-warning-bg:   #fff6dd;
-    --cs-error:        #9a2617;
-    --cs-error-bg:     #f9e4e0;
-    --cs-info-bg:      #e3ecff;
+    --cs-primary:        #2b338f;
+    --cs-primary-light:  #5b64cf;
+    --cs-action:         #0157ff;
+    --cs-sky:            #87d5ff;
+    --cs-cyan:           #46b7f3;
+    --cs-navy:           #1b363f;
+    --cs-cream:          #faf8f3;
+    --cs-sand:           #ece9e0;
+    --cs-stripe:         #f5f5f5;
+    --cs-page-outer:     #e8e8ea;
+    --cs-text:           #4a4a46;
+    --cs-text-muted:     #565151;
+    --cs-text-soft:      #8b8675;
+    --cs-border:         #c4c4c4;
+    --cs-border-light:   #ece9e0;
+    --cs-success:        #0a7a3f;
+    --cs-success-bg:     #e3f3ea;
+    --cs-success-text:        #053a1e;
+    --cs-success-text-muted:  #2d5a3f;
+    --cs-warning:        #c08200;
+    --cs-warning-bg:     #fff6dd;
+    --cs-warning-bg-deep:#fbeec9;
+    --cs-warning-text:   #3d2d00;
+    --cs-error:          #9a2617;
+    --cs-error-bg:       #f9e4e0;
+    --cs-info-bg:        #e3ecff;
+    --cs-indigo-tint:    #e3e5f5;
+    --cs-action-hover:   #014ae0;
+    --cs-error-hover:    #7d1f12;
+    --cs-white:          #ffffff;
     --sp-suite-bg:     #2b338f;
     --sp-chrome-line:  #edebe9;
     --sp-nav-bg:       #fafafa;
@@ -38,12 +49,12 @@
 html, body { margin: 0; padding: 0; height: 100%; }
 body {
     font-family: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
-    color: var(--cs-text); background: #e8e8ea;
+    color: var(--cs-text); background: var(--cs-page-outer);
     font-size: 14px; line-height: 1.55;
 }
 
 .demo-banner {
-    background: repeating-linear-gradient(-45deg, var(--cs-warning-bg) 0 10px, #fbeec9 10px 20px);
+    background: repeating-linear-gradient(-45deg, var(--cs-warning-bg) 0 10px, var(--cs-warning-bg-deep) 10px 20px);
     border-bottom: 3px dashed var(--cs-warning);
     padding: 12px 20px;
     display: flex; align-items: center; gap: 16px;
@@ -52,11 +63,11 @@ body {
 .demo-banner-label {
     font-weight: 800; letter-spacing: 0.12em;
     text-transform: uppercase; font-size: 12px;
-    background: var(--cs-warning); color: white;
+    background: var(--cs-warning); color: var(--cs-white);
     padding: 5px 10px; border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
-.demo-banner-text { color: #3d2d00; flex: 1; min-width: 240px; font-weight: 500; }
+.demo-banner-text { color: var(--cs-warning-text); flex: 1; min-width: 240px; font-weight: 500; }
 .demo-banner-text strong { color: var(--cs-warning); font-weight: 700; }
 .demo-banner a.variant-link { color: var(--cs-action); font-weight: 600; text-decoration: underline; }
 .demo-banner-prefix {
@@ -65,7 +76,7 @@ body {
     text-transform: uppercase; letter-spacing: 0.08em;
 }
 .role-switch {
-    display: inline-flex; background: white;
+    display: inline-flex; background: var(--cs-white);
     border-radius: 22px; padding: 3px;
     border: 2px solid var(--cs-warning);
     box-shadow: 0 2px 6px rgba(192, 130, 0, 0.25);
@@ -73,15 +84,15 @@ body {
 .role-switch button {
     border: none; background: transparent;
     font: 600 12.5px 'IBM Plex Sans', sans-serif;
-    color: #3d2d00;
+    color: var(--cs-warning-text);
     padding: 6px 14px; border-radius: 16px;
     cursor: pointer;
 }
-.role-switch button.active { background: var(--cs-warning); color: white; }
+.role-switch button.active { background: var(--cs-warning); color: var(--cs-white); }
 
 .variant-badge {
     display: inline-block;
-    background: var(--cs-primary); color: white;
+    background: var(--cs-primary); color: var(--cs-white);
     font-weight: 700; font-size: 10.5px;
     padding: 3px 8px; border-radius: 3px;
     letter-spacing: 0.08em; text-transform: uppercase;
@@ -89,12 +100,12 @@ body {
 }
 
 .sp-suite-bar {
-    background: var(--sp-suite-bg); color: white;
+    background: var(--sp-suite-bg); color: var(--cs-white);
     height: 48px; display: flex; align-items: center;
     padding: 0 12px; gap: 14px; font-size: 14px;
 }
 .sp-waffle { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 4px; }
-.sp-waffle svg { width: 16px; height: 16px; fill: white; }
+.sp-waffle svg { width: 16px; height: 16px; fill: var(--cs-white); }
 .sp-suite-title { font-weight: 600; font-size: 15px; }
 .sp-suite-search {
     flex: 1; max-width: 640px;
@@ -109,17 +120,17 @@ body {
     width: 32px; height: 32px; border-radius: 50%;
     background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
     display: grid; place-items: center;
-    font-weight: 700; font-size: 12px; color: white;
+    font-weight: 700; font-size: 12px; color: var(--cs-white);
     margin-left: 4px;
 }
 .sp-site-header {
-    background: white; border-bottom: 1px solid var(--sp-chrome-line);
+    background: var(--cs-white); border-bottom: 1px solid var(--sp-chrome-line);
     padding: 14px 28px 10px;
     display: flex; align-items: center; gap: 16px;
 }
 .sp-site-icon {
     width: 40px; height: 40px;
-    background: var(--cs-primary); color: white; font-weight: 700;
+    background: var(--cs-primary); color: var(--cs-white); font-weight: 700;
     display: grid; place-items: center;
     border-radius: 4px; font-size: 20px;
 }
@@ -129,7 +140,7 @@ body {
 .sp-body {
     display: flex;
     min-height: calc(100vh - 48px - 65px - 60px);
-    background: white;
+    background: var(--cs-white);
 }
 .sp-leftnav {
     width: 228px; flex-shrink: 0;
@@ -163,7 +174,7 @@ body {
 }
 
 .webpart {
-    background: white; border-radius: 8px;
+    background: var(--cs-white); border-radius: 8px;
     border: 1px solid var(--cs-border-light);
     box-shadow: 0 1px 6px rgba(27,54,63,0.06);
     overflow: hidden;
@@ -181,12 +192,12 @@ body {
 }
 .ai-badge {
     background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
-    color: white; font-weight: 700; font-size: 10.5px;
+    color: var(--cs-white); font-weight: 700; font-size: 10.5px;
     padding: 4px 10px; border-radius: 20px;
     letter-spacing: 0.1em; text-transform: uppercase;
 }
 .kleer-badge {
-    background: var(--cs-success); color: white;
+    background: var(--cs-success); color: var(--cs-white);
     font-weight: 700; font-size: 10.5px;
     padding: 4px 10px; border-radius: 20px;
     letter-spacing: 0.1em; text-transform: uppercase;
@@ -209,17 +220,17 @@ body {
 }
 .chat-role-chip .avatar-mini {
     width: 22px; height: 22px; border-radius: 50%;
-    color: white; font-weight: 700; font-size: 10px;
+    color: var(--cs-white); font-weight: 700; font-size: 10px;
     display: grid; place-items: center;
 }
-.avatar-anna { background: linear-gradient(135deg, #2b338f, #5b64cf); }
-.avatar-per  { background: linear-gradient(135deg, #0a7a3f, #46b7f3); }
-.avatar-lisa { background: linear-gradient(135deg, #9a2617, #c08200); }
+.avatar-anna { background: linear-gradient(135deg, var(--cs-primary), var(--cs-primary-light)); }
+.avatar-per  { background: linear-gradient(135deg, var(--cs-success), var(--cs-cyan)); }
+.avatar-lisa { background: linear-gradient(135deg, var(--cs-error), var(--cs-warning)); }
 
 .chat-window {
     display: flex; flex-direction: column;
     height: 580px;
-    background: #fcfbf7;
+    background: var(--cs-cream);
 }
 .chat-messages {
     flex: 1; overflow-y: auto;
@@ -241,12 +252,12 @@ body {
     font-size: 14px; line-height: 1.55;
 }
 .bubble-user {
-    background: var(--cs-primary); color: white;
+    background: var(--cs-primary); color: var(--cs-white);
     border-radius: 18px 18px 4px 18px;
     font-weight: 500;
 }
 .bubble-ai {
-    background: white;
+    background: var(--cs-white);
     border: 1px solid rgba(1, 87, 255, 0.22);
     border-radius: 4px 18px 18px 18px;
     color: var(--cs-text);
@@ -314,7 +325,7 @@ body {
     border-radius: 4px;
     padding: 10px 14px;
     font-size: 13px;
-    color: #053a1e;
+    color: var(--cs-success-text);
 }
 .kleer-card .kleer-heading {
     font-weight: 700; color: var(--cs-success);
@@ -332,15 +343,15 @@ body {
     border-bottom: 1px dashed rgba(10, 122, 63, 0.25);
 }
 .kleer-card .row:last-child { border-bottom: none; }
-.kleer-card .row .label { color: #2d5a3f; }
-.kleer-card .row .value { font-weight: 600; color: #053a1e; }
+.kleer-card .row .label { color: var(--cs-success-text-muted); }
+.kleer-card .row .value { font-weight: 600; color: var(--cs-success-text); }
 
 .quick-replies {
     display: flex; flex-wrap: wrap; gap: 6px;
     margin-top: 10px;
 }
 .quick-reply {
-    background: white; color: var(--cs-action);
+    background: var(--cs-white); color: var(--cs-action);
     border: 1.5px solid var(--cs-action);
     border-radius: 18px;
     padding: 5px 14px;
@@ -352,7 +363,7 @@ body {
 .chat-input-row {
     border-top: 1px solid var(--cs-border-light);
     padding: 14px 22px;
-    background: white;
+    background: var(--cs-white);
     display: flex; gap: 10px; align-items: center;
 }
 .chat-input {
@@ -366,19 +377,19 @@ body {
 }
 .chat-input:focus { border-color: var(--cs-action); }
 .chat-send {
-    background: var(--cs-action); color: white;
+    background: var(--cs-action); color: var(--cs-white);
     border: none; border-radius: 50%;
     width: 40px; height: 40px;
     display: grid; place-items: center;
     cursor: pointer;
 }
-.chat-send:hover { background: #014ae0; }
-.chat-send svg { width: 16px; height: 16px; fill: white; }
+.chat-send:hover { background: var(--cs-action-hover); }
+.chat-send svg { width: 16px; height: 16px; fill: var(--cs-white); }
 .chat-hint {
     text-align: center;
     font-size: 11px; color: var(--cs-text-soft);
     padding: 6px 0 10px;
-    background: white;
+    background: var(--cs-white);
     border-top: 1px solid var(--cs-border-light);
 }
 </style>
@@ -393,9 +404,9 @@ body {
         pratar med samma AI-assistent &mdash; Kleer-synk, saldon och synkfel är live-data i chatten.
         <br>
         Jämför med
-        <a class="variant-link" href="ledighet-mockup.html">A: formulär + Kleer →</a> ·
-        <a class="variant-link" href="ledighet-mockup-no-kleer.html">B: formulär utan synk →</a> ·
-        <a class="variant-link" href="ledighet-mockup-chat.html">C: AI-chatt (bas) →</a>
+        <a class="variant-link" href="freecorner-mockup.html">A: formulär + Kleer →</a> ·
+        <a class="variant-link" href="freecorner-mockup-no-kleer.html">B: formulär utan synk →</a> ·
+        <a class="variant-link" href="freecorner-mockup-chat.html">C: AI-chatt (bas) →</a>
     </span>
     <span class="demo-banner-prefix">Visa som:</span>
     <div class="role-switch" id="role-switch">

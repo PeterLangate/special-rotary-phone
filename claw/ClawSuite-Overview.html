@@ -622,12 +622,12 @@ kbd {
                 <tr><th>Product</th><th>Approximate tool count</th><th>Flagship capabilities</th></tr>
             </thead>
             <tbody>
-                <tr><td>OutClaw</td><td>~112</td><td>Redemption-backed mail, calendar, rules, search, archive, attachment handling, Outlook Object Model Guard bypass.</td></tr>
-                <tr><td>WorClaw</td><td>~111</td><td>Full styles, headings, TOC, cross-references, captions, revisions, mail merge, content controls, building blocks.</td></tr>
-                <tr><td>PointClaw</td><td>~107</td><td>AI image &amp; video generation, triggered animations, motion paths, SmartArt, deck audits, PDF / video export, template inspection.</td></tr>
-                <tr><td>ExClaw</td><td>~100</td><td>Ranges, formulas, tables, pivots, charts, conditional formats, sort / filter, named ranges, template inspection, macro execution.</td></tr>
-                <tr><td>ProjClaw</td><td>~97</td><td>Tasks, dependencies, indent/outdent, resources, assignments, baselines, variance, earned value, critical path, calendars, levelling, multi-project.</td></tr>
-                <tr><td>VisClaw</td><td>~82</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection-graph walking, layers, masters, layout automation, PNG / PDF export.</td></tr>
+                <tr><td>WorClaw</td><td>115+</td><td>Full styles, headings, TOC, cross-references, captions, revisions, mail merge, content controls, building blocks.</td></tr>
+                <tr><td>OutClaw</td><td>113+</td><td>Redemption-backed mail, calendar, rules, search, archive, attachment handling, Outlook Object Model Guard bypass.</td></tr>
+                <tr><td>ProjClaw</td><td>113+</td><td>Tasks, dependencies, indent/outdent, resources, assignments, baselines, variance, earned value, critical path, calendars, levelling, multi-project.</td></tr>
+                <tr><td>PointClaw</td><td>107+</td><td>AI image &amp; video generation, triggered animations, motion paths, SmartArt, deck audits, PDF / video export, template inspection.</td></tr>
+                <tr><td>VisClaw</td><td>102+</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection-graph walking, layers, masters, layout automation, PNG / PDF export.</td></tr>
+                <tr><td>ExClaw</td><td>101+</td><td>Ranges, formulas, tables, pivots, charts, conditional formats, sort / filter, named ranges, template inspection, macro execution.</td></tr>
             </tbody>
         </table>
 <div class="tip-box">
@@ -945,7 +945,7 @@ kbd {
             <tbody>
                 <tr><td>Add-in type</td><td>VSTO desktop add-in &mdash; runs inside the Office process via COM</td><td>Office Add-in (Office.js) &mdash; runs in a sandboxed web view</td></tr>
                 <tr><td>Reach into Office</td><td>Full native object model: triggered animations, motion paths, SmartArt, pivot tables, content controls, mail merge, Redemption-level Outlook access, deck audits, PDF / video export</td><td>Limited to what Office.js exposes &mdash; mainly generating, rewriting and summarising content</td></tr>
-                <tr><td>Specialist tools</td><td>~620 purpose-built tools across six hosts</td><td>Primarily conversational assistance on top of document text</td></tr>
+                <tr><td>Specialist tools</td><td>650+ purpose-built tools across six hosts</td><td>Primarily conversational assistance on top of document text</td></tr>
                 <tr><td>Media generation</td><td>Google Imagen (images) and Veo (short video), inserted in place &mdash; PointClaw</td><td>Not supported in the add-in</td></tr>
                 <tr><td>Authentication</td><td>Your own Anthropic API key, stored locally with DPAPI (pay-as-you-go)</td><td>Your Claude subscription</td></tr>
                 <tr><td>Platforms</td><td>Windows desktop Office only</td><td>Windows, Mac, Office for the web</td></tr>
@@ -977,7 +977,7 @@ kbd {
                 <tr><td>What they edit</td><td>The <em>live presentation / workbook / document</em> you have on screen</td><td>A <em>file on disk</em> &mdash; you see the result when you reopen it</td></tr>
                 <tr><td>Where they run</td><td>Inside the Office process via COM</td><td>Standalone Python server; uses a file-format library</td></tr>
                 <tr><td>Reach</td><td>Everything COM exposes &mdash; animations, live selection, deck audits, Outlook Redemption, macros, calc mode, track changes</td><td>Whatever the underlying file-format library supports &mdash; typically a subset</td></tr>
-                <tr><td>Tool surface (per host)</td><td>~100&ndash;112</td><td>Typically 30&ndash;50</td></tr>
+                <tr><td>Tool surface (per host)</td><td>100&ndash;115</td><td>Typically 30&ndash;50</td></tr>
                 <tr><td>Best for</td><td>Interactive, iterative work on a file you are looking at</td><td>Scripted, pipeline-style authoring &mdash; "generate ten reports overnight"</td></tr>
             </tbody>
         </table>
@@ -1013,7 +1013,7 @@ kbd {
                 <tr><td>Licensing</td><td>Free; bring-your-own API key</td><td>Bundled into Microsoft 365 E7 (premium tier)</td></tr>
                 <tr><td>AI model</td><td>Anthropic Claude / Google Gemini</td><td>Governs any registered agent, including Copilot + MCP + custom</td></tr>
                 <tr><td>Data boundary</td><td>Content sent to Anthropic / Google</td><td>Agents kept within the M365 tenant with policy enforcement</td></tr>
-                <tr><td>Tool surface</td><td>~400 specialist Office tools</td><td>Near zero &mdash; it is plumbing, not application</td></tr>
+                <tr><td>Tool surface</td><td>650+ specialist Office tools</td><td>Near zero &mdash; it is plumbing, not application</td></tr>
             </tbody>
         </table>
 <div class="info-box">
@@ -1023,7 +1023,7 @@ kbd {
         <ol>
             <li><strong>For individual and small-team users today, the model does not change.</strong> Agent 365 is an M365 E7 SKU aimed at large enterprises. A consultant, teacher or analyst using the Claws is not its audience.</li>
             <li><strong>For future enterprise adoption, integration will matter.</strong> A Claw add-in that registers itself as an Entra agent, emits telemetry via the Observability SDK, and respects tenant policy would be a governable agent in an Agent-365-enabled tenant. Without that, it is a shadow agent that IT may block. See Chapter 5 for the roadmap.</li>
-            <li><strong>Capability still matters.</strong> Microsoft's bet is that <em>governance</em> will dominate the enterprise buying decision. The Claw Suite's bet is that <em>capability</em> &mdash; a tool surface north of five hundred &mdash; dominates the individual-user decision. Both can be correct simultaneously at different market tiers.</li>
+            <li><strong>Capability still matters.</strong> Microsoft's bet is that <em>governance</em> will dominate the enterprise buying decision. The Claw Suite's bet is that <em>capability</em> &mdash; a tool surface north of six hundred &mdash; dominates the individual-user decision. Both can be correct simultaneously at different market tiers.</li>
         </ol>
 <h2>4.4 Where each option wins</h2>
     </div>

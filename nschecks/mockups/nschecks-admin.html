@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NSChecks — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="nschecks-shared.css?v=20260424-1336">
+<link rel="stylesheet" href="nschecks-shared.css?v=20260427-1106">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -194,6 +194,241 @@ body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var
 /* Result row animation */
 .result-row { animation:resultIn 0.3s ease; }
 @keyframes resultIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ══════════════════════════════════
+   ROLLER (Role admin)
+   ══════════════════════════════════ */
+.roles-layout { display:grid; grid-template-columns:280px 1fr; gap:20px; align-items:start; }
+
+/* Left: unassigned / all users panel */
+.users-panel { background:#fff; border:1px solid var(--b); border-radius:var(--rl); overflow:hidden; position:sticky; top:80px; }
+.users-panel-hdr { padding:14px 16px; background:var(--bg-s); border-bottom:1px solid var(--b); }
+.users-panel-hdr h3 { font-size:13px; font-weight:700; color:var(--ts); }
+.users-panel-hint { font-size:11px; color:var(--tm); margin-top:2px; }
+.users-search { width:100%; padding:10px 14px; border:none; border-bottom:1px solid var(--b); background:var(--bg-s); font-family:'Inter',sans-serif; font-size:13px; outline:none; }
+.users-search:focus { background:#fff; }
+.users-list { max-height:calc(100vh - 240px); overflow-y:auto; padding:8px; }
+.user-chip {
+    display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px;
+    cursor:grab; transition:background 0.15s; margin-bottom:2px;
+    -webkit-tap-highlight-color:transparent;
+}
+.user-chip:hover { background:var(--bg-s); }
+.user-chip.dragging { opacity:0.5; }
+.user-avatar {
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:12px; color:#fff; flex-shrink:0;
+    border:2px solid #fff; letter-spacing:0.02em;
+}
+.user-info { flex:1; min-width:0; }
+.user-name { font-size:13px; font-weight:600; color:var(--ts); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-email { font-size:11px; color:var(--tm); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Right: role group cards */
+.roles-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; }
+.role-card {
+    background:#fff; border:1.5px solid var(--b); border-radius:var(--rl);
+    padding:16px; transition:all 0.2s;
+}
+.role-card:hover { border-color:rgba(46,158,95,0.3); }
+.role-card.drop-target { border-color:var(--ns); border-style:dashed; background:var(--ns-light); }
+.role-card-hdr {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid var(--b);
+}
+.role-card-title {
+    display:flex; align-items:center; gap:10px;
+    font-size:15px; font-weight:700; color:var(--ts);
+}
+.role-card-icon {
+    width:36px; height:36px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:#fff; font-weight:800; flex-shrink:0;
+}
+.role-card-count {
+    font-size:11px; font-weight:700; color:var(--tm);
+    text-transform:uppercase; letter-spacing:0.05em;
+    background:var(--bg-s); padding:4px 10px; border-radius:10px;
+}
+.role-card-body { min-height:60px; }
+.role-members {
+    display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;
+}
+.role-member-chip {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px 4px 4px; background:var(--bg-s);
+    border-radius:16px; font-size:12px; font-weight:600;
+    color:var(--ts); cursor:grab; transition:all 0.15s;
+    -webkit-tap-highlight-color:transparent;
+}
+.role-member-chip:hover { background:var(--ns-light); }
+.role-member-chip .user-avatar { width:22px; height:22px; font-size:10px; border-width:1.5px; }
+.role-member-chip-remove {
+    margin-left:4px; color:var(--tm); font-size:14px;
+    line-height:1; cursor:pointer; padding:0 2px;
+    border-radius:50%;
+}
+.role-member-chip-remove:hover { color:var(--e); background:var(--eb); }
+.role-card-empty {
+    padding:20px; text-align:center;
+    font-size:12px; color:var(--tm); font-style:italic;
+    border:1px dashed var(--b); border-radius:var(--r);
+}
+.role-card-meta {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:10px; border-top:1px solid var(--b);
+    font-size:11px; color:var(--tm);
+}
+.role-card-meta code {
+    background:var(--bg-s); padding:2px 6px; border-radius:4px;
+    font-family:'Barlow Condensed',sans-serif; font-size:12px;
+    color:var(--t);
+}
+
+/* Avatar color rotation (stable per user by first letter) */
+.avc-0 { background:#2E9E5F; }  /* green */
+.avc-1 { background:#1E5BB8; }  /* blue */
+.avc-2 { background:#D75A1F; }  /* orange */
+.avc-3 { background:#7B3FA0; }  /* purple */
+.avc-4 { background:#C07800; }  /* gold */
+.avc-5 { background:#2B6A8D; }  /* teal */
+.avc-6 { background:#B55852; }  /* terracotta */
+
+.role-picker-inline {
+    display:inline-flex; gap:4px; flex-wrap:wrap;
+    padding:6px; background:var(--bg-s); border-radius:8px;
+    margin-top:6px;
+}
+.role-picker-inline button {
+    padding:4px 10px; border-radius:12px; border:1px solid var(--b);
+    background:#fff; font-family:'Inter',sans-serif; font-size:11px;
+    font-weight:600; color:var(--ts); cursor:pointer;
+}
+.role-picker-inline button:hover { border-color:var(--ns); color:var(--ns); }
+
+/* ══════════════════════════════════
+   PROJECT EDITOR
+   ══════════════════════════════════ */
+.proj-edit-layout { display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start; }
+.proj-edit-sidebar { background:#fff; border:1px solid var(--b); border-radius:var(--rl); overflow:hidden; position:sticky; top:80px; }
+.proj-edit-sidebar-hdr { padding:12px 14px; background:var(--bg-s); border-bottom:1px solid var(--b); display:flex; justify-content:space-between; align-items:center; }
+.proj-edit-sidebar-hdr h3 { font-size:13px; font-weight:700; color:var(--ts); }
+.proj-edit-list { max-height:calc(100vh - 240px); overflow-y:auto; padding:8px; }
+.proj-edit-item {
+    padding:10px 12px; border-radius:8px; cursor:pointer;
+    margin-bottom:2px; transition:background 0.15s;
+}
+.proj-edit-item:hover { background:var(--bg-s); }
+.proj-edit-item.selected { background:var(--ns-light); border-left:3px solid var(--ns); padding-left:9px; }
+.proj-edit-item-num { font-family:'Barlow Condensed',sans-serif; font-size:11px; color:var(--ns-dark); font-weight:700; letter-spacing:0.04em; }
+.proj-edit-item-name { font-size:13px; font-weight:600; color:var(--ts); margin-top:1px; }
+.proj-edit-item-client { font-size:11px; color:var(--tm); margin-top:1px; }
+
+.proj-edit-card { background:#fff; border:1px solid var(--b); border-radius:var(--rl); padding:20px; margin-bottom:16px; }
+.proj-edit-card-hdr {
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;
+    padding-bottom:10px; border-bottom:1px solid var(--b);
+}
+.proj-edit-card-hdr h3 { font-size:14px; font-weight:700; color:var(--ts); display:flex; align-items:center; gap:8px; }
+.proj-edit-card-hdr-icon { width:24px; height:24px; border-radius:6px; background:var(--ns-light); color:var(--ns-dark); font-size:14px; display:inline-flex; align-items:center; justify-content:center; font-weight:700; }
+.proj-edit-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.proj-edit-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+/* Per-role template matrix */
+.role-tmpl-row {
+    display:grid; grid-template-columns:140px 1fr;
+    gap:12px; padding:10px 0; border-bottom:1px solid var(--b);
+    align-items:flex-start;
+}
+.role-tmpl-row:last-child { border-bottom:none; }
+.role-tmpl-label {
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:700; color:var(--ts);
+}
+.role-tmpl-icon {
+    width:24px; height:24px; border-radius:6px;
+    color:#fff; font-size:13px; font-weight:700;
+    display:inline-flex; align-items:center; justify-content:center;
+}
+.role-tmpl-chips {
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+    min-height:32px;
+}
+.tmpl-chip {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px; background:var(--bg-s);
+    border:1px solid var(--b); border-radius:14px;
+    font-size:12px; font-weight:600; color:var(--ts);
+}
+.tmpl-chip-x { color:var(--tm); cursor:pointer; padding:0 2px; border-radius:50%; line-height:1; font-size:14px; }
+.tmpl-chip-x:hover { color:var(--e); background:var(--eb); }
+.tmpl-chip-add {
+    padding:4px 10px; border:1px dashed var(--b); border-radius:14px;
+    background:#fff; color:var(--tm); font-size:12px; font-weight:600;
+    cursor:pointer;
+}
+.tmpl-chip-add:hover { border-color:var(--ns); color:var(--ns); border-style:solid; }
+.role-tmpl-empty { font-size:12px; color:var(--tm); font-style:italic; }
+
+/* Phase editor */
+.phase-list { display:flex; flex-direction:column; gap:6px; }
+.phase-row {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; background:var(--bg-s);
+    border:1px solid var(--b); border-radius:var(--r);
+    cursor:grab; transition:background 0.15s;
+}
+.phase-row:hover { background:#eef2ec; }
+.phase-row.dragging { opacity:0.4; }
+.phase-row-handle { color:var(--tm); font-size:14px; cursor:grab; user-select:none; }
+.phase-row-num {
+    width:24px; height:24px; border-radius:50%;
+    background:var(--ns); color:#fff;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:12px; flex-shrink:0;
+}
+.phase-row-input {
+    flex:1; border:none; background:transparent;
+    font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+    color:var(--ts); padding:4px 0; outline:none;
+}
+.phase-row-input:focus { background:#fff; padding:4px 8px; border-radius:4px; }
+.phase-row-remove {
+    background:none; border:none; color:var(--tm);
+    cursor:pointer; padding:4px 6px; border-radius:4px; font-size:14px;
+}
+.phase-row-remove:hover { color:var(--e); background:var(--eb); }
+.phase-add-btn {
+    margin-top:8px; padding:8px 14px;
+    background:var(--ns-light); color:var(--ns-dark);
+    border:1px dashed var(--ns); border-radius:var(--r);
+    font-size:12px; font-weight:700; cursor:pointer;
+    text-transform:uppercase; letter-spacing:0.04em;
+}
+.phase-add-btn:hover { background:var(--ns); color:#fff; }
+
+.proj-edit-actions {
+    display:flex; justify-content:flex-end; gap:8px;
+    margin-top:16px;
+}
+
+/* Template picker modal */
+.tmpl-picker-search {
+    width:100%; padding:10px 12px; margin-bottom:12px;
+    border:1.5px solid var(--b); border-radius:var(--r);
+    font-family:'Inter',sans-serif; font-size:13px; outline:none;
+}
+.tmpl-picker-list { max-height:320px; overflow-y:auto; }
+.tmpl-picker-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-bottom:1px solid var(--b);
+    cursor:pointer; transition:background 0.15s;
+}
+.tmpl-picker-item:hover { background:var(--bg-s); }
+.tmpl-picker-item-info { flex:1; min-width:0; }
+.tmpl-picker-item-name { font-size:13px; font-weight:600; color:var(--ts); }
+.tmpl-picker-item-meta { font-size:11px; color:var(--tm); margin-top:1px; }
 </style>
 </head>
 <body>
@@ -207,6 +442,7 @@ body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var
         <button class="topnav-tab" onclick="Nav.show('projects')">Projekt</button>
         <button class="topnav-tab active" id="tabTemplates" onclick="Nav.show('templates')">Mallar</button>
         <button class="topnav-tab" id="tabImport" onclick="Nav.show('import')">Excel-import</button>
+        <button class="topnav-tab" id="tabRoles" onclick="Nav.show('roles')">Roller</button>
     </div>
     <div class="topnav-spacer"></div>
     <div class="topnav-user">Erik Lindgren &middot; Projektledare</div>
@@ -246,11 +482,38 @@ body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var
 
 <!-- ══════════════════════════════════ PROJECTS ══════════════════════════════════ -->
 <div class="view" id="view-projects">
-    <div class="page-hdr"><h1>Projekt</h1><p>Hantera projekt, tilldela mallar och följ upp installationsframgång.</p></div>
-    <div class="card" style="text-align:center;padding:60px;">
-        <div style="font-size:48px;color:var(--b);margin-bottom:12px;">&#128204;</div>
-        <div style="font-size:16px;font-weight:600;color:var(--ts);">Projektvy under utveckling</div>
-        <div style="font-size:14px;color:var(--tm);margin-top:4px;">Använd Mallar eller Excel-import ovan.</div>
+    <div class="page-hdr">
+        <h1>Projekt</h1>
+        <p>Skapa nya projekt och konfigurera dem &mdash; tilldela beställare, välj mallar per roll och redigera anslutningslistan.</p>
+    </div>
+    <div class="proj-edit-layout">
+        <div class="proj-edit-sidebar">
+            <div class="proj-edit-sidebar-hdr">
+                <h3 id="projEditCount">Projekt</h3>
+                <button class="btn btn-primary btn-sm" onclick="ProjEdit.newProject()">+ Nytt</button>
+            </div>
+            <div class="proj-edit-list" id="projEditList"></div>
+        </div>
+        <div id="projEditEditor"></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ ROLLER (ROLE ADMIN) ══════════════════════════════════ -->
+<div class="view" id="view-roles">
+    <div class="page-hdr">
+        <h1>Roller &amp; SharePoint-grupper</h1>
+        <p>Tilldela användare till roller genom att dra dem från listan till vänster. Varje roll backas av en SharePoint-grupp som styr hård åtkomstkontroll i listorna.</p>
+    </div>
+    <div class="roles-layout">
+        <div class="users-panel">
+            <div class="users-panel-hdr">
+                <h3>Användare</h3>
+                <div class="users-panel-hint">Dra till en roll &mdash; eller dubbelklicka för att välja.</div>
+            </div>
+            <input class="users-search" id="userSearch" placeholder="Sök användare..." oninput="RolesAdmin.filterUsers()" />
+            <div class="users-list" id="usersList"></div>
+        </div>
+        <div class="roles-grid" id="rolesGrid"></div>
     </div>
 </div>
 
@@ -262,7 +525,7 @@ body { font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var
 </div>
 <div class="toast" id="toastEl"></div>
 
-<script src="nschecks-shared.js?v=20260424-1336"></script>
+<script src="nschecks-shared.js?v=20260427-1106"></script>
 <script>
 /* ═══════════════════════════════════════════════════
    UTILITIES
@@ -292,7 +555,10 @@ var Nav = {
         document.getElementById('view-' + viewId).classList.add('active');
         if (viewId === 'templates') document.getElementById('tabTemplates').classList.add('active');
         else if (viewId === 'import') document.getElementById('tabImport').classList.add('active');
+        else if (viewId === 'roles') document.getElementById('tabRoles').classList.add('active');
         else document.querySelectorAll('.topnav-tab')[0].classList.add('active');
+        if (viewId === 'roles') RolesAdmin.ensureInit();
+        if (viewId === 'projects') ProjEdit.ensureInit();
     }
 };
 
@@ -1606,7 +1872,7 @@ var IMP = {
         '</div>' +
         '<div class="card">' +
             '<div class="card-title" style="color:var(--ok);">&#10003; Import slutförd</div>' +
-            '<p style="font-size:14px;color:var(--t);margin-bottom:12px;">22 installationer skapades i projektet <b>Östra Göinge Knislinge Etapp 1</b>. Varje installation fick 7 checklistor (baserat på valda mallar).</p>' +
+            '<p style="font-size:14px;color:var(--t);margin-bottom:12px;">22 installationer skapades i projektet <b>22181 Emmaljunga öst</b>. Varje installation fick 7 checklistor (baserat på valda mallar).</p>' +
             '<div style="font-size:13px;color:var(--tm);margin-bottom:16px;">' +
                 '&#9679; 22 &times; 7 = <b>154 checklistor</b> skapade<br/>' +
                 '&#9679; 22 dokumentbibliotek (Docs_xxxx) skapade<br/>' +
@@ -1620,6 +1886,577 @@ var IMP = {
     },
 
     reset: function() { this.step = 0; this.importDone = false; this.renderSteps(); this.renderPanel(); },
+};
+
+/* ═══════════════════════════════════════════════════
+   ROLES ADMIN — drag-and-drop user → SharePoint group
+   ═══════════════════════════════════════════════════ */
+var RolesAdmin = {
+    _inited: false,
+
+    roles: [
+        { key:'Schakt',        icon:'⛏', color:'#C07800', group:'NSChecks-Schakt',        desc:'Gräver stammen, sätter skåp/brunnar' },
+        { key:'Tekniker',      icon:'📝', color:'#2E9E5F', group:'NSChecks-Tekniker',      desc:'Fibertekniskt arbete, svetsning' },
+        { key:'Inmätare',      icon:'📍', color:'#1E5BB8', group:'NSChecks-Inmätare',      desc:'Geodetisk inmätning' },
+        { key:'Borrare',       icon:'🛠', color:'#2B6A8D', group:'NSChecks-Borrare',       desc:'Borrningar — ser enbart Borrloggen' },
+        { key:'Fiberblåsare',  icon:'💨', color:'#7B3FA0', group:'NSChecks-Fiberblåsare',  desc:'Blåsning av fiberkabel' },
+        { key:'Rolloberoende', icon:'⚠', color:'#D75A1F', group:'(alla användare)',       desc:'Tillbud &mdash; alla roller' },
+        { key:'Övrigt',        icon:'📄', color:'#71717A', group:'(per projekt)',           desc:'Projektspecifikt' }
+    ],
+
+    users: [
+        { id:'u1',  name:'Albert Fransson',   email:'albert@ns.se',    roles:['Tekniker'] },
+        { id:'u2',  name:'Erik Lindgren',     email:'erik@ns.se',      roles:['Tekniker'] },
+        { id:'u3',  name:'Kim Dahlgren',      email:'kim@bylunds.se',  roles:['Schakt'] },
+        { id:'u4',  name:'Sven Hultgren',     email:'sven@ns.se',      roles:['Schakt','Fiberblåsare'] },
+        { id:'u5',  name:'Maria Ahlgren',     email:'maria@ns.se',     roles:['Inmätare'] },
+        { id:'u6',  name:'Peter Kalmström',   email:'peter@ns.se',     roles:['Tekniker','Inmätare'] },
+        { id:'u7',  name:'Lars Borgström',    email:'lars@borrab.se',  roles:['Borrare'] },
+        { id:'u8',  name:'Johan Ek',          email:'johan@ns.se',     roles:['Schakt'] },
+        { id:'u9',  name:'Anna Svensson',     email:'anna@ns.se',      roles:['Tekniker'] },
+        { id:'u10', name:'Olof Sjögren',      email:'olof@bylunds.se', roles:['Schakt'] },
+        { id:'u11', name:'Ingrid Persson',    email:'ingrid@ns.se',    roles:[] },
+        { id:'u12', name:'Gustav Fredriksson',email:'gustav@ns.se',    roles:['Fiberblåsare'] }
+    ],
+
+    ensureInit: function() {
+        if (this._inited) return;
+        this._inited = true;
+        this.render();
+    },
+
+    render: function() {
+        this.renderUsers();
+        this.renderRoles();
+    },
+
+    avatarClass: function(user) {
+        var h = 0;
+        for (var i = 0; i < user.name.length; i++) h = (h + user.name.charCodeAt(i)) % 7;
+        return 'avc-' + h;
+    },
+
+    initials: function(name) {
+        var parts = name.split(' ');
+        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    },
+
+    filterUsers: function() {
+        var q = (document.getElementById('userSearch').value || '').toLowerCase();
+        var chips = document.querySelectorAll('#usersList .user-chip');
+        chips.forEach(function(c) {
+            c.style.display = c.textContent.toLowerCase().indexOf(q) >= 0 ? '' : 'none';
+        });
+    },
+
+    renderUsers: function() {
+        var list = document.getElementById('usersList');
+        var html = '';
+        var self = this;
+        this.users.forEach(function(u) {
+            html += '<div class="user-chip" draggable="true" data-user-id="' + u.id + '" ' +
+                'ondragstart="RolesAdmin.onDragStart(event,\'' + u.id + '\')" ' +
+                'ondragend="RolesAdmin.onDragEnd(event)" ' +
+                'ondblclick="RolesAdmin.openUserRoles(\'' + u.id + '\')">' +
+                '<div class="user-avatar ' + self.avatarClass(u) + '">' + self.initials(u.name) + '</div>' +
+                '<div class="user-info">' +
+                    '<div class="user-name">' + u.name + '</div>' +
+                    '<div class="user-email">' + u.email + '</div>' +
+                '</div>' +
+            '</div>';
+        });
+        list.innerHTML = html;
+    },
+
+    renderRoles: function() {
+        var grid = document.getElementById('rolesGrid');
+        var html = '';
+        var self = this;
+        this.roles.forEach(function(r) {
+            html += self.renderRoleCard(r);
+        });
+        grid.innerHTML = html;
+    },
+
+    renderRoleCard: function(role) {
+        var members = this.users.filter(function(u) { return u.roles.indexOf(role.key) >= 0; });
+        var self = this;
+        var memberHtml = members.length === 0
+            ? '<div class="role-card-empty">Inga medlemmar &mdash; dra en användare hit</div>'
+            : '<div class="role-members">' + members.map(function(u) {
+                return '<span class="role-member-chip" draggable="true" ' +
+                    'ondragstart="RolesAdmin.onDragStart(event,\'' + u.id + '\')" ' +
+                    'ondragend="RolesAdmin.onDragEnd(event)">' +
+                    '<span class="user-avatar ' + self.avatarClass(u) + '">' + self.initials(u.name) + '</span>' +
+                    u.name.split(' ')[0] +
+                    '<span class="role-member-chip-remove" onclick="RolesAdmin.removeFromRole(\'' + u.id + '\',\'' + role.key + '\')" title="Ta bort från rollen">&times;</span>' +
+                '</span>';
+            }).join('') + '</div>';
+        return '<div class="role-card" data-role="' + role.key + '" ' +
+            'ondragover="RolesAdmin.onDragOver(event)" ' +
+            'ondragleave="RolesAdmin.onDragLeave(event)" ' +
+            'ondrop="RolesAdmin.onDrop(event,\'' + role.key + '\')">' +
+            '<div class="role-card-hdr">' +
+                '<div class="role-card-title">' +
+                    '<div class="role-card-icon" style="background:' + role.color + ';">' + role.icon + '</div>' +
+                    '<div>' + role.key + '<div style="font-size:11px;font-weight:500;color:var(--tm);margin-top:1px;">' + role.desc + '</div></div>' +
+                '</div>' +
+                '<div class="role-card-count">' + members.length + ' ' + (members.length === 1 ? 'medlem' : 'medlemmar') + '</div>' +
+            '</div>' +
+            '<div class="role-card-body">' + memberHtml + '</div>' +
+            '<div class="role-card-meta">' +
+                '<span>SharePoint-grupp: <code>' + role.group + '</code></span>' +
+                '<span>Hård åtkomstkontroll</span>' +
+            '</div>' +
+        '</div>';
+    },
+
+    onDragStart: function(e, userId) {
+        e.dataTransfer.setData('text/plain', userId);
+        e.dataTransfer.effectAllowed = 'move';
+        e.currentTarget.classList.add('dragging');
+    },
+
+    onDragEnd: function(e) {
+        e.currentTarget.classList.remove('dragging');
+        document.querySelectorAll('.role-card').forEach(function(c) { c.classList.remove('drop-target'); });
+    },
+
+    onDragOver: function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        e.currentTarget.classList.add('drop-target');
+    },
+
+    onDragLeave: function(e) {
+        if (e.currentTarget.contains(e.relatedTarget)) return;
+        e.currentTarget.classList.remove('drop-target');
+    },
+
+    onDrop: function(e, roleKey) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drop-target');
+        var userId = e.dataTransfer.getData('text/plain');
+        this.addToRole(userId, roleKey);
+    },
+
+    addToRole: function(userId, roleKey) {
+        var u = this.users.find(function(x) { return x.id === userId; });
+        if (!u) return;
+        if (u.roles.indexOf(roleKey) < 0) {
+            u.roles.push(roleKey);
+            this.renderRoles();
+            toast(u.name.split(' ')[0] + ' tillagd i ' + roleKey);
+        }
+    },
+
+    removeFromRole: function(userId, roleKey) {
+        var u = this.users.find(function(x) { return x.id === userId; });
+        if (!u) return;
+        u.roles = u.roles.filter(function(r) { return r !== roleKey; });
+        this.renderRoles();
+        toast(u.name.split(' ')[0] + ' borttagen från ' + roleKey);
+    },
+
+    openUserRoles: function(userId) {
+        // Double-click: open a modal with role checkboxes
+        var u = this.users.find(function(x) { return x.id === userId; });
+        if (!u) return;
+        var self = this;
+        var rows = this.roles.map(function(r) {
+            var checked = u.roles.indexOf(r.key) >= 0 ? 'checked' : '';
+            return '<label style="display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid var(--b);cursor:pointer;">' +
+                '<input type="checkbox" ' + checked + ' onchange="RolesAdmin.toggleUserRole(\'' + userId + '\',\'' + r.key + '\',this.checked)" />' +
+                '<div class="role-card-icon" style="background:' + r.color + ';width:28px;height:28px;font-size:14px;">' + r.icon + '</div>' +
+                '<div style="flex:1;"><div style="font-weight:600;">' + r.key + '</div><div style="font-size:11px;color:var(--tm);">' + r.group + '</div></div>' +
+            '</label>';
+        }).join('');
+        Modal.open(
+            '<div class="modal-title">Roller för ' + u.name + ' <button class="modal-close" onclick="Modal.close()">&times;</button></div>' +
+            '<div style="font-size:13px;color:var(--tm);margin-bottom:12px;">' + u.email + '</div>' +
+            rows +
+            '<div style="margin-top:16px;display:flex;justify-content:flex-end;"><button class="btn btn-primary" onclick="Modal.close()">Klart</button></div>'
+        );
+    },
+
+    toggleUserRole: function(userId, roleKey, checked) {
+        if (checked) this.addToRole(userId, roleKey);
+        else this.removeFromRole(userId, roleKey);
+    }
+};
+
+/* ═══════════════════════════════════════════════════
+   PROJECT EDITOR
+   Per-project configuration: bas-info, role→template
+   matrix, anslutningsfaser, beställare-koppling.
+   ═══════════════════════════════════════════════════ */
+var ProjEdit = {
+    _inited: false,
+    activeIdx: 0,
+
+    bestallare: [
+        { id:1, name:'Hässleholm fibernät AB' },
+        { id:2, name:'Skanova AB' },
+        { id:3, name:'Global Connect AB' },
+        { id:4, name:'Öviks Energi AB' }
+    ],
+
+    // Match the seven roles from the mobile app
+    roles: [
+        { key:'Schakt',        icon:'⛏', color:'#C07800' },
+        { key:'Tekniker',      icon:'📝', color:'#2E9E5F' },
+        { key:'Inmätare',      icon:'📍', color:'#1E5BB8' },
+        { key:'Borrare',       icon:'🛠', color:'#2B6A8D' },
+        { key:'Fiberblåsare',  icon:'💨', color:'#7B3FA0' },
+        { key:'Rolloberoende', icon:'⚠', color:'#D75A1F' },
+        { key:'Övrigt',        icon:'📄', color:'#71717A' }
+    ],
+
+    projects: [
+        {
+            number:'22181', name:'Emmaljunga öst', clientId:1, region:'Hässleholm', category:'Fiber', status:'Active',
+            startDate:'2026-03-01', endDate:'2026-12-31', projectManager:'Erik Lindgren',
+            phases:['Tomtprojektering','Tomtschakt','Installation','Slutinstallation/aktivering'],
+            roleTemplates:{
+                Schakt:['Egenkontroll skåp schakt','Egenkontroll Schakt utförande'],
+                Tekniker:['Egenkontroll Installation i skåp – tätning, signering, märkning'],
+                Inmätare:['Egenkontroll – Geodetisk inmätning'],
+                Borrare:['Borrprotokoll'],
+                Fiberblåsare:[],
+                Rolloberoende:['Tillbud'],
+                Övrigt:['Projektspecifikt']
+            }
+        },
+        {
+            number:'22190', name:'Bromölla 24', clientId:2, region:'Bromölla', category:'Fiber', status:'Active',
+            startDate:'2026-04-01', endDate:'2026-10-31', projectManager:'Erik Lindgren',
+            phases:['Tomtprojektering','Tomtschakt','Installation','Slutinstallation/aktivering'],
+            roleTemplates:{
+                Schakt:['Egenkontroll sättning skåp','Egenkontroll skåp fibertekniskt','Egenkontroll fiberarbete NOD','Egenkontroll slingbrunn'],
+                Tekniker:['Egenkontroll skåp fibertekniskt','Egenkontroll fiberarbete NOD'],
+                Inmätare:['Egenkontroll – Geodetisk inmätning'],
+                Borrare:['Borrprotokoll'],
+                Fiberblåsare:['Egenkontroll slingbrunn'],
+                Rolloberoende:['Tillbud'],
+                Övrigt:['Projektspecifikt']
+            }
+        },
+        {
+            number:'22156', name:'Almsjönäs', clientId:3, region:'Glimåkra', category:'Fiber', status:'Active',
+            startDate:'2026-04-08', endDate:'2026-11-30', projectManager:'Erik Lindgren',
+            phases:['Tomtprojektering','Tomtschakt','Installation','Slutinstallation/aktivering'],
+            roleTemplates:{
+                Schakt:['Egenkontroll sättning skåp','Egenkontroll sättning brunn','Egenkontroll schakt','Underhåll grävmaskin','Daglig tillsyn'],
+                Tekniker:['Egenkontroll skåp fibertekniskt','Egenkontroll fiberarbete NOD','Egenkontroll slingbrunn','Egenkontroll brunn fibertekniskt'],
+                Inmätare:['Egenkontroll – Geodetisk inmätning'],
+                Borrare:['Borrprotokoll'],
+                Fiberblåsare:['Egenkontroll slingbrunn'],
+                Rolloberoende:['Tillbud'],
+                Övrigt:['Projektspecifikt']
+            }
+        },
+        {
+            number:'22184', name:'Grundsunda', clientId:4, region:'Örnsköldsvik', category:'Fiber', status:'Active',
+            startDate:'2026-04-15', endDate:'2027-01-31', projectManager:'Maria Ahlgren',
+            phases:['Tomtprojektering','Tomtschakt','Installation','Slutinstallation/aktivering'],
+            roleTemplates:{
+                Schakt:['Sättning skåp (övik)','Egenkontroll sättning brunn','Egenkontroll schakt och förläggning','Egenkontroll packningsprotokoll','Tolkprotokoll'],
+                Tekniker:['Egenkontroll fiberarbeten BRUNN','Egenkontroll SLINGBRUNN','Kontrollerade moment Egenkontroll fiberarbeten SKÅP','Checklista installation (Öviks energi)'],
+                Inmätare:['Egenkontroll – Geodetisk inmätning'],
+                Borrare:['Borrprotokoll'],
+                Fiberblåsare:['Egenkontroll slingbrunn','Tolkprotokoll'],
+                Rolloberoende:['Tillbud'],
+                Övrigt:['Projektspecifikt']
+            }
+        }
+    ],
+
+    ensureInit: function() {
+        if (this._inited) return;
+        this._inited = true;
+        this.render();
+    },
+
+    render: function() {
+        this.renderSidebar();
+        this.renderEditor();
+    },
+
+    renderSidebar: function() {
+        var html = '';
+        var self = this;
+        document.getElementById('projEditCount').textContent = 'Projekt (' + this.projects.length + ')';
+        this.projects.forEach(function(p, i) {
+            var c = self.bestallare.find(function(b) { return b.id === p.clientId; });
+            var sel = i === self.activeIdx ? 'selected' : '';
+            html += '<div class="proj-edit-item ' + sel + '" onclick="ProjEdit.select(' + i + ')">' +
+                '<div class="proj-edit-item-num">' + p.number + '</div>' +
+                '<div class="proj-edit-item-name">' + p.name + '</div>' +
+                '<div class="proj-edit-item-client">' + (c ? c.name : '—') + '</div>' +
+            '</div>';
+        });
+        document.getElementById('projEditList').innerHTML = html;
+    },
+
+    select: function(i) {
+        this.activeIdx = i;
+        this.render();
+    },
+
+    renderEditor: function() {
+        var p = this.projects[this.activeIdx];
+        if (!p) {
+            document.getElementById('projEditEditor').innerHTML = '<div class="card" style="text-align:center;padding:40px;"><div style="color:var(--tm);">Välj ett projekt till vänster.</div></div>';
+            return;
+        }
+        document.getElementById('projEditEditor').innerHTML =
+            this.renderBasicInfo(p) +
+            this.renderRoleMatrix(p) +
+            this.renderPhases(p) +
+            this.renderActions(p);
+    },
+
+    renderBasicInfo: function(p) {
+        var clientOpts = this.bestallare.map(function(b) {
+            var sel = b.id === p.clientId ? ' selected' : '';
+            return '<option value="' + b.id + '"' + sel + '>' + b.name + '</option>';
+        }).join('');
+        var statusOpts = ['Active','Archived'].map(function(s) {
+            var sel = s === p.status ? ' selected' : '';
+            return '<option' + sel + '>' + s + '</option>';
+        }).join('');
+        return '<div class="proj-edit-card">' +
+            '<div class="proj-edit-card-hdr">' +
+                '<h3><span class="proj-edit-card-hdr-icon">i</span> Bas-information</h3>' +
+            '</div>' +
+            '<div class="proj-edit-grid-2">' +
+                '<div class="field"><div class="field-label">Projektnummer</div><input class="field-input" id="peNum" value="' + p.number + '" /></div>' +
+                '<div class="field"><div class="field-label">Status</div><select class="field-select">' + statusOpts + '</select></div>' +
+            '</div>' +
+            '<div class="field"><div class="field-label">Projektnamn</div><input class="field-input" id="peName" value="' + p.name + '" /></div>' +
+            '<div class="proj-edit-grid-2">' +
+                '<div class="field"><div class="field-label">Beställare</div><select class="field-select" id="peClient">' + clientOpts + '</select></div>' +
+                '<div class="field"><div class="field-label">Region / ort</div><input class="field-input" value="' + p.region + '" /></div>' +
+            '</div>' +
+            '<div class="proj-edit-grid-3">' +
+                '<div class="field"><div class="field-label">Kategori</div><input class="field-input" value="' + p.category + '" /></div>' +
+                '<div class="field"><div class="field-label">Startdatum</div><input class="field-input" type="date" value="' + p.startDate + '" /></div>' +
+                '<div class="field"><div class="field-label">Slutdatum</div><input class="field-input" type="date" value="' + p.endDate + '" /></div>' +
+            '</div>' +
+            '<div class="field"><div class="field-label">Projektledare</div><input class="field-input" value="' + p.projectManager + '" /></div>' +
+        '</div>';
+    },
+
+    renderRoleMatrix: function(p) {
+        var self = this;
+        var rows = this.roles.map(function(role) {
+            var tpls = (p.roleTemplates[role.key] || []);
+            var chips = tpls.map(function(t, ti) {
+                return '<span class="tmpl-chip">' + t +
+                    '<span class="tmpl-chip-x" onclick="ProjEdit.removeTmpl(\'' + role.key + '\',' + ti + ')" title="Ta bort">&times;</span>' +
+                '</span>';
+            }).join('');
+            if (!chips) chips = '<span class="role-tmpl-empty">Inga mallar tilldelade</span> ';
+            chips += '<button class="tmpl-chip-add" onclick="ProjEdit.openTmplPicker(\'' + role.key + '\')">+ Mall</button>';
+            return '<div class="role-tmpl-row">' +
+                '<div class="role-tmpl-label">' +
+                    '<span class="role-tmpl-icon" style="background:' + role.color + ';">' + role.icon + '</span>' +
+                    role.key +
+                '</div>' +
+                '<div class="role-tmpl-chips">' + chips + '</div>' +
+            '</div>';
+        }).join('');
+        return '<div class="proj-edit-card">' +
+            '<div class="proj-edit-card-hdr">' +
+                '<h3><span class="proj-edit-card-hdr-icon">⊕</span> Mallar per roll</h3>' +
+                '<span style="font-size:11px;color:var(--tm);">Styr vilka checklistor varje roll ser i appen</span>' +
+            '</div>' +
+            rows +
+        '</div>';
+    },
+
+    renderPhases: function(p) {
+        var rows = p.phases.map(function(label, i) {
+            return '<div class="phase-row" draggable="true" data-i="' + i + '" ' +
+                'ondragstart="ProjEdit.phaseDragStart(event,' + i + ')" ' +
+                'ondragend="ProjEdit.phaseDragEnd(event)" ' +
+                'ondragover="ProjEdit.phaseDragOver(event)" ' +
+                'ondrop="ProjEdit.phaseDrop(event,' + i + ')">' +
+                '<span class="phase-row-handle">&#10495;</span>' +
+                '<span class="phase-row-num">' + (i + 1) + '</span>' +
+                '<input class="phase-row-input" value="' + label + '" oninput="ProjEdit.phaseRename(' + i + ',this.value)" />' +
+                '<button class="phase-row-remove" onclick="ProjEdit.phaseRemove(' + i + ')" title="Ta bort fas">&times;</button>' +
+            '</div>';
+        }).join('');
+        return '<div class="proj-edit-card">' +
+            '<div class="proj-edit-card-hdr">' +
+                '<h3><span class="proj-edit-card-hdr-icon">⇉</span> Anslutningslista (faser)</h3>' +
+                '<span style="font-size:11px;color:var(--tm);">Drag för att ordna om</span>' +
+            '</div>' +
+            '<div class="phase-list" id="phaseList">' + rows + '</div>' +
+            '<button class="phase-add-btn" onclick="ProjEdit.phaseAdd()">+ Lägg till fas</button>' +
+        '</div>';
+    },
+
+    renderActions: function(p) {
+        return '<div class="proj-edit-actions">' +
+            '<button class="btn btn-danger" onclick="ProjEdit.deleteProject()">Arkivera projekt</button>' +
+            '<button class="btn btn-secondary" onclick="ProjEdit.duplicateProject()">Duplicera</button>' +
+            '<button class="btn btn-primary" onclick="ProjEdit.save()">Spara ändringar</button>' +
+        '</div>';
+    },
+
+    // ── Mutations ───────────────────────────────────
+    removeTmpl: function(roleKey, idx) {
+        var p = this.projects[this.activeIdx];
+        p.roleTemplates[roleKey].splice(idx, 1);
+        this.renderEditor();
+    },
+
+    openTmplPicker: function(roleKey) {
+        var p = this.projects[this.activeIdx];
+        var existing = p.roleTemplates[roleKey] || [];
+        // Borrow templates from TD; fallback to a hard-coded set for the demo
+        var allTmpls = (typeof TD !== 'undefined' && TD.templates)
+            ? TD.templates.map(function(t) { return { name: t.name, cat: t.cat, doc: t.doc }; })
+            : this._fallbackTmpls();
+        var available = allTmpls.filter(function(t) { return existing.indexOf(t.name) < 0; });
+        var rows = available.map(function(t) {
+            return '<div class="tmpl-picker-item" onclick="ProjEdit.addTmpl(\'' + roleKey + '\',\'' + t.name.replace(/'/g, "\\'") + '\')">' +
+                '<div class="tmpl-picker-item-info">' +
+                    '<div class="tmpl-picker-item-name">' + t.name + '</div>' +
+                    '<div class="tmpl-picker-item-meta">' + (t.cat || '—') + ' · Doc ' + (t.doc || '?') + '</div>' +
+                '</div>' +
+                '<span class="chip chip-ns">Lägg till</span>' +
+            '</div>';
+        }).join('');
+        Modal.open(
+            '<div class="modal-title">Lägg till mall för rollen ' + roleKey + ' <button class="modal-close" onclick="Modal.close()">&times;</button></div>' +
+            '<input class="tmpl-picker-search" placeholder="Sök mall..." oninput="ProjEdit.filterTmplPicker(this.value)" autofocus />' +
+            '<div class="tmpl-picker-list" id="tmplPickerList">' + (rows || '<div style="padding:20px;color:var(--tm);text-align:center;">Inga fler mallar tillgängliga.</div>') + '</div>'
+        );
+    },
+
+    filterTmplPicker: function(q) {
+        var ql = (q || '').toLowerCase();
+        document.querySelectorAll('#tmplPickerList .tmpl-picker-item').forEach(function(el) {
+            el.style.display = el.textContent.toLowerCase().indexOf(ql) >= 0 ? '' : 'none';
+        });
+    },
+
+    addTmpl: function(roleKey, tmplName) {
+        var p = this.projects[this.activeIdx];
+        if (!p.roleTemplates[roleKey]) p.roleTemplates[roleKey] = [];
+        if (p.roleTemplates[roleKey].indexOf(tmplName) < 0) p.roleTemplates[roleKey].push(tmplName);
+        Modal.close();
+        this.renderEditor();
+        toast('Mall tillagd: ' + tmplName);
+    },
+
+    _fallbackTmpls: function() {
+        return [
+            { name:'Egenkontroll sättning skåp', cat:'Fiber', doc:'1010' },
+            { name:'Egenkontroll skåp fibertekniskt', cat:'Fiber', doc:'1011' },
+            { name:'Egenkontroll fiberarbete NOD', cat:'Fiber', doc:'1012' },
+            { name:'Egenkontroll slingbrunn', cat:'Fiber', doc:'1013' },
+            { name:'Egenkontroll – Geodetisk inmätning', cat:'Inmätning', doc:'2001' },
+            { name:'Borrprotokoll', cat:'Schakt', doc:'1010' },
+            { name:'Tillbud', cat:'Arbetsmiljö', doc:'2020' },
+            { name:'Daglig tillsyn', cat:'Övrigt', doc:'3001' }
+        ];
+    },
+
+    phaseAdd: function() {
+        var p = this.projects[this.activeIdx];
+        p.phases.push('Ny fas');
+        this.renderEditor();
+    },
+
+    phaseRemove: function(i) {
+        var p = this.projects[this.activeIdx];
+        if (p.phases.length <= 1) { toast('Minst en fas krävs'); return; }
+        p.phases.splice(i, 1);
+        this.renderEditor();
+    },
+
+    phaseRename: function(i, val) {
+        var p = this.projects[this.activeIdx];
+        p.phases[i] = val;
+    },
+
+    _phaseDragIdx: -1,
+
+    phaseDragStart: function(e, i) {
+        this._phaseDragIdx = i;
+        e.currentTarget.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    },
+
+    phaseDragEnd: function(e) {
+        e.currentTarget.classList.remove('dragging');
+        this._phaseDragIdx = -1;
+    },
+
+    phaseDragOver: function(e) { e.preventDefault(); },
+
+    phaseDrop: function(e, target) {
+        e.preventDefault();
+        var src = this._phaseDragIdx;
+        if (src < 0 || src === target) return;
+        var p = this.projects[this.activeIdx];
+        var moved = p.phases.splice(src, 1)[0];
+        p.phases.splice(target, 0, moved);
+        this.renderEditor();
+    },
+
+    save: function() {
+        var p = this.projects[this.activeIdx];
+        var num = document.getElementById('peNum').value.trim();
+        var name = document.getElementById('peName').value.trim();
+        var clientId = parseInt(document.getElementById('peClient').value, 10);
+        if (!num || !name) { toast('Projektnummer och namn krävs'); return; }
+        p.number = num; p.name = name; p.clientId = clientId;
+        this.render();
+        toast('Sparat: ' + num + ' ' + name);
+    },
+
+    duplicateProject: function() {
+        var orig = this.projects[this.activeIdx];
+        var copy = JSON.parse(JSON.stringify(orig));
+        copy.number = orig.number + '-K';
+        copy.name = orig.name + ' (kopia)';
+        this.projects.push(copy);
+        this.activeIdx = this.projects.length - 1;
+        this.render();
+        toast('Projekt duplicerat');
+    },
+
+    deleteProject: function() {
+        if (this.projects.length <= 1) { toast('Minst ett projekt krävs'); return; }
+        var p = this.projects[this.activeIdx];
+        if (!confirm('Arkivera projektet "' + p.number + ' ' + p.name + '"?')) return;
+        this.projects.splice(this.activeIdx, 1);
+        if (this.activeIdx >= this.projects.length) this.activeIdx = this.projects.length - 1;
+        this.render();
+        toast('Projektet arkiverat');
+    },
+
+    newProject: function() {
+        var nextNum = (Math.max.apply(null, this.projects.map(function(p) { return parseInt(p.number, 10) || 0; })) + 1) + '';
+        var blank = {
+            number: nextNum, name: 'Nytt projekt', clientId: this.bestallare[0].id,
+            region: '', category: 'Fiber', status: 'Active',
+            startDate: new Date().toISOString().slice(0, 10), endDate: '',
+            projectManager: '',
+            phases: ['Tomtprojektering','Tomtschakt','Installation','Slutinstallation/aktivering'],
+            roleTemplates: { Schakt:[], Tekniker:[], Inmätare:[], Borrare:[], Fiberblåsare:[], Rolloberoende:['Tillbud'], Övrigt:[] }
+        };
+        this.projects.unshift(blank);
+        this.activeIdx = 0;
+        this.render();
+        toast('Nytt projekt: ' + nextNum);
+    }
 };
 
 /* ═══════════════════════════════════════════════════
