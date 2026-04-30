@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecAudit — Office &amp; Azure Security Audit (Mockup)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260430-1916">
+</head>
+<body>
+<svg id="icon-sprite" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false">
+    <defs>
+        <linearGradient id="g-entra" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1F8FFF"/><stop offset="55%" stop-color="#7B53C0"/><stop offset="100%" stop-color="#E14CCD"/></linearGradient>
+        <linearGradient id="g-defender" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F8FFF"/><stop offset="100%" stop-color="#0445A8"/></linearGradient>
+        <linearGradient id="g-azure" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3DA9FF"/><stop offset="100%" stop-color="#0078D4"/></linearGradient>
+        <linearGradient id="g-copilot" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF8FB1"/><stop offset="50%" stop-color="#B86CFF"/><stop offset="100%" stop-color="#3CC0FF"/></linearGradient>
+        <linearGradient id="g-sentinel" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FF8C42"/><stop offset="100%" stop-color="#D83B01"/></linearGradient>
+        <linearGradient id="g-langate" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#02B896"/><stop offset="100%" stop-color="#00517e"/></linearGradient>
+        <linearGradient id="g-hero" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#02B896"/><stop offset="100%" stop-color="#00517e"/></linearGradient>
+    </defs>
+
+    <!-- Product icons -->
+    <symbol id="p-entra" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-entra)"/><path d="M12 5 L18.5 18.5 L12 16 L5.5 18.5 Z" fill="#fff"/><path d="M12 9 L15 16.2 L12 15.2 Z" fill="#fff" opacity="0.55"/></symbol>
+    <symbol id="p-defender" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-defender)"/><path d="M12 4 L18.5 6.6 V12 C18.5 16.2 15.4 18.9 12 20.4 C8.6 18.9 5.5 16.2 5.5 12 V6.6 Z" fill="#fff"/><path d="M12 4 L18.5 6.6 V12 C18.5 16.2 15.4 18.9 12 20.4 Z" fill="#0445A8" opacity="0.18"/></symbol>
+    <symbol id="p-purview" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#04787A"/><path d="M9 4.5 L15 4.5 L18 9.5 L15 14.5 L9 14.5 L6 9.5 Z" fill="#fff" opacity="0.45"/><path d="M9 9.5 L15 9.5 L18 14.5 L15 19.5 L9 19.5 L6 14.5 Z" fill="#fff"/></symbol>
+    <symbol id="p-intune" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#E66B00"/><rect x="5.5" y="4.5" width="9" height="15" rx="1.5" fill="#fff"/><rect x="6.6" y="6" width="6.8" height="10" fill="#FFB180" opacity="0.4"/><circle cx="10" cy="17.6" r="0.7" fill="#E66B00"/><path d="M14.5 11 L17.5 11 L18.5 12 L17.5 17 L14.5 17 Z" fill="#fff" opacity="0.85"/></symbol>
+    <symbol id="p-exchange" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0078D4"/><rect x="3.5" y="6.5" width="17" height="11" rx="1.2" fill="#fff"/><path d="M3.5 7.5 L12 13.5 L20.5 7.5" stroke="#0078D4" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-sharepoint" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#038387"/><circle cx="9" cy="11" r="4.5" fill="#fff"/><circle cx="15" cy="14.5" r="3.5" fill="#fff" opacity="0.7"/><circle cx="9" cy="11" r="2" fill="#038387"/></symbol>
+    <symbol id="p-teams" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#5059C9"/><rect x="9" y="6" width="10" height="10" rx="1.5" fill="#fff"/><text x="14" y="13.6" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="8" fill="#5059C9">T</text><circle cx="6" cy="10.5" r="2.6" fill="#fff" opacity="0.7"/></symbol>
+    <symbol id="p-sentinel" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-sentinel)"/><path d="M12 4 L19.5 7.5 V12 C19.5 16 16 18.5 12 20 C8 18.5 4.5 16 4.5 12 V7.5 Z" fill="#fff"/><circle cx="12" cy="11.5" r="3" fill="#D83B01"/><circle cx="12" cy="11.5" r="1.1" fill="#fff"/></symbol>
+    <symbol id="p-azure" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-azure)"/><path d="M11 4 L7 18.2 L13 16 L17 20 L20 18 L13 4 Z" fill="#fff"/></symbol>
+    <symbol id="p-power" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#742774"/><path d="M13.5 2.5 L6.5 13 L11 13 L10.5 21.5 L17.5 11 L13 11 Z" fill="#fff"/></symbol>
+    <symbol id="p-m365" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#1A1A1A"/><rect x="4.5" y="4.5" width="6" height="6" rx="0.8" fill="#F25022"/><rect x="13.5" y="4.5" width="6" height="6" rx="0.8" fill="#7FBA00"/><rect x="4.5" y="13.5" width="6" height="6" rx="0.8" fill="#00A4EF"/><rect x="13.5" y="13.5" width="6" height="6" rx="0.8" fill="#FFB900"/></symbol>
+    <symbol id="p-copilot" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-copilot)"/><path d="M5.5 17 C7.8 11 10 8.5 12 8.5 C14 8.5 14 10.5 14 12 C14 14 16 16 18.5 16" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="17" r="0.9" fill="#fff"/><circle cx="18.6" cy="16" r="0.9" fill="#fff"/></symbol>
+    <symbol id="p-forms" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#D83B83"/><rect x="5" y="3.5" width="14" height="17" rx="1.2" fill="#fff"/><rect x="7.5" y="6.5" width="9" height="1.6" rx="0.4" fill="#D83B83"/><rect x="7.5" y="10.5" width="6" height="1.6" rx="0.4" fill="#D83B83" opacity="0.5"/><rect x="7.5" y="14" width="8" height="1.6" rx="0.4" fill="#D83B83" opacity="0.5"/><path d="M14.5 17 L16 18.5 L17.5 16" stroke="#D83B83" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="p-viva" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0F6CBD"/><circle cx="9" cy="9.5" r="3" fill="#fff"/><circle cx="15" cy="9.5" r="3" fill="#fff" opacity="0.7"/><path d="M5 18 C8 14 16 14 19 18" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="p-browser" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#0078D4"/><circle cx="12" cy="12" r="7" fill="#fff"/><ellipse cx="12" cy="12" rx="3" ry="7" fill="none" stroke="#0078D4" stroke-width="1.2"/><path d="M5 12 H19 M12 5 V19" stroke="#0078D4" stroke-width="1.2"/></symbol>
+    <symbol id="p-monitor" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#017A64"/><path d="M5 18 L9 12 L13 15 L19 6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="12" r="1.6" fill="#fff"/><circle cx="13" cy="15" r="1.6" fill="#fff"/><circle cx="19" cy="6" r="1.6" fill="#fff"/></symbol>
+    <symbol id="p-backup" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#3F51B5"/><ellipse cx="12" cy="6.5" rx="6" ry="2" fill="#fff"/><path d="M6 6.5 V17 C6 18.1 8.7 19 12 19 C15.3 19 18 18.1 18 17 V6.5" fill="#fff"/><ellipse cx="12" cy="11.5" rx="6" ry="1.5" fill="#3F51B5" opacity="0.35"/><ellipse cx="12" cy="14.5" rx="6" ry="1.5" fill="#3F51B5" opacity="0.2"/></symbol>
+    <symbol id="p-tenant" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#5C6470"/><rect x="5" y="5" width="14" height="15" fill="#fff"/><rect x="7" y="7" width="2" height="2" fill="#5C6470"/><rect x="11" y="7" width="2" height="2" fill="#5C6470"/><rect x="15" y="7" width="2" height="2" fill="#5C6470"/><rect x="7" y="11" width="2" height="2" fill="#5C6470"/><rect x="11" y="11" width="2" height="2" fill="#5C6470"/><rect x="15" y="11" width="2" height="2" fill="#5C6470"/><rect x="10" y="14" width="4" height="6" fill="#5C6470"/></symbol>
+    <symbol id="p-langate" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="url(#g-langate)"/><path d="M5 17 V7 H8 V14 H14 V17 Z" fill="#fff"/><circle cx="17" cy="8" r="2.2" fill="#02B896"/></symbol>
+
+    <!-- Status icons -->
+    <symbol id="s-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7 12 L11 16 L17 9" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="s-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M8 8 L16 16 M16 8 L8 16" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="s-na" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M6 18 L18 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="s-pending" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="2" fill="currentColor"/></symbol>
+    <symbol id="s-high" viewBox="0 0 24 24"><path d="M12 3 L22 20 H2 Z" fill="currentColor"/><rect x="11" y="9" width="2" height="6" fill="#fff" rx="1"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></symbol>
+    <symbol id="s-med" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><rect x="11" y="6" width="2" height="9" fill="#fff" rx="1"/><circle cx="12" cy="18" r="1.3" fill="#fff"/></symbol>
+    <symbol id="s-low" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><circle cx="12" cy="8" r="1.3" fill="#fff"/><rect x="11" y="11" width="2" height="7" fill="#fff" rx="1"/></symbol>
+
+    <!-- Navigation icons -->
+    <symbol id="n-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.2" fill="currentColor"/><rect x="13" y="3" width="8" height="5" rx="1.2" fill="currentColor"/><rect x="13" y="10" width="8" height="11" rx="1.2" fill="currentColor"/><rect x="3" y="13" width="8" height="8" rx="1.2" fill="currentColor"/></symbol>
+    <symbol id="n-audits" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 8 H16 M8 12 H14 M8 16 H12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="n-workspace" viewBox="0 0 24 24"><path d="M14 3 L20.5 9.5 L11 19 L4 21 L6 14 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/><path d="M13 4 L20 11" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="n-reference" viewBox="0 0 24 24"><path d="M5 4 V19 C5 20.1 6 21 7 21 H19 V6 H7 C6 6 5 7 5 8 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 9 H15 M9 13 H15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="n-reports" viewBox="0 0 24 24"><rect x="3" y="14" width="4" height="7" rx="0.6" fill="currentColor"/><rect x="10" y="9" width="4" height="12" rx="0.6" fill="currentColor"/><rect x="17" y="4" width="4" height="17" rx="0.6" fill="currentColor"/></symbol>
+    <symbol id="n-architecture" viewBox="0 0 24 24"><path d="M12 2 L21 7 V17 L12 22 L3 17 V7 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M3 7 L12 12 L21 7 M12 12 V22" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="n-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 2 V5 M12 19 V22 M22 12 H19 M5 12 H2 M19.1 4.9 L17 7 M7 17 L4.9 19.1 M19.1 19.1 L17 17 M7 7 L4.9 4.9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+
+    <!-- Action icons -->
+    <symbol id="a-powershell" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7 9 L11 12 L7 15" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 16 H17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="a-portal" viewBox="0 0 24 24"><path d="M14 4 H20 V10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/><path d="M20 4 L11 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M18 14 V18 C18 19.1 17 20 16 20 H6 C5 20 4 19.1 4 18 V8 C4 6.9 5 6 6 6 H10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="a-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M16 16 L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="a-plus" viewBox="0 0 24 24"><path d="M12 5 V19 M5 12 H19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="a-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 6 V12 C4 13.5 7.6 14.8 12 14.8 C16.4 14.8 20 13.5 20 12 V6" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M4 12 V18 C4 19.5 7.6 20.8 12 20.8 C16.4 20.8 20 19.5 20 18 V12" stroke="currentColor" stroke-width="1.7" fill="none"/></symbol>
+    <symbol id="a-clipboard" viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="9" y="3" width="6" height="3" rx="0.6" fill="currentColor"/><path d="M9 12 H15 M9 15 H13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="a-download" viewBox="0 0 24 24"><path d="M12 4 V16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 11 L12 16 L17 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M4 19 H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="a-print" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="6" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="9" width="18" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="6" y="13" width="12" height="8" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="12" r="1" fill="currentColor"/></symbol>
+    <symbol id="a-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7 V12 L15 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></symbol>
+    <symbol id="a-attach" viewBox="0 0 24 24"><path d="M16 8 L9 15 C8 16 8 18 9 19 C10 20 12 20 13 19 L19 13 C21 11 21 8 19 6 C17 4 14 4 12 6 L6 12 C4 14 4 18 6 20 C8 22 12 22 14 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="a-close" viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="a-arrow-right" viewBox="0 0 24 24"><path d="M5 12 H19 M14 7 L19 12 L14 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+    <symbol id="a-shield-check" viewBox="0 0 24 24"><path d="M12 3 L20 6 V12 C20 16.5 17 19.7 12 21 C7 19.7 4 16.5 4 12 V6 Z" fill="currentColor" opacity="0.18"/><path d="M12 3 L20 6 V12 C20 16.5 17 19.7 12 21 C7 19.7 4 16.5 4 12 V6 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 12 L11 15 L16 9" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="a-doc" viewBox="0 0 24 24"><path d="M6 3 H14 L19 8 V21 H6 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3 V8 H19" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 13 H15 M9 16 H15 M9 19 H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="a-stale" viewBox="0 0 24 24"><path d="M3 18 L12 4 L21 18 Z" fill="currentColor" opacity="0.18"/><path d="M3 18 L12 4 L21 18 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><rect x="11" y="9" width="2" height="5" fill="currentColor" rx="1"/><circle cx="12" cy="16" r="1" fill="currentColor"/></symbol>
+    <symbol id="a-sparkle" viewBox="0 0 24 24"><path d="M12 3 L13.5 9 L19 10.5 L13.5 12 L12 18 L10.5 12 L5 10.5 L10.5 9 Z" fill="currentColor"/><circle cx="19" cy="5" r="1.5" fill="currentColor"/><circle cx="5" cy="18" r="1" fill="currentColor"/></symbol>
+    <symbol id="a-lock" viewBox="0 0 24 24"><rect x="6" y="11" width="12" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 11 V8 C9 6 10 4 12 4 C14 4 15 6 15 8 V11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="a-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="17" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M3 19 C3 16 5.5 14 9 14 C12.5 14 15 16 15 19" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M16 17 C19 17 21 19 21 19" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="a-eye" viewBox="0 0 24 24"><path d="M2 12 C5 6 8.5 4 12 4 C15.5 4 19 6 22 12 C19 18 15.5 20 12 20 C8.5 20 5 18 2 12 Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="12" r="3.2" fill="currentColor"/></symbol>
+    <symbol id="a-diff" viewBox="0 0 24 24"><path d="M9 4 V20 M5 8 L9 4 L13 8" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 20 V4 M11 16 L15 20 L19 16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="a-evidence" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="11" r="1.6" fill="currentColor"/><path d="M4 18 L9 13 L13 16 L17 11 L20 14" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 4 H15 V6 H9 Z" fill="currentColor"/></symbol>
+    <symbol id="a-owner" viewBox="0 0 24 24"><circle cx="12" cy="9" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 20 C5 16 8 14 12 14 C16 14 19 16 19 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="a-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M4 10 H20 M9 3 V7 M15 3 V7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><rect x="10" y="13" width="4" height="4" fill="currentColor"/></symbol>
+
+    <!-- Customer logos (mock geometric marks) -->
+    <symbol id="l-acme" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#1A2C42"/><path d="M9 24 L16 8 L23 24 H19 L17.5 20.5 H14.5 L13 24 Z M15.2 17.5 H16.8 L16 15.5 Z" fill="#F5A623"/></symbol>
+    <symbol id="l-bergstrom" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#1F4E2E"/><path d="M16 6 L23 14 H20 L24 20 H21 L25 26 H7 L11 20 H8 L12 14 H9 Z" fill="#9CD79C"/><rect x="14" y="22" width="4" height="6" fill="#3D6648"/></symbol>
+    <symbol id="l-nordic" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#0E2A47"/><rect x="7" y="9" width="3" height="14" fill="#fff"/><rect x="22" y="9" width="3" height="14" fill="#fff"/><path d="M10 9 L22 23 V18 L10 4 Z" fill="#fff" opacity="0.7"/><circle cx="26" cy="8" r="2" fill="#FFD23F"/></symbol>
+    <symbol id="l-vasa" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#0F4C5C"/><path d="M16 5 L9 18 L13 18 L11 27 L23 13 L18 13 L21 5 Z" fill="#FFB041"/></symbol>
+    <symbol id="l-malar" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#3F4B5A"/><path d="M5 19 L16 8 L27 19 V26 H5 Z" fill="#fff"/><rect x="14" y="20" width="4" height="6" fill="#3F4B5A"/><rect x="9" y="14" width="2" height="2" fill="#3F4B5A"/><rect x="21" y="14" width="2" height="2" fill="#3F4B5A"/></symbol>
+    <symbol id="l-karolinska" viewBox="0 0 32 32"><rect width="32" height="32" rx="4" fill="#0B5563"/><rect x="14" y="6" width="4" height="20" fill="#fff"/><rect x="6" y="14" width="20" height="4" fill="#fff"/><circle cx="22" cy="22" r="3" fill="#7AC74F"/></symbol>
+
+    <!-- Empty state illustration -->
+    <symbol id="ill-empty" viewBox="0 0 200 140"><rect x="44" y="32" width="112" height="84" rx="8" fill="#ebf2f5" stroke="#DBE4EA" stroke-width="2"/><rect x="44" y="32" width="112" height="14" fill="#00517e"/><circle cx="52" cy="39" r="2" fill="#02B896"/><circle cx="60" cy="39" r="2" fill="#fff" opacity="0.4"/><circle cx="68" cy="39" r="2" fill="#fff" opacity="0.4"/><rect x="56" y="58" width="88" height="6" rx="3" fill="#DBE4EA"/><rect x="56" y="72" width="60" height="6" rx="3" fill="#DBE4EA"/><rect x="56" y="86" width="74" height="6" rx="3" fill="#DBE4EA"/><circle cx="148" cy="92" r="22" fill="#02B896" opacity="0.18"/><circle cx="148" cy="92" r="14" fill="#fff" stroke="#02B896" stroke-width="2"/><path d="M141 92 L146 96 L155 88" stroke="#02B896" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+
+    <!-- Audit cover hero -->
+    <symbol id="ill-audit-hero" viewBox="0 0 200 80"><rect x="0" y="0" width="200" height="80" rx="6" fill="url(#g-hero)"/><circle cx="170" cy="20" r="38" fill="#fff" opacity="0.06"/><circle cx="20" cy="60" r="46" fill="#fff" opacity="0.06"/><path d="M30 56 L30 28 L42 28 L42 56 Z" fill="#fff" opacity="0.95"/><path d="M48 56 L48 36 L60 36 L60 56 Z" fill="#fff" opacity="0.78"/><path d="M66 56 L66 22 L78 22 L78 56 Z" fill="#fff" opacity="0.95"/><path d="M84 56 L84 44 L96 44 L96 56 Z" fill="#fff" opacity="0.6"/><path d="M102 56 L102 32 L114 32 L114 56 Z" fill="#fff" opacity="0.85"/><path d="M30 56 L114 56" stroke="#fff" stroke-width="1.4" opacity="0.5"/><circle cx="156" cy="40" r="18" fill="#fff" opacity="0.18"/><circle cx="156" cy="40" r="12" fill="#fff"/><path d="M150 40 L155 45 L162 36" stroke="#02B896" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="app">
+
+    <header class="app-titlebar">
+        <div class="titlebar-accent" aria-hidden="true"></div>
+        <div class="titlebar-content">
+            <span class="brand">
+                <svg class="icon icon-md brand-mark" aria-hidden="true"><use href="#p-langate"/></svg>
+                <span class="brand-name">Langate</span>
+                <span class="brand-dot" aria-hidden="true"></span>
+            </span>
+            <span class="app-name">SecAudit &middot; Office &amp; Azure Security Audit</span>
+            <span class="titlebar-grow"></span>
+            <span class="connection-pill">
+                <span class="pill-dot pill-dot-on" aria-hidden="true"></span>
+                <span>Graph: <strong>acme-prod.onmicrosoft.com</strong></span>
+            </span>
+            <button class="cb-toggle" id="cb-toggle" title="Color-blind safe mode (patterns + glyphs)" data-action="toggle-cb">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="#a-eye"/></svg>
+                <span>CB</span>
+            </button>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode" data-action="toggle-theme">
+                <svg class="icon icon-sm" aria-hidden="true" id="theme-icon"><use href="#a-shield-check"/></svg>
+                <span id="theme-label">Dark</span>
+            </button>
+            <button class="theme-toggle" id="cmdk-btn" title="Quick search (Ctrl+K)" data-action="open-cmdk" style="margin-left:8px">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="#a-search"/></svg>
+                <span>Ctrl+K</span>
+            </button>
+            <span class="user-pill" title="peter@kalmstrom.com">PK</span>
+        </div>
+    </header>
+
+    <nav class="menubar" aria-label="Application menu">
+        <button class="menu-item">File</button>
+        <button class="menu-item">Edit</button>
+        <button class="menu-item">View</button>
+        <button class="menu-item">Audit</button>
+        <button class="menu-item">Tools</button>
+        <button class="menu-item">Help</button>
+    </nav>
+
+    <div class="app-body">
+
+        <aside class="sidebar" aria-label="Primary navigation">
+            <button class="nav-item active" data-nav="dashboard">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-dashboard"/></svg>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" data-nav="audits">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-audits"/></svg>
+                <span>Audits</span>
+                <span class="nav-badge">3</span>
+            </button>
+            <button class="nav-item" data-nav="workspace">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-workspace"/></svg>
+                <span>Audit workspace</span>
+            </button>
+            <button class="nav-item" data-nav="interview">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#a-people"/></svg>
+                <span>Customer interview</span>
+                <span class="nav-badge" id="nav-interview-badge">0</span>
+            </button>
+            <button class="nav-item" data-nav="reference">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-reference"/></svg>
+                <span>Reference catalog</span>
+            </button>
+            <button class="nav-item" data-nav="reports">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-reports"/></svg>
+                <span>Reports</span>
+            </button>
+            <button class="nav-item" data-nav="architecture">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-architecture"/></svg>
+                <span>Architecture</span>
+            </button>
+            <button class="nav-item" data-nav="settings">
+                <svg class="icon icon-md nav-icon" aria-hidden="true"><use href="#n-settings"/></svg>
+                <span>Settings</span>
+            </button>
+
+            <div class="sidebar-spacer"></div>
+
+            <div class="sidebar-footer">
+                <div class="db-pill">
+                    <svg class="icon icon-md" style="color:var(--accent-green-d);flex-shrink:0" aria-hidden="true"><use href="#a-database"/></svg>
+                    <div>
+                        <div class="db-label">Access database</div>
+                        <div class="db-path">SecAudit.accdb</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content" id="content">
+
+            <!-- ============== DASHBOARD ============== -->
+            <section class="screen active" data-screen="dashboard">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Overview</div>
+                        <h1>Dashboard</h1>
+                    </div>
+                    <div class="screen-actions">
+                        <button class="btn btn-secondary" data-nav="reference">
+                            <svg class="icon" aria-hidden="true"><use href="#n-reference"/></svg> Browse catalog
+                        </button>
+                        <button class="btn btn-primary" data-action="new-audit">
+                            <svg class="icon" aria-hidden="true"><use href="#a-plus"/></svg> New audit
+                        </button>
+                    </div>
+                </header>
+
+                <div class="dashboard-hero" id="dashboard-hero"></div>
+
+                <div class="kpi-row">
+                    <div class="kpi">
+                        <div class="kpi-label">Active audits</div>
+                        <div class="kpi-value">3</div>
+                        <div class="kpi-trend kpi-trend-flat">2 in progress &middot; 1 review</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Items checked (this audit)</div>
+                        <div class="kpi-value">147 / 624</div>
+                        <div class="kpi-progress">
+                            <div class="kpi-progress-bar" style="width: 23.5%"></div>
+                        </div>
+                        <div class="kpi-trend kpi-trend-flat">23.5% complete</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Open findings</div>
+                        <div class="kpi-value">38</div>
+                        <div class="kpi-trend kpi-trend-up">
+                            <span class="badge badge-red">12 high</span>
+                            <span class="badge badge-orange">19 med</span>
+                            <span class="badge badge-blue">7 low</span>
+                        </div>
+                    </div>
+                    <div class="kpi">
+                        <div class="kpi-label">Days since last finding</div>
+                        <div class="kpi-value">0</div>
+                        <div class="kpi-trend kpi-trend-flat">Updated 14 minutes ago</div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Tenant posture heatmap &mdash; Acme Holdings AB</h2>
+                        <span class="panel-meta">Each cell = one of the 624 catalog items. Severity-tinted on fail (red/amber/teal). Click to jump.</span>
+                    </div>
+                    <div class="tenant-rollup" id="tenant-rollup"></div>
+                    <div class="heatmap-wrap" id="dashboard-heatmap"></div>
+                </div>
+
+                <div class="dashboard-grid">
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Recent audits</h2>
+                            <button class="btn-link" data-nav="audits">View all &rsaquo;</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Tenant</th>
+                                    <th>Started</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-audits-tbody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Findings by category &mdash; Acme Holdings AB</h2>
+                            <span class="panel-meta">Top 8 categories by open findings</span>
+                        </div>
+                        <ul class="findings-bars" id="findings-bars-list"></ul>
+                    </div>
+
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Portfolio benchmarks &mdash; areas to focus</h2>
+                        <span class="panel-meta">Acme vs your customer portfolio (sorted by gap to median)</span>
+                    </div>
+                    <div id="benchmarks-widget"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Activity</h2>
+                        <span class="panel-meta">Last 24 hours</span>
+                    </div>
+                    <ul class="activity-feed" id="activity-feed"></ul>
+                </div>
+            </section>
+
+            <!-- ============== AUDITS LIST ============== -->
+            <section class="screen" data-screen="audits">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Engagements</div>
+                        <h1>Audits</h1>
+                    </div>
+                    <div class="screen-actions">
+                        <input type="search" class="search-input" placeholder="Search by customer or tenant&hellip;">
+                        <button class="btn btn-primary" data-action="new-audit">+ New audit</button>
+                    </div>
+                </header>
+
+                <div class="filter-row" id="audits-filter-row">
+                    <button class="filter-chip active" data-audit-filter="all">All <span class="chip-count" id="ac-all">7</span></button>
+                    <button class="filter-chip" data-audit-filter="in-progress">In progress <span class="chip-count" id="ac-ip">2</span></button>
+                    <button class="filter-chip" data-audit-filter="review">Review <span class="chip-count" id="ac-rv">1</span></button>
+                    <button class="filter-chip" data-audit-filter="delivered">Delivered <span class="chip-count" id="ac-dl">3</span></button>
+                    <button class="filter-chip" data-audit-filter="archived">Archived <span class="chip-count" id="ac-ar">1</span></button>
+                </div>
+
+                <div class="panel">
+                    <table class="data-table data-table-full">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Tenant</th>
+                                <th>Started</th>
+                                <th>Last activity</th>
+                                <th>Progress</th>
+                                <th>Findings</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="audits-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============== AUDIT WORKSPACE ============== -->
+            <section class="screen" data-screen="workspace">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">
+                            <button class="crumb-link" data-nav="audits">Audits</button>
+                            <span class="crumb-sep">/</span>
+                            <span>Acme Holdings AB</span>
+                        </div>
+                        <h1>Audit workspace</h1>
+                        <div class="workspace-meta">
+                            <span><strong>Tenant:</strong> <code>acme-prod.onmicrosoft.com</code></span>
+                            <span><strong>Reviewer:</strong> peter@kalmstrom.com</span>
+                            <span><strong>Started:</strong> 2026-04-22</span>
+                            <span><strong>Status:</strong> <span class="badge badge-blue">In progress</span></span>
+                        </div>
+                    </div>
+                    <div class="screen-actions">
+                        <button class="btn btn-secondary" data-action="compare">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="#a-arrow-right"/></svg> Compare with previous
+                        </button>
+                        <button class="btn btn-secondary" data-nav="reports">Generate deliverable</button>
+                        <button class="btn btn-primary" data-action="audit-report">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="#a-shield-check"/></svg> Audit status report
+                        </button>
+                    </div>
+                </header>
+
+                <div id="catalog-banner-host"></div>
+
+                <div class="workspace-progress">
+                    <div class="workspace-progress-bar">
+                        <div class="workspace-progress-fill" style="width: 23.5%"></div>
+                    </div>
+                    <div class="workspace-progress-text">
+                        <strong>147</strong> of <strong>624</strong> items checked &middot;
+                        <span class="badge badge-green">109 pass</span>
+                        <span class="badge badge-red">22 fail</span>
+                        <span class="badge badge-gray">16 N/A</span>
+                        <span class="text-muted">477 pending</span>
+                    </div>
+                </div>
+
+                <div class="workspace-grid">
+                    <aside class="workspace-categories" aria-label="Categories">
+                        <div class="ws-pane-header">
+                            <h2>Categories</h2>
+                            <input type="search" class="search-input ws-search" placeholder="Filter&hellip;" id="cat-filter">
+                        </div>
+                        <ul class="category-list" id="category-list"></ul>
+                    </aside>
+
+                    <section class="workspace-items" aria-label="Checks in category">
+                        <div class="ws-pane-header">
+                            <h2 id="items-pane-title">Loading&hellip;</h2>
+                            <div class="status-filter">
+                                <button class="filter-chip active" data-status="all">All</button>
+                                <button class="filter-chip" data-status="pending">Pending</button>
+                                <button class="filter-chip" data-status="pass">Pass</button>
+                                <button class="filter-chip" data-status="fail">Fail</button>
+                                <button class="filter-chip" data-status="na">N/A</button>
+                                <button class="filter-chip" data-status="stale" title="Verified more than 90 days ago">
+                                    <svg class="icon icon-xs" aria-hidden="true" style="color:var(--warning-text);vertical-align:middle"><use href="#a-stale"/></svg>
+                                    Stale
+                                </button>
+                                <button class="filter-chip" data-status="lifecycle" title="In remediation lifecycle">
+                                    <svg class="icon icon-xs" aria-hidden="true" style="vertical-align:middle"><use href="#a-clock"/></svg>
+                                    Lifecycle
+                                </button>
+                            </div>
+                        </div>
+                        <div class="risk-filter-row" id="risk-filter-row">
+                            <span class="rf-label">Risk</span>
+                            <button class="filter-chip active" data-risk="all">All</button>
+                            <button class="filter-chip" data-risk="high"><span class="rf-dot rf-high"></span>High</button>
+                            <button class="filter-chip" data-risk="med"><span class="rf-dot rf-med"></span>Med</button>
+                            <button class="filter-chip" data-risk="low"><span class="rf-dot rf-low"></span>Low</button>
+                            <button class="filter-chip" data-risk="overdue"><span class="rf-dot rf-overdue"></span>Overdue</button>
+                            <button class="filter-chip" data-risk="mine"><span class="rf-dot rf-mine"></span>Mine</button>
+                        </div>
+                        <div class="tenant-filter-row" id="tenant-filter-row">
+                            <span class="rf-label">Tenant</span>
+                            <button class="filter-chip active" data-tenant="all">All tenants</button>
+                            <button class="filter-chip" data-tenant="acme-prod.onmicrosoft.com">Prod <code>acme-prod</code></button>
+                            <button class="filter-chip" data-tenant="acme-dev.onmicrosoft.com">Dev <code>acme-dev</code></button>
+                        </div>
+                        <div class="bulk-bar" id="bulk-bar" hidden>
+                            <span data-bulk-count>0 items selected</span>
+                            <span class="bulk-spacer"></span>
+                            <button class="btn btn-secondary bulk-btn" data-bulk="pass" title="Mark Pass">
+                                <svg class="icon" aria-hidden="true"><use href="#s-pass"/></svg> Pass
+                            </button>
+                            <div class="bulk-fail-group" role="group" aria-label="Mark Fail with risk level">
+                                <span class="bulk-fail-label">
+                                    <svg class="icon" aria-hidden="true"><use href="#s-fail"/></svg> Fail
+                                </span>
+                                <button class="btn btn-secondary bulk-btn bulk-fail-h" data-bulk="fail-high" title="Mark Fail (high risk)">High</button>
+                                <button class="btn btn-secondary bulk-btn bulk-fail-m" data-bulk="fail-med"  title="Mark Fail (medium risk)">Med</button>
+                                <button class="btn btn-secondary bulk-btn bulk-fail-l" data-bulk="fail-low"  title="Mark Fail (low risk)">Low</button>
+                            </div>
+                            <button class="btn btn-secondary bulk-btn" data-bulk="na" title="Mark N/A">
+                                <svg class="icon" aria-hidden="true"><use href="#s-na"/></svg> N/A
+                            </button>
+                            <button class="btn btn-secondary bulk-btn" data-bulk="assign" title="Assign owner / target date to selected fail items">
+                                <svg class="icon" aria-hidden="true"><use href="#a-owner"/></svg> Assign…
+                            </button>
+                            <button class="btn btn-secondary bulk-btn" data-bulk="select-all">Select all visible</button>
+                            <button class="btn btn-secondary bulk-btn" data-bulk="clear">Clear</button>
+                        </div>
+                        <ul class="item-list" id="item-list"></ul>
+                    </section>
+
+                    <section class="workspace-detail" aria-label="Check detail and finding">
+                        <div class="ws-pane-header">
+                            <h2>Check detail</h2>
+                            <span class="item-id-pill" id="detail-id-pill">#&mdash;</span>
+                        </div>
+                        <div class="detail-body" id="detail-body">
+                            <div class="empty-state">
+                                <div class="empty-state-illustration"><svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><use href="#ill-empty"/></svg></div>
+                                <div class="empty-title">Select a check</div>
+                                <div class="empty-help">Pick a check from the middle list to see its expected value, how to read it, and to record a finding.</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <!-- ============== CUSTOMER INTERVIEW ============== -->
+            <section class="screen" data-screen="interview">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Customer interview &middot; Acme Holdings AB</div>
+                        <h1>Customer interview</h1>
+                        <div class="screen-help">Process &amp; policy items that need customer input. Fill in during the customer call, or share the link below for self-service.</div>
+                    </div>
+                    <div class="screen-actions">
+                        <button class="btn btn-secondary" data-action="share-interview">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="#a-portal"/></svg> Share with customer
+                        </button>
+                        <button class="btn btn-primary" data-action="audit-report">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="#a-shield-check"/></svg> Status report
+                        </button>
+                    </div>
+                </header>
+
+                <div class="interview-progress" id="interview-progress"></div>
+                <div class="interview-questions" id="interview-questions"></div>
+            </section>
+
+            <!-- ============== REFERENCE CATALOG ============== -->
+            <section class="screen" data-screen="reference">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Master checklist</div>
+                        <h1>Reference catalog</h1>
+                        <div class="screen-help">624 audit items across 61 categories &mdash; sourced from <code>OfficeAzureSecurityAudit.xlsx</code></div>
+                    </div>
+                    <div class="screen-actions">
+                        <input type="search" class="search-input" id="ref-search" placeholder="Search description, expected value, command&hellip;">
+                        <button class="btn btn-secondary">Re-import from Excel</button>
+                    </div>
+                </header>
+
+                <div class="reference-grid">
+                    <aside class="ref-categories" aria-label="Filter by category">
+                        <div class="ws-pane-header"><h2>Filter by category</h2></div>
+                        <ul class="ref-category-list" id="ref-category-list"></ul>
+                    </aside>
+
+                    <div class="panel ref-panel">
+                        <table class="data-table data-table-compact">
+                            <thead>
+                                <tr>
+                                    <th class="col-id">#</th>
+                                    <th class="col-cat">Category</th>
+                                    <th>Check</th>
+                                    <th>Expected / recommended</th>
+                                    <th class="col-perm">Permission</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ref-tbody"></tbody>
+                        </table>
+                        <div class="table-footer">
+                            <span id="ref-count">Showing 624 of 624</span>
+                            <button class="btn-link">Export to CSV</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============== REPORTS ============== -->
+            <section class="screen" data-screen="reports">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Deliverables</div>
+                        <h1>Reports</h1>
+                        <div class="screen-help">Generate Word, PDF, or HTML reports for any audit.</div>
+                    </div>
+                    <div class="screen-actions">
+                        <button class="btn btn-primary" data-action="generate">Generate selected</button>
+                    </div>
+                </header>
+
+                <div class="reports-grid">
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#a-shield-check"/></svg>
+                            <h2>Executive summary</h2>
+                            <span class="badge badge-blue">PDF</span>
+                        </div>
+                        <p>1&ndash;2 page overview for stakeholders. KPIs, top risks, headline recommendations.</p>
+                        <ul class="report-meta">
+                            <li>~2 pages</li>
+                            <li>Customer logo on cover</li>
+                            <li>Includes risk heat-map</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#n-reference"/></svg>
+                            <h2>Full technical findings</h2>
+                            <span class="badge badge-blue">PDF</span>
+                            <span class="badge badge-blue">DOCX</span>
+                        </div>
+                        <p>All findings grouped by category, with evidence, risk rating, and remediation steps.</p>
+                        <ul class="report-meta">
+                            <li>~30&ndash;80 pages</li>
+                            <li>Embedded screenshots and PowerShell output</li>
+                            <li>Per-category appendix</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#a-clipboard"/></svg>
+                            <h2>Remediation plan</h2>
+                            <span class="badge badge-blue">DOCX</span>
+                            <span class="badge badge-blue">XLSX</span>
+                        </div>
+                        <p>Prioritized backlog of remediation actions, owner, effort estimate, target date.</p>
+                        <ul class="report-meta">
+                            <li>One row per finding</li>
+                            <li>Sortable by risk and effort</li>
+                            <li>Plays nicely with Planner / Jira import</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#p-purview"/></svg>
+                            <h2>Compliance mapping</h2>
+                            <span class="badge badge-blue">PDF</span>
+                        </div>
+                        <p>Findings mapped to ISO 27001:2022, CIS Microsoft 365 v3, and NIST CSF.</p>
+                        <ul class="report-meta">
+                            <li>Coverage matrix</li>
+                            <li>Gap analysis</li>
+                            <li>Evidence pointers</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#a-attach"/></svg>
+                            <h2>Customer evidence pack</h2>
+                            <span class="badge badge-blue">ZIP</span>
+                        </div>
+                        <p>All attached evidence, named PowerShell transcripts, and screenshots in a single archive.</p>
+                        <ul class="report-meta">
+                            <li>Hashed for integrity</li>
+                            <li>Per-finding subfolders</li>
+                            <li>Manifest CSV</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+
+                    <article class="report-card">
+                        <div class="report-card-header">
+                            <svg class="icon icon-lg" style="color:var(--primary)" aria-hidden="true"><use href="#a-people"/></svg>
+                            <h2>Internal QA review</h2>
+                            <span class="badge badge-blue">HTML</span>
+                        </div>
+                        <p>Reviewer-only diff: items left pending, missing evidence, comments to resolve.</p>
+                        <ul class="report-meta">
+                            <li>Pre-delivery checklist</li>
+                            <li>Stale-evidence flags</li>
+                            <li>Reviewer sign-off line</li>
+                        </ul>
+                        <div class="report-actions">
+                            <button class="btn btn-secondary" data-action="preview-report">Preview</button>
+                            <button class="btn btn-primary">Generate</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============== ARCHITECTURE ============== -->
+            <section class="screen" data-screen="architecture">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Implementation reference</div>
+                        <h1>Architecture</h1>
+                        <div class="screen-help">Proposed C# desktop application with Microsoft Access database backend.</div>
+                    </div>
+                </header>
+
+                <div class="arch-row">
+                    <div class="arch-block arch-ui">
+                        <div class="arch-block-eyebrow">UI layer</div>
+                        <div class="arch-block-title">SecAudit.exe</div>
+                        <div class="arch-block-sub">C# 12 &middot; .NET 8 WPF</div>
+                        <ul class="arch-tech">
+                            <li>MVVM with CommunityToolkit.Mvvm</li>
+                            <li>Avenir/DM Sans typography</li>
+                            <li>Langate brand theme</li>
+                        </ul>
+                    </div>
+                    <div class="arch-arrow" aria-hidden="true">&rarr;</div>
+                    <div class="arch-block arch-svc">
+                        <div class="arch-block-eyebrow">Service layer</div>
+                        <div class="arch-block-title">SecAudit.Services</div>
+                        <div class="arch-block-sub">Class library &middot; .NET 8</div>
+                        <ul class="arch-tech">
+                            <li>AuditService, FindingService, ReportService</li>
+                            <li>Microsoft.Graph SDK for tenant queries</li>
+                            <li>PowerShell SDK for runbook execution</li>
+                        </ul>
+                    </div>
+                    <div class="arch-arrow" aria-hidden="true">&rarr;</div>
+                    <div class="arch-block arch-data">
+                        <div class="arch-block-eyebrow">Data layer</div>
+                        <div class="arch-block-title">SecAudit.accdb</div>
+                        <div class="arch-block-sub">Microsoft Access &middot; OLE DB / ACE</div>
+                        <ul class="arch-tech">
+                            <li>System.Data.OleDb provider</li>
+                            <li>Single-file, portable per-customer DB</li>
+                            <li>Excel import for catalog refresh</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Database schema</h2>
+                            <span class="panel-meta">Access tables &mdash; minimal viable model</span>
+                        </div>
+                        <div class="schema-grid">
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblCustomer</div>
+                                <ul>
+                                    <li><span class="pk">CustomerId</span> &mdash; AutoNumber, PK</li>
+                                    <li>Name &mdash; Text(120)</li>
+                                    <li>LogoPath &mdash; Text(255)</li>
+                                    <li>PrimaryContact &mdash; Text(120)</li>
+                                    <li>Notes &mdash; Memo</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblTenant</div>
+                                <ul>
+                                    <li><span class="pk">TenantId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">CustomerId</span> &mdash; FK &rarr; tblCustomer</li>
+                                    <li>TenantDomain &mdash; Text(120)</li>
+                                    <li>TenantGuid &mdash; Text(40)</li>
+                                    <li>Environment &mdash; Number (Prod/Dev/Test)</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblAudit</div>
+                                <ul>
+                                    <li><span class="pk">AuditId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">CustomerId</span> &mdash; FK &rarr; tblCustomer</li>
+                                    <li><span class="fk">TenantId</span> &mdash; FK &rarr; tblTenant</li>
+                                    <li><span class="fk">CatalogVersionId</span> &mdash; FK &rarr; tblCatalogVersion</li>
+                                    <li><span class="fk">PreviousAuditId</span> &mdash; FK &rarr; tblAudit, nullable</li>
+                                    <li>StartedAt / CompletedAt</li>
+                                    <li>Status &mdash; Number</li>
+                                    <li>Reviewer &mdash; Text(120)</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblCatalogVersion</div>
+                                <ul>
+                                    <li><span class="pk">CatalogVersionId</span> &mdash; AutoNumber, PK</li>
+                                    <li>Version &mdash; Text(20) e.g. "2026.04"</li>
+                                    <li>ImportedAt &mdash; Date/Time</li>
+                                    <li>SourceFile &mdash; Text(255)</li>
+                                    <li>ItemCount &mdash; Number</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblCheckCategory</div>
+                                <ul>
+                                    <li><span class="pk">CategoryId</span> &mdash; AutoNumber, PK</li>
+                                    <li>Name &mdash; Text(120), unique</li>
+                                    <li>ProductDomain &mdash; Text(40)</li>
+                                    <li>SortOrder &mdash; Number</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblCheckItem</div>
+                                <ul>
+                                    <li><span class="pk">CheckItemId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">CategoryId</span> &mdash; FK &rarr; tblCheckCategory</li>
+                                    <li><span class="fk">CatalogVersionId</span> &mdash; FK &rarr; tblCatalogVersion</li>
+                                    <li>ShortDescription &mdash; Memo</li>
+                                    <li>ExpectedValue, HowToRead &mdash; Memo</li>
+                                    <li>PermissionsNeeded &mdash; Text(255)</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblFrameworkMapping</div>
+                                <ul>
+                                    <li><span class="pk">MappingId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">CheckItemId</span> &mdash; FK &rarr; tblCheckItem</li>
+                                    <li>Framework &mdash; Number (ISO/CIS/NIST)</li>
+                                    <li>ControlId &mdash; Text(40) e.g. "A.8.5"</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblFinding</div>
+                                <ul>
+                                    <li><span class="pk">FindingId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">AuditId</span> &mdash; FK &rarr; tblAudit</li>
+                                    <li><span class="fk">CheckItemId</span> &mdash; FK &rarr; tblCheckItem</li>
+                                    <li>Status &mdash; Number (Pending/Pass/Fail/NA)</li>
+                                    <li>Risk &mdash; Number (None/Low/Med/High)</li>
+                                    <li>Observation, Remediation &mdash; Memo</li>
+                                    <li>CheckedAt &mdash; Date/Time</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblComment</div>
+                                <ul>
+                                    <li><span class="pk">CommentId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">FindingId</span> &mdash; FK &rarr; tblFinding</li>
+                                    <li>Author &mdash; Text(120)</li>
+                                    <li>Body &mdash; Memo</li>
+                                    <li>PostedAt &mdash; Date/Time</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblEvidence</div>
+                                <ul>
+                                    <li><span class="pk">EvidenceId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">FindingId</span> &mdash; FK &rarr; tblFinding</li>
+                                    <li>FileName, RelativePath &mdash; Text</li>
+                                    <li>Sha256 &mdash; Text(64)</li>
+                                    <li>CapturedAt &mdash; Date/Time</li>
+                                </ul>
+                            </div>
+                            <div class="schema-table">
+                                <div class="schema-table-name">tblActivityLog</div>
+                                <ul>
+                                    <li><span class="pk">LogId</span> &mdash; AutoNumber, PK</li>
+                                    <li><span class="fk">AuditId</span> &mdash; FK &rarr; tblAudit</li>
+                                    <li>Actor &mdash; Text(120)</li>
+                                    <li>Action &mdash; Text(60)</li>
+                                    <li>Detail &mdash; Memo</li>
+                                    <li>OccurredAt &mdash; Date/Time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>Project layout</h2>
+                            <span class="panel-meta">Visual Studio solution</span>
+                        </div>
+                        <pre class="code-block">SecAudit.sln
+&#9500;&#9472; SecAudit.UI (WPF, .NET 8)
+&#9474;  &#9500;&#9472; Views/
+&#9474;  &#9474;   &#9500;&#9472; DashboardView.xaml
+&#9474;  &#9474;   &#9500;&#9472; AuditsView.xaml
+&#9474;  &#9474;   &#9500;&#9472; WorkspaceView.xaml
+&#9474;  &#9474;   &#9500;&#9472; ReferenceView.xaml
+&#9474;  &#9474;   &#9492;&#9472; ReportsView.xaml
+&#9474;  &#9500;&#9472; ViewModels/
+&#9474;  &#9492;&#9472; Themes/Langate.xaml
+&#9500;&#9472; SecAudit.Services (.NET 8)
+&#9474;  &#9500;&#9472; AuditService.cs
+&#9474;  &#9500;&#9472; FindingService.cs
+&#9474;  &#9500;&#9472; ReferenceImporter.cs (Excel &rarr; Access)
+&#9474;  &#9500;&#9472; GraphRunner.cs
+&#9474;  &#9492;&#9472; ReportBuilder.cs
+&#9500;&#9472; SecAudit.Data (.NET 8)
+&#9474;  &#9500;&#9472; Access/AccessConnectionFactory.cs
+&#9474;  &#9500;&#9472; Repositories/AuditRepository.cs
+&#9474;  &#9500;&#9472; Repositories/FindingRepository.cs
+&#9474;  &#9492;&#9472; Schema/SecAudit.accdb (template)
+&#9492;&#9472; SecAudit.Tests (MSTest)</pre>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>Open questions</h2>
+                        <span class="panel-meta">Confirm before build</span>
+                    </div>
+                    <ul class="open-questions">
+                        <li><strong>Single-DB or per-customer DB?</strong> Recommend per-customer <code>.accdb</code> in a customer folder &mdash; cleaner isolation, easier handover, no row-level filtering.</li>
+                        <li><strong>UI framework:</strong> WPF vs WinForms vs WinUI 3. Recommend WPF for richer data binding and a more polished look at no extra cost.</li>
+                        <li><strong>Graph queries:</strong> embed Microsoft.Graph .NET SDK, or shell out to PowerShell scripts? Recommend hybrid &mdash; SDK for simple reads, PowerShell for the existing complex commands in the catalog (<code>Get-MgServicePrincipalAppRoleAssignment</code>, etc).</li>
+                        <li><strong>Multi-user:</strong> Access does not love simultaneous writers. If two reviewers will share an audit, plan to split data (back-end .accdb on a share with linked tables) or move to SQLite/SQL Server later.</li>
+                        <li><strong>Evidence files:</strong> store paths in DB, files on disk in <code>&lt;customer&gt;\evidence\&lt;findingId&gt;\</code>. Hash on import.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ============== SETTINGS ============== -->
+            <section class="screen" data-screen="settings">
+                <header class="screen-header">
+                    <div>
+                        <div class="screen-eyebrow">Configuration</div>
+                        <h1>Settings</h1>
+                    </div>
+                </header>
+
+                <div class="settings-grid">
+                    <nav class="settings-nav" aria-label="Settings sections">
+                        <button class="settings-nav-item active">Connections</button>
+                        <button class="settings-nav-item">Database</button>
+                        <button class="settings-nav-item">Reference catalog</button>
+                        <button class="settings-nav-item">Reviewers &amp; tenants</button>
+                        <button class="settings-nav-item">Reports</button>
+                        <button class="settings-nav-item">Updates</button>
+                        <button class="settings-nav-item">About</button>
+                    </nav>
+
+                    <div class="panel">
+                        <div class="panel-header"><h2>Microsoft Graph</h2></div>
+                        <form class="settings-form" onsubmit="return false">
+                            <div class="form-row">
+                                <label for="tenant-id">Tenant ID</label>
+                                <input id="tenant-id" type="text" value="acme-prod.onmicrosoft.com">
+                            </div>
+                            <div class="form-row">
+                                <label for="client-id">App registration (Client ID)</label>
+                                <input id="client-id" type="text" value="b1cf31f4-6e3a-4f8c-9c08-2b2d4e3f0a11" readonly>
+                            </div>
+                            <div class="form-row">
+                                <label for="auth-mode">Authentication</label>
+                                <select id="auth-mode">
+                                    <option>Interactive (device code)</option>
+                                    <option selected>Interactive (browser)</option>
+                                    <option>Certificate</option>
+                                    <option>Managed identity</option>
+                                </select>
+                            </div>
+                            <div class="form-help">
+                                Required Graph permissions are listed per check in the
+                                <button class="btn-link" data-nav="reference">reference catalog</button>.
+                                The app requests these on first use.
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary">Test connection</button>
+                                <button class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <footer class="app-statusbar">
+        <span><span class="pill-dot pill-dot-on" aria-hidden="true"></span> Connected</span>
+        <span class="status-sep">&middot;</span>
+        <span>Audit: <strong>Acme Holdings AB</strong></span>
+        <span class="status-sep">&middot;</span>
+        <span>147 / 624 items checked</span>
+        <span class="status-grow"></span>
+        <span>Auto-save: on</span>
+        <span class="status-sep">&middot;</span>
+        <span>v0.1.0-mockup</span>
+    </footer>
+</div>
+
+<!-- ============== NEW AUDIT MODAL ============== -->
+<div class="modal-backdrop" id="modal-new-audit" hidden>
+    <div class="modal" role="dialog" aria-labelledby="new-audit-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="new-audit-title">New audit</h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <form class="modal-body" onsubmit="return false">
+            <div class="form-row">
+                <label for="na-customer">Customer name</label>
+                <input id="na-customer" type="text" placeholder="e.g. Acme Holdings AB">
+            </div>
+            <div class="form-row">
+                <label for="na-tenant">Tenant</label>
+                <input id="na-tenant" type="text" placeholder="customer.onmicrosoft.com">
+            </div>
+            <div class="form-row form-row-half">
+                <div>
+                    <label for="na-reviewer">Reviewer</label>
+                    <input id="na-reviewer" type="text" value="peter@kalmstrom.com">
+                </div>
+                <div>
+                    <label for="na-started">Start date</label>
+                    <input id="na-started" type="date" value="2026-04-30">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="na-scope">Scope</label>
+                <select id="na-scope">
+                    <option>Full catalog (624 items)</option>
+                    <option>Quick triage (top 80 items)</option>
+                    <option>Identity &amp; Access only</option>
+                    <option>Custom selection&hellip;</option>
+                </select>
+            </div>
+            <div class="form-help">A new <code>.accdb</code> will be created in the customer folder. Findings auto-save as you work.</div>
+        </form>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Cancel</button>
+            <button class="btn btn-primary" data-action="close-modal">Create audit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== REPORT PREVIEW MODAL ============== -->
+<div class="modal-backdrop" id="modal-report-preview" hidden>
+    <div class="modal modal-wide" role="dialog" aria-labelledby="rp-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="rp-title">Report preview &mdash; Executive summary</h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body modal-body-flush">
+            <div class="report-preview">
+                <div class="rp-page">
+                    <div class="rp-cover-bar"></div>
+                    <div class="rp-cover-body">
+                        <div class="rp-cover-eyebrow">Security audit &middot; Executive summary</div>
+                        <h1 class="rp-cover-title">Acme Holdings AB</h1>
+                        <div class="rp-cover-sub">Microsoft 365 &amp; Azure tenant assessment</div>
+                        <div class="rp-cover-divider"></div>
+                        <div class="rp-cover-foot">
+                            <div>Prepared by <strong>Langate AB</strong></div>
+                            <div>Reviewer: peter@kalmstrom.com</div>
+                            <div>2026-04-30</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rp-page">
+                    <div class="rp-page-header">
+                        <span class="rp-ph-accent"></span>
+                        <span class="rp-ph-brand">Langate &middot; Executive summary</span>
+                        <span class="rp-ph-line"></span>
+                        <span class="rp-ph-section">Acme Holdings AB</span>
+                    </div>
+                    <div class="rp-page-body">
+                        <h2>Headline</h2>
+                        <p>Acme&rsquo;s tenant scores well on identity hygiene (MFA, Conditional Access baseline) but has elevated risk in three areas: legacy authentication, broad service-principal permissions, and missing Defender for Cloud Apps governance.</p>
+                        <h2>Risk profile</h2>
+                        <table class="rp-risk-table">
+                            <tr><td>High-risk findings</td><td><strong>12</strong></td><td>require remediation within 30 days</td></tr>
+                            <tr><td>Medium-risk findings</td><td><strong>19</strong></td><td>plan within 90 days</td></tr>
+                            <tr><td>Low-risk findings</td><td><strong>7</strong></td><td>track in backlog</td></tr>
+                        </table>
+                        <h2>Top recommendations</h2>
+                        <ol>
+                            <li>Block legacy authentication tenant-wide via Conditional Access.</li>
+                            <li>Inventory and review service principals with <code>Directory.ReadWrite.All</code>; remove or scope down.</li>
+                            <li>Enable Defender for Cloud Apps OAuth governance and review unsanctioned third-party apps.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Close</button>
+            <button class="btn btn-secondary">Open in new window</button>
+            <button class="btn btn-primary">Download PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== COMPARE AUDITS MODAL ============== -->
+<div class="modal-backdrop" id="modal-compare" hidden>
+    <div class="modal modal-wide" role="dialog" aria-labelledby="cmp-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="cmp-title">Compare with previous audit</h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body modal-body-flush">
+            <div class="compare-body" id="compare-body"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Close</button>
+            <button class="btn btn-secondary">Export DOCX</button>
+            <button class="btn btn-primary">Download PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== POWERSHELL MODAL ============== -->
+<div class="modal-backdrop" id="modal-powershell" hidden>
+    <div class="modal modal-wide" role="dialog" aria-labelledby="ps-modal-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="ps-modal-title">PowerShell &mdash; <span id="ps-modal-item">&hellip;</span></h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="ps-meta" id="ps-modal-meta"></div>
+        <pre class="ps-modal-code" id="ps-modal-code"></pre>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Close</button>
+            <button class="btn btn-secondary" data-action="copy-ps">Copy to clipboard</button>
+            <button class="btn btn-primary" data-action="run-ps">Run</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== AUDIT STATUS REPORT MODAL ============== -->
+<div class="modal-backdrop" id="modal-audit-report" hidden>
+    <div class="modal modal-wide" role="dialog" aria-labelledby="ar-modal-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="ar-modal-title">Audit status report</h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body modal-body-flush">
+            <div class="audit-report" id="audit-report-body"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Close</button>
+            <button class="btn btn-secondary" data-action="print-report">Print</button>
+            <button class="btn btn-secondary">Export DOCX</button>
+            <button class="btn btn-primary">Download PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== CATALOG DIFF MODAL ============== -->
+<div class="modal-backdrop" id="modal-catalog-diff" hidden>
+    <div class="modal modal-wide" role="dialog" aria-labelledby="cdiff-title" aria-modal="true">
+        <div class="modal-header">
+            <h2 id="cdiff-title">Catalog version diff</h2>
+            <button class="modal-close" data-action="close-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body" id="cdiff-body"></div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-action="close-modal">Close</button>
+            <button class="btn btn-primary" data-action="catalog-promote">Promote audit to latest</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============== COMMAND PALETTE ============== -->
+<div class="cmd-palette-backdrop" id="cmd-palette" hidden>
+    <div class="cmd-palette" role="dialog" aria-modal="true" aria-label="Quick search">
+        <div class="cmd-palette-input-row">
+            <svg class="icon icon-md" aria-hidden="true"><use href="#a-search"/></svg>
+            <input type="text" class="cmd-palette-input" id="cmd-input" placeholder="Search 624 catalog items by name, ID, or category…">
+        </div>
+        <div class="cmd-palette-results" id="cmd-results"></div>
+        <div class="cmd-palette-footer">
+            <span><kbd>↑</kbd> <kbd>↓</kbd> navigate &middot; <kbd>↵</kbd> jump &middot; <kbd>Esc</kbd> close</span>
+            <span id="cmd-count">0 results</span>
+        </div>
+    </div>
+</div>
+
+<script src="data.js?v=20260430-1916"></script>
+<script src="state.js?v=20260430-1916"></script>
+<script src="helpers.js?v=20260430-1916"></script>
+<script src="app.js?v=20260430-1916"></script>
+</body>
+</html>

@@ -1,0 +1,2854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SecAudit — User & Build Documentation · Langate</title>
+    <style>
+@page { size: A4; margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 8.5pt;
+            background: var(--bg-grey);
+            padding: 1px 4px;
+            border-radius: 3px;
+            color: var(--primary);
+        }
+
+        body {
+            font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.65;
+            color: #4A4A4A;
+            background: #C2D9DF;
+        }
+
+        /* ── Langate brand tokens ── */
+        :root {
+            --primary:        #00517e;
+            --primary-teal:   #537780;
+            --primary-navy:   #0b3ebe;
+            --accent-green:   #02B896;
+            --accent-gold:    #F5A623;
+            --accent-red:     #B55852;
+            --accent-red-h:   #B33F3E;
+            --bg:             #ffffff;
+            --bg-subtle:      #ebf2f5;
+            --bg-grey:        #EAEAEC;
+            --bg-beige:       #F1EEEA;
+            --text:           #4A4A4A;
+            --text-muted:     #888888;
+            --text-light:     #A0A0A0;
+            --border:         #DBE4EA;
+            --border-light:   #E0E0E0;
+            --success:        #02B896;
+            --success-bg:     #e6faf6;
+            --warning:        #c07800;
+            --warning-bg:     #fff8e6;
+            --error:          #B55852;
+            --error-bg:       #fbeeed;
+            --info:           #00517e;
+            --info-bg:        #ebf2f5;
+        }
+
+        /* ── Page shell ── */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--bg);
+            margin: 8mm auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 14px rgba(0,81,126,0.18);
+        }
+
+        @media print {
+            body { background: white; }
+            .page { margin: 0; box-shadow: none; page-break-after: always; }
+            .page:last-child { page-break-after: avoid; }
+            h1, h2, h3 { break-after: avoid; }
+            p, li, tr { break-inside: avoid; }
+            .note-box, .tip-box, .info-box, .warn-box,
+            .feature-card, .two-col, .three-col,
+            table, .screenshot { break-inside: avoid; }
+        }
+
+        /* ── Page header ── */
+        .page-header {
+            background: var(--primary);
+            padding: 0;
+            display: flex;
+            align-items: stretch;
+            height: 14mm;
+        }
+        .page-header-accent {
+            width: 3mm;
+            background: var(--accent-green);
+            flex-shrink: 0;
+        }
+        .page-header-inner {
+            flex: 1;
+            padding: 0 8mm;
+            display: flex;
+            align-items: center;
+            gap: 6mm;
+        }
+        .page-header-brand {
+            color: white;
+            font-size: 9.5pt;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+        .page-header-dot {
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            flex-shrink: 0;
+        }
+        .page-header-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.18);
+        }
+        .page-header-section {
+            color: rgba(255,255,255,0.65);
+            font-size: 7.5pt;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        /* ── Page footer ── */
+        .page-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0; right: 0;
+            padding: 3mm 10mm 3mm 13mm;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            background: var(--bg-subtle);
+        }
+        .page-footer-left {
+            font-size: 7.5pt;
+            color: var(--text-muted);
+        }
+        .page-footer-right {
+            font-size: 7.5pt;
+            color: var(--primary-teal);
+            font-weight: 600;
+        }
+
+        /* ── Content area ── */
+        .page-content {
+            padding: 9mm 10mm 22mm 13mm;
+        }
+
+        /* ── Cover page ── */
+        .page-cover {
+            min-height: 297mm;
+            display: flex;
+            flex-direction: column;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .cover-top-bar {
+            background: var(--accent-green);
+            height: 3mm;
+        }
+        .cover-body {
+            background: var(--primary);
+            flex: 1;
+            padding: 16mm 14mm 12mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .cover-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 3mm;
+            margin-bottom: 18mm;
+        }
+        .cover-logo-text {
+            font-size: 14pt;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.04em;
+        }
+        .cover-logo-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent-green);
+        }
+        .cover-tag {
+            font-size: 8pt;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent-green);
+            margin-bottom: 5mm;
+        }
+        .cover-title {
+            font-size: 34pt;
+            font-weight: 800;
+            line-height: 1.1;
+            color: white;
+            margin-bottom: 4mm;
+        }
+        .cover-title-sub {
+            font-size: 16pt;
+            font-weight: 300;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8mm;
+        }
+        .cover-divider {
+            width: 14mm;
+            height: 3px;
+            background: var(--accent-green);
+            margin-bottom: 10mm;
+        }
+        .cover-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm 10mm;
+            margin-bottom: 14mm;
+        }
+        .cover-meta-item label {
+            display: block;
+            font-size: 7pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 1mm;
+        }
+        .cover-meta-item span {
+            font-size: 9.5pt;
+            font-weight: 400;
+            color: rgba(255,255,255,0.85);
+        }
+        .cover-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2mm;
+        }
+        .chip {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            padding: 1mm 3.5mm;
+            font-size: 8pt;
+            color: rgba(255,255,255,0.72);
+        }
+        .cover-footer {
+            padding-top: 5mm;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 7.5pt;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ── TOC ── */
+        .toc-section-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-green);
+            margin: 5mm 0 2mm;
+        }
+        .toc-entry {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 2mm;
+        }
+        .toc-entry.toc-h1 { font-weight: 600; font-size: 10pt; }
+        .toc-entry.toc-h2 {
+            font-size: 9pt;
+            color: var(--text-muted);
+            padding-left: 5mm;
+        }
+        .toc-num {
+            min-width: 9mm;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 9.5pt;
+        }
+        .toc-text { flex: 0 0 auto; }
+        .toc-dots {
+            flex: 1;
+            border-bottom: 1px dotted var(--border-light);
+            margin: 0 3mm 1.5mm;
+        }
+        .toc-page {
+            font-size: 9pt;
+            color: var(--primary-teal);
+            font-weight: 600;
+            min-width: 6mm;
+            text-align: right;
+        }
+
+        /* ── Typography ── */
+        h1 {
+            font-size: 19pt;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2mm;
+            line-height: 1.15;
+        }
+        .chapter-num {
+            display: block;
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--accent-green);
+            margin-bottom: 2mm;
+        }
+        .chapter-rule {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--bg-subtle) 100%);
+            margin: 3mm 0 7mm;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 7mm 0 2.5mm;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+        h2::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 12pt;
+            background: var(--accent-green);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        h3 {
+            font-size: 10.5pt;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin: 4.5mm 0 1.5mm;
+        }
+        p { margin-bottom: 3mm; color: var(--text); }
+        ul, ol { margin: 2mm 0 3mm 5mm; color: var(--text); }
+        li { margin-bottom: 1mm; }
+
+        .chapter-intro {
+            font-size: 10.5pt;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 5mm;
+            padding: 4mm 5mm;
+            background: var(--bg-subtle);
+            border-left: 3px solid var(--primary-teal);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* ── Callout boxes ── */
+        .note-box, .tip-box, .info-box, .warn-box {
+            padding: 3mm 4.5mm;
+            border-radius: 4px;
+            margin: 3.5mm 0;
+            font-size: 9.5pt;
+        }
+        .note-box { background: var(--warning-bg); border-left: 3px solid var(--accent-gold); }
+        .tip-box  { background: var(--success-bg); border-left: 3px solid var(--accent-green); }
+        .info-box { background: var(--info-bg);    border-left: 3px solid var(--primary-teal); }
+        .warn-box { background: var(--error-bg);   border-left: 3px solid var(--accent-red); }
+        .box-label {
+            font-weight: 700;
+            font-size: 7.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 1.5mm;
+        }
+        .note-box .box-label { color: var(--warning); }
+        .tip-box  .box-label { color: var(--accent-green); }
+        .info-box .box-label { color: var(--primary-teal); }
+        .warn-box .box-label { color: var(--accent-red); }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            margin: 3mm 0;
+        }
+        thead tr {
+            background: var(--primary);
+            color: white;
+        }
+        thead th {
+            padding: 2.5mm 3mm;
+            text-align: left;
+            font-weight: 600;
+            font-size: 8.5pt;
+            letter-spacing: 0.03em;
+        }
+        tbody tr { border-bottom: 1px solid var(--border); }
+        tbody tr:nth-child(even) { background: var(--bg-subtle); }
+        td { padding: 2mm 3mm; vertical-align: top; color: var(--text); }
+        td:first-child { font-weight: 600; color: var(--primary); }
+
+        /* ── Badges ── */
+        .badge {
+            display: inline-block;
+            font-size: 7.5pt;
+            font-weight: 700;
+            padding: 0.5mm 2.5mm;
+            border-radius: 10px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .badge-green  { background: var(--success-bg); color: #017a64; }
+        .badge-orange { background: var(--warning-bg); color: var(--warning); }
+        .badge-red    { background: var(--error-bg);   color: var(--accent-red); }
+        .badge-blue   { background: var(--info-bg);    color: var(--primary); }
+        .badge-teal   { background: #e6f4f3;           color: var(--primary-teal); }
+        .badge-gray   { background: var(--bg-grey);    color: var(--text-muted); }
+
+        /* ── Grid layouts ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm;
+            margin: 3mm 0;
+        }
+        .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4mm;
+            margin: 3mm 0;
+        }
+
+        /* ── Feature cards ── */
+        .feature-card {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 4mm;
+        }
+        .feature-card h4 {
+            font-size: 9pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5mm;
+        }
+        .feature-card p {
+            font-size: 8.5pt;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* ── Architecture boxes ── */
+        .arch-box {
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            padding: 5mm 5mm 4mm;
+            background: var(--bg-subtle);
+            position: relative;
+        }
+        .arch-box-title {
+            font-size: 8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            background: var(--bg);
+            display: inline-block;
+            padding: 0 2mm;
+            position: absolute;
+            top: -2.5mm;
+            left: 5mm;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+        }
+        .arch-row {
+            display: flex;
+            gap: 4mm;
+            margin-bottom: 3.5mm;
+        }
+        .arch-row:last-child { margin-bottom: 0; }
+        .arch-item {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2.5mm 3mm;
+            font-size: 8pt;
+            color: var(--text);
+            border-top: 2px solid var(--primary-teal);
+        }
+        .arch-item strong {
+            display: block;
+            font-size: 7pt;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--accent-green);
+            margin-bottom: 1mm;
+        }
+
+        /* ── Priority list ── */
+        .priority-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 4mm;
+            padding: 3.5mm 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .priority-num {
+            min-width: 8mm;
+            height: 8mm;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8.5pt;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 0.5mm;
+        }
+        .priority-body { flex: 1; }
+        .priority-title {
+            font-size: 10pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5mm;
+        }
+        .priority-desc {
+            font-size: 9pt;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ── Column tags (for list columns) ── */
+        .col-tag {
+            display: inline-block;
+            background: var(--bg-subtle);
+            color: var(--primary-teal);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0 2mm;
+            font-size: 8pt;
+            font-family: 'DM Sans', Avenir, Helvetica, monospace;
+            margin: 0.3mm 0.5mm 0.3mm 0;
+        }
+        td .col-tag { font-size: 7.5pt; }
+
+        /* ── Utility ── */
+        .mt-sm  { margin-top: 2mm; }
+        .mt-md  { margin-top: 5mm; }
+        .text-muted { color: var(--text-muted); font-size: 9pt; }
+
+        /* ── Langate green accent stripe (decorative) ── */
+        .green-stripe {
+            height: 2px;
+            background: var(--accent-green);
+            margin: 3mm 0;
+        }
+
+        /* ── SecAudit additions ── */
+
+        kbd {
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            font-size: 8pt;
+            line-height: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-bottom-width: 2px;
+            border-radius: 3px;
+            padding: 1.5mm 2mm;
+            color: var(--primary);
+            font-weight: 600;
+            margin: 0 0.5mm;
+            vertical-align: 1px;
+        }
+
+        .risk-dot {
+            display: inline-block;
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            margin-right: 1.5mm;
+            vertical-align: -1px;
+        }
+        .risk-dot.high { background: var(--accent-red); }
+        .risk-dot.med  { background: var(--accent-gold); }
+        .risk-dot.low  { background: var(--primary-teal); }
+        .risk-dot.acc  { background: var(--info); }
+        .risk-dot.green{ background: var(--accent-green); }
+
+        .step-bar {
+            display: flex;
+            margin: 2mm 0 4mm;
+            gap: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            font-size: 8pt;
+            color: white;
+            font-weight: 700;
+        }
+        .step-bar > span {
+            padding: 1.5mm 3mm;
+            white-space: nowrap;
+        }
+        .step-bar .high { background: var(--accent-red); }
+        .step-bar .med  { background: var(--accent-gold); color: #4a3000; }
+        .step-bar .low  { background: var(--primary-teal); }
+        .step-bar .acc  { background: var(--info); }
+
+        .ui-mock {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg);
+            padding: 3mm 4mm;
+            margin: 3mm 0;
+            font-size: 9pt;
+        }
+        .ui-mock-title {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary-teal);
+            margin-bottom: 2mm;
+        }
+        .ui-mock-row {
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+            padding: 1.5mm 0;
+            border-bottom: 1px dashed var(--border-light);
+            font-size: 9pt;
+        }
+        .ui-mock-row:last-child { border-bottom: none; }
+        .ui-mock-bar {
+            display: inline-block;
+            width: 1.5mm;
+            height: 4mm;
+            border-radius: 1px;
+            margin-right: 1.5mm;
+            vertical-align: -1mm;
+        }
+        .ui-mock-bar.high { background: var(--accent-red); }
+        .ui-mock-bar.med  { background: var(--accent-gold); }
+        .ui-mock-bar.low  { background: var(--primary-teal); }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm;
+            margin: 4mm 0;
+        }
+        .compare-card {
+            border: 1.5px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 5px;
+            padding: 4mm 5mm;
+            background: var(--bg);
+        }
+        .compare-card.spfx { border-top-color: var(--accent-green); }
+        .compare-card-title {
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1mm;
+        }
+        .compare-card.spfx .compare-card-title { color: var(--accent-green); }
+        .compare-card-sub {
+            font-size: 8pt;
+            color: var(--text-muted);
+            margin-bottom: 3mm;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 600;
+        }
+        .compare-card ul { margin: 0 0 0 4mm; padding: 0; }
+        .compare-card li {
+            margin-bottom: 1mm;
+            font-size: 9pt;
+            line-height: 1.5;
+        }
+
+        .lifecycle-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 3mm 0 4mm;
+        }
+        .lifecycle-row .lc-step {
+            flex: 1;
+            text-align: center;
+            font-size: 8pt;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 2mm 1mm;
+            background: var(--bg-subtle);
+            border-right: 1px solid var(--border);
+        }
+        .lifecycle-row .lc-step:last-child { border-right: none; }
+        .lifecycle-row .lc-step.done {
+            background: var(--success-bg);
+            color: var(--accent-green);
+        }
+        .lifecycle-row .lc-step.current {
+            background: var(--primary);
+            color: white;
+        }
+
+        .kbd-grid {
+            display: grid;
+            grid-template-columns: 60mm 1fr;
+            gap: 1mm 4mm;
+            margin: 3mm 0;
+            font-size: 9pt;
+        }
+        .kbd-grid > div:nth-child(odd) {
+            color: var(--text-muted);
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ COVER ═══ -->
+<div class="page">
+    <div class="page-cover">
+        <div class="cover-top-bar"></div>
+        <div class="cover-body">
+            <div>
+                <div class="cover-logo-area">
+                    <span class="cover-logo-text">Langate</span>
+                    <div class="cover-logo-dot"></div>
+                </div>
+
+                <div class="cover-tag">User &amp; Build Documentation &middot; Version 1.0 &middot; 2026-04-30</div>
+                <div class="cover-title">SecAudit</div>
+                <div class="cover-title-sub">Microsoft 365 &amp; Azure Security Audit Toolkit</div>
+                <div class="cover-divider"></div>
+
+                <div class="cover-meta-grid">
+                    <div class="cover-meta-item">
+                        <label>Date</label>
+                        <span>30 April 2026</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Catalog</label>
+                        <span>2026.04 &middot; 624 items &middot; 61 categories</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Audience</label>
+                        <span>Langate auditors &middot; customer admins</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Document scope</label>
+                        <span>Feature reference &middot; build options</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Build options</label>
+                        <span>C# WPF (local) &middot; SPFx (tenant-hosted)</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Frameworks covered</label>
+                        <span>ISO 27001 &middot; CIS M365 v3 &middot; NIST CSF</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Document owner</label>
+                        <span>peter@kalmstrom.com</span>
+                    </div>
+                    <div class="cover-meta-item">
+                        <label>Classification</label>
+                        <span>Internal &middot; Confidential</span>
+                    </div>
+                </div>
+
+                <div class="cover-chips">
+                    <div class="chip">Workspace</div>
+                    <div class="chip">Risk lifecycle</div>
+                    <div class="chip">Bulk actions</div>
+                    <div class="chip">Risk acceptance</div>
+                    <div class="chip">Evidence</div>
+                    <div class="chip">Heatmap</div>
+                    <div class="chip">Benchmarks</div>
+                    <div class="chip">Catalog diff</div>
+                    <div class="chip">Multi-tenant</div>
+                    <div class="chip">Customer interview</div>
+                    <div class="chip">AI assist</div>
+                    <div class="chip">Status report</div>
+                    <div class="chip">Comparison</div>
+                    <div class="chip">Color-blind safe</div>
+                    <div class="chip">Ctrl+K palette</div>
+                </div>
+            </div>
+
+            <div class="cover-footer">
+                Companion to the clickable mockup at <code style="background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.85);padding:0.5mm 1.5mm;border-radius:2px">x:\Source\SecAudit\mockup\index.html</code>
+                &nbsp;&middot;&nbsp; Confidential planning material
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════════════ TOC ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Table of Contents</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1 style="margin-bottom:6mm">Table of Contents</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="toc-section-label">Part I &middot; Using SecAudit</div>
+                <div class="toc-entry toc-h1"><span class="toc-num">1</span>What SecAudit is<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>Who uses it<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>The model in one paragraph<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>Two views of the same data<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num"></span>Document map<div class="toc-dots"></div><span class="toc-page">3</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Screens overview<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>The eight screens<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>Navigation conventions<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>Two display toggles in the title bar<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>Audit workspace<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>The three panes<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>The visible risk indicator<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>Setting status and risk<div class="toc-dots"></div><span class="toc-page">6</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>Finding lifecycle &amp; risk acceptance<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>The four-step remediation track<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Risk acceptance &mdash; the side track<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Bulk-assigning owner and target date<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Overdue and due-soon visual cues<div class="toc-dots"></div><span class="toc-page">7</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Bulk operations &amp; keyboard<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Selecting multiple items<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>The bulk bar buttons<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Keyboard shortcuts<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>The command palette &mdash; Ctrl+K<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.5</span>The undo log<div class="toc-dots"></div><span class="toc-page">9</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">6</span>Filters, heatmap, color-blind mode<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.1</span>Filter chips at a glance<div class="toc-dots"></div><span class="toc-page">10</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.2</span>The tenant posture heatmap<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>The per-tenant rollup<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Color-blind safe mode<div class="toc-dots"></div><span class="toc-page">11</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>The reference catalog<div class="toc-dots"></div><span class="toc-page">11</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">7</span>Evidence, comments, AI assist<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.1</span>The evidence dropzone<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.2</span>Comments &mdash; collaboration thread per finding<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.3</span>AI assist &mdash; Draft remediation / Translate for customer<div class="toc-dots"></div><span class="toc-page">12</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">7.4</span>Per-item PowerShell &amp; Portal buttons<div class="toc-dots"></div><span class="toc-page">13</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">8</span>Reports &amp; year-over-year comparison<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.1</span>The live audit status report<div class="toc-dots"></div><span class="toc-page">14</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.2</span>Year-over-year comparison<div class="toc-dots"></div><span class="toc-page">15</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.3</span>The Reports screen<div class="toc-dots"></div><span class="toc-page">15</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">8.4</span>The activity feed<div class="toc-dots"></div><span class="toc-page">15</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">9</span>The customer interview<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.1</span>What goes on the interview screen<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.2</span>Live-call mode<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.3</span>Self-service share link<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.4</span>Outstanding-questions badge<div class="toc-dots"></div><span class="toc-page">16</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">9.5</span>Translating answers into findings<div class="toc-dots"></div><span class="toc-page">17</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">10</span>Cross-customer benchmarks &amp; trends<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.1</span>The portfolio benchmark widget<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.2</span>In the audit status report<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.3</span>Stale-evidence tracking<div class="toc-dots"></div><span class="toc-page">18</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">10.4</span>Per-category trend sparklines<div class="toc-dots"></div><span class="toc-page">18</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">11</span>Catalog versions &amp; multi-tenant scoping<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.1</span>The catalog-version banner<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.2</span>The catalog-diff modal<div class="toc-dots"></div><span class="toc-page">19</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.3</span>Multi-tenant scoping<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.4</span>The tenant rollup on the dashboard<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.5</span>The tenant filter chip in the workspace<div class="toc-dots"></div><span class="toc-page">20</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">11.6</span>Per-tenant evidence and reports<div class="toc-dots"></div><span class="toc-page">20</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">12</span>Build option 1 &mdash; Local C# WPF desktop app<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.1</span>Architecture at a glance<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.2</span>The PowerShell button &mdash; the killer feature of this build<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.3</span>The Access database<div class="toc-dots"></div><span class="toc-page">21</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.4</span>Project layout<div class="toc-dots"></div><span class="toc-page">22</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.5</span>Microsoft Graph integration<div class="toc-dots"></div><span class="toc-page">22</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.6</span>Distribution<div class="toc-dots"></div><span class="toc-page">22</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">12.7</span>Strengths and trade-offs<div class="toc-dots"></div><span class="toc-page">23</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">13</span>Build option 2 &mdash; Tenant-hosted SPFx web app<div class="toc-dots"></div><span class="toc-page">24</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.1</span>Architecture at a glance<div class="toc-dots"></div><span class="toc-page">24</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.2</span>No local PowerShell &mdash; the consequence<div class="toc-dots"></div><span class="toc-page">24</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.3</span>Where the data lives<div class="toc-dots"></div><span class="toc-page">25</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.4</span>Multi-user from day one<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.5</span>The customer interview &mdash; trivially shareable<div class="toc-dots"></div><span class="toc-page">26</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">13.6</span>Strengths and trade-offs<div class="toc-dots"></div><span class="toc-page">27</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">14</span>Choosing between the two builds<div class="toc-dots"></div><span class="toc-page">28</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">14.1</span>Side by side<div class="toc-dots"></div><span class="toc-page">28</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">14.2</span>Decision matrix<div class="toc-dots"></div><span class="toc-page">29</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">14.3</span>Recommendation: build both, in this order<div class="toc-dots"></div><span class="toc-page">30</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">14.4</span>Final word<div class="toc-dots"></div><span class="toc-page">30</span></div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; User &amp; Build Documentation</div>
+        <div class="page-footer-right">2</div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════ CH 1 INTRO ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 1 &middot; Introduction</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 1</span>What SecAudit is</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            SecAudit is a structured workflow tool for performing a Microsoft&nbsp;365 and Azure
+            security audit against a customer tenant. It walks an auditor through a 624-item
+            catalog, captures Pass / Fail / N/A findings with risk severity, supports
+            remediation planning across audits, and produces deliverables for the customer.
+        </div>
+
+        <h2>Who uses it</h2>
+        <p>
+            SecAudit is built around two roles. The <strong>auditor</strong> at Langate runs
+            the audit, captures findings, attaches evidence and signs off accepted risks. The
+            <strong>customer admin</strong> can be invited to fill in the customer-interview
+            section (process and policy items that cannot be answered from Microsoft&nbsp;Graph
+            alone) but otherwise reads only the deliverables.
+        </p>
+
+        <h2>The model in one paragraph</h2>
+        <p>
+            An <strong>audit</strong> belongs to one customer and targets one or more
+            <strong>tenants</strong>. The audit is anchored to a <strong>catalog version</strong>
+            (e.g. <code>2026.04</code>) which fixes the set of 624 check items to evaluate. For
+            each item the auditor records a <strong>finding</strong>: a status, a risk
+            severity, an observation, optional remediation, attached evidence, and &mdash; on
+            failures &mdash; a remediation lifecycle (open &rarr; acknowledged &rarr;
+            remediating &rarr; verified, or accepted with sign-off). Findings carry an owner
+            and a target date. All edits are local, instant, and undoable with
+            <kbd>Ctrl</kbd>+<kbd>Z</kbd>.
+        </p>
+
+        <h2>Two views of the same data</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>The workspace view</h4>
+                <p>
+                    Per-item editing surface. Three panes: categories on the left, items in the
+                    middle, finding detail on the right. Every keystroke saves.
+                </p>
+            </div>
+            <div class="feature-card">
+                <h4>The status-report view</h4>
+                <p>
+                    Aggregated, customer-facing view. Risk donut, severity-tinted heatmap, KPIs,
+                    findings grouped by category. Printable to PDF.
+                </p>
+            </div>
+        </div>
+
+        <h2>Document map</h2>
+        <p>
+            <strong>Part I</strong> &mdash; Chapters 2&ndash;11 walk through every screen and
+            feature of the tool, in the order an auditor would encounter them. <strong>Part
+            II</strong> &mdash; Chapters 12&ndash;14 outline two ways to ship SecAudit: a local
+            C# WPF desktop app, or a tenant-hosted SPFx web application. Chapter&nbsp;14 ends
+            with a side-by-side decision matrix.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 1</div>
+        <div class="page-footer-right">3</div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ CH 2 SCREENS ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 2 &middot; Screens overview</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 2</span>Screens overview</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            SecAudit has eight primary screens, listed in the left navigation rail. Each
+            screen has one purpose; you should rarely need more than two open in your head at
+            the same time.
+        </div>
+
+        <h2>2.1 The eight screens</h2>
+
+        <table>
+            <thead>
+                <tr><th style="width:32mm">Screen</th><th>Purpose</th><th style="width:36mm">Goes to&hellip;</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Dashboard</td><td>Hero KPIs for the active engagement, posture heatmap, per-tenant rollup, portfolio benchmarks, activity feed.</td><td>Open audit, status report</td></tr>
+                <tr><td>Audits</td><td>Lists every audit (active, in review, delivered, archived) with progress and finding counts.</td><td>Open workspace</td></tr>
+                <tr><td>Audit workspace</td><td>The auditor&rsquo;s home. Categories, items, finding detail.</td><td>Status report, comparison</td></tr>
+                <tr><td>Customer interview</td><td>Process &amp; policy questions that need a human answer. Shareable link.</td><td>Workspace, status report</td></tr>
+                <tr><td>Reference catalog</td><td>Read-only browser of all 624 items: description, expected value, &ldquo;how to read&rdquo;, permission needed.</td><td>Settings (re-import)</td></tr>
+                <tr><td>Reports</td><td>Pre-built deliverables (executive summary, technical findings, remediation plan, compliance map, evidence pack, internal QA).</td><td>Preview &rarr; Generate</td></tr>
+                <tr><td>Architecture</td><td>Implementation reference for the build (data model, project layout, open questions).</td><td>Read-only</td></tr>
+                <tr><td>Settings</td><td>Microsoft Graph connection, database path, catalog import, reviewers.</td><td>Apply / Save</td></tr>
+            </tbody>
+        </table>
+
+        <h2>2.2 Navigation conventions</h2>
+        <ul>
+            <li>Click a screen name in the rail to switch.</li>
+            <li>Press <kbd>Ctrl</kbd>+<kbd>K</kbd> from anywhere to open the command palette and jump to any of the 624 items by name or <code>#NN</code>.</li>
+            <li>Press <kbd>Esc</kbd> to close a modal, popover, or the command palette.</li>
+            <li>The status bar at the bottom flashes a confirmation after every state-changing action and reminds you that <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes the last edit.</li>
+        </ul>
+
+        <h2>2.3 Two display toggles in the title bar</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>CB &mdash; Color-blind safe mode</h4>
+                <p>
+                    Adds diagonal hatch patterns and severity glyphs (<code>!!</code>,
+                    <code>!</code>, <code>&middot;</code>) so red / amber / teal are decodable
+                    without color. Persists for the session.
+                </p>
+            </div>
+            <div class="feature-card">
+                <h4>Dark / Light theme</h4>
+                <p>
+                    Mirror your OS preference on first run, then toggle from the title bar.
+                    Both themes share the same component contrast and are print-safe.
+                </p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="box-label">Reading order</div>
+            The remaining chapters of Part&nbsp;I follow the same order an auditor would
+            encounter the features: open the workspace, work through one finding, then expand
+            outward to bulk operations, filters, evidence, reports, interviews, benchmarks,
+            and finally the catalog/tenant scoping that shows up at engagement boundaries.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 2</div>
+        <div class="page-footer-right">4</div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ CH 3 WORKSPACE ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 3 &middot; Audit workspace</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 3</span>Audit workspace</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            The workspace is where 90% of an audit is performed. Three vertical panes:
+            categories on the left, items in the middle, finding detail on the right. The
+            middle and right panes update as you click.
+        </div>
+
+        <h2>3.1 The three panes</h2>
+
+        <h3>Categories pane (left)</h3>
+        <p>
+            Lists the 61 catalog categories, each with a per-category progress fill that
+            shows how many items have been answered. The active category is highlighted in
+            primary blue with a green left edge. A search box at the top filters categories
+            in place.
+        </p>
+
+        <h3>Items pane (middle)</h3>
+        <p>
+            Lists the items in the active category. Each row carries:
+        </p>
+        <ul>
+            <li>A selection check-box for bulk operations</li>
+            <li>A status icon (Pending, Pass, Fail, N/A)</li>
+            <li>A product-domain icon (Entra, Defender, Purview, etc.)</li>
+            <li>The item description and ID</li>
+            <li>Status / risk badges and lifecycle / overdue / stale pills</li>
+            <li>Per-row PowerShell and Portal action buttons</li>
+        </ul>
+        <p>
+            <strong>Three filter rows</strong> sit above the list. The status row (All /
+            Pending / Pass / Fail / N/A / Stale / Lifecycle), the risk row (All / High / Med /
+            Low / Overdue / Mine), and the tenant row (All / Prod / Dev). All three filters
+            compose &mdash; an item is shown only if it passes every active filter.
+        </p>
+
+        <h3>Detail pane (right)</h3>
+        <p>
+            Shows the active item: its expected value, &ldquo;how to read&rdquo; instructions,
+            permission needed, and the editable finding (status, risk, observation,
+            remediation, evidence). For failed items it also shows the remediation lifecycle
+            stepper, framework mapping (ISO/CIS/NIST), and the comment thread. Two AI-assist
+            buttons offer to draft remediation steps or rewrite the observation in
+            customer-friendly language.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 3</div>
+        <div class="page-footer-right">5</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 3 &middot; Risk indicator</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>3.2 The visible risk indicator</h2>
+
+        <p>
+            Every Fail item carries a 4-px colored left bar and a tinted Fail badge. This is
+            the single most important visual cue in the workspace &mdash; severity is
+            decodable from a 1500-pixel-wide list at a glance.
+        </p>
+
+        <div class="ui-mock">
+            <div class="ui-mock-title">Item list &mdash; visual cue</div>
+            <div class="ui-mock-row"><span class="ui-mock-bar high"></span> <strong>#13</strong> &middot; Phishing-resistant MFA available <span style="margin-left:auto" class="badge badge-red">Fail &middot; HIGH</span></div>
+            <div class="ui-mock-row"><span class="ui-mock-bar med"></span>  <strong>#14</strong> &middot; SMS / Voice MFA still enabled <span style="margin-left:auto" class="badge badge-orange">Fail &middot; MED</span></div>
+            <div class="ui-mock-row"><span class="ui-mock-bar low"></span>  <strong>#110</strong> &middot; PIM-eligible roles still permanent <span style="margin-left:auto" class="badge badge-teal">Fail &middot; LOW</span></div>
+            <div class="ui-mock-row"><span class="ui-mock-bar" style="background:var(--accent-green)"></span>  <strong>#15</strong> &middot; Number matching enabled <span style="margin-left:auto" class="badge badge-green">Pass</span></div>
+        </div>
+
+        <p>
+            When the same row is also the active selection, the risk color wins over the
+            primary-blue active indicator. This guarantees that severity stays visible while
+            you edit.
+        </p>
+
+        <h2>3.3 Setting status and risk</h2>
+
+        <p>
+            The detail pane offers a four-button status row (Pending / Pass / Fail / N/A) and
+            a three-pill risk row (Low / Med / High). The two work together:
+        </p>
+
+        <table>
+            <thead><tr><th>Action</th><th>Effect</th></tr></thead>
+            <tbody>
+                <tr><td>Click <strong>Pass</strong></td><td>Sets status=pass, clears risk to <code>none</code>, removes any lifecycle.</td></tr>
+                <tr><td>Click <strong>Fail</strong></td><td>Sets status=fail. If no risk yet, risk defaults to <code>med</code>. Pre-existing risk is preserved.</td></tr>
+                <tr><td>Click <strong>Med</strong> on an active item</td><td>Sets risk=med. Item must already be a fail (the tool warns &ldquo;Set status before risk&rdquo; otherwise).</td></tr>
+                <tr><td>Click <strong>N/A</strong></td><td>Sets status=na, clears risk and lifecycle. The item is excluded from the risk donut.</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            All four also have keyboard shortcuts <kbd>1</kbd> Pending, <kbd>2</kbd> Pass,
+            <kbd>3</kbd> Fail, <kbd>4</kbd> N/A. The risk pills have <kbd>L</kbd> /
+            <kbd>M</kbd> / <kbd>H</kbd>. See chapter&nbsp;5 for the full list.
+        </p>
+
+        <div class="tip-box">
+            <div class="box-label">Why Fail defaults to Med, not None</div>
+            Marking an item as failed without a severity hides it from the risk donut and the
+            heatmap severity tint. To avoid silent disappearances, the tool defaults a fresh
+            failure to medium risk and lets you override with <kbd>H</kbd> or <kbd>L</kbd>
+            immediately.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 3</div>
+        <div class="page-footer-right">6</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 4 LIFECYCLE ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 4 &middot; Finding lifecycle</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 4</span>Finding lifecycle &amp; risk acceptance</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            Failed items don&rsquo;t just sit on a list &mdash; each one moves through a
+            documented remediation lifecycle, or is formally accepted as a known risk with a
+            sign-off. Both paths produce evidence the customer can take to a compliance
+            review.
+        </div>
+
+        <h2>4.1 The four-step remediation track</h2>
+
+        <p>
+            Every failed item starts as <strong>Open</strong>. Click any step in the lifecycle
+            stepper on the detail pane to advance the state. The stepper appears only on
+            failures &mdash; pass items have no lifecycle.
+        </p>
+
+        <div class="lifecycle-row">
+            <div class="lc-step done">Open</div>
+            <div class="lc-step done">Acknowledged</div>
+            <div class="lc-step current">Remediating</div>
+            <div class="lc-step">Verified</div>
+        </div>
+
+        <table>
+            <thead><tr><th>State</th><th>Meaning</th><th style="width:42mm">Reveals fields</th></tr></thead>
+            <tbody>
+                <tr><td>Open</td><td>Default. Captured but no plan yet.</td><td>&mdash;</td></tr>
+                <tr><td>Acknowledged</td><td>Customer is aware. Not yet planned.</td><td>&mdash;</td></tr>
+                <tr><td>Remediating</td><td>Actively being fixed. Has owner + due date.</td><td>Owner, target date</td></tr>
+                <tr><td>Verified</td><td>Fix applied. Re-run the catalog check to confirm; the finding will move to Pass.</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <h2>4.2 Risk acceptance &mdash; the side track</h2>
+
+        <p>
+            Some findings cannot be fixed because the customer has compensating controls or
+            an explicit business decision to bear the risk. These are accepted, not
+            remediated. Click the <strong>Accept risk</strong> button (lock icon, far right of
+            the stepper) to move the finding off the remediation track.
+        </p>
+
+        <p>
+            On first acceptance the tool pre-fills <strong>Signed by</strong> (the active
+            reviewer), <strong>Signed at</strong> (today), and <strong>Expires</strong>
+            (one&nbsp;year out). The auditor edits these and writes a justification &mdash; what
+            the compensating control is, why the risk is acceptable.
+        </p>
+
+        <div class="info-box">
+            <div class="box-label">Acceptance expiry banner</div>
+            When today is within 30&nbsp;days of <strong>Expires</strong>, an amber banner
+            appears in the detail pane prompting a renewal review. After expiry the banner
+            turns red and asks the auditor to re-validate or move the finding back to Open.
+        </div>
+
+        <h2>4.3 Bulk-assigning owner and target date</h2>
+
+        <p>
+            From the bulk bar (chapter&nbsp;5) the <strong>Assign&hellip;</strong> button opens a
+            small popover with two fields: owner email and target date. Apply once and every
+            selected fail item gets an owner, a target, and a lifecycle of
+            <code>remediating</code>. Items not in fail state are skipped silently.
+        </p>
+
+        <h2>4.4 Overdue and due-soon visual cues</h2>
+
+        <p>
+            On every fail item that has a target date in <code>remediating</code>, the row
+            shows one of:
+        </p>
+
+        <div class="ui-mock">
+            <div class="ui-mock-row">
+                <span class="badge badge-red" style="background:var(--accent-red);color:#fff">Overdue</span>
+                &nbsp;Pulses red. Target date is in the past.
+            </div>
+            <div class="ui-mock-row">
+                <span class="badge badge-orange" style="background:var(--accent-gold);color:#4a3000">Due soon</span>
+                &nbsp;Static amber. Target date is within 14 days.
+            </div>
+            <div class="ui-mock-row">
+                <span class="text-muted">No badge</span>
+                &nbsp;Target date is more than 14 days out, or item is not in <code>remediating</code>.
+            </div>
+        </div>
+
+        <p>
+            The risk filter chip <strong>Overdue</strong> (chapter&nbsp;6) restricts the item
+            list to overdue items only &mdash; the fastest way to triage SLA breaches mid-audit.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 4</div>
+        <div class="page-footer-right">7</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 5 BULK / KEYS ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 5 &middot; Bulk &amp; keyboard</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 5</span>Bulk operations &amp; keyboard</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            Audits are won and lost on speed of capture. SecAudit is built around two
+            patterns that turn an 8-hour audit into a 2-hour audit: bulk multi-edit, and
+            keyboard-only navigation backed by an undo log.
+        </div>
+
+        <h2>5.1 Selecting multiple items</h2>
+        <p>
+            Click the check-box on the left of any item, or press <kbd>X</kbd> on the active
+            item to toggle its selection. The bulk bar slides in once at least one item is
+            selected and shows a running count. Click <strong>Select all visible</strong> to
+            tick every row currently visible (filters apply); click <strong>Clear</strong> to
+            empty the selection.
+        </p>
+
+        <p>
+            Switching to a different category clears the selection automatically and a footer
+            note confirms it. This avoids the silent-selection trap where a bulk action
+            applies across categories.
+        </p>
+
+        <h2>5.2 The bulk bar buttons</h2>
+
+        <table>
+            <thead><tr><th>Button</th><th>Effect on selected items</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Pass</strong></td><td>status=pass, risk=none, lifecycle removed, <code>checkedAt</code> = today.</td></tr>
+                <tr><td><strong>Fail &middot; High</strong></td><td>status=fail, risk=high. Pre-existing risk overridden.</td></tr>
+                <tr><td><strong>Fail &middot; Med</strong></td><td>status=fail, risk=med. Pre-existing risk overridden.</td></tr>
+                <tr><td><strong>Fail &middot; Low</strong></td><td>status=fail, risk=low. Pre-existing risk overridden.</td></tr>
+                <tr><td><strong>N/A</strong></td><td>status=na, risk=none, lifecycle removed.</td></tr>
+                <tr><td><strong>Assign&hellip;</strong></td><td>Opens owner / target-date popover (chapter&nbsp;4).</td></tr>
+                <tr><td><strong>Select all visible</strong></td><td>Ticks every row that passes the current filters.</td></tr>
+                <tr><td><strong>Clear</strong></td><td>Empties the selection; bulk bar disappears.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <div class="box-label">Every bulk edit is undoable</div>
+            Press <kbd>Ctrl</kbd>+<kbd>Z</kbd> to roll back the last bulk action in one step.
+            Pre-action snapshots are taken per finding so the previous lifecycle, owner,
+            target date, evidence list and observation are all restored.
+        </div>
+
+        <h2>5.3 Keyboard shortcuts</h2>
+
+        <p>The shortcuts work whenever the workspace screen is active and you are not typing in a textarea or input.</p>
+
+        <div class="kbd-grid">
+            <div><kbd>J</kbd> / <kbd>K</kbd></div><div>next / previous item in the current category</div>
+            <div><kbd>Shift</kbd>+<kbd>J</kbd>/<kbd>K</kbd></div><div>next / previous category</div>
+            <div><kbd>1</kbd> &middot; <kbd>2</kbd> &middot; <kbd>3</kbd> &middot; <kbd>4</kbd></div><div>set status to Pending / Pass / Fail / N/A</div>
+            <div><kbd>L</kbd> &middot; <kbd>M</kbd> &middot; <kbd>H</kbd></div><div>set risk to Low / Med / High</div>
+            <div><kbd>X</kbd></div><div>toggle selection of the active item</div>
+            <div><kbd>P</kbd></div><div>open the PowerShell snippet for the active item</div>
+            <div><kbd>O</kbd></div><div>open the relevant Microsoft 365 / Azure portal page</div>
+            <div><kbd>R</kbd></div><div>open the audit status report</div>
+            <div><kbd>/</kbd></div><div>focus the search input on the current screen</div>
+            <div><kbd>Ctrl</kbd>+<kbd>K</kbd></div><div>open the command palette (works on any screen)</div>
+            <div><kbd>Ctrl</kbd>+<kbd>Z</kbd></div><div>undo last change</div>
+            <div><kbd>Esc</kbd></div><div>close modals, popovers, command palette</div>
+            <div><kbd>?</kbd></div><div>show this list as a popover</div>
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 5</div>
+        <div class="page-footer-right">8</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 5 &middot; Command palette</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>5.4 The command palette &mdash; <kbd>Ctrl</kbd>+<kbd>K</kbd></h2>
+
+        <p>
+            The command palette is the fastest way to navigate 624 items. Press
+            <kbd>Ctrl</kbd>+<kbd>K</kbd> from anywhere to open a search modal that filters
+            items by description and category in real time.
+        </p>
+
+        <h3>Search forms</h3>
+        <ul>
+            <li><strong>Free text:</strong> <code>legacy</code> &rarr; matches every item whose description or category contains "legacy".</li>
+            <li><strong>Direct ID:</strong> <code>#17</code> or <code>17</code> &rarr; jumps straight to item&nbsp;17.</li>
+            <li><strong>Category jump:</strong> <code>conditional</code> &rarr; offers both items and a "jump to Conditional Access" row.</li>
+            <li><strong>Empty search:</strong> shows current failures first &mdash; useful for resuming yesterday&rsquo;s work.</li>
+        </ul>
+
+        <h3>Navigation in the palette</h3>
+        <div class="kbd-grid">
+            <div><kbd>&uarr;</kbd> / <kbd>&darr;</kbd></div><div>move highlight</div>
+            <div><kbd>&crarr;</kbd></div><div>jump to selected result &mdash; opens workspace, selects category, activates item</div>
+            <div><kbd>Esc</kbd></div><div>close palette</div>
+            <div>Click anywhere outside</div><div>close palette</div>
+        </div>
+
+        <div class="info-box">
+            <div class="box-label">Why this exists</div>
+            With 624 items across 61 categories, scrolling for a known check by name is the
+            slowest path. The palette resolves the lookup in under a second and the jump
+            opens the right category and selects the item, saving two clicks.
+        </div>
+
+        <h2>5.5 The undo log</h2>
+
+        <p>
+            Every state change &mdash; single edits, bulk operations, owner assignments,
+            lifecycle transitions, evidence attachments &mdash; is pushed to an in-memory undo
+            stack. <kbd>Ctrl</kbd>+<kbd>Z</kbd> pops the top entry and restores the previous
+            snapshot. There is no redo at present; an accidental undo can be reverted by
+            re-applying the action.
+        </p>
+
+        <p>
+            The undo log lives only for the current session. On close it is discarded; the
+            persisted database / list keeps only the latest state. This is intentional: the
+            audit trail of <em>who changed what when</em> is captured separately in the
+            activity log (chapter&nbsp;9 of the deliverables view).
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 5</div>
+        <div class="page-footer-right">9</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 6 FILTERS / VIEWS ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 6 &middot; Filters &amp; views</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 6</span>Filters, heatmap, color-blind mode</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            With 624 items and a multi-week audit, you spend more time filtering than
+            entering. SecAudit composes three independent filters (status, risk, tenant), one
+            stale-evidence flag, and one accessibility toggle on top of the same list.
+        </div>
+
+        <h2>6.1 Filter chips at a glance</h2>
+
+        <table>
+            <thead><tr><th style="width:30mm">Row</th><th>Chip</th><th>Effect</th></tr></thead>
+            <tbody>
+                <tr><td rowspan="7"><strong>Status</strong></td><td>All</td><td>No status filter (default).</td></tr>
+                <tr><td>Pending</td><td>Items with no finding recorded yet.</td></tr>
+                <tr><td>Pass</td><td>Items marked pass.</td></tr>
+                <tr><td>Fail</td><td>Items marked fail (any severity).</td></tr>
+                <tr><td>N/A</td><td>Items marked not-applicable.</td></tr>
+                <tr><td>Stale</td><td>Items last verified more than 90 days ago.</td></tr>
+                <tr><td>Lifecycle</td><td>Items in remediation lifecycle (acknowledged / remediating / accepted / verified).</td></tr>
+                <tr><td rowspan="6"><strong>Risk</strong></td><td>All</td><td>No risk filter (default).</td></tr>
+                <tr><td><span class="risk-dot high"></span>High</td><td>Fails marked high risk only.</td></tr>
+                <tr><td><span class="risk-dot med"></span>Med</td><td>Fails marked medium risk only.</td></tr>
+                <tr><td><span class="risk-dot low"></span>Low</td><td>Fails marked low risk only.</td></tr>
+                <tr><td><span class="risk-dot" style="background:var(--accent-red-h)"></span>Overdue</td><td>Items in remediating with target date in the past.</td></tr>
+                <tr><td><span class="risk-dot acc"></span>Mine</td><td>Items where lifecycle owner equals the active reviewer.</td></tr>
+                <tr><td rowspan="3"><strong>Tenant</strong></td><td>All tenants</td><td>No tenant filter (default).</td></tr>
+                <tr><td>Prod</td><td>Items targeting the production tenant only.</td></tr>
+                <tr><td>Dev</td><td>Items targeting the development tenant only.</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            Filters compose. Setting Status=Fail, Risk=High, Tenant=Prod shows only
+            high-risk failures in the production tenant &mdash; a typical &ldquo;what do we
+            need to discuss with the customer&rsquo;s CTO this week&rdquo; query.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 6</div>
+        <div class="page-footer-right">10</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 6 &middot; Heatmap &amp; CB mode</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>6.2 The tenant posture heatmap</h2>
+
+        <p>
+            On the dashboard, every catalog item is rendered as one cell in a 624-cell grid.
+            Cells are color-coded by status and (for fails) by severity. Hover for a tooltip,
+            click to jump to the item in the workspace.
+        </p>
+
+        <table>
+            <thead><tr><th>Cell color</th><th>Meaning</th></tr></thead>
+            <tbody>
+                <tr><td><span class="risk-dot green"></span>Green</td><td>Pass</td></tr>
+                <tr><td><span class="risk-dot high"></span>Red</td><td>Fail &middot; High risk</td></tr>
+                <tr><td><span class="risk-dot med"></span>Amber</td><td>Fail &middot; Medium risk</td></tr>
+                <tr><td><span class="risk-dot low"></span>Teal</td><td>Fail &middot; Low risk</td></tr>
+                <tr><td>Gray</td><td>N/A</td></tr>
+                <tr><td>Light gray</td><td>Pending</td></tr>
+                <tr><td>Amber corner mark</td><td>Stale evidence (verified &gt; 90 days ago)</td></tr>
+                <tr><td>Blue corner mark</td><td>In remediation lifecycle</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            The heatmap uses the same severity palette as the row indicator and the audit
+            report findings list. Once a customer has the language &mdash; "the red cells in
+            the lower right are our high-risk Conditional Access items" &mdash; it works
+            unchanged across every screen.
+        </p>
+
+        <h2>6.3 The per-tenant rollup</h2>
+
+        <p>
+            Above the heatmap on the dashboard, the rollup shows one card per tenant in the
+            audit. Each card carries a stacked progress bar and four counts: pass / fail /
+            n&middot;a / pending. This is the surface to look at first when the audit covers
+            multiple tenants &mdash; it answers &ldquo;is the gap between Prod and Dev
+            growing?&rdquo;.
+        </p>
+
+        <h2>6.4 Color-blind safe mode</h2>
+
+        <p>
+            Toggle the <strong>CB</strong> button in the title bar (or write a settings rule)
+            to swap every red / amber / teal surface for one decodable without color:
+        </p>
+
+        <ul>
+            <li>Risk-tinted left bars become diagonal hatch patterns &mdash; high uses 45° red-on-white, med uses 0° amber-on-white, low uses &minus;45° teal-on-white. Different angles per severity.</li>
+            <li>Fail badges prepend a glyph: <code>!!</code> for high, <code>!</code> for med, <code>&middot;</code> for low. The glyphs are decodable in monochrome.</li>
+            <li>Heatmap cells get the same hatched fills.</li>
+        </ul>
+
+        <p>
+            CB mode is per-session. Storing it in customer-facing exports is on the roadmap
+            but not yet present.
+        </p>
+
+        <h2>6.5 The reference catalog</h2>
+
+        <p>
+            Switch to the <strong>Reference catalog</strong> screen to browse the underlying
+            624 items without recording a finding. The category filter on the left and the
+            search box at the top both narrow the table. Use this to look up the &ldquo;how to
+            read&rdquo; instructions for an item without leaving the read-only view.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 6</div>
+        <div class="page-footer-right">11</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 7 EVIDENCE ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 7 &middot; Evidence, comments, AI</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 7</span>Evidence, comments, AI assist</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            A finding without backing material is contestable. SecAudit attaches three layers
+            of supporting context to every check: structured evidence files, free-form
+            comments, and AI-drafted remediation / customer translations.
+        </div>
+
+        <h2>7.1 The evidence dropzone</h2>
+
+        <p>
+            On the detail pane, below the observation and remediation textareas, the evidence
+            section accepts files in two ways:
+        </p>
+
+        <ul>
+            <li><strong>Click the dropzone</strong> &mdash; opens a file picker (in the local C# build) or a URL prompt (in the SPFx build).</li>
+            <li><strong>Drag a file from the OS</strong> &mdash; the dropzone highlights green; release to attach.</li>
+        </ul>
+
+        <p>
+            Attached files render as thumbnail tiles with a type icon. PNG / JPG / SVG show a
+            picture icon, CSV / XLSX show a clipboard icon, JSON / TXT / LOG / EML show a
+            document icon. Hover a tile and click the small <code>&times;</code> button to
+            remove. Removal is undoable with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.
+        </p>
+
+        <div class="info-box">
+            <div class="box-label">Evidence storage</div>
+            In the C# build, files are stored on disk under
+            <code>&lt;customer&gt;\evidence\&lt;findingId&gt;\</code> with SHA-256 hashes.
+            In the SPFx build, files go into a SharePoint document library under the
+            audit&rsquo;s site. Both record only the relative path in the database.
+        </div>
+
+        <h2>7.2 Comments &mdash; collaboration thread per finding</h2>
+
+        <p>
+            The comments block under each finding is a chronological thread. The auditor and
+            (in the SPFx build) the customer admin can both post. Use comments for:
+        </p>
+        <ul>
+            <li>Conversation with the customer admin about a specific finding</li>
+            <li>Internal notes for the QA reviewer</li>
+            <li>Linking out to a Jira / Planner ticket for the remediation</li>
+        </ul>
+
+        <p>
+            Comments are not part of the customer deliverable by default &mdash; they live on
+            the workspace and the internal QA report. The full technical findings deliverable
+            offers an opt-in flag to include them.
+        </p>
+
+        <h2>7.3 AI assist &mdash; Draft remediation / Translate for customer</h2>
+
+        <p>
+            Two small sparkle-icon buttons sit next to the Observation and Remediation
+            textareas:
+        </p>
+
+        <table>
+            <thead><tr><th>Button</th><th>What it drafts</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Draft remediation</strong> (next to Remediation)</td><td>Step-by-step instructions tailored to the item&rsquo;s product domain (Entra, Defender, Purview, Azure, etc.) including portal location, recommended setting, verification command, estimated effort, and suggested owner team.</td></tr>
+                <tr><td><strong>Translate for customer</strong> (next to Observation)</td><td>Rewrites the technical observation into plain language for the customer-facing deliverable. Keeps the meaning, drops the jargon.</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            Both buttons render an inline preview with three actions: <strong>Apply</strong>
+            replaces the textarea content, <strong>Regenerate</strong> drafts a new variant,
+            and <strong>Dismiss</strong> closes the preview. The auditor always reviews
+            before applying &mdash; AI output is a starting point, not a deliverable.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 7</div>
+        <div class="page-footer-right">12</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 7 &middot; PowerShell &amp; Portal</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>7.4 Per-item PowerShell &amp; Portal buttons</h2>
+
+        <p>
+            Two small buttons live on every item row and again on the detail pane. They open
+            a focused single-item action; <kbd>P</kbd> and <kbd>O</kbd> from the keyboard do
+            the same.
+        </p>
+
+        <table>
+            <thead><tr><th>Button</th><th>Behavior</th></tr></thead>
+            <tbody>
+                <tr><td><strong>PowerShell</strong></td><td>Opens a modal showing the catalog command for this item, syntax-highlighted. Copy to clipboard, or (in the local C# build) press Run to execute against the connected tenant.</td></tr>
+                <tr><td><strong>Portal</strong></td><td>Opens the relevant Microsoft 365 / Azure admin portal page in a new browser tab &mdash; e.g. Entra Conditional Access for items in that category, Defender XDR for Defender items.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <div class="box-label">Why both</div>
+            Some items are answered fastest by running a Graph cmdlet (and the output is the
+            evidence). Others are answered by clicking through the admin UI to confirm a
+            policy. Both buttons are always offered &mdash; the auditor picks the path that
+            fits this customer.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 7</div>
+        <div class="page-footer-right">13</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 8 REPORTS ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 8 &middot; Reports &amp; comparison</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 8</span>Reports &amp; year-over-year comparison</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            SecAudit ships with two interactive views (the live audit status report and the
+            comparison view) plus six pre-built deliverables on the Reports screen. All are
+            generated from the same finding data &mdash; the auditor never enters numbers
+            twice.
+        </div>
+
+        <h2>8.1 The live audit status report</h2>
+
+        <p>
+            From any screen press <kbd>R</kbd> or click <strong>Audit status report</strong>
+            to open a modal that summarises the engagement. The structure:
+        </p>
+
+        <ol>
+            <li><strong>Cover</strong> &mdash; customer name, tenant, reviewer, started date, status badge, and four risk tiles (High / Med / Low / Accepted) showing the live counts.</li>
+            <li><strong>Overall progress</strong> &mdash; coverage %, item-count KPIs, a stacked bar (pass / fail / n&middot;a / pending), and a risk donut showing the failure mix.</li>
+            <li><strong>Tenant posture heatmap</strong> &mdash; the same severity-tinted grid as the dashboard, embedded in the report.</li>
+            <li><strong>Findings by category</strong> &mdash; one row per category with item counts, progress %, severity mini-bar (high / med / low mix), 4-audit trend sparkline, and benchmark position vs. the portfolio.</li>
+            <li><strong>Recorded findings</strong> &mdash; every finding grouped by category, with risk-tinted left border, status badge, observation, evidence list, and framework mapping (ISO / CIS / NIST). Filter chips at the top: All / Failures only / High risk / Medium risk / Low risk / Accepted / Passes / N/A.</li>
+            <li><strong>Pending items</strong> &mdash; what is still outstanding, capped at 60 with a count of any further hidden items.</li>
+        </ol>
+
+        <p>
+            Click <strong>Print</strong> in the modal footer to send the report straight to a
+            print-to-PDF dialog. The print stylesheet hides all chrome (sidebar, title bar,
+            modal footer, action buttons) and prints just the report contents at A4.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 8</div>
+        <div class="page-footer-right">14</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 8 &middot; Comparison &amp; deliverables</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>8.2 Year-over-year comparison</h2>
+
+        <p>
+            For customers on their second or later audit, the workspace header shows a
+            <strong>Compare with previous</strong> button. Clicking it opens a modal that
+            diffs the current findings against the previous audit&rsquo;s findings, by
+            <code>CheckItemId</code>:
+        </p>
+
+        <table>
+            <thead><tr><th style="width:32mm">Bucket</th><th>Definition</th></tr></thead>
+            <tbody>
+                <tr><td>Fixed</td><td>Was fail, now pass or N/A.</td></tr>
+                <tr><td>Regressed</td><td>Was pass, now fail.</td></tr>
+                <tr><td>New failures</td><td>Item not present in previous audit, now fail (e.g. catalog version added the item).</td></tr>
+                <tr><td>New passes</td><td>Item not present in previous audit, now pass.</td></tr>
+                <tr><td>Other status changes</td><td>Status changed but not into the buckets above (e.g. fail &rarr; N/A).</td></tr>
+                <tr><td>Unchanged</td><td>Same status in both audits. Counted but not listed by default.</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            The comparison is the basis of the customer renewal conversation: how much
+            improved, where regressions appeared, what new compliance items the catalog now
+            requires.
+        </p>
+
+        <h2>8.3 The Reports screen</h2>
+
+        <p>
+            Six pre-built deliverables, each with a Preview button and a Generate button:
+        </p>
+
+        <table>
+            <thead><tr><th style="width:38mm">Deliverable</th><th>Format</th><th>Audience</th></tr></thead>
+            <tbody>
+                <tr><td>Executive summary</td><td>PDF, ~2 pages</td><td>Stakeholders &mdash; KPIs, top risks, headline recommendations.</td></tr>
+                <tr><td>Full technical findings</td><td>PDF / DOCX, ~30&ndash;80 pages</td><td>Customer security team &mdash; per-finding evidence, risk rating, remediation steps.</td></tr>
+                <tr><td>Remediation plan</td><td>DOCX / XLSX</td><td>Project managers &mdash; one row per finding, sortable by risk and effort, Planner / Jira import-friendly.</td></tr>
+                <tr><td>Compliance mapping</td><td>PDF</td><td>Auditors &mdash; coverage matrix and gap analysis vs ISO 27001:2022, CIS M365 v3, NIST CSF.</td></tr>
+                <tr><td>Customer evidence pack</td><td>ZIP</td><td>Hashed for integrity, per-finding subfolders, manifest CSV.</td></tr>
+                <tr><td>Internal QA review</td><td>HTML</td><td>Reviewer-only diff: pending items, missing evidence, comments to resolve, sign-off line.</td></tr>
+            </tbody>
+        </table>
+
+        <h2>8.4 The activity feed</h2>
+
+        <p>
+            On the dashboard, the Activity panel shows the last 24 hours: comments posted,
+            evidence attached, status changes, PowerShell commands run, catalog re-imports.
+            Click any row that references a specific item to jump straight to the workspace
+            with that item active.
+        </p>
+
+        <p>
+            The activity feed is the audit trail used by the internal QA review and is
+            preserved in the database independently of the per-finding undo log.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 8</div>
+        <div class="page-footer-right">15</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 9 INTERVIEW ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 9 &middot; Customer interview</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 9</span>The customer interview</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            About 45 of the 624 catalog items cannot be answered from Microsoft&nbsp;Graph
+            alone &mdash; they are process, policy, and training questions that require a
+            human inside the customer organisation to answer. SecAudit groups them on a
+            dedicated screen that the auditor can run through during a live call or share
+            with the customer for self-service.
+        </div>
+
+        <h2>9.1 What goes on the interview screen</h2>
+
+        <p>
+            The Customer interview screen pulls in every catalog item flagged as
+            interview-only. Each question carries:
+        </p>
+
+        <ul>
+            <li>The catalog ID (e.g. <code>#101</code>)</li>
+            <li>The question phrased as a question (the catalog descriptions are auto-rephrased &mdash; "Phishing simulation programme" becomes "Is a phishing simulation programme in place?")</li>
+            <li>Four answer buttons: <strong>Yes</strong>, <strong>Partial</strong>, <strong>No</strong>, <strong>N/A</strong></li>
+            <li>A free-text notes field for context the customer wants on the record</li>
+            <li>An &ldquo;answered by / when&rdquo; line that records who provided the answer</li>
+        </ul>
+
+        <p>
+            Questions are grouped by category so the auditor can move through related items
+            in one pass. A progress bar at the top shows percent answered out of the total.
+        </p>
+
+        <h2>9.2 Live-call mode</h2>
+
+        <p>
+            During a customer call, the auditor opens the interview screen on a shared
+            screen and walks through the questions. Click an answer button, type a short
+            note, move on. Each click writes to the in-memory model immediately; on save,
+            the answer becomes the finding for that catalog item.
+        </p>
+
+        <p>
+            Estimated pace: ~45 questions in under an hour.
+        </p>
+
+        <h2>9.3 Self-service share link</h2>
+
+        <p>
+            Click <strong>Share with customer</strong> in the screen actions. The tool
+            generates a one-time URL such as
+            <code>https://secaudit.langate.se/interview/acme/&lt;token&gt;</code> and copies
+            it to the clipboard. The customer admin opens the URL in any browser and answers
+            at their own pace; their answers stream into the same backing store.
+        </p>
+
+        <div class="info-box">
+            <div class="box-label">Build-mode difference</div>
+            In the C# build, the share link is hosted by a small ASP.NET endpoint that the
+            local app spins up on demand and tunnels via a reverse proxy. In the SPFx build
+            it is just a tenant URL that the customer admin (already authenticated to the
+            tenant) can hit directly. The SPFx flow is materially simpler.
+        </div>
+
+        <h2>9.4 Outstanding-questions badge</h2>
+
+        <p>
+            The Customer interview entry in the left navigation rail carries a small numeric
+            badge that counts unanswered questions. It only shows when there is at least one
+            outstanding question, and disappears once every interview item has an answer.
+            Use it as a "ready to deliver" signal &mdash; if the badge is gone and the
+            workspace coverage is 100%, the audit is ready for the QA review.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 9</div>
+        <div class="page-footer-right">16</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 9 &middot; Interview &rarr; findings</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>9.5 Translating answers into findings</h2>
+
+        <p>
+            Customer-interview answers map to the same status / risk model as the rest of
+            the audit:
+        </p>
+
+        <table>
+            <thead><tr><th>Customer answer</th><th>Becomes finding</th></tr></thead>
+            <tbody>
+                <tr><td>Yes</td><td>status=pass</td></tr>
+                <tr><td>Partial</td><td>status=fail, risk=med (auditor adjusts as needed)</td></tr>
+                <tr><td>No</td><td>status=fail, risk=high (auditor adjusts as needed)</td></tr>
+                <tr><td>N/A</td><td>status=na</td></tr>
+            </tbody>
+        </table>
+
+        <p>
+            The auditor reviews the inferred severity in the workspace and tunes it before
+            the report is generated. Every interview answer also sets the
+            <code>checkedAt</code> timestamp and records the customer respondent under
+            <code>answeredBy</code>.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 9</div>
+        <div class="page-footer-right">17</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 10 BENCHMARKS ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 10 &middot; Benchmarks &amp; trends</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 10</span>Cross-customer benchmarks &amp; trends</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            A finding lands harder when the customer can see how their tenant compares to
+            the rest of Langate&rsquo;s portfolio &mdash; and how it has moved since last
+            year. SecAudit aggregates anonymised pass-rates across delivered audits and
+            renders them per category.
+        </div>
+
+        <h2>10.1 The portfolio benchmark widget</h2>
+
+        <p>
+            On the dashboard, the &ldquo;Portfolio benchmarks &mdash; areas to focus&rdquo;
+            panel shows the eight categories where this customer is furthest below the
+            portfolio median. Each row carries:
+        </p>
+
+        <ul>
+            <li><strong>Category</strong> name with product icon</li>
+            <li><strong>This customer&rsquo;s pass-rate</strong> as a percentage</li>
+            <li><strong>Benchmark bar</strong> &mdash; a 100mm horizontal scale showing the portfolio Q1, median, Q3, and top quartile, with this customer&rsquo;s position marked as a colored dot</li>
+            <li><strong>Delta</strong> &mdash; difference between this customer and the portfolio median, in percentage points</li>
+            <li><strong>Cohort size</strong> &mdash; how many delivered audits the benchmark draws from</li>
+        </ul>
+
+        <p>
+            The dot colour matches the band the customer falls into: green if top quartile,
+            light green above median, teal at median, amber below median, red bottom
+            quartile.
+        </p>
+
+        <h2>10.2 In the audit status report</h2>
+
+        <p>
+            The same benchmark bar appears in the &ldquo;vs portfolio&rdquo; column of the
+            findings-by-category table inside the status report, alongside a 4-audit trend
+            sparkline. Together they answer two customer-facing questions in two columns:
+        </p>
+
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Where do we stand vs the portfolio?</h4>
+                <p>
+                    The benchmark bar position. A teal-or-greener dot is good; an amber or
+                    red dot calls for a remediation plan focused on that category.
+                </p>
+            </div>
+            <div class="feature-card">
+                <h4>Are we improving over time?</h4>
+                <p>
+                    The 4-audit sparkline. A rising line in green = improvement; a falling
+                    line in red = regression. Hover to see the percentages.
+                </p>
+            </div>
+        </div>
+
+        <h2>10.3 Stale-evidence tracking</h2>
+
+        <p>
+            Every finding records a <code>checkedAt</code> timestamp set automatically when
+            the auditor records / re-records the finding. After 90&nbsp;days the finding is
+            flagged <strong>Stale</strong>. The marker shows up in three places:
+        </p>
+
+        <ul>
+            <li>An amber pill on the workspace item row</li>
+            <li>An amber corner mark on the heatmap cell</li>
+            <li>A &ldquo;stale&rdquo; line in the lifecycle metadata in the detail pane (with day count)</li>
+        </ul>
+
+        <p>
+            The Status filter <strong>Stale</strong> chip narrows the workspace to only the
+            stale items &mdash; the obvious starting point for a re-verification pass before
+            delivery.
+        </p>
+
+        <h2>10.4 Per-category trend sparklines</h2>
+
+        <p>
+            Each category that has been audited at least twice has a 4-audit pass-rate
+            history (currently sourced from the customer&rsquo;s own previous audits;
+            extending to portfolio-trend is on the roadmap). Sparklines render in red if
+            the trend is downward, green if upward.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 10</div>
+        <div class="page-footer-right">18</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 11 CATALOG ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 11 &middot; Catalog &amp; tenant</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 11</span>Catalog versions &amp; multi-tenant scoping</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            Two long-running concerns sit at the engagement boundary rather than inside a
+            single finding: which version of the 624-item catalog this audit was performed
+            against, and which tenant a finding actually targets when the customer has more
+            than one.
+        </div>
+
+        <h2>11.1 The catalog-version banner</h2>
+
+        <p>
+            The workspace renders a status banner at the top of the screen on every visit.
+            Two states:
+        </p>
+
+        <table>
+            <thead><tr><th>State</th><th>Banner</th></tr></thead>
+            <tbody>
+                <tr><td>On latest catalog</td><td>Green border. Reads "This audit is on the latest catalog 2026.04."</td></tr>
+                <tr><td>Behind</td><td>Amber border. Reads "Audit on catalog 2026.01 &middot; latest is 2026.04: 4 added &middot; 3 changed &middot; 1 removed." With a "View diff &rsaquo;" link.</td></tr>
+            </tbody>
+        </table>
+
+        <h2>11.2 The catalog-diff modal</h2>
+
+        <p>
+            Click <strong>View diff &rsaquo;</strong> to open a modal listing every change
+            between the audit&rsquo;s catalog version and the latest. Three sections, each with
+            a count summary tile:
+        </p>
+
+        <ul>
+            <li><strong>Added</strong> &mdash; new items that did not exist in the audit&rsquo;s catalog. Each entry shows the new item ID, description, and a "reason" line explaining why it was introduced (e.g. "M365 Copilot &mdash; new domain, 9 controls added").</li>
+            <li><strong>Changed</strong> &mdash; items whose definition was tightened or expanded between versions (e.g. "Authentication strengths: phishing-resistant now baseline (was optional)").</li>
+            <li><strong>Removed</strong> &mdash; items retired from the catalog, usually because they were superseded by a newer unified item.</li>
+        </ul>
+
+        <p>
+            The modal&rsquo;s <strong>Promote audit to latest</strong> action carries the
+            audit forward: any new items become pending, any changed items get a "review"
+            flag, removed items are archived but their history is preserved. The auditor
+            decides when to promote &mdash; mid-engagement promotion is supported but not
+            forced.
+        </p>
+
+        <div class="info-box">
+            <div class="box-label">Why a versioned catalog matters</div>
+            Two engagements in the same calendar quarter can be on different catalog
+            versions if Microsoft adds a new product domain (M365 Copilot, Defender for
+            Cloud Apps governance) between them. Without versioning, every previous audit
+            would silently appear "incomplete" against the new catalog. With versioning,
+            each audit&rsquo;s coverage is unambiguous.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 11</div>
+        <div class="page-footer-right">19</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 11 &middot; Multi-tenant scoping</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>11.3 Multi-tenant scoping</h2>
+
+        <p>
+            Many customers have more than one Entra tenant &mdash; typically Production and
+            Development, sometimes a separate Acquisition tenant. SecAudit stores tenants on
+            the audit (<code>tenants[]</code>) and on each finding
+            (<code>TENANT_ASSIGNMENT[itemId]</code>). The default tenant is the audit&rsquo;s
+            primary; deviations are recorded on the finding.
+        </p>
+
+        <h2>11.4 The tenant rollup on the dashboard</h2>
+
+        <p>
+            Above the heatmap, the dashboard shows one card per tenant in the audit. Each
+            card carries a stacked progress bar (pass / fail / n&middot;a / pending) and four
+            counts. Use this to spot the gap between tenants &mdash; "Prod looks healthy at
+            91% pass, Dev is dragging at 64%" &mdash; before opening the workspace.
+        </p>
+
+        <h2>11.5 The tenant filter chip in the workspace</h2>
+
+        <p>
+            The third filter row in the workspace is the tenant scope. Three chips: <strong>All
+            tenants</strong>, <strong>Prod</strong>, <strong>Dev</strong>. Setting any chip
+            other than All hides items not assigned to that tenant from both the item list
+            and the bulk-bar selection.
+        </p>
+
+        <p>
+            Filters compose: setting Status=Fail, Risk=High, Tenant=Prod gives "high-risk
+            production failures only", which is the typical engagement-close conversation.
+        </p>
+
+        <h2>11.6 Per-tenant evidence and reports</h2>
+
+        <p>
+            Evidence files attached to a finding inherit the finding&rsquo;s tenant scope
+            implicitly. The audit-status-report filters fold in the tenant scope: filtering
+            to Prod-only produces a Prod-only report. The full technical findings deliverable
+            offers a per-tenant flag &mdash; one report per tenant, or a combined report
+            with per-section dividers.
+        </p>
+
+        <div class="tip-box">
+            <div class="box-label">When to scope per-tenant</div>
+            Always when the customer&rsquo;s Dev tenant is Microsoft-managed sandbox data
+            and not a real production target &mdash; the auditor still notes findings, but
+            the deliverable focuses on Prod. Always when the customer requests separate
+            sign-off lines for two business units.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 11</div>
+        <div class="page-footer-right">20</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 12 C# BUILD ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Part II &middot; Build option 1</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 12</span>Build option 1 &mdash; Local C# WPF desktop app</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            The first option ships SecAudit as a single Windows desktop application, signed
+            with a Langate code-signing certificate, distributed by MSIX. Findings live in a
+            per-customer Microsoft Access database. Microsoft Graph queries run via a hybrid
+            of the Graph SDK and PowerShell &mdash; with one-click execution of the catalog
+            commands directly from the workspace.
+        </div>
+
+        <h2>12.1 Architecture at a glance</h2>
+
+        <div class="arch-box">
+            <div class="arch-box-title">SecAudit.exe &middot; .NET 8 WPF</div>
+            <div class="arch-row">
+                <div class="arch-item"><strong>UI layer</strong>SecAudit.UI (WPF, MVVM, CommunityToolkit.Mvvm, DM Sans typography, Langate brand theme)</div>
+                <div class="arch-item"><strong>Service layer</strong>SecAudit.Services (AuditService, FindingService, ReportService, GraphRunner, PowerShellHost)</div>
+                <div class="arch-item"><strong>Data layer</strong>SecAudit.Data (System.Data.OleDb &rarr; Access ACE, per-customer .accdb file, SHA-256 evidence on disk)</div>
+            </div>
+            <div class="arch-row">
+                <div class="arch-item"><strong>Microsoft Graph</strong>Microsoft.Graph SDK for read-only queries; Connect-MgGraph for catalog commands</div>
+                <div class="arch-item"><strong>PowerShell host</strong>System.Management.Automation hosts an in-process PS 7 runspace</div>
+                <div class="arch-item"><strong>Reports</strong>OpenXML for DOCX / XLSX, QuestPDF for PDF, optional Word-COM fallback</div>
+            </div>
+        </div>
+
+        <h2>12.2 The PowerShell button &mdash; the killer feature of this build</h2>
+
+        <p>
+            Every catalog item carries a one-line PowerShell command that produces the
+            evidence (e.g. <code>Get-MgServicePrincipal -Filter "appOwnerOrganizationId eq
+            null"</code>). In the C# build, the <strong>Run</strong> button in the per-item
+            PowerShell modal executes that command directly:
+        </p>
+
+        <ol class="step-list">
+            <li>The user clicks <strong>Run</strong> in the PowerShell modal</li>
+            <li>SecAudit lazily starts an in-process PowerShell&nbsp;7 runspace if none is open</li>
+            <li>The runspace inherits the user&rsquo;s existing <code>Connect-MgGraph</code> token (or prompts if absent)</li>
+            <li>The catalog command runs; stdout / stderr stream into the modal</li>
+            <li>The output is automatically attached as evidence (<code>output-{itemId}-{timestamp}.txt</code>) to the active finding</li>
+            <li>The finding&rsquo;s <code>checkedAt</code> is set to <em>now</em>; status remains for the auditor to set</li>
+        </ol>
+
+        <p>
+            One-click verification turns a 30-second copy-paste-into-PowerShell-window-and-back
+            into a 2-second flow. Across 624 items this adds up to roughly 4 working hours
+            saved per audit.
+        </p>
+
+        <div class="tip-box">
+            <div class="box-label">Why in-process, not Start-Process</div>
+            Spawning a new <code>powershell.exe</code> per command would lose the
+            <code>Connect-MgGraph</code> token after every run, forcing the user to
+            re-authenticate. An in-process runspace inherits the token; the user logs in
+            once at app startup.
+        </div>
+
+        <h2>12.3 The Access database</h2>
+
+        <p>
+            Each customer gets its own <code>.accdb</code> file in
+            <code>&lt;customer&gt;\SecAudit.accdb</code>. The schema is small &mdash; ten
+            tables connected by foreign keys (covered in detail on the Architecture screen
+            of the mockup). Per-customer files have three benefits:
+        </p>
+
+        <ul>
+            <li><strong>Cleaner isolation</strong> &mdash; deleting a customer file deletes that customer&rsquo;s audit history with no row-level filtering</li>
+            <li><strong>Easier handover</strong> &mdash; the entire audit can be zipped and sent to the customer</li>
+            <li><strong>Portable backup</strong> &mdash; just copy the file</li>
+        </ul>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 12</div>
+        <div class="page-footer-right">21</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 12 &middot; C# build details</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>12.4 Project layout</h2>
+
+        <table>
+            <thead><tr><th style="width:42mm">Project</th><th>Contents</th></tr></thead>
+            <tbody>
+                <tr><td><strong>SecAudit.UI</strong> (WPF)</td><td>Views (XAML), ViewModels, Themes/Langate.xaml. References Services.</td></tr>
+                <tr><td><strong>SecAudit.Services</strong> (class library)</td><td>AuditService, FindingService, ReferenceImporter (Excel &rarr; Access), GraphRunner, ReportBuilder, PowerShellHost.</td></tr>
+                <tr><td><strong>SecAudit.Data</strong> (class library)</td><td>AccessConnectionFactory, AuditRepository, FindingRepository, schema templates, per-customer .accdb provisioning.</td></tr>
+                <tr><td><strong>SecAudit.Tests</strong> (MSTest)</td><td>Unit tests for risk-defaulting logic, lifecycle transitions, evidence hashing, Graph runner, report builder.</td></tr>
+            </tbody>
+        </table>
+
+        <h2>12.5 Microsoft Graph integration</h2>
+
+        <p>
+            A hybrid approach. Simple read-only queries (list users, list service
+            principals, get a Conditional Access policy) run via the
+            <code>Microsoft.Graph</code> .NET SDK, which is type-safe, paginated, and
+            unit-testable. The 100+ catalog items whose &ldquo;how to read&rdquo; is already
+            an existing PowerShell command (e.g.
+            <code>Get-MgServicePrincipalAppRoleAssignment</code>) run through the in-process
+            PowerShell runspace &mdash; the catalog text is executed verbatim.
+        </p>
+
+        <p>
+            App registration in Entra:
+        </p>
+
+        <ul>
+            <li><strong>Client ID</strong> hard-coded into the app for the Langate-tenant first-party registration; one app for all customers.</li>
+            <li><strong>Authentication</strong> &mdash; Interactive (browser) by default. Certificate auth for headless / CI use. Managed identity for hosted scenarios.</li>
+            <li><strong>Permissions</strong> &mdash; the catalog lists per-item Graph permissions; the app asks for the union on first sign-in. Admin consent is obtained per customer.</li>
+        </ul>
+
+        <h2>12.6 Distribution</h2>
+
+        <ul>
+            <li><strong>Format:</strong> MSIX, signed with a Langate EV code-signing cert.</li>
+            <li><strong>Channel:</strong> Internal Langate distribution (no Microsoft Store).</li>
+            <li><strong>Auto-update:</strong> Built-in MSIX delta updates from a Langate-hosted feed.</li>
+            <li><strong>Footprint:</strong> ~120 MB installed; ~40 MB on the wire after the first download.</li>
+        </ul>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 12</div>
+        <div class="page-footer-right">22</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 12 &middot; Strengths &amp; trade-offs</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>12.7 Strengths and trade-offs</h2>
+
+        <table>
+            <thead><tr><th style="width:42mm">Aspect</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Strength</strong> &middot; PowerShell run</td><td>One-click catalog execution. Saves ~4&nbsp;hours per audit.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Offline</td><td>Audit work continues without an internet connection (Graph queries fail; portal links and editing work).</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Data sovereignty</td><td>The .accdb stays on the auditor&rsquo;s laptop or a Langate file share &mdash; never leaves Langate-controlled storage.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Performance</td><td>WPF + Access on a modern laptop is instantaneous &mdash; no network round-trips for navigation.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Single-user</td><td>Access does not love simultaneous writers. If two reviewers share an audit, plan to split into back-end .accdb on a share with linked tables, or move to SQLite / SQL Server.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Customer interview link</td><td>Hosting the share-link endpoint requires a small ASP.NET listener and a tunneled URL (ngrok / Tailscale Funnel). Workable but more moving parts than the SPFx alternative.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Windows-only</td><td>WPF is Windows-only. Acceptable today, problematic if a macOS-only auditor joins.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Customer environments</td><td>The auditor&rsquo;s tenant credentials must be present on the auditor&rsquo;s machine; some enterprise customers require all access from their own managed device.</td></tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 12</div>
+        <div class="page-footer-right">23</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 13 SPFX BUILD ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Part II &middot; Build option 2</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 13</span>Build option 2 &mdash; Tenant-hosted SPFx web app</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            The second option ships SecAudit as a SharePoint Framework (SPFx) application
+            deployed into the Langate tenant (or, for very large engagements, into the
+            customer&rsquo;s tenant). All audit data lives in SharePoint lists. All checks
+            run as REST queries against Microsoft Graph from the user&rsquo;s browser. No
+            local PowerShell, no .accdb files, no installation &mdash; but multi-user from
+            day one.
+        </div>
+
+        <h2>13.1 Architecture at a glance</h2>
+
+        <div class="arch-box">
+            <div class="arch-box-title">SecAudit.SPFx &middot; Single-Page Application</div>
+            <div class="arch-row">
+                <div class="arch-item"><strong>UI layer</strong>SPFx web part &middot; React 18 &middot; TypeScript &middot; Fluent UI 9 with Langate brand overrides</div>
+                <div class="arch-item"><strong>Identity</strong>Entra ID via SPFx SSO. AadHttpClient for Graph. Tenant-wide consent.</div>
+                <div class="arch-item"><strong>Data layer</strong>SharePoint lists (Audits, Findings, Comments, Evidence, CatalogItems, Tenants, Activity). PnPjs for queries.</div>
+            </div>
+            <div class="arch-row">
+                <div class="arch-item"><strong>Microsoft Graph</strong>Read-only REST queries against /v1.0 and /beta endpoints. No PowerShell.</div>
+                <div class="arch-item"><strong>Evidence storage</strong>SharePoint document library, one folder per finding, native version history.</div>
+                <div class="arch-item"><strong>Reports</strong>Client-side HTML &rarr; print-to-PDF. Server-side DOCX via a small Azure Function for pixel-perfect Word output.</div>
+            </div>
+        </div>
+
+        <h2>13.2 No local PowerShell &mdash; the consequence</h2>
+
+        <p>
+            The SPFx build cannot start a PowerShell process. Instead, the catalog defines a
+            <strong>Graph REST query</strong> for every check that has a one-line
+            equivalent. The per-item button in the workspace becomes <strong>Run
+            check</strong>:
+        </p>
+
+        <ol class="step-list">
+            <li>The user clicks <strong>Run check</strong> on the active item</li>
+            <li>SPFx calls Microsoft Graph via <code>AadHttpClient</code> using the user&rsquo;s SSO token</li>
+            <li>The JSON response is rendered in the same modal that the C# build uses for stdout</li>
+            <li>The JSON is auto-attached as evidence (<code>graph-{itemId}-{timestamp}.json</code>) and stored in the SharePoint document library</li>
+            <li>The finding&rsquo;s <code>checkedAt</code> is set to <em>now</em>; status remains for the auditor to set</li>
+        </ol>
+
+        <p>
+            About 480 of the 624 catalog items have a clean Graph REST equivalent. The
+            remaining 144 are mostly Azure resource-management checks (AKS configuration,
+            Storage, Networking) that require Azure ARM REST queries; these run via the same
+            <code>AadHttpClient</code> against <code>management.azure.com</code>. A small
+            residue of ~30 items have no REST equivalent today &mdash; they fall back to a
+            "copy-paste this PowerShell into your shell" instruction with a copy button.
+        </p>
+
+        <div class="info-box">
+            <div class="box-label">High tenant permissions</div>
+            For SecAudit to read the customer tenant via Graph, the SPFx app needs
+            tenant-wide admin consent for the union of catalog permissions
+            (<code>Directory.Read.All</code>, <code>Policy.Read.All</code>,
+            <code>SecurityEvents.Read.All</code>, <code>AuditLog.Read.All</code>, etc.).
+            Acquired once per customer engagement by the customer&rsquo;s Global
+            Administrator and revocable at any time.
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 13</div>
+        <div class="page-footer-right">24</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 13 &middot; SPFx build details</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>13.3 Where the data lives</h2>
+
+        <p>
+            The Access tables become SharePoint lists, one per entity. The mapping is
+            mechanical &mdash; each foreign key becomes a <code>Lookup</code> column &mdash;
+            but the gain is multi-user concurrency, native versioning, and tenant-managed
+            backup.
+        </p>
+
+        <table>
+            <thead><tr><th style="width:42mm">SharePoint list</th><th>Replaces Access table</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td>SecAudit_Customers</td><td>tblCustomer</td><td>One per engagement. Logo URL field.</td></tr>
+                <tr><td>SecAudit_Tenants</td><td>tblTenant</td><td>Lookup to Customers. Multi-tenant per customer.</td></tr>
+                <tr><td>SecAudit_Audits</td><td>tblAudit</td><td>Lookup to Customer + CatalogVersion + previous audit.</td></tr>
+                <tr><td>SecAudit_Findings</td><td>tblFinding</td><td>Lookup to Audit + CheckItem + Tenant. Indexed on Audit + CheckItem.</td></tr>
+                <tr><td>SecAudit_Comments</td><td>tblComment</td><td>Lookup to Finding. SharePoint version history acts as edit log.</td></tr>
+                <tr><td>SecAudit_CheckItems</td><td>tblCheckItem</td><td>624 items per catalog version. Versioned via CatalogVersionId column.</td></tr>
+                <tr><td>SecAudit_Evidence (document library)</td><td>tblEvidence + filesystem</td><td>One folder per finding. Native versioning + native search.</td></tr>
+                <tr><td>SecAudit_ActivityLog</td><td>tblActivityLog</td><td>Append-only. Site-collection-scope retention policy.</td></tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 13</div>
+        <div class="page-footer-right">25</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 13 &middot; Multi-user model</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>13.4 Multi-user from day one</h2>
+
+        <p>
+            The SPFx build inherits the SharePoint co-authoring model. Three or four Langate
+            auditors can edit the same audit at the same time:
+        </p>
+
+        <ul>
+            <li>Findings written by another reviewer appear in real time via the SharePoint change-feed (PnPjs <code>useEffect</code> + SharePoint webhook)</li>
+            <li>Comment threads are live; a customer admin invited as guest sees comments as the auditor types them</li>
+            <li>The activity feed shows everyone&rsquo;s actions, not just the local user&rsquo;s</li>
+        </ul>
+
+        <p>
+            For large engagements (one Langate lead + two specialists + one customer
+            point-of-contact = 4 active editors) this is a category-of-magnitude improvement
+            over the C# build&rsquo;s "send the .accdb back and forth" model.
+        </p>
+
+        <h2>13.5 The customer interview &mdash; trivially shareable</h2>
+
+        <p>
+            Because SPFx runs in the customer tenant (or in a tenant the customer admin can
+            be invited to as guest), the <strong>Share with customer</strong> link becomes a
+            plain SharePoint URL. The customer admin opens it, signs in with their existing
+            tenant credentials, and answers. No tunneling, no anonymous-access surface.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 13</div>
+        <div class="page-footer-right">26</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 13 &middot; Strengths &amp; trade-offs</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>13.6 Strengths and trade-offs</h2>
+
+        <table>
+            <thead><tr><th style="width:42mm">Aspect</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Strength</strong> &middot; Multi-user</td><td>Real co-authoring. Lead + specialists + customer admin can all work in the same audit.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Zero install</td><td>Auditor and customer admin both reach SecAudit via a tenant URL. No MSIX, no .accdb, no signed cert needed on every device.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Native versioning</td><td>SharePoint preserves every edit of a finding and every evidence file. The "who changed what when" trail is automatic.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Customer interview</td><td>Just a tenant URL. No tunneling, no anonymous endpoint exposure.</td></tr>
+                <tr><td><strong>Strength</strong> &middot; Cross-platform</td><td>Runs in any modern browser. macOS auditors and customer admins on iPad both work.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; No PowerShell run</td><td>~30 catalog items without a Graph REST equivalent fall back to copy-paste. Can be resolved over time by extending the catalog with REST queries.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Permissions consent</td><td>Customer Global Admin must consent to a relatively broad permission set per engagement. Some customers reject this on principle &mdash; they want auditors to use their own service principal in their own tenant.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Where does the audit live</td><td>Three options: Langate tenant (simplest, but customer data lands in Langate&rsquo;s SharePoint), customer tenant (cleanest data sovereignty, but install requires customer cooperation), or per-engagement isolated tenant (cleanest legally, highest setup overhead). Default: Langate tenant with explicit customer consent.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Offline</td><td>Cannot work without internet. Acceptable for typical engagements; problematic on a customer site with restricted egress.</td></tr>
+                <tr><td><strong>Trade-off</strong> &middot; Build complexity</td><td>SPFx pipeline is more involved than a WPF MSIX (gulp / heft, App Catalog approval, tenant-wide deployment). One-time cost.</td></tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 13</div>
+        <div class="page-footer-right">27</div>
+    </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════ CH 14 DECISION ═══ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 14 &middot; Decision matrix</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+        <h1><span class="chapter-num">Chapter 14</span>Choosing between the two builds</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            Both builds are credible and both have been mocked end-to-end. The choice is not
+            about features &mdash; both will support the full feature set of Part&nbsp;I.
+            The choice is about <em>who edits the audit</em> and <em>where the data
+            lives</em>. This chapter offers a side-by-side matrix and a recommendation.
+        </div>
+
+        <h2>14.1 Side by side</h2>
+
+        <div class="compare-grid">
+            <div class="compare-card">
+                <div class="compare-card-sub">Option 1</div>
+                <div class="compare-card-title">C# WPF desktop app</div>
+                <ul>
+                    <li>Single-user, local-first</li>
+                    <li>Per-customer Access database on the auditor&rsquo;s machine</li>
+                    <li>One-click PowerShell run via in-process PS&nbsp;7 runspace</li>
+                    <li>Microsoft Graph SDK + PowerShell hybrid</li>
+                    <li>MSIX install, signed, auto-update</li>
+                    <li>Offline-capable for editing</li>
+                    <li>Windows-only</li>
+                </ul>
+            </div>
+            <div class="compare-card spfx">
+                <div class="compare-card-sub">Option 2</div>
+                <div class="compare-card-title">SPFx tenant-hosted web app</div>
+                <ul>
+                    <li>Multi-user, co-authoring</li>
+                    <li>SharePoint lists + document library</li>
+                    <li>Pure REST against Graph + Azure ARM (no PowerShell)</li>
+                    <li>Tenant-wide consent for the catalog permission set</li>
+                    <li>Zero-install; reach via tenant URL</li>
+                    <li>Online-only</li>
+                    <li>Cross-platform (any modern browser)</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 14</div>
+        <div class="page-footer-right">28</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 14 &middot; Decision matrix</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>14.2 Decision matrix</h2>
+
+        <table>
+            <thead><tr><th style="width:50mm">If your engagement&hellip;</th><th>Pick</th><th>Why</th></tr></thead>
+            <tbody>
+                <tr><td>is a single auditor running a 1-2&nbsp;week engagement on a customer&rsquo;s tenant</td><td><strong>C#</strong></td><td>Speed of capture wins; one-click PowerShell saves ~4&nbsp;h.</td></tr>
+                <tr><td>has a Langate lead + specialist(s) + customer point-of-contact actively editing</td><td><strong>SPFx</strong></td><td>Co-authoring is the hard requirement.</td></tr>
+                <tr><td>is for a customer that requires all access from a customer-managed device</td><td><strong>SPFx</strong></td><td>The auditor uses their browser inside the customer tenant; nothing on disk.</td></tr>
+                <tr><td>has restricted egress / works inside an air-gapped customer site</td><td><strong>C#</strong></td><td>Editing works offline; sync on return.</td></tr>
+                <tr><td>has a customer that explicitly refuses tenant-wide consent for read permissions</td><td><strong>C#</strong></td><td>Auditor uses their own service principal &mdash; consent is per-call rather than tenant-wide.</td></tr>
+                <tr><td>requires a clean per-engagement legal data sovereignty stance</td><td><strong>SPFx</strong> in customer tenant</td><td>Audit data never leaves customer storage.</td></tr>
+                <tr><td>needs macOS auditor support</td><td><strong>SPFx</strong></td><td>WPF is Windows-only.</td></tr>
+                <tr><td>has a standardised Langate engagement process &amp; reused customer interviews</td><td><strong>SPFx</strong></td><td>Share-link is a tenant URL, not a tunneled localhost endpoint.</td></tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 14</div>
+        <div class="page-footer-right">29</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">SecAudit</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Chapter 14 &middot; Recommendation</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:9mm">
+
+        <h2>14.3 Recommendation: build both, in this order</h2>
+
+        <p>
+            Ship the <strong>C# WPF build first</strong>. It is the smaller cone of work
+            (single-user, no SharePoint plumbing, no tenant deployment), it preserves the
+            killer one-click PowerShell flow, and it covers ~80% of current Langate
+            engagements which are single-auditor jobs. Target: 8&ndash;10&nbsp;weeks of
+            development time including reports, signing, and MSIX distribution.
+        </p>
+
+        <p>
+            Ship the <strong>SPFx build next</strong>, sharing the same audit data model
+            (the Access tables map directly to SharePoint lists), the same brand theme, and
+            the same finding lifecycle. Catalog REST queries are added incrementally &mdash;
+            the SPFx build can launch with a 90% catalog coverage and gain the rest over the
+            following two release cycles. Target: 12&ndash;14&nbsp;weeks once the C# build
+            is in production and the data model is settled.
+        </p>
+
+        <p>
+            Both builds share <em>this documentation</em> and <em>the mockup</em> as the
+            source of truth for behaviour. A user manual change made in chapter&nbsp;5 is
+            equally true for both. The catalog is one source &mdash; the same Excel file
+            imported into both Access (C#) and SharePoint Lists (SPFx).
+        </p>
+
+        <div class="tip-box">
+            <div class="box-label">One catalog, two front-ends</div>
+            The 624-item Excel catalog is the contract between the two builds. As long as
+            both builds import the same version, both produce the same finding model, the
+            same report structure, and the same year-over-year comparison. A customer that
+            starts on the C# build can move to SPFx mid-engagement (or vice versa) by
+            exporting findings to a portable JSON.
+        </div>
+
+        <h2>14.4 Final word</h2>
+
+        <p>
+            SecAudit&rsquo;s value is in the workflow: catalog &rarr; finding &rarr; risk
+            severity &rarr; lifecycle &rarr; deliverable. The two builds are different
+            packagings of that workflow, optimised for different engagements. The features
+            documented in Part&nbsp;I are the contract between builds &mdash; both implement
+            them, both honour the same brand language, both produce the same reports.
+        </p>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">SecAudit &middot; Chapter 14</div>
+        <div class="page-footer-right">30</div>
+    </div>
+</div>
+
+
+</body>
+</html>
