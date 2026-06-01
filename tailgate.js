@@ -40,7 +40,7 @@
 	}
 
 	async function loadRootMeta() {
-		const slugs = ['fortbridge', 'humanit', 'flowsight', 'nschecks', 'claw', 'spai', 'mermaid', 'freecorner', 'pnp-dbbuilder', 'secaudit'];
+		const slugs = ['fortbridge', 'humanit', 'flowsight', 'nschecks', 'claw', 'spai', 'mermaid', 'freecorner', 'pnp-dbbuilder', 'secaudit', 'core-security', 'iso'];
 		const results = await Promise.allSettled(slugs.map(function (s) {
 			return fetch(s + '/_meta.json', { cache: 'no-store' }).then(function (r) {
 				return r.ok ? r.json() : null;
