@@ -1,10 +1,13 @@
 {
-  "syncedAt": "2026-06-01T11:50:08Z",
+  "syncedAt": "2026-06-17T11:17:16Z",
   "files": {
-    "CoreTenantSecurity.html": {
-      "updated": "2026-06-01"
+    "CtsSentinelEvents.html": {
+      "updated": "2026-06-17"
     },
     "index.html": {
+      "updated": "2026-06-17"
+    },
+    "CoreTenantSecurity.html": {
       "updated": "2026-06-01"
     }
   }
