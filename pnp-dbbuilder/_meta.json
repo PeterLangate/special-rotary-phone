@@ -1,10 +1,10 @@
 {
-  "syncedAt": "2026-07-06T09:44:55Z",
+  "syncedAt": "2026-07-06T10:33:07Z",
   "files": {
-    "index.html": {
+    "dist/dbbuilder.js.LICENSE.txt": {
       "updated": "2026-05-01"
     },
-    "dist/dbbuilder.js.LICENSE.txt": {
+    "index.html": {
       "updated": "2026-05-01"
     },
     "dist/dbbuilder.js": {
