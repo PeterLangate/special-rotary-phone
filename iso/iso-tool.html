@@ -3717,7 +3717,76 @@ function OnReady() {
             Power Automate flow triggered on item creation sends the message from
             <code>iso-noreply@langate.se</code> — a shared mailbox dedicated to the tool — and flips
             the row to <code>Sent</code> or <code>Failed</code>. Reassignment notifications, weekly
-            digests, and external-auditor invitations all flow through this one list.
+            digests, external-auditor invitations, and the approval-workflow emails (below) all
+            flow through this one list.
+        </p>
+
+        <p>
+            <strong>HTML approval emails.</strong> When an answer is submitted for approval, the
+            approver group is emailed a branded notification with a &ldquo;Review &amp; approve&rdquo;
+            button that opens the question; when an approver approves, rejects, or unlocks it, the
+            person who submitted it is emailed the outcome (a rejection carries the reviewer&rsquo;s
+            comment and an &ldquo;Open &amp; revise&rdquo; button). A bulk submit from the document
+            editor sends the approvers a single digest, not one mail per question. These mails carry
+            a rich HTML body in the same <code>ISBody</code> column every notification uses; every
+            button is a link that <em>opens</em>
+            the tool to the right place — no button changes anything on its own. If the notification
+            cannot be queued the approval still succeeds and a small on-screen notice appears, so an
+            approval is never blocked by a mail hiccup.
+        </p>
+
+        <p>
+            <strong>Your branding, not ours.</strong> The emails carry <em>your</em> organisation's
+            identity, taken from Settings &rarr; Branding — the same name, primary/accent colours and
+            body font your governance PDFs use — so a notification looks like it came from your ISMS,
+            not from a vendor product. Change the palette in Settings and the next email reflects it;
+            with nothing configured the mail falls back to a neutral &ldquo;ISO Compliance&rdquo;
+            theme. The button colour follows your accent and its text is automatically set to black
+            or white for legibility, whatever shade you choose. Each email is kept deliberately
+            lean — a short summary, the few facts worth scanning (who, when, the question or due
+            date), the reviewer's comment where there is one, and one clear action button — with no
+            internal tracking codes or jargon on show.
+        </p>
+
+        <p>
+            <strong>Dates, and what needs action.</strong> Every date and time is shown in your
+            SharePoint site's time zone in ISO&nbsp;8601 form (<code>2026-06-18 11:14</code>) — the
+            same wall-clock you see in the lists, in a clean, unambiguous, locale-independent
+            format that reads the same for every recipient. And rather
+            than alert-style severity badges, the emails carry a single quiet signal: the three that
+            need someone to <em>act</em> — an answer awaiting approval, a rejected answer, a new
+            finding — show an "Action needed" flag; the purely informational ones (approved,
+            unlocked, a new comment, an audit scheduled, a review recorded, auditor access granted)
+            carry no badge at all.
+        </p>
+
+        <p>
+            <strong>Comment notifications.</strong> Posting a comment — whether on a question in the
+            wizard or on a governance document in the document editor — emails everyone
+            already involved in that thread (the author and anyone who commented before) with an
+            &ldquo;Open thread &amp; reply&rdquo; button that opens the right place: the question in the
+            wizard, or the document in the editor. You are never emailed about your own comment, and a
+            thread with no other participants sends no mail.
+        </p>
+
+        <p>
+            <strong>Choosing what you receive.</strong> Everyone can tailor their own email. Under
+            Settings &rarr; Notifications each person ticks which kinds they want — answer approvals,
+            comments, lifecycle events (findings, audits, reviews) and external-auditor access — and
+            unticking a box opts you out of just that kind while you stay subscribed to the rest. The
+            &ldquo;Manage notifications&rdquo; link at the bottom of every email takes you straight
+            there. Preferences are per person and take effect immediately; if they ever can&rsquo;t be
+            read the tool errs on the side of sending, so you never miss something because a setting
+            failed to load.
+        </p>
+
+        <p>
+            <strong>Lifecycle &amp; governance notifications.</strong> Recording a new finding, audit,
+            or management review emails the governance team (and, for a finding, its assignee) with a
+            button to the matching Certification Lifecycle tab. Granting an external auditor read-only
+            access emails the governance team — time-boxed access being a control worth flagging. And
+            if a governance-PDF regeneration fails, the person who triggered it is emailed the reason
+            with a prompt to retry, so a failed render is never silent.
         </p>
 
         <p>

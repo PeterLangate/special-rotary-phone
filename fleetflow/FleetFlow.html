@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>FleetFlow - Solution Architecture and Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <meta name="author" content="Langate AB">
+    <meta name="description" content="FleetFlow — Solution Architecture & Plan">
+    <meta name="date" content="2026-06-25">
+    <style>
+:root {
+    --primary:        #00517e;
+    --primary-teal:   #537780;
+    --primary-navy:   #0b3ebe;
+    --accent-green:   #02B896;
+    --accent-gold:    #F5A623;
+    --accent-red:     #B55852;
+    --accent-red-h:   #B33F3E;
+    --bg:             #ffffff;
+    --bg-subtle:      #ebf2f5;
+    --bg-grey:        #EAEAEC;
+    --bg-beige:       #F1EEEA;
+    --text:           #4A4A4A;
+    --text-muted:     #888888;
+    --text-light:     #A0A0A0;
+    --border:         #DBE4EA;
+    --border-light:   #E0E0E0;
+    --success:        #02B896;
+    --success-bg:     #e6faf6;
+    --warning:        #c07800;
+    --warning-bg:     #fff8e6;
+    --error:          #B55852;
+    --error-bg:       #fbeeed;
+    --info:           #00517e;
+    --info-bg:        #ebf2f5;
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.6; color: var(--text);
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: var(--bg); margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 7mm 12mm 26mm 13mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col              { break-inside: avoid; }
+.device-card          { break-inside: avoid; }
+.svg-figure           { break-inside: avoid; }
+pre.code-block        { break-inside: avoid; }
+table                 { break-inside: avoid; }
+
+/* Banner header */
+.page-header { background: var(--primary); display: flex; align-items: stretch; height: 14mm;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.page-header-accent { width: 3mm; background: var(--accent-green); flex-shrink: 0; }
+.page-header-inner { flex: 1; padding: 0 8mm; display: flex; align-items: center; gap: 6mm; }
+.page-header-brand { color: white; font-size: 9.5pt; font-weight: 700; letter-spacing: 0.06em; }
+.page-header-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent-green); }
+.page-header-line { flex: 1; height: 1px; background: rgba(255,255,255,0.18); }
+.page-header-section { color: rgba(255,255,255,0.65); font-size: 7.5pt; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* Footer */
+.page-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 3mm 10mm 3mm 13mm;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); background: var(--bg-subtle);
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.footer-left  { font-size: 7.5pt; color: var(--text-muted); }
+.footer-right { font-size: 7.5pt; color: var(--primary-teal); font-weight: 600; }
+
+/* Cover */
+.page-cover { min-height: 297mm; display: flex; flex-direction: column;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.cover-top-bar { background: var(--accent-green); height: 3mm; }
+.cover-body { background: var(--primary); flex: 1; padding: 24mm 18mm 16mm;
+    display: flex; flex-direction: column; justify-content: space-between;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.cover-logo-area { display: flex; align-items: flex-start; gap: 4px; }
+.cover-logo-text { color: white; font-size: 14pt; font-weight: 700; letter-spacing: 0.02em; }
+.cover-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-green); margin-top: 4px; }
+.cover-tagline { font-size: 8pt; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 6mm; }
+.cover-title { font-size: 42pt; font-weight: 800; color: white; line-height: 1.04; }
+.cover-divider { width: 14mm; height: 3px; background: var(--accent-green); margin: 7mm 0; }
+.cover-subtitle { font-size: 15pt; font-weight: 300; color: rgba(255,255,255,0.7); max-width: 135mm; line-height: 1.4; }
+.cover-meta { display: flex; justify-content: space-between; font-size: 8.5pt; color: rgba(255,255,255,0.5);
+    border-top: 1px solid rgba(255,255,255,0.14); padding-top: 5mm; }
+
+/* Typography */
+h1 { font-size: 19pt; font-weight: 800; color: var(--primary); margin-bottom: 1mm; }
+.chapter-num { display: block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--accent-green); margin-bottom: 2mm; }
+.chapter-rule { width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--bg-subtle) 100%); margin: 3mm 0 6mm; }
+h2 { font-size: 12pt; font-weight: 700; color: var(--primary); margin: 6mm 0 2.5mm;
+    display: flex; align-items: center; gap: 2mm; }
+h2::before { content: ''; display: inline-block; width: 3px; height: 12pt;
+    background: var(--accent-green); border-radius: 2px; flex-shrink: 0; }
+h3 { font-size: 10.5pt; font-weight: 700; color: var(--primary); margin: 4mm 0 1.5mm; }
+p { margin-bottom: 2.5mm; }
+ul, ol { margin: 2mm 0 3mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.2mm; }
+a { color: var(--primary-teal); text-decoration: none; }
+strong { color: var(--text); font-weight: 700; }
+em { font-style: italic; }
+code { font-family: 'Consolas','Courier New',monospace; font-size: 9pt; background: var(--bg-subtle);
+    padding: 0.3mm 1mm; border-radius: 2px; color: var(--primary); }
+
+/* Chapter intro */
+.chapter-intro { background: var(--bg-subtle); border-left: 4px solid var(--accent-green);
+    padding: 3.5mm 5mm; margin-bottom: 5mm; border-radius: 0 4px 4px 0; }
+.chapter-intro p { margin: 0; font-size: 10pt; color: var(--text); }
+
+/* Callouts */
+.note-box { background: var(--warning-bg); border-left: 3px solid var(--accent-gold);
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+.tip-box  { background: var(--success-bg); border-left: 3px solid var(--accent-green);
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+.info-box { background: var(--bg-subtle); border-left: 3px solid var(--primary-teal);
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+.warn-box { background: var(--error-bg); border-left: 3px solid var(--accent-red);
+    padding: 3mm 5mm; margin: 3mm 0; font-size: 9.5pt; border-radius: 0 3px 3px 0; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt; line-height: 1.4; }
+th { background: var(--primary); color: white; text-align: left; padding: 2mm 3mm; font-weight: 700; font-size: 9pt;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+td { padding: 2mm 3mm; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: var(--bg-subtle); }
+
+/* Badges */
+.badge { display: inline-block; font-size: 7.5pt; font-weight: 700; padding: 0.5mm 2mm; border-radius: 10px;
+    letter-spacing: 0.04em; text-transform: uppercase; }
+.badge-green  { background: #e6faf6; color: #017a64; }
+.badge-orange { background: #fff8e6; color: #c07800; }
+.badge-red    { background: #fbeeed; color: #B55852; }
+.badge-blue   { background: #ebf2f5; color: #00517e; }
+.badge-gray   { background: #EAEAEC; color: #888888; }
+
+/* Two-column cards */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 5px; padding: 3.5mm 4mm; }
+.feature-card h4 { color: var(--primary); font-size: 10pt; font-weight: 700; margin-bottom: 1.5mm; }
+.feature-card p { font-size: 9pt; margin: 0; color: var(--text); }
+
+/* Device product cards (with manufacturer product images) */
+.device-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.device-card { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 5px;
+    padding: 3mm 4mm; display: flex; gap: 4mm; align-items: center; }
+.device-card img { width: 28mm; height: 21mm; object-fit: contain; flex-shrink: 0;
+    background: white; border-radius: 3px; border: 1px solid var(--border-light); }
+.device-meta { min-width: 0; }
+.device-meta h4 { color: var(--primary); font-size: 9.5pt; font-weight: 700; margin-bottom: 0.8mm; }
+.device-meta .device-role { font-size: 7.5pt; }
+.device-meta p { font-size: 8.5pt; margin: 1mm 0 1.2mm; color: var(--text); line-height: 1.35; }
+.device-meta a { font-size: 8pt; color: var(--primary-teal); font-weight: 600; word-break: break-word; }
+
+/* SVG figures + captions */
+.svg-figure { margin: 4mm 0 1.5mm; }
+.svg-figure svg { display: block; width: 100%; height: auto; }
+.figure-caption { font-size: 8pt; color: var(--text-muted); text-align: center;
+    margin: 0 0 4mm; font-style: italic; }
+.attribution { font-size: 7pt; color: var(--text-light); margin: 1mm 0 0; }
+
+/* Code block (annotated JSON, etc.) */
+pre.code-block { background: var(--bg-subtle); border: 1px solid var(--border);
+    border-left: 3px solid var(--primary-teal); border-radius: 0 4px 4px 0;
+    padding: 3mm 4mm; margin: 3mm 0; white-space: pre; overflow-x: hidden;
+    font-family: 'Consolas','Courier New',monospace; font-size: 8pt; line-height: 1.5; color: var(--text); }
+pre.code-block .cm { color: var(--text-light); }
+
+/* Step list */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before { content: counter(step-counter); background: var(--accent-green); color: white;
+    font-size: 8pt; font-weight: 700; min-width: 5mm; height: 5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin-right: 3mm; margin-top: 0.3mm; flex-shrink: 0;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* TOC */
+.toc-title { font-size: 18pt; font-weight: 800; color: var(--primary); margin-bottom: 6mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.4mm 0; text-decoration: none; color: var(--text); }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 2.5mm; color: var(--primary); }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.5pt; color: var(--text); }
+.toc-num { min-width: 12mm; flex-shrink: 0; color: var(--accent-green); font-weight: 700; }
+.toc-entry.toc-h2 .toc-num { color: var(--text-muted); font-weight: 500; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-light); margin: 0 2mm 1mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; font-weight: 600; }
+
+    </style>
+</head>
+<body>
+
+<div class="page page-cover">
+    <div class="cover-top-bar"></div>
+    <div class="cover-body">
+        <div class="cover-logo-area">
+            <span class="cover-logo-text">Langate</span>
+            <div class="cover-logo-dot"></div>
+        </div>
+        <div class="cover-main">
+            <div class="cover-tagline">Solution Architecture &amp; Plan</div>
+            <div class="cover-title">FleetFlow</div>
+            <div class="cover-divider"></div>
+            <div class="cover-subtitle">Fleet &amp; transport-order management for small haulage firms &mdash; built on the proven SharePoint + Azure Function architecture of the ISO solution.</div>
+        </div>
+        <div class="cover-meta">
+            <div>Langate AB</div>
+            <div>Draft v0.1 &nbsp;&middot;&nbsp; 2026-06-25</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Contents</div>
+        </div>
+    </div>
+    <div class="page-content">
+<div class="toc-title">Contents</div>
+<a class="toc-entry toc-h1" href="#kap-1"><span class="toc-num">1</span>What FleetFlow is<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#the-three-goals-that-define-the-project"><span class="toc-num"></span>The three goals that define the project<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#what-it-manages"><span class="toc-num"></span>What it manages<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#who-uses-it"><span class="toc-num"></span>Who uses it<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h1" href="#kap-2"><span class="toc-num">2</span>The big picture<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#a-two-part-cooperating-system"><span class="toc-num"></span>A two-part cooperating system<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#what-we-reuse-and-why"><span class="toc-num"></span>What we reuse, and why<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#what-we-deliberately-leave-behind"><span class="toc-num"></span>What we deliberately leave behind<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h1" href="#kap-3"><span class="toc-num">3</span>Front-end host &amp; UI<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#one-bundle-three-hosts"><span class="toc-num"></span>One bundle, three hosts<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#mobile-first-modelled-on-rollcall"><span class="toc-num"></span>Mobile-first, modelled on Rollcall<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#owner-admin-a-responsive-desktop-console"><span class="toc-num"></span>Owner &amp; admin: a responsive desktop console<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h2" href="#every-screen-has-a-link-and-back-just-works"><span class="toc-num"></span>Every screen has a link, and Back just works<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#help-is-one-hover-or-long-press-away"><span class="toc-num"></span>Help is one hover (or long-press) away<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#deployment-shape"><span class="toc-num"></span>Deployment shape<div class="toc-dots"></div><span class="toc-page">10</span></a>
+        <a class="toc-entry toc-h1" href="#kap-4"><span class="toc-num">4</span>The Azure Function backend<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h2" href="#what-it-does"><span class="toc-num"></span>What it does<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h2" href="#one-function-per-customer-in-their-own-subscription"><span class="toc-num"></span>One Function per customer, in their own subscription<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h2" href="#why-a-backend-at-all"><span class="toc-num"></span>Why a backend at all<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h1" href="#kap-5"><span class="toc-num">5</span>Dynamic SharePoint setup<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#how-it-works"><span class="toc-num"></span>How it works<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#two-properties-that-matter"><span class="toc-num"></span>Two properties that matter<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#onboarding-a-customer"><span class="toc-num"></span>Onboarding a customer<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h1" href="#kap-6"><span class="toc-num">6</span>The shared k* libraries<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        <a class="toc-entry toc-h2" href="#one-core-two-faces"><span class="toc-num"></span>One core, two faces<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        <a class="toc-entry toc-h2" href="#what-is-already-solved"><span class="toc-num"></span>What is already solved<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Contents</div>
+        </div>
+    </div>
+    <div class="page-content">
+<a class="toc-entry toc-h2" href="#multi-lingual-versioning"><span class="toc-num"></span>Multi-lingual &amp; versioning<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        <a class="toc-entry toc-h1" href="#kap-7"><span class="toc-num">7</span>The domain model<div class="toc-dots"></div><span class="toc-page">15</span></a>
+        <a class="toc-entry toc-h2" href="#the-entities-from-c-flow"><span class="toc-num"></span>The entities (from C-Flow)<div class="toc-dots"></div><span class="toc-page">15</span></a>
+        <a class="toc-entry toc-h2" href="#new-in-fleetflow-not-in-c-flow"><span class="toc-num"></span>New in FleetFlow (not in C-Flow)<div class="toc-dots"></div><span class="toc-page">15</span></a>
+        <a class="toc-entry toc-h2" href="#vehicle-constraints-fit"><span class="toc-num"></span>Vehicle constraints &amp; fit<div class="toc-dots"></div><span class="toc-page">16</span></a>
+        <a class="toc-entry toc-h2" href="#a-krnings-life"><span class="toc-num"></span>A k&ouml;rning&rsquo;s life<div class="toc-dots"></div><span class="toc-page">16</span></a>
+        <a class="toc-entry toc-h1" href="#kap-8"><span class="toc-num">8</span>Vehicle telemetry<div class="toc-dots"></div><span class="toc-page">17</span></a>
+        <a class="toc-entry toc-h2" href="#where-the-data-lands-decided"><span class="toc-num"></span>Where the data lands &mdash; decided<div class="toc-dots"></div><span class="toc-page">17</span></a>
+        <a class="toc-entry toc-h2" href="#why-files-not-list-rows"><span class="toc-num"></span>Why files, not list rows<div class="toc-dots"></div><span class="toc-page">17</span></a>
+        <a class="toc-entry toc-h2" href="#transport-read-back-privacy"><span class="toc-num"></span>Transport, read-back &amp; privacy<div class="toc-dots"></div><span class="toc-page">17</span></a>
+        <a class="toc-entry toc-h2" href="#how-the-telemetry-flows"><span class="toc-num"></span>How the telemetry flows<div class="toc-dots"></div><span class="toc-page">18</span></a>
+        <a class="toc-entry toc-h2" href="#what-lands-in-each-daily-file"><span class="toc-num"></span>What lands in each daily file<div class="toc-dots"></div><span class="toc-page">19</span></a>
+        <a class="toc-entry toc-h2" href="#device-options-on-the-market"><span class="toc-num"></span>Device options on the market<div class="toc-dots"></div><span class="toc-page">20</span></a>
+        <a class="toc-entry toc-h2" href="#kostnad-per-enhet-och-mnad-uppskattning"><span class="toc-num"></span>Kostnad per enhet och m&aring;nad uppskattning<div class="toc-dots"></div><span class="toc-page">21</span></a>
+        <a class="toc-entry toc-h1" href="#kap-9"><span class="toc-num">9</span>Replacing C-Flow<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#what-c-flow-is"><span class="toc-num"></span>What C-Flow is<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#goal-by-goal-how-fleetflow-surpasses-it"><span class="toc-num"></span>Goal by goal: how FleetFlow surpasses it<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#what-we-keep-fix-and-add"><span class="toc-num"></span>What we keep, fix, and add<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h1" href="#kap-10"><span class="toc-num">10</span>Market &amp; generalisation<div class="toc-dots"></div><span class="toc-page">24</span></a>
+        <a class="toc-entry toc-h2" href="#the-market"><span class="toc-num"></span>The market<div class="toc-dots"></div><span class="toc-page">24</span></a>
+        <a class="toc-entry toc-h2" href="#one-spine-six-storage-tiers"><span class="toc-num"></span>One spine, six storage tiers<div class="toc-dots"></div><span class="toc-page">24</span></a>
+        <a class="toc-entry toc-h2" href="#what-this-means-for-fleetflow"><span class="toc-num"></span>What this means for FleetFlow<div class="toc-dots"></div><span class="toc-page">25</span></a>
+        <a class="toc-entry toc-h1" href="#kap-11"><span class="toc-num">11</span>Decisions &amp; open questions<div class="toc-dots"></div><span class="toc-page">26</span></a>
+        <a class="toc-entry toc-h2" href="#resolved"><span class="toc-num"></span>Resolved<div class="toc-dots"></div><span class="toc-page">26</span></a>
+        <a class="toc-entry toc-h2" href="#open-for-detailed-design"><span class="toc-num"></span>Open &mdash; for detailed design<div class="toc-dots"></div><span class="toc-page">26</span></a>
+        <a class="toc-entry toc-h2" href="#carry-forward-risk"><span class="toc-num"></span>Carry-forward risk<div class="toc-dots"></div><span class="toc-page">27</span></a>
+        </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Introduction</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1 id="kap-1"><span class="chapter-num">Chapter 1</span>What FleetFlow is</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow (working name <em>&ldquo;Armada&rdquo;</em>) is a container-haulage
+            management application for small haulage firms &mdash; an <em>instegsprodukt</em>
+            (entry-level product) for <em>sm&aring; &aring;kerier</em>. It is the production
+            successor to <strong>&ldquo;C-Flow&rdquo;, a Power Apps prototype that was never sold or
+            implemented</strong> &mdash; so FleetFlow starts clean (no migration) and must far surpass
+            that prototype on three fronts: look &amp; feel, performance, and cost (no Power Apps
+            license). Chapter&nbsp;9 analyses the predecessor in detail.</p>
+        </div>
+
+        <h2 id="the-three-goals-that-define-the-project">The three goals that define the project</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>1 &middot; Look &amp; feel &mdash; far better</h4>
+                <p>A bespoke, mobile-first interface under full design control and Langate branding
+                &mdash; not generic, auto-generated Power Apps forms.</p>
+            </div>
+            <div class="feature-card">
+                <h4>2 &middot; Performance &mdash; snappy</h4>
+                <p>Immediate load and immediate feedback on every interaction. The screen reacts in the
+                same frame; the save confirms behind it.</p>
+            </div>
+            <div class="feature-card">
+                <h4>3 &middot; No Power Apps license</h4>
+                <p>Built on SharePoint (included in Microsoft&nbsp;365), not Power Apps + Dataverse, so
+                there is no premium Power Platform licensing cost.</p>
+            </div>
+            <div class="feature-card">
+                <h4>+ Multi-lingual</h4>
+                <p>Every screen runs through Langate&rsquo;s existing translation system &mdash; Swedish
+                and English from day one, more languages with no code change.</p>
+            </div>
+        </div>
+
+        <h2 id="what-it-manages">What it manages</h2>
+        <p>The domain is <strong>container / skip haulage</strong>: customers order containers
+        (<em>beh&aring;llare</em> &mdash; from 190&nbsp;L bins to 40&nbsp;m&sup3; roll-off containers and
+        compactors) delivered or collected (<em>k&ouml;rningar</em>, type <em>Utk&ouml;rning</em> /
+        <em>H&auml;mtning</em>) at addresses, by drivers in trucks, with completion marks and vehicle
+        telemetry. The full entity model is in Chapter&nbsp;7.</p>
+
+        <h2 id="who-uses-it">Who uses it</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Office / dispatch</h4>
+                <p>Manages customers, contacts, addresses, vehicles, drivers and container types, and
+                creates and assigns k&ouml;rningar. Desktop or tablet.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Drivers</h4>
+                <p>See today&rsquo;s jobs (<em>Vart ska jag k&ouml;ra idag</em>) and their own list
+                (<em>Mina k&ouml;rningar</em>), and mark jobs complete &mdash; phone-first. New vs C-Flow.</p>
+            </div>
+        </div>
+
+        <div class="info-box"><strong>Status:</strong> this document records the agreed architecture
+        only. No source code exists yet (as of 2026-06-25). Items marked <span class="badge badge-gray">TBD</span>
+        are open decisions, captured in Chapter&nbsp;11.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Architecture overview</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1 id="kap-2"><span class="chapter-num">Chapter 2</span>The big picture</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow does not start from scratch. It reuses the proven shape of two existing
+            Langate solutions: the <strong>ISO</strong> certification tool (SharePoint front-end +
+            Azure Function backend + dynamic list provisioning) and <strong>Rollcall</strong>
+            (a lean, mobile-first classic SharePoint page).</p>
+        </div>
+
+        <h2 id="a-two-part-cooperating-system">A two-part cooperating system</h2>
+        <p>The product is two halves that work together, both must be running:</p>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>1 &middot; SharePoint browser app</h4>
+                <p>A webpack bundle that renders the UI, reads and writes SharePoint list data, and
+                asks the backend to provision the site. Does no privileged or long-running work itself.</p>
+            </div>
+            <div class="feature-card">
+                <h4>2 &middot; Azure Function (Node)</h4>
+                <p>Runs under an app-only identity with Full Control. Owns dynamic list provisioning
+                and background work such as telemetry ingestion.</p>
+            </div>
+        </div>
+
+        <h2 id="what-we-reuse-and-why">What we reuse, and why</h2>
+        <table>
+            <tr><th>Concern</th><th>Reused from</th><th>Benefit</th></tr>
+            <tr><td>Front-end host &amp; bootstrap</td><td>Rollcall</td><td>Mobile-first classic page, proven on phones</td></tr>
+            <tr><td>Backend + provisioning</td><td>ISO</td><td>Self-provisioning sites, no manual setup</td></tr>
+            <tr><td>Shared <code>k*</code> libraries</td><td>Admin (ReUsableTS)</td><td>HTTP, CRUD, dates, errors already solved</td></tr>
+            <tr><td>Single-version build</td><td>ISO</td><td>Server &amp; client can never drift apart</td></tr>
+        </table>
+
+        <h2 id="what-we-deliberately-leave-behind">What we deliberately leave behind</h2>
+        <div class="note-box"><strong>No question-catalog or wizard.</strong> ISO is a question-driven
+        tool with a large catalog/wizard subsystem. FleetFlow is conventional CRUD (orders, trucks,
+        drivers, routes), so that machinery is dropped. We keep the data-model <em>shape</em> &mdash;
+        domain objects that own their own persistence &mdash; not the catalog.</div>
+
+        <p>The chapters that follow take each layer in turn: the front-end host (Ch.&nbsp;3), the
+        backend (Ch.&nbsp;4), dynamic provisioning (Ch.&nbsp;5), the shared libraries (Ch.&nbsp;6),
+        the domain model (Ch.&nbsp;7), and telemetry (Ch.&nbsp;8). Chapter&nbsp;9 compares FleetFlow
+        against the C-Flow prototype goal by goal; Chapter&nbsp;10 maps the wider market and how the
+        schema generalises; and Chapter&nbsp;11 records the decisions taken and the questions still open.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Front-end</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-3"><span class="chapter-num">Chapter 3</span>Front-end host &amp; UI</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>The webpack bundle <em>is</em> the product; the SharePoint host that loads it is a thin
+            shim. The same bundle can run under three hosts &mdash; only the start-up call differs.
+            That is what makes &ldquo;sandboxed now, SPFx later&rdquo; cheap.</p>
+        </div>
+<h2 id="one-bundle-three-hosts">One bundle, three hosts</h2>
+<table>
+            <tr><th>Host</th><th>How the bundle loads</th><th>Start-up call</th></tr>
+            <tr><td>Classic page / sandboxed WSP <span class="badge badge-green">now</span></td><td>A <code>ScriptLink</code> on a classic page</td><td><code>StartGetBaseInfo</code></td></tr>
+            <tr><td>SPFx Application Customizer <span class="badge badge-gray">later</span></td><td>An extension injects the script on every modern page</td><td><code>SPFXGetBaseInfo(context)</code></td></tr>
+        </table>
+        <p>Boot is keyed off the application type, so converting to SPFx is a pure add-on, not a
+        rewrite. ISO already ships the minimal SPFx customizer this conversion would use.</p>
+<h2 id="mobile-first-modelled-on-rollcall">Mobile-first, modelled on Rollcall</h2>
+        <p>The driver surface follows Rollcall&rsquo;s recipe, proven on phone browsers:</p>
+        <ul>
+            <li>A classic SharePoint page that <strong>strips all SharePoint chrome</strong> (suite bar, title row, ribbon, navigation) for a full-bleed app surface.</li>
+            <li>A single mount point; the app builds its own UI into it.</li>
+            <li>Large touch targets and a glanceable layout for drivers in the cab.</li>
+            <li>Shared mobile-styled notifications and continuous, visible feedback on every tap.</li>
+            <li>A Langate-branded <strong>&ldquo;frosted glass&rdquo;</strong> finish &mdash; the deep-blue
+            primary, the signature green accent and DM&nbsp;Sans &mdash; rendered as translucent panels over
+            a soft brand backdrop, with WCAG&nbsp;AA-contrast colour throughout.</li>
+        </ul>
+<div class="tip-box"><strong>Why Rollcall, not the ISO wizard:</strong> Rollcall is a thin,
+        single-page mobile app &mdash; a much closer fit to a driver&rsquo;s <em>&ldquo;what do I drive
+        today&rdquo;</em> view than ISO&rsquo;s multi-view desktop wizard.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Front-end</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2 id="owner-admin-a-responsive-desktop-console">Owner &amp; admin: a responsive desktop console</h2>
+        <p>The dispatcher and owner surfaces are the mirror of the driver app &mdash; a
+        <strong>desktop console</strong> that is <strong>fully responsive</strong>: the dashboard, live
+        vehicle map, schedule and data grids <strong>fill the available width</strong> on a wide monitor
+        (the map grows to dominate the screen) and reflow gracefully down to a tablet, rather than sitting
+        in a fixed narrow column. The same Langate &ldquo;frosted glass&rdquo; finish carries across both
+        apps.</p>
+        <p>The <strong>dashboard</strong> is now a start-of-day <strong>cockpit</strong> that answers one
+        question &mdash; <em>&ldquo;what needs me right now?&rdquo;</em> A row of <strong>attention tiles</strong>
+        counts everything that needs a dispatcher&rsquo;s eye (jobs with no driver, overdue runs, load-fit
+        conflicts, vehicles in the workshop, containers left on site, open incident reports); each tile
+        jumps straight to that worklist. Below it, <strong>today&rsquo;s</strong> jobs are broken down by
+        status with a &ldquo;stops completed today&rdquo; progress bar, then <strong>three separate
+        panels &mdash; one per time frame</strong> show what is <strong>running now</strong>, what is
+        <strong>running late</strong> and the <strong>next few departures</strong> (that last one carrying a
+        one-click link to the full day&rsquo;s schedule), the <strong>fleet</strong> panel surfaces only the vehicles
+        that need attention, and a <strong>latest-activity</strong> feed streams the newest events. Every
+        panel links straight into the tab that owns the action &mdash; the dashboard points, the specialist
+        tabs do.</p>
+        <p><strong>Drivers, locations and container types now have their own detail views</strong> &mdash;
+        a driver&rsquo;s assigned vehicles, certifications and jobs; a location&rsquo;s coordinates and the
+        jobs that stop there; a container type&rsquo;s compatible vehicles and the jobs that need it &mdash;
+        each cross-linked so you can hop from one to the next. A route&rsquo;s <strong>activity timeline</strong>
+        is expandable (tap an event to see exactly when it happened, on which stop, and its detail), and a
+        completed drive&rsquo;s <strong>proof-of-delivery PDF</strong> can be downloaded or previewed straight
+        from the route. The <strong>turn-by-turn navigator</strong> now shades its route by <strong>live
+        traffic</strong> (green&rarr;red) and shows <strong>lane guidance</strong> at the roads that carry it.</p>
+        <p>The admin <strong>detail modals are editable forms</strong>, not read-only reports: a vehicle,
+        customer or route can be changed in place (status, assignments, stops, contacts) and saved through
+        the same optimistic writer that powers the grids. Creating a new drive and editing an existing one
+        use <strong>the same form</strong> &mdash; identical two-column layout, container-fit check and
+        stops grid &mdash; so the two never drift apart; only the fields that make sense for each (a new
+        drive is always &ldquo;planned&rdquo;; an existing one adds status, history and lifecycle actions)
+        differ. The <strong>jobs list stays fast at scale</strong>: once a fleet holds more than 75 drives
+        it pages the grid (Previous / &ldquo;Page X of Y&rdquo; / Next, newest first) instead of drawing one
+        endless table, so the console loads quickly and stays easy to scan; a small fleet still shows every
+        drive in a single list. The driver app remains mobile-first, but on a desktop browser it widens into a roomier
+        layout with route cards in a grid. While a drive is <strong>in progress</strong> the live map is
+        the primary surface: the detail goes edge-to-edge, with the customer, instructions and stops in a
+        slim column on the left and the <strong>map filling the entire rest of the screen</strong> &mdash;
+        the same &ldquo;the map dominates the monitor&rdquo; principle as the admin console, so nothing is
+        wasted on a wide screen.</p>
+        <p>Places are edited on a <strong>map</strong>, not in raw number boxes. The Locations grid
+        carries a single <strong>&ldquo;Location&rdquo; column</strong> that opens an interactive
+        Mapbox <strong>map picker</strong>: start typing an address and a <strong>live list of
+        suggestions</strong> appears &mdash; pick one and the pin and coordinates drop in for you &mdash;
+        or click / drag the pin to place it exactly where the site is, and the coordinates fill in
+        automatically (they can still be typed by hand for precision). It is one reusable building block &mdash; the same map-picker column can
+        be dropped into any future grid that needs a point on the map &mdash; so capturing a depot,
+        customer site or drop-off is a glance-and-click instead of guessing latitude and longitude.</p>
+        <p>Because that map picker is a reusable building block, it also powers a
+        <strong>&ldquo;+ New location&rdquo;</strong> option right next to every stop&rsquo;s location field
+        &mdash; on the driver&rsquo;s <em>New drive</em> form and on the admin drive form alike. If the
+        place a driver or dispatcher needs isn&rsquo;t in the list yet, they pin it on the map right there,
+        name it and set its type, and it is created and selected on the spot &mdash; no detour to a separate
+        Locations screen first.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Front-end</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h3>The live vehicle map</h3>
+        <p>On the live vehicle map each vehicle is drawn as a <strong>truck marker</strong>
+        &mdash; a compact rounded pin carrying a bold truck silhouette, coloured by its status (green
+        driving, slate idle, amber on-hold, red needs attention) &mdash; so the fleet reads at a glance
+        as <em>trucks</em> rather than abstract dots, crisp and legible even zoomed out to a whole
+        country. Each truck also carries a small <strong>caption</strong> above it showing its
+        <strong>registration plate</strong> and the <strong>driver&rsquo;s name</strong>, so a dispatcher
+        sees not just <em>where</em> a truck is but <em>which</em> one and <em>who</em> is driving it,
+        without clicking. <strong>Clicking a truck</strong> opens a card listing <strong>all of that
+        truck&rsquo;s drives for the day</strong> &mdash; each showing the customer, the status, the
+        departure time and how many stops are done. Every drive in the card is a <strong>link</strong>:
+        click it to open that drive&rsquo;s full details. Each also has a <strong>share</strong> button
+        that produces a customer tracking link, so a haulier can tell a customer &ldquo;your container is
+        on the way&rdquo; straight from the map. (A completed drive now correctly reads <em>2&nbsp;of&nbsp;2
+        stops</em> done, not the earlier confusing <em>0&nbsp;of&nbsp;2</em>.) The map opens clean, showing only the
+        fleet; the day&rsquo;s <strong>job stops are an optional layer</strong>, off by default and turned
+        on with a <strong>&ldquo;Show stops&rdquo;</strong> switch in the map&rsquo;s options menu when the
+        dispatcher wants to see where the work is. Alongside it a <strong>&ldquo;Traffic&rdquo;</strong>
+        switch overlays <strong>live road congestion</strong> (green flowing through to red for a jam), so the
+        dispatcher can see at a glance which routes are slow. And each truck&rsquo;s <strong>trail of where it
+        has actually driven today</strong> is <strong>snapped to the roads</strong> &mdash; the raw GPS breadcrumb
+        is cleaned up so the path follows the streets instead of wandering across buildings.</p>
+        <p>A <strong>&ldquo;Show locations&rdquo;</strong> switch (in the same options menu, off by default) marks
+        every one of the fleet&rsquo;s sites &mdash; depots, customer premises, ports, rest stops &mdash; with a
+        distinct <strong>white house symbol whose roof is colour-coded by kind</strong> (so a depot, a customer
+        site and any other place read apart at a glance, and the bright house stays legible on both the light and
+        the dark map). Clicking a house opens a small card <strong>suggesting what to do there</strong>:
+        <strong>View details</strong> opens that site&rsquo;s full record, and <strong>Nearest truck</strong> finds
+        the closest vehicle that can actually take the job and draws the route to it &mdash; so a dispatcher can act
+        on a place straight from the map.</p>
+        <p>The map also has a <strong>&ldquo;Simulate day&rdquo;</strong> button that plays the whole
+        fleet&rsquo;s day out in about twenty seconds: every truck sets off from the start of its route and
+        <strong>glides smoothly along the real roads</strong> it drives &mdash; motorways and A-roads, not
+        straight lines across country &mdash; laying down its route ahead of it and its progress behind,
+        with the view automatically <strong>framed so the entire day stays on screen</strong>. When it
+        finishes, a <strong>replay slider</strong> lets you scrub back and forth to any moment of the day.
+        A one-click <strong>&ldquo;Run demo&rdquo;</strong> plays the whole story hands-free for a buyer:
+        it tilts into 3D, drives the day to completion, then highlights the <strong>nearest suitable
+        truck</strong> for a new job and opens a shareable <strong>&ldquo;track your delivery&rdquo;</strong>
+        card &mdash; each step waiting for the previous one to finish, so it never talks over itself.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Front-end</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2 id="every-screen-has-a-link-and-back-just-works">Every screen has a link, and Back just works</h2>
+        <p>FleetFlow is a single-page app, but it behaves like the web you expect. <strong>Every screen has
+        its own address</strong> in the browser bar &mdash; the driver&rsquo;s drives list, a specific drive,
+        the admin dashboard, the schedule, any admin tab &mdash; so a link can be <strong>bookmarked or
+        shared</strong> and opens straight onto that screen. And the browser&rsquo;s <strong>Back and Forward
+        buttons work</strong>: Back steps to the previous screen inside the app (a drive back to the list, one
+        admin tab back to the last, an app back to the home chooser) instead of jumping out of FleetFlow
+        entirely. The links go one level deeper too &mdash; a specific Configuration section or an Operations
+        worklist has its own address, so Back walks back through those as well. It is one consistent behaviour
+        whether you click a card, click an admin tab, or press Back &mdash; the address bar and the on-screen
+        view always agree.</p>
+        <p><strong>Back also closes an open pop-up.</strong> When a detail form or the driver&rsquo;s incident
+        report is on screen, pressing Back simply closes it and returns you to exactly where you were &mdash;
+        the natural gesture, especially on a phone &mdash; rather than jumping away underneath it. A bookmarked
+        link never re-opens a pop-up (it opens the screen behind it); pop-ups belong to the moment, not to a
+        shareable address.</p>
+        <p>Under the hood this is a small, <strong>reusable building block</strong> in the shared library, so
+        the same &ldquo;every screen has a link and Back just works&rdquo; behaviour can be switched on for any
+        of Langate&rsquo;s single-page apps, not just FleetFlow.</p>
+<h2 id="help-is-one-hover-or-long-press-away">Help is one hover (or long-press) away</h2>
+        <p>Every button, tab, toggle and form field that could use an explanation carries a <strong>short
+        help note</strong> in the current language. On the desktop admin console it appears when you
+        <strong>hover</strong> the control (or tab to it with the keyboard); on the phone driver app &mdash;
+        where a plain hover tooltip never shows &mdash; you <strong>press and hold</strong> to reveal it. So a
+        control such as &ldquo;Pausa&rdquo; on a drive is no longer a guess: hold it and it explains
+        &ldquo;pauses the drive &mdash; it leaves active dispatch and can be resumed later.&rdquo; The notes are
+        translated the same way as the rest of the interface (Swedish, English, German), so they always match
+        the language a person is working in.</p>
+        <p>It is one small, <strong>reusable component</strong>: a single tidy help bubble, styled to match the
+        rest of the app, that any control can opt into with one line &mdash; so the coverage can grow without
+        adding clutter, and the same help layer is available to Langate&rsquo;s other apps.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Front-end</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2 id="deployment-shape">Deployment shape</h2>
+        <p>FleetFlow ships first as a <strong>sandboxed <code>.wsp</code></strong> installed per site,
+        with the bundle uploaded to the site&rsquo;s asset library and loaded via a script link.
+        Conversion to the tenant-wide SPFx package is scheduled against the tenancy decision
+        (Chapter&nbsp;11), since the two have opposite deployment topologies.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Backend</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-4"><span class="chapter-num">Chapter 4</span>The Azure Function backend</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>The backend is a Node.js Azure Function that owns everything privileged: provisioning
+            SharePoint lists, and background work such as telemetry ingestion. It runs under an
+            app-only identity with Full Control, so it can act regardless of who is signed in.</p>
+        </div>
+<h2 id="what-it-does">What it does</h2>
+        <ul>
+            <li><strong>HTTP endpoints</strong> the browser calls &mdash; chiefly a &ldquo;make sure
+            the site is set up&rdquo; endpoint the bundle kicks on load.</li>
+            <li><strong>Timer-triggered workers</strong> for background jobs, following ISO&rsquo;s
+            scanner / worker pattern.</li>
+            <li><strong>Central error reporting</strong> &mdash; the function arms its own global error
+            handler so server errors are surfaced, never silently swallowed.</li>
+        </ul>
+<h2 id="one-function-per-customer-in-their-own-subscription">One Function per customer, in their own subscription</h2>
+<div class="info-box"><strong>Decided 2026-06-25:</strong> each fleet manager (customer) runs
+        <strong>their own Azure Function in their own Azure subscription</strong> &mdash; not a shared
+        vendor-hosted service. The function, its secrets, and its access grant all live inside the
+        customer&rsquo;s subscription.</div>
+        <p>This is the ISO single-tenant-per-customer model, taken one step further. The browser
+        bundle for each customer points at that customer&rsquo;s own Function endpoint. The
+        consequences for build, deployment, and configuration are covered in Chapters&nbsp;5 and&nbsp;11.</p>
+<h2 id="why-a-backend-at-all">Why a backend at all</h2>
+        <p>Two jobs genuinely need server-side power. First, <strong>provisioning</strong>: creating
+        SharePoint lists and columns requires elevated rights a normal user may not have &mdash; the
+        app-only identity lets any user&rsquo;s first page load fully set up the site (Chapter&nbsp;5).
+        Second, <strong>telemetry</strong>: pulling vehicle position data and writing it to storage is
+        background work that must run without a user present (Chapter&nbsp;8).</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Backend</div>
+        </div>
+    </div>
+    <div class="page-content">
+<div class="note-box"><strong>Driver writes go through SharePoint, not the function.</strong>
+        Because drivers are signed-in Microsoft 365 users (Chapter&nbsp;11), they read and write their
+        k&ouml;rningar directly against SharePoint under their own identity &mdash; the function is
+        reserved for provisioning and background jobs.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Provisioning</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1 id="kap-5"><span class="chapter-num">Chapter 5</span>Dynamic SharePoint setup</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow describes the SharePoint lists, columns, and permissions it needs in a single
+            declarative schema, and lets the Azure Function build them. There is no manual list setup
+            and no separate install step for the data structure.</p>
+        </div>
+
+        <h2 id="how-it-works">How it works</h2>
+        <ol class="step-list">
+            <li>The schema (one JSON file) describes every list, column, folder, and permission set.</li>
+            <li>The browser bundle, on load, asks the function to ensure the site matches the schema.</li>
+            <li>The function reads the schema and creates anything missing &mdash; lists, columns, folders, permissions.</li>
+            <li>The bundle polls until the site is fully set up, then loads its data.</li>
+        </ol>
+
+        <h2 id="two-properties-that-matter">Two properties that matter</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Idempotent</h4>
+                <p>A version stamp means repeat runs are cheap. Adding a column is just an edit to the
+                schema plus a version bump; the function adds whatever it does not already find.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Order-safe</h4>
+                <p>Any data read that needs a new column waits until provisioning reports done &mdash;
+                so a read can never ask for a column the function has not created yet.</p>
+            </div>
+        </div>
+
+        <h2 id="onboarding-a-customer">Onboarding a customer</h2>
+        <p>Because each customer is self-hosted (Chapter&nbsp;4), provisioning has two parts: a
+        <strong>one-time onboarding</strong> step (create the site, grant the function access, register
+        the bundle) and the <strong>per-load schema convergence</strong> above, which keeps an existing
+        site up to date automatically.</p>
+
+        <div class="tip-box"><strong>Reused wholesale.</strong> The schema-to-lists engine is shared
+        library code already proven in ISO. FleetFlow supplies its own schema; the engine that applies
+        it is not rewritten.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Shared libraries</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1 id="kap-6"><span class="chapter-num">Chapter 6</span>The shared k* libraries</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow does not hand-roll networking, persistence, dates, translations, or error
+            handling. Langate&rsquo;s shared <code>k*</code> libraries already solve these, and the same
+            code runs in both halves of the system &mdash; the Azure Function and the browser.</p>
+        </div>
+
+        <h2 id="one-core-two-faces">One core, two faces</h2>
+        <p>The libraries are built as an environment-neutral <strong>core</strong> consumed by both the
+        Node.js function and the browser. The browser classes are thin shells over that shared core, so
+        a list read, a CRUD save, or a permission apply behaves identically on the server and the client.</p>
+
+        <h2 id="what-is-already-solved">What is already solved</h2>
+        <table>
+            <tr><th>Concern</th><th>Use the shared</th></tr>
+            <tr><td>HTTP to SharePoint / Graph</td><td>REST helper (retries, request digest, 429 handling)</td></tr>
+            <tr><td>List item create / read / update</td><td>Item + typed-collection classes</td></tr>
+            <tr><td>Files &amp; libraries</td><td>File upload / download helpers</td></tr>
+            <tr><td>Lists, views, schema, permissions</td><td>List / schema / permission engine</td></tr>
+            <tr><td>Dates &amp; times</td><td>Culture-aware time helpers</td></tr>
+            <tr><td>Translations</td><td>Phrase database + localization class</td></tr>
+            <tr><td>Errors</td><td>Central error handler &mdash; handled or reported, never hidden</td></tr>
+        </table>
+
+        <div class="note-box"><strong>Reuse before writing.</strong> Before any networking, persistence,
+        or framework-utility code is written, the shared libraries are searched first. If a shared
+        method almost fits, it is extended with a defaulted parameter rather than duplicated &mdash; and
+        bugs are fixed in the shared library directly, never worked around locally.</div>
+
+        <h2 id="multi-lingual-versioning">Multi-lingual &amp; versioning</h2>
+        <p><strong>Every user-facing string is multi-lingual.</strong> Text comes from Langate&rsquo;s
+        shared phrase database (generated, never hand-edited) &mdash; Swedish and English from day one,
+        with more languages addable and no code change. (C-Flow was Swedish-only.) A single generated
+        version file is imported by both halves, so every error report carries the exact build &mdash;
+        the server and client can never disagree about which version is running.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Domain model</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-7"><span class="chapter-num">Chapter 7</span>The domain model</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow is conventional CRUD. The entity model below is taken directly from the C-Flow
+            prototype (the authoritative source for the fields), plus the records C-Flow lacks. Each
+            entity is an object that owns its own SharePoint round-trip, gathered into one in-memory model.</p>
+        </div>
+<h2 id="the-entities-from-c-flow">The entities (from C-Flow)</h2>
+<table>
+            <tr><th>Entity</th><th>Key fields</th></tr>
+            <tr><td><strong>Kund</strong> (Customer)</td><td>Namn, S&ouml;knamn, Kontaktperson, Postadress / Prim&auml;r adress, Kundansvarig, Kundnummer (auto). Has many k&ouml;rningar, personer, adresser.</td></tr>
+            <tr><td><strong>Person</strong> (contact)</td><td>Namn, Kund, Mobil, Telefon, E-post, Kommentar. A customer-side contact &mdash; not a driver.</td></tr>
+            <tr><td><strong>Adress</strong> (Address)</td><td>Kund, Namn, Gatuadress, Gatuadress&nbsp;2, Postnummer/ort. Pickup / delivery addresses.</td></tr>
+            <tr><td><strong>F&ouml;rare</strong> (Driver)</td><td>Namn, Mobil, Fordon. In FleetFlow, linked to a Microsoft&nbsp;365 sign-in so the driver can log in.</td></tr>
+            <tr><td><strong>Fordon</strong> (Vehicle)</td><td>Namn, F&ouml;rare, registration. Carries the telemetry device(s).</td></tr>
+            <tr><td><strong>Beh&aring;llare</strong> (Container type)</td><td>Namn. A catalog of container / bin kinds (190&nbsp;L &ndash; 40&nbsp;m&sup3;, compactor, &hellip;).</td></tr>
+            <tr><td><strong>K&ouml;rning</strong> (Job) &mdash; central</td><td>Kund, Best&auml;llare, status, datum, typ (<em>Utk&ouml;rning</em>/<em>H&auml;mtning</em>), tid, beh&aring;llare, f&ouml;rare, gatuadress + postnummer/ort, instruktion, position (lat/lng) + map.</td></tr>
+        </table>
+<h2 id="new-in-fleetflow-not-in-c-flow">New in FleetFlow (not in C-Flow)</h2>
+        <ul>
+            <li><strong>Aktivitet</strong> &mdash; steps and events within a k&ouml;rning.</li>
+            <li><strong>Klarmarkering</strong> (completion) &mdash; one record per completion event, carrying the captured location.</li>
+            <li><strong>Telemetry</strong> &mdash; vehicle position logs (Chapter&nbsp;8), stored as files, not list rows.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 15</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Domain model</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h2 id="vehicle-constraints-fit">Vehicle constraints &amp; fit</h2>
+        <p>C-Flow was built for a container company, where each container size fits only <em>some</em>
+        trucks. FleetFlow makes this a first-class, typed model: a <strong>Fordon</strong> carries its
+        constraints &mdash; max weight, dimensions, passenger capacity, and which container sizes it can
+        take &mdash; and a <strong>Beh&aring;llare</strong> carries the matching requirement. Assigning a
+        load to a truck is checked against these constraints, so dispatch only offers trucks that
+        actually fit. The same model generalises the product beyond containers &mdash; for example
+        passenger capacity for taxi-type work.</p>
+<h2 id="a-krnings-life">A k&ouml;rning&rsquo;s life</h2>
+<div class="info-box"><strong>Created &rarr; Assigned &rarr; En route &rarr; Completed.</strong>
+        The dispatcher creates and assigns; the driver drives and completes. A single authority decides
+        which transitions are legal, so every screen agrees and the audit trail (who, when, where) stays
+        consistent. Completing a k&ouml;rning creates a separate completion record with the captured location.</div>
+<div class="tip-box"><strong>Relationships are lightweight.</strong> Entities reference each other
+        by simple stable IDs resolved in memory &mdash; the convention proven in ISO &mdash; not heavy
+        cross-list lookups. Final columns and the work-order-to-k&ouml;rning cardinality are confirmed in
+        detailed design (Chapter&nbsp;11).</div>
+<div class="info-box"><strong>Every drive is scheduled to the minute.</strong> A k&ouml;rning is
+        stored with a full date <em>and</em> time for its departure and its arrival, and each stop carries
+        its own planned time (and, once the driver completes it, the actual time) &mdash; so the driver app,
+        the dispatch board and the customer ETA all show <em>when</em>, not just which day.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 16</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Telemetry</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h1 id="kap-8"><span class="chapter-num">Chapter 8</span>Vehicle telemetry</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>Trucks and transported goods carry GPS sensors, OBD2 connectors, and utility boxes that
+            report position and status. FleetFlow ingests that stream in the background and stores it so
+            the office can see <em>&ldquo;var &auml;r mina bilar&rdquo;</em> &mdash; where are my vehicles.</p>
+        </div>
+
+        <h2 id="where-the-data-lands-decided">Where the data lands &mdash; decided</h2>
+        <div class="info-box"><strong>Decided 2026-06-25:</strong> telemetry is stored as files in
+        SharePoint, not as list rows. <strong>One document library per vehicle</strong>; inside it,
+        <strong>one folder per month</strong>; inside that, <strong>one JSON file per day</strong>
+        holding that day&rsquo;s log. The day&rsquo;s file is <strong>over-written on each data
+        receipt</strong>, and <strong>version history is turned off</strong> on these libraries so the
+        rewrites do not pile up versions.</div>
+
+        <h2 id="why-files-not-list-rows">Why files, not list rows</h2>
+        <p>A single truck reporting every few seconds produces thousands of points per day. Writing one
+        SharePoint list row per point would quickly throttle the service and overwhelm list views. A
+        per-day JSON file sidesteps both limits and keeps everything inside SharePoint &mdash; no extra
+        cloud database to operate.</p>
+
+        <h2 id="transport-read-back-privacy">Transport, read-back &amp; privacy</h2>
+        <table>
+            <tr><th>Question</th><th>Where it landed</th></tr>
+            <tr><td>How devices reach the cloud</td><td><strong>Per-customer choice</strong> &mdash; poll the vendor cloud on a timer, or accept a device push; wired in each customer&rsquo;s own Function. <span class="badge badge-blue">per customer</span></td></tr>
+            <tr><td>How the data is read back</td><td><strong>Defined</strong> &mdash; the live map reads the last fix per vehicle; history reads whole day files (schema below). <span class="badge badge-green">decided</span></td></tr>
+            <tr><td>Privacy &amp; retention</td><td>Live driver position is personal data under GDPR. <strong>The Function purges old telemetry automatically</strong> (below); access is dispatcher-only (Chapter&nbsp;11). <span class="badge badge-green">decided</span></td></tr>
+        </table>
+
+        <div class="note-box"><strong>Scope note.</strong> The SMS-based location check
+        (<em>&ldquo;SMS med autentisering av var jag &auml;r&rdquo;</em>) is a separate, deferred feature
+        &mdash; see Chapter&nbsp;11. Continuous vehicle telemetry and one-off location proof are kept apart.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 17</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Telemetry</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2 id="how-the-telemetry-flows">How the telemetry flows</h2>
+        <p>Two pictures: <strong>what the on-board devices capture</strong>, and <strong>how that
+        data travels</strong> from the vehicle to the dispatcher&rsquo;s live map.</p>
+
+        <h3>What the devices capture</h3>
+        <div class="svg-figure">
+          <svg viewBox="0 0 720 150" role="img" aria-label="The three telemetry capture sources and what each yields" font-family="'DM Sans', Arial, sans-serif">
+            <defs>
+              <marker id="srcArrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L7,3 L0,6 Z" fill="#02B896"></path>
+              </marker>
+            </defs>
+            <!-- source cards -->
+            <g>
+              <rect x="0" y="4"   width="288" height="42" rx="5" fill="#ffffff" stroke="#DBE4EA" stroke-width="1.5"></rect>
+              <rect x="0" y="4"   width="5"   height="42" fill="#02B896"></rect>
+              <text x="16" y="22" fill="#00517e" font-size="11" font-weight="700">GPS tag in transported object</text>
+              <text x="16" y="37" fill="#888888" font-size="9">Position of the container / load only</text>
+            </g>
+            <g>
+              <rect x="0" y="54"  width="288" height="42" rx="5" fill="#ffffff" stroke="#DBE4EA" stroke-width="1.5"></rect>
+              <rect x="0" y="54"  width="5"   height="42" fill="#F5A623"></rect>
+              <text x="16" y="72" fill="#00517e" font-size="11" font-weight="700">OBD2 dongle (plug-in)</text>
+              <text x="16" y="87" fill="#888888" font-size="9">+ fuel, mileage, fault codes, ignition state</text>
+            </g>
+            <g>
+              <rect x="0" y="104" width="288" height="42" rx="5" fill="#ffffff" stroke="#DBE4EA" stroke-width="1.5"></rect>
+              <rect x="0" y="104" width="5"   height="42" fill="#F5A623"></rect>
+              <text x="16" y="122" fill="#00517e" font-size="11" font-weight="700">Utility box (hardwired)</text>
+              <text x="16" y="137" fill="#888888" font-size="9">As OBD2 + theft-resistant, extra I/O</text>
+            </g>
+            <!-- converging arrows -->
+            <path d="M288,25 L450,66"  stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#srcArrow)"></path>
+            <path d="M288,75 L450,75"  stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#srcArrow)"></path>
+            <path d="M288,125 L450,84" stroke="#02B896" stroke-width="2" fill="none" marker-end="url(#srcArrow)"></path>
+            <!-- stream node -->
+            <rect x="456" y="50" width="264" height="50" rx="6" fill="#00517e"></rect>
+            <text x="588" y="71" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">Telemetry stream</text>
+            <text x="588" y="88" fill="#cfe0ea" font-size="9" text-anchor="middle">time-stamped position + status</text>
+          </svg>
+        </div>
+        <div class="figure-caption">Three ways to capture &mdash; richer data costs more. All three yield the GPS position the live map needs.</div>
+
+        <h3>From device to dispatcher</h3>
+        <div class="svg-figure">
+          <svg viewBox="0 0 720 150" role="img" aria-label="Telemetry pipeline from on-board device to the browser app" font-family="'DM Sans', Arial, sans-serif">
+            <defs>
+              <marker id="pipeArrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+                <path d="M0,0 L7,3 L0,6 Z" fill="#02B896"></path>
+              </marker>
+            </defs>
+            <!-- arrow labels -->
+            <text x="139" y="42" fill="#888888" font-size="7.5" text-anchor="middle">report</text>
+            <text x="286" y="42" fill="#888888" font-size="7.5" text-anchor="middle">poll / push</text>
+            <text x="433" y="42" fill="#888888" font-size="7.5" text-anchor="middle">write</text>
+            <text x="580" y="42" fill="#888888" font-size="7.5" text-anchor="middle">read</text>
+            <!-- node 1 -->
+            <rect x="0" y="48" width="132" height="70" rx="6" fill="#ffffff" stroke="#00517e" stroke-width="1.5"></rect>
+            <circle cx="16" cy="64" r="9" fill="#02B896"></circle>
+            <text x="16" y="67" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">1</text>
+            <text x="31" y="67" fill="#00517e" font-size="9.5" font-weight="700">On-board device</text>
+            <text x="12" y="90"  fill="#888888" font-size="7.5">GPS &middot; OBD2 &middot;</text>
+            <text x="12" y="101" fill="#888888" font-size="7.5">utility box</text>
+            <!-- node 2 -->
+            <rect x="147" y="48" width="132" height="70" rx="6" fill="#ffffff" stroke="#00517e" stroke-width="1.5"></rect>
+            <circle cx="163" cy="64" r="9" fill="#02B896"></circle>
+            <text x="163" y="67" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">2</text>
+            <text x="178" y="67" fill="#00517e" font-size="9.5" font-weight="700">Vendor cloud</text>
+            <text x="159" y="90"  fill="#888888" font-size="7.5">Teltonika/Flespi,</text>
+            <text x="159" y="101" fill="#888888" font-size="7.5">ABAX&middot;Geotab&middot;Samsara</text>
+            <!-- node 3 -->
+            <rect x="294" y="48" width="132" height="70" rx="6" fill="#ffffff" stroke="#00517e" stroke-width="1.5"></rect>
+            <circle cx="310" cy="64" r="9" fill="#02B896"></circle>
+            <text x="310" y="67" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">3</text>
+            <text x="325" y="67" fill="#00517e" font-size="9.5" font-weight="700">Azure Function</text>
+            <text x="306" y="90"  fill="#888888" font-size="7.5">per customer &middot;</text>
+            <text x="306" y="101" fill="#888888" font-size="7.5">poll timer / push</text>
+            <!-- node 4 -->
+            <rect x="441" y="48" width="132" height="70" rx="6" fill="#ffffff" stroke="#00517e" stroke-width="1.5"></rect>
+            <circle cx="457" cy="64" r="9" fill="#02B896"></circle>
+            <text x="457" y="67" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">4</text>
+            <text x="472" y="67" fill="#00517e" font-size="9.5" font-weight="700">SharePoint</text>
+            <text x="453" y="90"  fill="#888888" font-size="7.5">per-vehicle lib &middot;</text>
+            <text x="453" y="101" fill="#888888" font-size="7.5">daily JSON (no ver.)</text>
+            <!-- node 5 -->
+            <rect x="588" y="48" width="132" height="70" rx="6" fill="#ffffff" stroke="#00517e" stroke-width="1.5"></rect>
+            <circle cx="604" cy="64" r="9" fill="#02B896"></circle>
+            <text x="604" y="67" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">5</text>
+            <text x="619" y="67" fill="#00517e" font-size="9.5" font-weight="700">Browser app</text>
+            <text x="600" y="90"  fill="#888888" font-size="7.5">live map &middot; history</text>
+            <text x="600" y="101" fill="#888888" font-size="7.5">&ldquo;Mina bilar&rdquo;</text>
+            <!-- arrows -->
+            <line x1="132" y1="83" x2="147" y2="83" stroke="#02B896" stroke-width="2" marker-end="url(#pipeArrow)"></line>
+            <line x1="279" y1="83" x2="294" y2="83" stroke="#02B896" stroke-width="2" marker-end="url(#pipeArrow)"></line>
+            <line x1="426" y1="83" x2="441" y2="83" stroke="#02B896" stroke-width="2" marker-end="url(#pipeArrow)"></line>
+            <line x1="573" y1="83" x2="588" y2="83" stroke="#02B896" stroke-width="2" marker-end="url(#pipeArrow)"></line>
+          </svg>
+        </div>
+        <div class="figure-caption">FleetFlow never talks to the dongle directly &mdash; it reads the vendor cloud and stores per-vehicle JSON in SharePoint. Transport (poll vs push) is a <strong>per-customer choice</strong>.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 18</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Telemetry</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2 id="what-lands-in-each-daily-file">What lands in each daily file</h2>
+        <p>One JSON file per vehicle per day (inside a month folder), over-written on each receipt
+        &mdash; the whole day&rsquo;s fixes in one place. Short keys keep a multi-thousand-fix day small.</p>
+        <pre class="code-block">{
+  "v": 1,                          <span class="cm">// schema version</span>
+  "regNr": "ABC123",
+  "date": "2026-06-25",            <span class="cm">// fleet-local day</span>
+  "tz": "Europe/Stockholm",
+  "source": "flespi",              <span class="cm">// vendor platform</span>
+  "fixCount": 1234,
+  "fixes": [
+    { "t": "2026-06-25T07:14:32Z", <span class="cm">// UTC time</span>
+      "lat": 55.6050, "lng": 13.0038,
+      "spd": 52.3,                 <span class="cm">// km per hour</span>
+      "ign": true,                 <span class="cm">// ignition  (OBD2 only)</span>
+      "fuel": 64.5,                <span class="cm">// percent   (OBD2 only)</span>
+      "odo": 154233 }              <span class="cm">// km        (OBD2 only)</span>
+  ]
+}</pre>
+        <ul>
+            <li><strong>UTC stored, local shown.</strong> Times are stored in UTC; the app displays Swedish time.</li>
+            <li><strong>Optional fields.</strong> A bare GPS tag sends only time + position; OBD2 /
+            utility units add ignition, fuel, mileage and fault codes.</li>
+            <li><strong>Live map.</strong> Reads the last fix of today&rsquo;s file per vehicle; history
+            reads whole day files across a date range.</li>
+        </ul>
+        <div class="tip-box"><strong>Privacy by design &mdash; automatic.</strong> The per-customer
+        Azure Function purges telemetry files older than the retention window (e.g. 90&nbsp;days) on a
+        timer &mdash; no manual cleanup. Live positions are <strong>dispatcher-only</strong>; one
+        driver never sees another&rsquo;s position.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 19</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Telemetry</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2 id="device-options-on-the-market">Device options on the market</h2>
+        <p>Every option below reports <strong>GPS position</strong> &mdash; the essential signal for
+        the live map &mdash; and the OBD2 / gateway units add ignition, fuel, mileage and fault codes
+        on top. In each case the device reports to the <em>vendor&rsquo;s own cloud</em>, which the
+        Azure Function reads (see the pipeline above). Indicative prices are on the next page.</p>
+
+        <div class="device-grid">
+            <div class="device-card">
+                <img src="assets/devices/teltonika-fmc003.png?v=20260706-1144" alt="Teltonika FMC003 OBD2 plug-in GPS tracker">
+                <div class="device-meta">
+                    <h4>Teltonika FMC003 <span class="badge badge-green device-role">Entry default</span></h4>
+                    <p>Plug-in OBD2 dongle, 4G. Lowest cost, self-fit, pairs with Flespi. ABAX resells this exact unit.</p>
+                    <a href="https://www.teltonika-gps.com/products/trackers/obd-data/fmc003">teltonika-gps.com &rsaquo; FMC003</a>
+                </div>
+            </div>
+            <div class="device-card">
+                <img src="assets/devices/abax-6s.png?v=20260706-1144" alt="ABAX6S GPS tracking device">
+                <div class="device-meta">
+                    <h4>ABAX6S <span class="badge badge-blue device-role">Nordic alt.</span></h4>
+                    <p>Norway-made tracker, strong Nordic / Swedish support. Also offers an OBD plug-in option.</p>
+                    <a href="https://www.abax.com/en-gb/abax-hardware">abax.com &rsaquo; hardware</a>
+                </div>
+            </div>
+            <div class="device-card">
+                <img src="assets/devices/geotab-go9.jpg?v=20260706-1144" alt="Geotab GO9 telematics device held in hand">
+                <div class="device-meta">
+                    <h4>Geotab GO9 <span class="badge badge-gray device-role">Premium</span></h4>
+                    <p>Premium plug-in. Strong heavy-truck (J1939) data and a large app marketplace.</p>
+                    <a href="https://www.geotab.com/products/vehicle-telematics/">geotab.com &rsaquo; vehicle-telematics</a>
+                </div>
+            </div>
+            <div class="device-card">
+                <img src="assets/devices/samsara-vg34.png?v=20260706-1144" alt="Samsara VG34 vehicle IoT gateway">
+                <div class="device-meta">
+                    <h4>Samsara VG34 <span class="badge badge-gray device-role">Premium</span></h4>
+                    <p>Rugged vehicle gateway, enterprise platform, video / sensor expansion.</p>
+                    <a href="https://www.samsara.com/products/models/vg34">samsara.com &rsaquo; VG34</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 20</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Telemetry</div>
+        </div>
+    </div>
+    <div class="page-content">
+        <h2 id="kostnad-per-enhet-och-mnad-uppskattning">Kostnad per enhet och m&aring;nad <span class="badge badge-orange">uppskattning</span></h2>
+        <p>Grova marknadsuppskattningar (2026, ca 1&nbsp;EUR&nbsp;&asymp;&nbsp;11,40&nbsp;kr) som
+        <strong>m&aring;ste bekr&auml;ftas med offert</strong> &mdash; priser varierar med volym och
+        avtal. H&aring;rdvara &auml;r en eng&aring;ngskostnad och amorteras h&auml;r &ouml;ver 36
+        m&aring;nader f&ouml;r att visa verklig m&aring;nadskostnad.</p>
+
+        <h3>Per fordon &mdash; OBD2-telematik</h3>
+        <table>
+            <tr><th>Modell</th><th>Eng&aring;ng (h&aring;rdvara)</th><th>L&ouml;pande per m&aring;nad</th></tr>
+            <tr><td><strong>DIY:</strong> Teltonika plug-in + Flespi</td><td>500&ndash;1&nbsp;000&nbsp;kr <span style="color:#667">(&asymp; 15&ndash;28&nbsp;kr/m&aring;n amorterat)</span></td><td>SIM 10&ndash;35&nbsp;kr + plattform 15&ndash;30&nbsp;kr = <strong>40&ndash;95&nbsp;kr</strong></td></tr>
+            <tr><td><strong>Bundlad:</strong> ABAX / Geotab / Samsara</td><td>Liten eller ingen</td><td><strong>150&ndash;400&nbsp;kr</strong> (allt-i-ett)</td></tr>
+        </table>
+
+        <h3>Per beh&aring;llare &mdash; batteridriven GPS-tagg</h3>
+        <table>
+            <tr><th>Post</th><th>Kostnad</th></tr>
+            <tr><td>H&aring;rdvara, asset-tracker (eng&aring;ng)</td><td>350&ndash;1&nbsp;100&nbsp;kr <span style="color:#667">(&asymp; 10&ndash;30&nbsp;kr/m&aring;n amorterat)</span></td></tr>
+            <tr><td>Data / plattform (l&aring;gfrekvent)</td><td>10&ndash;55&nbsp;kr/m&aring;n</td></tr>
+            <tr><td><strong>Summa l&ouml;pande</strong></td><td><strong>&asymp; 20&ndash;85&nbsp;kr/m&aring;n</strong></td></tr>
+        </table>
+        <div class="note-box"><strong>OBS:</strong> en beh&aring;llare har <strong>ingen
+        str&ouml;mf&ouml;rs&ouml;rjning</strong> och kr&auml;ver d&auml;rf&ouml;r batteridrift
+        (1&ndash;5 &aring;rs batteritid beroende p&aring; pingfrekvens). Att tagga <em>varje</em>
+        skip &auml;r s&auml;llan l&ouml;nsamt &mdash; tagga hellre v&auml;rdefulla eller
+        ofta-bortappade enheter.</div>
+
+        <h3>FleetFlow-programvaran &mdash; per kund, inte per enhet</h3>
+        <table>
+            <tr><th>Post</th><th>Kostnad</th></tr>
+            <tr><td>SharePoint (frontend + telemetrilagring)</td><td><strong>0&nbsp;kr extra</strong> &mdash; ing&aring;r i M365; m&aring;let &auml;r <em>ingen</em> Power Apps-licens</td></tr>
+            <tr><td>Azure Function (f&ouml;rbrukningsplan, l&aring;g volym)</td><td>&asymp; 0&ndash;50&nbsp;kr/m&aring;n totalt f&ouml;r kunden</td></tr>
+            <tr><td>Telemetrilagring (1 JSON/dag/fordon)</td><td>F&ouml;rsumbar</td></tr>
+        </table>
+
+        <div class="info-box"><strong>Exempel &mdash; litet &aring;keri (5 fordon, 20 taggade
+        beh&aring;llare):</strong> fordon (DIY) &asymp; 325&nbsp;kr/m&aring;n, beh&aring;llare
+        &asymp; 1&nbsp;000&nbsp;kr/m&aring;n, programvara &asymp; 0&ndash;50&nbsp;kr/m&aring;n &rarr;
+        <strong>totalt &asymp; 1&nbsp;350&ndash;1&nbsp;400&nbsp;kr/m&aring;n</strong> plus ca
+        15&nbsp;000&nbsp;kr i eng&aring;ngsh&aring;rdvara.</div>
+
+        <p>Det l&ouml;pande domineras av <strong>beh&aring;llartaggar</strong>, inte fordon &mdash;
+        vilket f&ouml;rst&auml;rker rekommendationen att tagga selektivt. Det stora
+        besparingsargumentet mot C-Flow kvarst&aring;r: sj&auml;lva programvaran kostar
+        <strong>&asymp; 0&nbsp;kr</strong> tack vare SharePoint i st&auml;llet f&ouml;r Power
+        Apps&nbsp;+&nbsp;Dataverse.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 21</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Replacing C-Flow</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-9"><span class="chapter-num">Chapter 9</span>Replacing C-Flow</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow is the production successor to <strong>&ldquo;C-Flow&rdquo;, a Power Apps
+            model-driven prototype on Dataverse that was never sold or implemented</strong>. It exists
+            only as a prototype, and its value here is as a worked reference for the domain. FleetFlow
+            must far surpass it on three goals &mdash; and adds capabilities C-Flow never had.</p>
+        </div>
+<h2 id="what-c-flow-is">What C-Flow is</h2>
+        <p>An office / dispatch CRUD prototype for a <strong>container company</strong>: customers,
+        contacts, addresses, container types, vehicles, drivers, and k&ouml;rningar. It is a standard
+        Microsoft model-driven app &mdash; generic chrome, dense toolbars, auto-generated forms, Swedish
+        only. The purple <em>&ldquo;Begr&auml;nsat l&auml;ge&rdquo;</em> (Limited mode) banner in the
+        screenshots simply marks it as a prototype. Reference shots:
+        <em>PowerVersionScreenshots/</em>.</p>
+<div class="note-box"><strong>Never deployed.</strong> Because C-Flow was never sold or
+        implemented, there is no data to migrate and no cutover &mdash; FleetFlow starts clean.</div>
+<h2 id="goal-by-goal-how-fleetflow-surpasses-it">Goal by goal: how FleetFlow surpasses it</h2>
+<table>
+            <tr><th>Goal</th><th>C-Flow (prototype)</th><th>FleetFlow</th></tr>
+            <tr><td><strong>Look &amp; feel</strong></td><td>Generic model-driven chrome, dense toolbars, auto-generated forms</td><td>Bespoke, mobile-first UI under full design control + Langate brand; purpose-built dispatch and driver surfaces</td></tr>
+            <tr><td><strong>Performance</strong></td><td>Power Apps player + Dataverse round-trips; slow to load and react</td><td>One cached bundle; in-memory collections; cached-first reads; optimistic UI &mdash; feedback in the same frame</td></tr>
+            <tr><td><strong>Licensing</strong></td><td>Requires premium Power Apps + Dataverse licensing</td><td>SharePoint (in Microsoft&nbsp;365) + an Azure Function &mdash; no Power Platform license</td></tr>
+            <tr><td><strong>Languages</strong></td><td>Swedish only</td><td>Multi-lingual via kLNG / phrases.json &mdash; Swedish + English from day one</td></tr>
+        </table>
+<h2 id="what-we-keep-fix-and-add">What we keep, fix, and add</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Keep</h4>
+                <p>The domain entity model &mdash; Kund, Person, Adress, F&ouml;rare, Fordon,
+                Beh&aring;llare, K&ouml;rning (Chapter&nbsp;7). C-Flow got the data shape right.</p>
+            </div>
+<div class="feature-card">
+                <h4>Fix</h4>
+                <p>The look &amp; feel, the performance, the licensing cost, and the Swedish-only
+                limitation &mdash; the four things above.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 22</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Replacing C-Flow</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h3>Add (net-new)</h3>
+        <ul>
+            <li><strong>Driver mobile surface</strong> &mdash; today&rsquo;s jobs and one-tap completion. C-Flow is office-only.</li>
+            <li><strong>Completion tracking</strong> (klarmarkeringar) with captured location.</li>
+            <li><strong>Vehicle telemetry</strong> &mdash; GPS / OBD2 / utility-box position logs (Chapter&nbsp;8).</li>
+            <li><strong>Typed vehicle constraints</strong> &mdash; weight, dimensions, passenger capacity, and which container sizes fit which trucks; dispatch only offers compatible vehicles. This generalises the product beyond containers (e.g. taxi-type passenger work).</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 23</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Market &amp; generalisation</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-10"><span class="chapter-num">Chapter 10</span>Market &amp; generalisation</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>FleetFlow starts as a container-haulage tool, but the data model is built so the
+            <em>same product</em> fits the wider fleet-management market with no per-industry rewrite.
+            This chapter maps that market and the mechanism that absorbs it.</p>
+        </div>
+<h2 id="the-market">The market</h2>
+        <p>A survey of <strong>35 fleet-operator types</strong> across eight sectors (full table in
+        <em>TargetCompanies.html</em>) shows a large, adjacent market. FleetFlow&rsquo;s
+        <strong>core targets</strong> are small transport firms; the rest are natural expansion segments.</p>
+<table>
+            <tr><th>Sector</th><th>Examples</th></tr>
+            <tr><td><strong>Transport &amp; logistics</strong> <span class="badge badge-green">core</span></td><td>Haulage / trucking, courier &amp; last-mile, moving / removal, freight forwarders, bus &amp; coach, taxi, rental</td></tr>
+            <tr><td>Construction &amp; heavy industry</td><td>Construction, mining, oil &amp; gas field service, forestry, plant hire</td></tr>
+            <tr><td>Trades &amp; field services</td><td>Plumbing / electrical / HVAC, telecom &amp; utility, landscaping, pest control</td></tr>
+            <tr><td>Food, retail &amp; distribution</td><td>Food &amp; beverage (cold-chain), grocery, vending routes, waste &amp; recycling</td></tr>
+            <tr><td>Agriculture / passenger / public sector / corporate</td><td>Farms, livestock, ambulance, schools, municipalities, pool cars, car-sharing, &hellip;</td></tr>
+        </table>
+        <p>Reading the &ldquo;crucial information&rdquo; each type needs, roughly <strong>80&nbsp;% is the
+        same spine</strong>: vehicles, drivers, customers and sites, a job that becomes a route of stops
+        with proof of completion, plus maintenance, inspection, documents and position data.</p>
+<h2 id="one-spine-six-storage-tiers">One spine, six storage tiers</h2>
+        <p>The genuinely industry-specific needs (the other 20&nbsp;%) are <em>shaped like data, not new
+        tables</em>. Every datum lands in exactly one of six tiers &mdash; and each maps cleanly onto
+        SharePoint, so a single generic product serves a haulier, a pest-control van fleet, a vending
+        route and an e-scooter operator alike:</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 24</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Market &amp; generalisation</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+            <tr><th>Tier</th><th>For</th><th>In SharePoint</th></tr>
+            <tr><td><strong>Column</strong></td><td>Universal, filterable (reg, status, dates, links)</td><td>A list column &mdash; the spine</td></tr>
+            <tr><td><strong>Telemetry</strong></td><td>A number sampled over time (temp, payload, battery %)</td><td>The per-vehicle daily-JSON libraries (Chapter&nbsp;8)</td></tr>
+            <tr><td><strong>Event</strong></td><td>A discrete occurrence (alert, breach, hand-off)</td><td>A low-volume list row + JSON payload</td></tr>
+            <tr><td><strong>Attributes</strong></td><td>Structured industry data (reefer zones, animal manifest)</td><td>A JSON text column, keys governed by a per-tenant catalogue</td></tr>
+            <tr><td><strong>Note</strong></td><td>Free-form human narrative</td><td>A multi-line text column</td></tr>
+            <tr><td><strong>Document</strong></td><td>A file with an expiry (certs, permits, PODs)</td><td>A document library, attachable to any record</td></tr>
+        </table>
+<h2 id="what-this-means-for-fleetflow">What this means for FleetFlow</h2>
+<div class="tip-box"><strong>Build container-first, stay market-ready.</strong> The container
+        schema (Chapter&nbsp;7) is one projection of this generic spine. We keep the entity names aligned
+        to the spine and add the JSON-<em>Attributes</em>, <em>Document</em> and <em>Event</em> absorbers
+        as the generalisation mechanism &mdash; so reaching a new sector is configuration, not a rebuild.</div>
+        <p>The same principle settled a design question: a transport order with several stops does
+        <strong>not</strong> need a separate &ldquo;stop&rdquo; table &mdash; the stops ride as a JSON
+        list on the single k&ouml;rning row, which keeps a job loading in one fast read. A dedicated
+        stop table is only worth it if a customer needs to query or report across stops of many jobs at
+        once &mdash; added later, if ever.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 25</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Decisions &amp; open questions</div>
+        </div>
+    </div>
+    <div class="page-content">
+<h1 id="kap-11"><span class="chapter-num">Chapter 11</span>Decisions &amp; open questions</h1>
+        <div class="chapter-rule"></div>
+        <div class="chapter-intro">
+            <p>A six-lens architecture review surfaced the decisions that everything else depends on.
+            The blockers below were resolved with the product owner on 2026-06-25, together with the
+            product goals, the multi-lingual requirement, and the vehicle-constraint scope; the rest are
+            scheduled for detailed design. This chapter is the running decision log.</p>
+        </div>
+<h2 id="resolved">Resolved</h2>
+<table>
+            <tr><th>Decision</th><th>Outcome</th></tr>
+            <tr><td>Driver identity</td><td><span class="badge badge-green">resolved</span> Drivers are licensed Microsoft 365 users. The authenticated mobile page serves them directly; no separate account-less driver system is needed.</td></tr>
+            <tr><td>Tenancy</td><td><span class="badge badge-green">resolved</span> Each fleet manager runs their own Azure Function in their own Azure subscription, with one SharePoint site per customer.</td></tr>
+            <tr><td>Telemetry storage</td><td><span class="badge badge-green">resolved</span> Per-vehicle library, month folders, one daily JSON file over-written on each receipt, version history off (Chapter&nbsp;8).</td></tr>
+            <tr><td>SMS location check</td><td><span class="badge badge-gray">deferred</span> Not designed now. With drivers signed in, location can be captured in the browser at completion; the SMS flow is revisited later.</td></tr>
+            <tr><td>Product goals</td><td><span class="badge badge-green">confirmed</span> Far-better look &amp; feel, snappy / optimistic performance, and no Power Apps license &mdash; the three goals that define the project (Chapters&nbsp;1, 9).</td></tr>
+            <tr><td>Multi-lingual</td><td><span class="badge badge-green">confirmed</span> Every string through the existing kLNG / phrases.json system; Swedish + English from day one.</td></tr>
+            <tr><td>Vehicle constraints</td><td><span class="badge badge-green">confirmed</span> Typed constraints (weight, dimensions, passengers, container fit); dispatch only offers compatible trucks (Chapter&nbsp;7).</td></tr>
+            <tr><td>Scope &amp; first apps</td><td><span class="badge badge-green">confirmed</span> A single K&ouml;rning job entity (no separate work-order layer). First two surfaces: the <strong>driver app</strong> and the <strong>owner live-vehicle-map</strong> (&ldquo;Var &auml;r mina bilar&rdquo;). Telemetry ingestion is researched separately; FleetFlow reads the positions.</td></tr>
+            <tr><td>Multi-stop &amp; generalisation</td><td><span class="badge badge-green">confirmed</span> A k&ouml;rning carries multiple stops as a JSON list on its row (no separate stop table). The generic spine + six-tier storage is the path to the wider market (Chapter&nbsp;10).</td></tr>
+        </table>
+<h2 id="open-for-detailed-design">Open &mdash; for detailed design</h2>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 26</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; FleetFlow</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Decisions &amp; open questions</div>
+        </div>
+    </div>
+    <div class="page-content">
+<table>
+            <tr><th>Question</th><th>Note</th></tr>
+            <tr><td>Telemetry transport &amp; read-back</td><td>Poll a vendor platform vs device push; how the daily JSON is read for the map.</td></tr>
+            <tr><td>Driver scoping</td><td>How a driver sees only their own k&ouml;rningar &mdash; view filter vs stricter enforcement.</td></tr>
+            <tr><td>Entity &amp; column schema</td><td>Final columns, the work-order-to-k&ouml;rning cardinality, and the state machine.</td></tr>
+            <tr><td>Build &amp; deploy</td><td>Keep ISO&rsquo;s single-version build; deploy each customer into their own subscription.</td></tr>
+            <tr><td>SPFx conversion timing</td><td>Sandboxed package ships first; convert when the tenancy picture makes a tenant-wide package a clear win.</td></tr>
+        </table>
+<h2 id="carry-forward-risk">Carry-forward risk</h2>
+<div class="warn-box"><strong>GDPR &mdash; live driver location.</strong> Continuous position of an
+        identifiable driver is personal data and engages Swedish employee-monitoring rules. Privacy by
+        design is required from the start: a documented lawful basis, data minimization, and
+        dispatcher-only access &mdash; never expose one driver&rsquo;s position to another.
+        <strong>Bounded retention is enforced automatically</strong>: the per-customer Azure Function
+        purges telemetry files older than the retention window (e.g.&nbsp;90&nbsp;days) on a timer, so
+        cleanup needs no manual step. Remaining per customer: the lawful basis and the exact window.</div>
+<div class="tip-box"><strong>Next step.</strong> The detailed data-model design (SharePoint
+        schema, the k&ouml;rning state machine, and the two first app surfaces) is now drafted. From
+        there: scaffold the sandboxed project + single-version build script, stand up the provisioning
+        slice, then build the driver app and the owner live-map &mdash; the walking skeleton that
+        proves the three goals.</div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">FleetFlow &middot; Solution Architecture</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 27</div>
+    </div>
+</div>
+
+
+</body>
+</html>
