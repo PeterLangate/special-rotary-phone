@@ -1,32 +1,29 @@
 {
-  "syncedAt": "2026-07-06T09:59:41Z",
   "files": {
-    "FleetFlow.html": {
-      "updated": "2026-07-05"
+    "app/main.bundle.js": {
+      "updated": "2026-07-06"
     },
     "app/styles": {
       "updated": "2026-07-06"
     },
-    "app/data/sRGB_IEC61966_2_1.icc": {
-      "updated": "2026-06-29"
-    },
-    "app/sampledata": {
-      "updated": "2026-06-29"
-    },
-    "app/main.bundle.js": {
-      "updated": "2026-07-06"
-    },
-    "dashboard-mockup.html": {
-      "updated": "2026-07-05"
-    },
     "index.html": {
-      "updated": "2026-07-06"
-    },
-    "app/index.html": {
       "updated": "2026-07-06"
     },
     "app/icons": {
       "updated": "2026-06-25"
+    },
+    "app/data/sRGB_IEC61966_2_1.icc": {
+      "updated": "2026-06-29"
+    },
+    "FleetFlow.html": {
+      "updated": "2026-07-05"
+    },
+    "app/index.html": {
+      "updated": "2026-07-06"
+    },
+    "app/sampledata": {
+      "updated": "2026-06-29"
     }
-  }
+  },
+  "syncedAt": "2026-07-06T10:22:38Z"
 }
