@@ -16,7 +16,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../tailgate.css?v=20260706-1144">
+	<link rel="stylesheet" href="../tailgate.css?v=20260706-1204">
 </head>
 <body class="is-project">
 	<header class="hero">
@@ -31,7 +31,7 @@
 		<div class="project-grid">
 			<a class="project-card" href="FleetFlow.html">
 				<div class="project-thumb">
-					<img src="../thumbs/fleetflow-doc.png?v=20260706-1144" alt="">
+					<img src="../thumbs/fleetflow-doc.png?v=20260706-1204" alt="">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
 						<path d="M15 3v4h4"/>
@@ -54,7 +54,7 @@
 
 			<a class="project-card" href="dashboard-mockup.html">
 				<div class="project-thumb">
-					<img src="../thumbs/fleetflow-mockup.png?v=20260706-1144" alt="">
+					<img src="../thumbs/fleetflow-mockup.png?v=20260706-1204" alt="">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<rect x="3" y="4" width="18" height="16" rx="1.6"/>
 						<path d="M3 9h18"/>
@@ -67,18 +67,41 @@
 					<div class="tag-row">
 						<span class="tag tag-mockup">Mockup</span>
 						<span class="tag">Dashboard</span>
-						<span class="tag">Intern DB</span>
+						<span class="tag">Statiskt</span>
 					</div>
 					<h2>Dashboard-översikt</h2>
 					<div class="tagline">Vagnpark, aktiva körningar och statuskort</div>
-					<p class="desc">Klickbar dashboard-mockup som visar utsnitt ur den interna databasen — vagnparkens status, pågående körningar, KPI-kort och glass-cardsen som återanvänder produktionsappens designtokens. Speglar hur produktionsappen presenterar realtidsdata från Azure Functions-backenden.</p>
+					<p class="desc">Statisk dashboard-mockup som visar utsnitt ur databasen — vagnparkens status, pågående körningar, KPI-kort och glass-cardsen som återanvänder produktionsappens designtokens. Ingen körande app: bara en HTML-sida som speglar layouten.</p>
 					<div class="meta-row"><span class="meta-updated" data-file="dashboard-mockup.html"></span></div>
+				</div>
+				<div class="project-arrow" aria-hidden="true">&rarr;</div>
+			</a>
+
+			<a class="project-card" href="app/">
+				<div class="project-thumb">
+					<img src="../thumbs/fleetflow-app.png?v=20260706-1204" alt="">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<circle cx="12" cy="10" r="3"/>
+						<path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/>
+					</svg>
+				</div>
+				<div class="project-body">
+					<div class="tag-row">
+						<span class="tag tag-mockup">Live app</span>
+						<span class="tag">Mapbox</span>
+						<span class="tag">Intern DB</span>
+						<span class="tag">35 branscher</span>
+					</div>
+					<h2>Live app — Where are my vehicles</h2>
+					<div class="tagline">Riktig FleetFlow-build mot inbyggda seed-data</div>
+					<p class="desc">Publicerad FleetFlow-build körande direkt i webbläsaren — kartvy via Mapbox och den interna IndexedDB-databasen. 35 branscher × 3 språk (sv/en/de) med kompletta seed-paket: fordon, förare, kunder, arbetsordrar, telemetri och bifogade dokument. Byt bransch via katalogvyn.</p>
+					<div class="meta-row"><span class="meta-updated">Klickbar demo · körs offline efter första nedladdning</span></div>
 				</div>
 				<div class="project-arrow" aria-hidden="true">&rarr;</div>
 			</a>
 		</div>
 	</main>
 
-	<script src="../tailgate.js?v=20260706-1144"></script>
+	<script src="../tailgate.js?v=20260706-1204"></script>
 </body>
 </html>

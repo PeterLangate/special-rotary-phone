@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>FleetFlow — Where are my vehicles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--
+      Mapbox GL JS is loaded from the CDN so the shared kMapbox wrapper finds
+      it as window.mapboxgl (the kHighlightJS "expects global" pattern).
+    -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.25.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.25.0/mapbox-gl.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./styles/fleetflow.css?v=20260706-1204">
+
+    <!--
+      Tailgate-subpath rewrite. The webpack build is compiled with
+      `publicPath: "/"` and FleetDatasetFetcher/FleetSampleCatalog fetch
+      `/sampledata/...` and pdfkit fetches `/data/sRGB_IEC61966_2_1.icc`.
+      On GitHub Pages this app lives at `/special-rotary-phone/fleetflow/app/`
+      so those absolute-root paths would 404. We intercept fetch()/XHR before
+      the bundle runs and prefix them with the current document's directory.
+    -->
+    <script>
+    (function () {
+        var BASE = new URL('./', location.href).pathname.replace(/\/$/, '');
+        var PREFIXES = ['/sampledata/', '/data/'];
+        function needsRewrite(url) {
+            if (typeof url !== 'string') { return false; }
+            for (var i = 0; i < PREFIXES.length; i++) {
+                if (url.indexOf(PREFIXES[i]) === 0) { return true; }
+            }
+            return false;
+        }
+        var origFetch = window.fetch ? window.fetch.bind(window) : null;
+        if (origFetch !== null) {
+            window.fetch = function (input, init) {
+                var url = (typeof input === 'string') ? input : (input && input.url);
+                if (needsRewrite(url)) {
+                    var rewritten = BASE + url;
+                    if (typeof input === 'string') { return origFetch(rewritten, init); }
+                    return origFetch(new Request(rewritten, input), init);
+                }
+                return origFetch(input, init);
+            };
+        }
+        var origOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (method, url) {
+            if (needsRewrite(url)) {
+                var rewrittenArgs = [method, BASE + url];
+                for (var i = 2; i < arguments.length; i++) { rewrittenArgs.push(arguments[i]); }
+                return origOpen.apply(this, rewrittenArgs);
+            }
+            return origOpen.apply(this, arguments);
+        };
+    })();
+    </script>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="./main.bundle.js?v=20260706-1204"></script>
+</body>
+</html>

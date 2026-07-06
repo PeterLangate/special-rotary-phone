@@ -1,0 +1,2746 @@
+/* =============================================================================
+   FleetFlow — "Langate Glass" theme
+   -----------------------------------------------------------------------------
+   Official Langate brand (X:\Source\Admin\AgentInstruction\skills\branding-langate)
+   rendered as an Apple-style VIBRANT FROSTED GLASS surface system.
+
+   Design grammar (locked with the product owner 2026-06-28):
+     - Colour    : official Langate palette — #00517e deep blue (chrome, headings,
+                   text-bearing), #02B896 signature green (dots, stripes, glows,
+                   fills, accents), teal #537780 secondary. Every value is a token.
+     - Type      : DM Sans (Avenir substitute) — loaded in index.html.
+     - Surface   : translucent frosted glass over a brand "aurora" backdrop, with
+                   hairline light highlights, vivid accent glows, deeper blur.
+     - Brand mark: the green dot beside the FleetFlow wordmark (.ff-nav-dot) + the
+                   3mm green accent-stripe motif on key panels.
+
+   Accessibility guardrails baked in (auditing-taste / designing-color):
+     - Green #02B896 is NEVER a backing for small text (white-on-green fails AA).
+       It is used as fills, strokes, dots, stripes, glows, progress + success tints.
+       Green TEXT + badges use #017a64 (5.3:1). The primary CTA is the brand BLUE (green = accent).
+     - All text/background pairs target WCAG AA (4.5:1 body, 3:1 large/UI).
+     - Gradients stay inside the brand palette, few brand stops (no slop_gradient).
+     - Elevation is disciplined to two tiers (no slop_drop_shadow_overuse).
+     - Inputs keep content-box >= font-size so nothing clips (the kSelect lesson +
+       e2e/visual-audit gate).
+   ========================================================================== */
+
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+:root {
+    /* Langate brand (official — branding-langate) */
+    --ff-primary:        #00517e;   /* deep blue: chrome, headings, primary text-bearing */
+    --ff-primary-700:    #013d5f;   /* darker blue: gradient / pressed */
+    --ff-primary-900:    #04293f;   /* deepest blue: dark-glass base */
+    --ff-primary-300:    #2b86b8;   /* brighter blue: links/hover on dark */
+    --ff-teal:           #537780;   /* secondary */
+    --ff-teal-ink:       #3d5a62;   /* office-proof / on-hold TEXT (AA on the office tint) */
+    --ff-office:         rgba(83, 119, 128, 0.16);  /* office-proof / on-hold chip fill */
+    --ff-navy:           #0b3ebe;   /* rare accent / gradient endpoint */
+    --ff-green:          #02b896;   /* SIGNATURE accent — dots, stripes, glows, fills */
+    --ff-green-600:      #017a64;   /* accessible green — green text + badge fill (AA) */
+    --ff-green-50:       #e6faf6;   /* green tint bg (success) */
+    --ff-gold:           #f5a623;
+    --ff-gold-700:       #8a5a00;   /* amber TEXT — AA ~5.1:1 on gold-50, ~5.4:1 on white */
+    --ff-gold-50:        #fff8e6;
+    --ff-red:            #b55852;
+    --ff-red-700:        #973c37;   /* red text (AA-ish on light) */
+    --ff-red-50:         #fbeeed;
+
+    /* Ink / neutrals */
+    --ff-ink:            #1d3a4b;   /* body text — AA on glass */
+    --ff-ink-strong:     #00517e;   /* headings — brand blue */
+    --ff-muted:          #4f6b7c;   /* secondary text (~5:1 on light glass) */
+    --ff-faint:          #7d94a2;   /* tertiary / captions (large/label only) */
+    --ff-line:           rgba(0, 81, 126, 0.13);    /* hairline divider */
+    --ff-line-soft:      rgba(0, 81, 126, 0.07);
+
+    /* Light frosted glass (cards / panels over the aurora) */
+    --ff-glass:          rgba(255, 255, 255, 0.66);
+    --ff-glass-strong:   rgba(255, 255, 255, 0.82); /* dense text areas (tables, db) */
+    --ff-glass-blur:     saturate(155%) blur(20px);
+    --ff-glass-blur-lg:  saturate(170%) blur(28px);
+    --ff-glass-hi:       inset 0 1px 0 rgba(255, 255, 255, 0.75); /* top sheen */
+    --ff-glass-ring:     rgba(255, 255, 255, 0.6);  /* light hairline border */
+    --ff-glass-edge:     rgba(0, 81, 126, 0.10);    /* outer definition hairline */
+    --ff-glass-tint:     rgba(2, 184, 150, 0.05);   /* faint green vibrancy */
+
+    /* Dark frosted glass (over the map / deep chrome) */
+    --ff-glass-dark:        rgba(8, 46, 68, 0.64);
+    --ff-glass-dark-strong: rgba(5, 36, 55, 0.82);
+    --ff-on-dark:           #eaf3f8;
+    --ff-on-dark-muted:     #c2d8e4;   /* AA on the nav bar (~5.1:1) + on the dark panel */
+
+    /* Elevation — disciplined to two tiers */
+    --ff-elev-1: 0 1px 2px rgba(2, 38, 58, 0.05), 0 8px 22px rgba(2, 38, 58, 0.07);
+    --ff-elev-2: 0 2px 8px rgba(2, 38, 58, 0.10), 0 22px 60px rgba(2, 38, 58, 0.18);
+    --ff-glow-green: 0 0 0 3px rgba(2, 184, 150, 0.22);
+    --ff-glow-blue:  0 0 0 3px rgba(0, 81, 126, 0.18);
+
+    /* Radii */
+    --ff-r-sm:   9px;
+    --ff-r-md:   13px;
+    --ff-r-lg:   17px;
+    --ff-r-xl:   22px;
+    --ff-r-pill: 999px;
+
+    /* Motion */
+    --ff-t-fast: 140ms ease-out;
+    --ff-t-mid:  240ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* App "aurora" backdrop — vibrant, brand-internal, kept light so white glass
+       panels stay readable. Green glow top-left, blue glows top-right + bottom. */
+    --ff-aurora:
+        radial-gradient(118% 120% at 0% 0%, rgba(2, 184, 150, 0.22), transparent 46%),
+        radial-gradient(120% 120% at 100% 2%, rgba(13, 62, 190, 0.16), transparent 52%),
+        radial-gradient(100% 100% at 100% 100%, rgba(0, 81, 126, 0.12), transparent 60%),
+        linear-gradient(157deg, #e9f4f8 0%, #dde9f0 48%, #e8f6f2 100%);
+
+    --ff-font: 'DM Sans', Avenir, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+/* Border-box for every FleetFlow element so a `width:100%` card/button never overflows
+   its container by its own padding+border (the driver-card 20px right-overflow class of
+   bug, 2026-06-29 — content-box made `.ff-jobcard`/`.ff-signin-btn` etc. 100% + padding
+   wider than the column). Scoped to the `ff-*` namespace ON PURPOSE: third-party widget
+   internals (jqWidgets schedule, Mapbox GL) keep their own box model. Guarded by the
+   mobile + visual overflow audits. */
+[class^="ff-"], [class*=" ff-"] {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    height: 100%;
+    font-family: var(--ff-font);
+    color: var(--ff-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+#app {
+    position: absolute;
+    inset: 0;
+}
+
+.ff-map {
+    position: absolute;
+    inset: 0;
+}
+
+/* Visible focus ring on every interactive element (a11y — designing-basics §9). */
+:focus-visible {
+    outline: 2px solid var(--ff-green);
+    outline-offset: 2px;
+    border-radius: 5px;
+}
+
+/* Thin brand-tinted scrollbars on scroll surfaces (designing-basics §4). */
+.ff-view.db, .ff-view.driver, .ff-view.admin,
+.ff-admin-gridhost, .ff-sample {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 81, 126, 0.32) transparent;
+}
+.ff-view.db::-webkit-scrollbar, .ff-view.driver::-webkit-scrollbar,
+.ff-view.admin::-webkit-scrollbar, .ff-admin-gridhost::-webkit-scrollbar,
+.ff-sample::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+.ff-view.db::-webkit-scrollbar-thumb, .ff-view.driver::-webkit-scrollbar-thumb,
+.ff-view.admin::-webkit-scrollbar-thumb, .ff-admin-gridhost::-webkit-scrollbar-thumb,
+.ff-sample::-webkit-scrollbar-thumb {
+    background: rgba(0, 81, 126, 0.28);
+    border-radius: var(--ff-r-pill);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+.ff-view.db::-webkit-scrollbar-thumb:hover, .ff-view.driver::-webkit-scrollbar-thumb:hover,
+.ff-view.admin::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 81, 126, 0.45);
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Honour reduced-motion globally (designing-motion). */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ── Turn-by-turn navigator (FleetNavView) — dark frosted glass ──────────────── */
+/* The MAP is the primary surface. The panel is a full-cover, CLICK-THROUGH overlay
+   layer; the two glass clusters it holds dock to the top and bottom edges, leaving the
+   live map visible and pannable between them (not buried under one big card). */
+.ff-nav-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    pointer-events: none;
+}
+
+/* Edge-docked glass clusters: dark frosted glass with the Langate green accent stripe.
+   Only these capture input (the overlay layer above is click-through). */
+.ff-nav-top, .ff-nav-bottom {
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    color: var(--ff-on-dark);
+    background: var(--ff-glass-dark-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-left: 3px solid var(--ff-green);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2);
+    pointer-events: auto;
+}
+.ff-nav-top { padding: 10px 14px; }
+.ff-nav-bottom { padding: 10px 14px 12px; }
+
+.ff-nav-hint {
+    font-size: 11px;
+    color: var(--ff-on-dark-muted);
+    margin-top: 10px;
+}
+/* Steady-state driving clears the status line (FleetNavView._SetStatus("")); hiding it
+   when empty removes the permanent "keep screen on" row so the map gains that space. */
+.ff-nav-hint:empty { display: none; }
+
+/* Secondary nav controls — small square icon buttons (mute voice, open in Google
+   Maps) below the full-width Start button, not the old full-width button row. */
+.ff-nav-tools {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+/* Bottom dock: the Start CTA + the two small icon tools share ONE row (not stacked) —
+   the CTA flexes to fill, the icons sit at the trailing edge. Saves a whole row of
+   height over the map. The 3-class selector outranks the global .ff-btn.primary
+   (flex-basis:100%) so the button flexes instead of taking the full row; Start is the
+   only .ff-btn in this row (the tools are .ff-nav-icon). */
+.ff-nav-bottom .ff-row { flex-wrap: nowrap; align-items: center; }
+.ff-nav-bottom .ff-row .ff-btn { flex: 1 1 auto; margin-top: 0; }
+.ff-nav-bottom .ff-nav-tools { margin-top: 0; }
+.ff-nav-icon {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--ff-line);
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: var(--ff-primary);
+    border-radius: var(--ff-r-sm);
+    cursor: pointer;
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast),
+                color var(--ff-t-fast), box-shadow var(--ff-t-fast), transform var(--ff-t-fast);
+}
+.ff-nav-icon svg { width: 20px; height: 20px; display: block; }
+.ff-nav-icon:hover {
+    border-color: var(--ff-green);
+    color: var(--ff-primary-700);
+    box-shadow: var(--ff-glow-green);
+}
+.ff-nav-icon:active { transform: translateY(1px); }
+.ff-nav-icon.active {
+    background: linear-gradient(180deg, var(--ff-primary), var(--ff-primary-700));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 81, 126, 0.30);
+}
+
+/* Job-context strip — WHERE + WHAT (the job-aware difference). Compact: the pill + the
+   destination site share the first row; action/note wrap below (1 line each, clipped).
+   It leads with the SITE, not the customer company (that lives in the detail header). */
+.ff-nav-job {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 2px;
+    margin-bottom: 8px;
+}
+.ff-nav-job-pill {
+    flex: 0 0 auto;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--ff-green-600);
+    border-radius: var(--ff-r-pill);
+    padding: 3px 10px;
+}
+.ff-nav-job-where {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Action·container sits INLINE after the pill + site (one compact row), not on its own
+   line — it wraps only if the row genuinely cannot fit it. */
+.ff-nav-job-meta { flex: 0 0 auto; font-size: 12px; color: var(--ff-on-dark-muted); white-space: nowrap; }
+.ff-nav-job-note {
+    flex: 1 1 100%;
+    font-size: 12px;
+    color: #ffd98a;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Maneuver card — big arrow + distance-to-turn + instruction + "then". */
+.ff-nav-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+.ff-nav-card-arrow { flex: 0 0 56px; width: 56px; height: 56px; color: var(--ff-green); }
+.ff-nav-card-arrow svg { display: block; width: 100%; height: 100%; }
+.ff-nav-card-body { flex: 1 1 auto; min-width: 0; }
+.ff-nav-card-dist { font-size: 26px; font-weight: 800; line-height: 1.1; letter-spacing: -.01em; }
+.ff-nav-card-instr { font-size: 15px; font-weight: 600; line-height: 1.25; margin-top: 2px; }
+.ff-nav-card-then { font-size: 12px; color: var(--ff-on-dark-muted); margin-top: 4px; }
+/* Lane guidance strip: one small arrow per lane, valid lanes bright, others dimmed. */
+.ff-nav-card-lanes { display: flex; gap: 4px; margin-top: 6px; }
+.ff-nav-lane { width: 20px; height: 20px; opacity: 0.32; color: var(--ff-on-dark-muted); }
+.ff-nav-lane.valid { opacity: 1; color: #fff; }
+
+/* HUD — speed-limit shield, live speed, live ETA. First row of the bottom cluster. */
+.ff-nav-hud { display: flex; align-items: center; gap: 14px; margin-top: 0; margin-bottom: 10px; }
+.ff-nav-limit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #fff;
+    color: #c0142a;
+    border: 4px solid #c0142a;
+    line-height: 1;
+}
+.ff-nav-limit-num { font-size: 17px; font-weight: 900; }
+.ff-nav-limit-unit { font-size: 7px; font-weight: 700; text-transform: uppercase; }
+.ff-nav-speed { display: flex; align-items: baseline; gap: 4px; }
+.ff-nav-speed-num { font-size: 24px; font-weight: 800; }
+.ff-nav-speed-unit { font-size: 11px; color: var(--ff-on-dark-muted); }
+.ff-nav-speed.over .ff-nav-speed-num { color: #ff6b6b; }
+.ff-nav-eta { margin-left: auto; font-size: 13px; font-weight: 700; text-align: right; }
+
+/* Arrival / completion overlay above the map. */
+.ff-nav-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: rgba(6, 18, 28, 0.55);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+.ff-nav-overlay.hidden { display: none; }
+.ff-nav-arrival {
+    width: 100%;
+    max-width: 540px;
+    margin: auto;
+    background: var(--ff-glass-dark-strong);
+    color: var(--ff-on-dark);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-left: 3px solid var(--ff-green);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2);
+    padding: 16px;
+}
+.ff-nav-arrival-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; line-height: 1.25; }
+/* The stop note, surfaced on arrival (lifted off the always-on job dock). */
+.ff-nav-arrival-note { font-size: 13px; color: #ffd98a; line-height: 1.35; margin: -4px 0 14px; }
+
+.kmapbox-notloaded {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--ff-red-700);
+    background: var(--ff-red-50);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Map control panel (light frosted glass). */
+.ff-panel {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 5;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+    padding: 14px 16px;
+    width: 260px;
+}
+
+.ff-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ff-ink-strong);
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+}
+
+.ff-sub {
+    font-size: 11px;
+    color: var(--ff-muted);
+    margin: 0 0 12px;
+}
+
+.ff-group-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ff-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin: 12px 0 6px;
+}
+
+.ff-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.ff-btn {
+    flex: 1 1 auto;
+    min-width: 64px;
+    border: 1px solid var(--ff-line);
+    background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    color: var(--ff-primary);
+    border-radius: var(--ff-r-sm);
+    padding: 8px 11px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast),
+                color var(--ff-t-fast), box-shadow var(--ff-t-fast), transform var(--ff-t-fast);
+}
+
+.ff-btn:hover {
+    border-color: var(--ff-green);
+    color: var(--ff-primary-700);
+    box-shadow: var(--ff-glow-green);
+}
+
+.ff-btn:active { transform: translateY(1px); }
+
+.ff-btn.active {
+    background: linear-gradient(180deg, var(--ff-primary), var(--ff-primary-700));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 81, 126, 0.30);
+}
+
+.ff-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Primary CTA — the canonical Langate action colour is the deep BLUE (white = 8.3:1);
+   green stays the accent (dots / stripes / chips / success). A glossy 2-stop blue
+   gradient — both stops clear AA on white. NO inset top-sheen on buttons: --ff-glass-hi
+   paints a hard 1px line on a small control, so it is reserved for large card/panel
+   surfaces only. */
+.ff-btn.primary {
+    background: linear-gradient(180deg, #0c6ea0, var(--ff-primary));
+    border-color: transparent;
+    color: #fff;
+    flex-basis: 100%;
+    margin-top: 4px;
+    box-shadow: 0 4px 16px rgba(0, 81, 126, 0.30);
+}
+
+.ff-btn.primary:hover {
+    background: linear-gradient(180deg, #0f7aac, #045f90);
+    box-shadow: 0 6px 20px rgba(0, 81, 126, 0.42), var(--ff-glow-blue);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* Destructive action — keep it visually distinct and harder to hit by accident. */
+.ff-btn.danger {
+    background: var(--ff-red-700);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(151, 60, 55, 0.28);
+}
+.ff-btn.danger:hover {
+    background: var(--ff-red);
+    box-shadow: 0 6px 20px rgba(151, 60, 55, 0.40);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.ff-link-btn.danger { color: var(--ff-red-700); }
+.ff-link-btn.danger:hover { color: var(--ff-red); text-decoration: underline; }
+
+.ff-status {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    z-index: 5;
+    /* A passive status readout — it must never capture clicks. In the embedded driver
+       map (a shorter box) it can overlap the control row; letting pointer events pass
+       through keeps the buttons beneath it clickable. */
+    pointer-events: none;
+    background: var(--ff-glass-dark);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--ff-on-dark);
+    border-radius: var(--ff-r-pill);
+    padding: 9px 17px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: var(--ff-elev-2);
+}
+
+/* ── Owner live-map: top-right options menu (hamburger) ─────────────────────── */
+.ff-mapmenu { position: absolute; top: 16px; right: 16px; z-index: 6; }
+
+.ff-mapmenu-toggle {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    color: var(--ff-primary);
+    cursor: pointer;
+    box-shadow: var(--ff-elev-2);
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast),
+                color var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-mapmenu-toggle svg { width: 22px; height: 22px; display: block; pointer-events: none; }
+.ff-mapmenu-toggle:hover { border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-mapmenu-toggle.active {
+    background: linear-gradient(180deg, var(--ff-primary), var(--ff-primary-700));
+    border-color: transparent;
+    color: #fff;
+}
+
+.ff-mapmenu-panel {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 244px;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+    padding: 4px 16px 16px;
+}
+.ff-mapmenu-panel.hidden { display: none; }
+.ff-mapmenu-panel .ff-group-label:first-child { margin-top: 10px; }
+
+/* ── Owner live-map: bottom-left demo controls ─────────────────────────────── */
+.ff-mapactions {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 5;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.ff-mapactions .ff-btn { flex: 0 0 auto; min-width: 0; margin-top: 0; }
+.ff-mapactions .ff-btn.primary { flex-basis: auto; }
+
+/* The status readout is a transient overlay in the opposite (bottom-right) corner,
+   hidden when idle so it never competes with the bottom-left controls or the map. */
+.ff-mapstatus { left: auto; right: 16px; }
+.ff-mapstatus.hidden { display: none; }
+
+/* ── Owner live-map: permanent address search (top-centre) ─────────────────── */
+.ff-mapsearch {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 6;
+    width: min(420px, calc(100% - 120px));
+}
+.ff-mapsearch-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 42px;
+    padding: 0 14px;
+    font: 14px/1.2 var(--ff-font);
+    color: var(--ff-ink);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-2);
+    outline: none;
+}
+.ff-mapsearch-input::placeholder { color: var(--ff-muted); }
+.ff-mapsearch-input:focus { border-color: var(--ff-green); box-shadow: var(--ff-elev-2), var(--ff-glow-green); }
+
+.ff-mapsearch-suggest {
+    margin-top: 6px;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-2);
+    max-height: 264px;
+    overflow-y: auto;
+}
+.ff-mapsearch-suggest.hidden { display: none; }
+.ff-mapsearch-item {
+    padding: 9px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--ff-line-soft);
+}
+.ff-mapsearch-item:last-child { border-bottom: none; }
+.ff-mapsearch-item:hover { background: rgba(2, 184, 150, 0.12); }
+.ff-mapsearch-name { font: 600 13px/1.3 var(--ff-font); color: var(--ff-ink); }
+.ff-mapsearch-addr { font: 11px/1.35 var(--ff-font); color: var(--ff-muted); margin-top: 1px; }
+
+/* ── Owner live-map: search-result pin action popup ────────────────────────── */
+.ff-mappop { font: 13px/1.4 var(--ff-font); color: var(--ff-ink); min-width: 190px; }
+.ff-mappop-title { font-weight: 700; margin-bottom: 8px; padding-right: 14px; }
+/* A muted subtitle under the title (e.g. a location's kind on a house-marker popup). */
+.ff-mappop-sub { color: var(--ff-muted); font: 11px/1.35 var(--ff-font); margin: -4px 0 8px; }
+.ff-mappop-actions { display: flex; flex-direction: column; gap: 6px; }
+.ff-mappop-actions .ff-btn { flex: 0 0 auto; width: 100%; justify-content: center; margin-top: 0; }
+
+/* ── Owner live-map: truck-click popup (the day's drives — each linked + shareable) ── */
+.ff-truckpop { font: 13px/1.4 var(--ff-font); color: var(--ff-ink); min-width: 210px; max-width: 300px; max-height: 340px; overflow-y: auto; }
+.ff-truckpop-title { font-weight: 700; color: var(--ff-ink); }
+.ff-truckpop-driver { color: var(--ff-muted); font: 12px/1.35 var(--ff-font); margin-top: 2px; }
+.ff-truckpop-status { display: flex; align-items: center; gap: 6px; font-size: 12px; margin-top: 6px; }
+.ff-truckpop-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+.ff-truckpop-section { border-top: 1px solid var(--ff-line); margin-top: 8px; padding-top: 8px; }
+.ff-truckpop-empty { font-size: 12px; color: var(--ff-muted); }
+.ff-truckpop-heading { font-weight: 700; font-size: 12px; color: var(--ff-ink); margin-bottom: 2px; }
+.ff-truckpop-drive { margin-top: 6px; }
+.ff-truckpop-drive.divided { margin-top: 8px; border-top: 1px dashed var(--ff-line); padding-top: 8px; }
+.ff-truckpop-head { display: flex; align-items: center; gap: 6px; }
+/* The clickable drive title — reads + behaves as a link, opens the route detail. */
+.ff-truckpop-link { flex: 1 1 auto; min-width: 0; text-align: left; background: none; border: 0; padding: 0; cursor: pointer;
+    font: 600 12px/1.3 var(--ff-font); color: var(--ff-blue-700); }
+.ff-truckpop-link:hover { text-decoration: underline; }
+/* The compact per-drive share icon (reuses .ff-share-icon), sized down for the popup. */
+.ff-truckpop-share { flex: 0 0 auto; width: 26px; height: 26px; padding: 4px; }
+.ff-truckpop-share svg { width: 15px; height: 15px; }
+.ff-truckpop-meta { font-size: 11px; color: var(--ff-muted); margin-top: 1px; }
+.ff-truckpop-stops { margin-top: 6px; }
+.ff-truckpop-stop { font-size: 12px; color: var(--ff-ink); padding: 1px 0; }
+.ff-truckpop-stop.done { color: var(--ff-muted); }
+
+/* Icon-only toolbar button (the Share / customer-link control). */
+.ff-btn.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+}
+.ff-btn.icon svg { width: 18px; height: 18px; display: block; pointer-events: none; }
+
+/* ── Owner live-map: cluster popup / side panel ─────────────────────────────── */
+.ff-cluster-popup {
+    font: 13px/1.45 var(--ff-font);
+    color: var(--ff-ink);
+    min-width: 220px;
+    max-width: 280px;
+}
+.mapboxgl-popup-content:has(.ff-cluster-popup) {
+    padding: 0;
+    border-radius: var(--ff-r-lg);
+}
+
+.ff-cluster-panel {
+    position: absolute;
+    top: 80px;
+    right: 16px;
+    z-index: 5;
+    width: 320px;
+    max-width: calc(100% - 32px);
+    max-height: calc(100% - 96px);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.ff-cluster-head {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--ff-line-soft);
+}
+
+.ff-cluster-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ff-ink-strong);
+    line-height: 1.25;
+}
+
+.ff-cluster-sub {
+    font-size: 12px;
+    color: var(--ff-muted);
+    margin-top: 2px;
+}
+
+.ff-cluster-close {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ff-line);
+    border-radius: var(--ff-r-sm);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--ff-primary);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast), color var(--ff-t-fast);
+}
+.ff-cluster-close:hover {
+    border-color: var(--ff-green);
+    color: var(--ff-green-600);
+    background: #fff;
+}
+
+.ff-cluster-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.ff-cluster-group {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--ff-line-soft);
+}
+.ff-cluster-group:last-child { border-bottom: none; }
+
+.ff-cluster-group-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--ff-muted);
+    padding: 4px 14px;
+}
+
+.ff-cluster-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 14px;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--ff-t-fast);
+}
+.ff-cluster-row:hover { background: rgba(2, 184, 150, 0.08); }
+.ff-cluster-row:focus-visible { outline-offset: -2px; }
+
+.ff-cluster-dot {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.ff-cluster-action {
+    flex: 0 0 auto;
+    font-weight: 700;
+    color: var(--ff-ink-strong);
+}
+
+.ff-cluster-meta {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    color: var(--ff-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ff-cluster-meta::before {
+    content: "·";
+    margin-right: 6px;
+    color: var(--ff-line);
+}
+
+/* ── App shell (nav + content) ─────────────────────────────────────────────── */
+.ff-shell {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--ff-aurora);
+    background-attachment: fixed;
+}
+
+/* Deep-blue frosted-glass nav bar with a thin green underline (Langate stripe). */
+.ff-nav {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 18px;
+    background: linear-gradient(120deg, rgba(0, 81, 126, 0.92), rgba(1, 61, 95, 0.90));
+    -webkit-backdrop-filter: saturate(150%) blur(14px);
+    backdrop-filter: saturate(150%) blur(14px);
+    border-bottom: 1px solid rgba(2, 184, 150, 0.55);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(2, 38, 58, 0.28);
+    z-index: 10;
+}
+
+/* The brand is a button (the way back to the landing) — reset to look like text. */
+.ff-nav-brand {
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: .01em;
+    color: #fff;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--ff-t-fast);
+}
+.ff-nav-brand:hover { color: var(--ff-green); }
+.ff-nav-brand:active { transform: translateY(1px); }
+
+.ff-nav.hidden { display: none; }
+/* The mobile driver app slims the top bar further: a thinner strip + no decorative dot,
+   so it costs minimal height above the live map (brand-as-home + version stay). */
+.ff-nav.driver { padding-top: 5px; padding-bottom: 5px; }
+.ff-nav.driver .ff-nav-brand { font-size: 14px; }
+.ff-nav.driver .ff-nav-dot { display: none; }
+/* The top-bar language toggle is hidden on the mobile driver app (language is in the
+   driver ☰ menu → Settings); shown on the desktop surfaces. */
+.ff-nav-lang.hidden { display: none; }
+
+/* The Langate brand mark — the signature green dot beside the wordmark. */
+.ff-nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ff-green);
+    box-shadow: 0 0 10px rgba(2, 184, 150, 0.85);
+    margin: 5px 12px 0 5px;
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+
+/* Build version, to the right of the logo (FF-Build.ps1 stamps it each build). */
+.ff-nav-version {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ff-on-dark-muted);
+    margin-right: 14px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ff-nav-btn {
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.10);
+    color: var(--ff-on-dark);
+    border-radius: var(--ff-r-sm);
+    padding: 7px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--ff-t-fast), color var(--ff-t-fast),
+                box-shadow var(--ff-t-fast);
+}
+
+.ff-nav-btn:hover { background: rgba(255, 255, 255, 0.20); color: #fff; }
+
+/* Active tab: brighter glass fill + the green underline accent (text stays white). */
+.ff-nav-btn.active {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    box-shadow: inset 0 -2px 0 var(--ff-green), 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Language toggle (SE / GB / DE flags) — pushed to the right by the spacer. */
+.ff-nav-spacer { flex: 1 1 auto; }
+
+.ff-lang { display: flex; align-items: center; gap: 4px; }
+.ff-lang-btn {
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.10);
+    border-radius: 7px;
+    padding: 4px 6px;
+    line-height: 0;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity var(--ff-t-fast), background var(--ff-t-fast), border-color var(--ff-t-fast);
+}
+.ff-lang-btn:hover { background: rgba(255, 255, 255, 0.22); opacity: 0.9; }
+.ff-lang-btn.active {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--ff-green);
+    opacity: 1;
+}
+
+.ff-content {
+    flex: 1 1 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.ff-view {
+    position: absolute;
+    inset: 0;
+}
+
+.ff-view.db { overflow: auto; }
+.ff-view.hidden { display: none; }
+
+/* ── Database inspector ────────────────────────────────────────────────────── */
+/* Surfaces are transparent so the shell aurora shows through the glass cards. */
+.ff-db {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 24px 22px 60px;
+    color: var(--ff-ink);
+}
+
+.ff-db-title { font-size: 24px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 2px; letter-spacing: -0.02em; }
+.ff-db-sub { font-size: 13px; color: var(--ff-muted); margin: 0 0 18px; }
+
+.ff-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.ff-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ff-ink-strong);
+    margin: 6px 0 14px;
+}
+
+.ff-spinner {
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(0, 81, 126, 0.18);
+    border-top-color: var(--ff-green);
+    border-radius: 50%;
+    animation: ff-spin 0.7s linear infinite;
+    flex: 0 0 auto;
+}
+
+.ff-spinner.hidden { display: none; }
+
+@keyframes ff-spin { to { transform: rotate(360deg); } }
+
+.ff-banner {
+    border-radius: var(--ff-r-md);
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 6px 0 18px;
+    line-height: 1.5;
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.ff-banner.ok { background: var(--ff-green-50); color: var(--ff-green-600); border: 1px solid rgba(2, 184, 150, 0.35); }
+.ff-banner.bad { background: var(--ff-red-50); color: var(--ff-red-700); border: 1px solid rgba(181, 88, 82, 0.35); }
+.ff-banner.info { background: rgba(0, 81, 126, 0.07); color: var(--ff-primary); border: 1px solid rgba(0, 81, 126, 0.20); }
+.ff-banner-big { font-size: 17px; display: block; margin-bottom: 4px; }
+
+/* Frosted-glass card — the workhorse surface. */
+.ff-card {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+}
+
+.ff-card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ff-muted); margin: 0 0 12px; font-weight: 700; }
+
+.ff-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ff-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--ff-muted);
+    border-bottom: 2px solid var(--ff-line);
+    padding: 8px;
+    font-weight: 700;
+}
+.ff-table td { padding: 8px; border-bottom: 1px solid var(--ff-line-soft); }
+.ff-table tr:hover td { background: rgba(2, 184, 150, 0.06); }
+.ff-table .ff-num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-table .ff-key { color: var(--ff-muted); font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; }
+
+.ff-sample-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ff-select {
+    border: 1px solid var(--ff-line);
+    border-radius: var(--ff-r-sm);
+    padding: 7px 11px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ff-ink);
+    background: rgba(255, 255, 255, 0.85);
+}
+.ff-select:focus { outline: none; border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+
+/* The DB inspector's dark JSON <pre> — deepened to the brand near-black blue. */
+.ff-sample {
+    background: var(--ff-primary-900);
+    color: #cfe6f2;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--ff-r-md);
+    padding: 14px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow: auto;
+    max-height: 360px;
+    white-space: pre;
+    margin: 0;
+}
+
+/* ── Driver surface (mobile-first) ─────────────────────────────────────────── */
+.ff-view.driver { overflow: auto; background: transparent; }
+
+.ff-driver { max-width: 720px; margin: 0 auto; padding: 20px 16px 64px; color: var(--ff-ink); box-sizing: border-box; }
+.ff-d-title { font-size: 24px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 4px; letter-spacing: -0.02em; }
+.ff-d-hint { font-size: 14px; color: var(--ff-muted); margin: 0 0 18px; line-height: 1.5; }
+.ff-d-header { margin-bottom: 14px; }
+.ff-d-subrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--ff-muted); }
+
+.ff-link-btn { border: none; background: none; color: var(--ff-primary); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; font-family: inherit; }
+.ff-link-btn:hover { color: var(--ff-green-600); text-decoration: underline; }
+
+.ff-signin-list { display: flex; flex-direction: column; gap: 10px; }
+.ff-signin-btn {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid var(--ff-glass-ring);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border-radius: var(--ff-r-lg);
+    padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; color: var(--ff-ink-strong); cursor: pointer;
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    transition: transform var(--ff-t-fast), box-shadow var(--ff-t-mid), border-color var(--ff-t-fast);
+}
+.ff-signin-btn:hover { border-color: var(--ff-green); box-shadow: var(--ff-elev-2), var(--ff-glow-green); transform: translateY(-1px); }
+.ff-signin-btn:active { transform: scale(0.99); }
+
+.ff-d-cards { display: flex; flex-direction: column; gap: 12px; }
+.ff-jobcard {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid var(--ff-glass-ring);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border-radius: var(--ff-r-lg); padding: 15px 17px; cursor: pointer;
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    transition: transform var(--ff-t-fast), box-shadow var(--ff-t-mid), border-color var(--ff-t-fast);
+}
+.ff-jobcard:hover { border-color: var(--ff-green); box-shadow: var(--ff-elev-2), var(--ff-glow-green); transform: translateY(-1px); }
+.ff-jobcard:active { transform: scale(0.99); }
+.ff-jobcard-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.ff-jobcard-cust { font-size: 16px; font-weight: 800; color: var(--ff-ink-strong); }
+.ff-jobcard-meta { font-size: 13px; color: var(--ff-muted); }
+.ff-jobcard-chips { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+/* Expand chevron + inline stop list (the active drive starts expanded). */
+.ff-jobcard-expand {
+    border: none; background: none; color: var(--ff-muted); cursor: pointer;
+    font-size: 13px; line-height: 1; padding: 4px 2px; font-family: inherit;
+    transition: color var(--ff-t-fast);
+}
+.ff-jobcard-expand:hover { color: var(--ff-green-600); }
+.ff-jobcard-stops { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ff-line-soft); flex-direction: column; gap: 6px; }
+.ff-jobcard-stops.open { display: flex; }
+.ff-jobcard-stop { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+.ff-jobcard-stop.done { opacity: 0.6; }
+.ff-jobcard-stop.empty { color: var(--ff-muted); font-style: italic; }
+.ff-jobcard-stopseq { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 50%; background: rgba(0, 81, 126, 0.10); color: var(--ff-primary); font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
+.ff-jobcard-stoptext { flex: 1 1 auto; color: var(--ff-ink-strong); min-width: 0; }
+.ff-jobcard-stopwhen { flex: 0 0 auto; color: var(--ff-muted); font-variant-numeric: tabular-nums; }
+
+.ff-chip {
+    display: inline-block; font-size: 11px; font-weight: 800; text-transform: none; letter-spacing: .01em;
+    padding: 3px 9px; border-radius: var(--ff-r-pill); white-space: nowrap;
+}
+.ff-chip.planned { background: rgba(0, 81, 126, 0.10); color: var(--ff-primary); }
+.ff-chip.inprogress { background: var(--ff-gold-50); color: var(--ff-gold-700); }
+.ff-chip.completed { background: var(--ff-green-50); color: var(--ff-green-600); }
+.ff-chip.late { background: var(--ff-red-50); color: var(--ff-red-700); }
+
+/* "Today" badge on the driver list (gap A2) — the signature green, white text. */
+.ff-today-badge {
+    display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+    padding: 3px 9px; border-radius: var(--ff-r-pill); white-space: nowrap;
+    background: var(--ff-green-600); color: #fff;
+    box-shadow: 0 0 0 1px rgba(2, 184, 150, 0.35);
+}
+
+.ff-empty { font-size: 14px; color: var(--ff-muted); padding: 24px 4px; text-align: center; }
+
+.ff-d-section {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-lg);
+    padding: 15px 17px; margin: 14px 0; box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+.ff-d-h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--ff-muted); margin: 0 0 10px; font-weight: 700; }
+.ff-d-instr { font-size: 14px; color: var(--ff-ink); line-height: 1.5; margin: 0; white-space: pre-wrap; }
+
+/* The instructions expander reuses the shared kCollapsibleHeader; re-theme its stable
+   classes to the glass section-header look (matching .ff-d-h2). The component sets inline
+   defaults (#0078d4 / 11px), so the overrides need !important — its documented re-theme
+   path. The whole header row is the click target (cursor:pointer is inline). */
+.ff-d-instrsection .kcollapsible-header { margin-bottom: 10px !important; }
+.ff-d-instrsection .kcollapsible-label { color: var(--ff-muted) !important; font-size: 12px !important; font-weight: 700 !important; letter-spacing: .06em !important; }
+.ff-d-instrsection .kcollapsible-arrow { color: var(--ff-primary) !important; font-size: 10px !important; }
+.ff-d-instrsection .kcollapsible-line { background: var(--ff-line) !important; }
+.ff-d-instrsection .kcollapsible-header:hover .kcollapsible-label,
+.ff-d-instrsection .kcollapsible-header:hover .kcollapsible-arrow { color: var(--ff-primary-700) !important; }
+
+.ff-stop { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--ff-line-soft); }
+.ff-stop:last-child { border-bottom: none; }
+.ff-stop-seq { flex: 0 0 auto; width: 27px; height: 27px; border-radius: 50%; background: linear-gradient(180deg, var(--ff-primary), var(--ff-primary-700)); color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0, 81, 126, 0.30); }
+.ff-stop-body { flex: 1 1 auto; min-width: 0; }
+.ff-stop-where { font-size: 14px; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-stop-action { font-size: 12px; color: var(--ff-muted); text-transform: capitalize; }
+/* Per-stop planned/done time (right of the stop) + the law-7 "X of Y stops" line. */
+.ff-stop-when { flex: 0 0 auto; font-size: 12px; color: var(--ff-muted); font-variant-numeric: tabular-nums; }
+.ff-d-progress { font-size: 13px; font-weight: 700; color: var(--ff-ink-strong); margin: 2px 0 8px; }
+
+.ff-splash { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--ff-aurora); z-index: 5; }
+.ff-splash.hidden { display: none; }
+.ff-splash-text { font-size: 14px; font-weight: 600; color: var(--ff-ink-strong); }
+
+.ff-gear-btn { border: 1px solid transparent; background: rgba(255, 255, 255, 0.10); color: var(--ff-on-dark); border-radius: var(--ff-r-sm); padding: 6px 9px; font-size: 14px; cursor: pointer; margin-left: 4px; transition: background var(--ff-t-fast); }
+.ff-gear-btn:hover { background: rgba(255, 255, 255, 0.22); }
+
+/* ── Driver completion flow (D6–D8) ────────────────────────────────────────── */
+.ff-d-actionbar { margin: 12px 0 4px; }
+/* In-progress drives have no action-bar content (the Start CTA + incident control live
+   on the embedded map); hide the empty bar so it eats no space above the map. */
+.ff-d-actionbar:empty { display: none; margin: 0; }
+.ff-start { width: 100%; font-size: 16px; padding: 14px; }
+.ff-done-banner { background: var(--ff-green-50); color: var(--ff-green-600); border: 1px solid rgba(2, 184, 150, 0.35); border-radius: var(--ff-r-md); padding: 14px 16px; font-size: 15px; font-weight: 700; }
+
+.ff-note { width: 100%; box-sizing: border-box; border: 1px solid var(--ff-line); border-radius: var(--ff-r-sm); padding: 11px 13px; font-size: 15px; font-family: inherit; color: var(--ff-ink); background: rgba(255, 255, 255, 0.8); resize: vertical; margin-bottom: 12px; transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast); }
+.ff-note:focus { outline: none; border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-photo-label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px dashed rgba(0, 81, 126, 0.35); border-radius: var(--ff-r-sm); padding: 10px 14px; font-size: 14px; font-weight: 600; color: var(--ff-primary); margin-bottom: 12px; transition: background var(--ff-t-fast), border-color var(--ff-t-fast); }
+.ff-photo-label:hover { background: rgba(2, 184, 150, 0.08); border-color: var(--ff-green); }
+.ff-photo-input { display: none; }
+.ff-finish { width: 100%; font-size: 16px; padding: 14px; margin-top: 4px; }
+.ff-finish-status { font-size: 13px; color: var(--ff-muted); margin-top: 10px; min-height: 18px; text-align: center; }
+.ff-stop-complete { flex: 0 0 auto; font-size: 13px; padding: 7px 12px; }
+
+/* ── Register a new drive (FleetNewDrive, mobile) ──────────────────────────── */
+.ff-nd-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.ff-nd-flabel { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--ff-muted); }
+.ff-nd-control {
+    width: 100%; box-sizing: border-box; height: auto; min-height: 44px;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-sm); padding: 11px 13px;
+    font-size: 15px; font-family: inherit; color: var(--ff-ink); background: rgba(255, 255, 255, 0.8);
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-nd-control:focus { outline: none; border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-nd-assigned { display: flex; align-items: center; gap: 8px; padding-top: 4px; }
+.ff-nd-assigned-name { font-size: 15px; font-weight: 700; color: var(--ff-ink-strong); }
+
+.ff-nd-stops { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.ff-nd-stop { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+.ff-nd-locwrap { flex: 2 1 150px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ff-nd-locwrap .ff-nd-location { width: 100%; min-width: 0; }
+/* "+ New location" — a clearly-labelled, map-pin button under the stop's location
+   select (was a bare "+" that read as a separator, so drivers couldn't find how to
+   add a location). Dashed accent border = the "create new" affordance convention. */
+.ff-nd-addloc {
+    flex: 0 0 auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+    min-width: 0; padding: 8px 12px; min-height: 40px; font-size: 13px; color: var(--ff-blue-700);
+    border-style: dashed; border-color: var(--ff-blue); background: rgba(255, 255, 255, 0.6);
+}
+.ff-nd-addloc:hover {
+    border-color: var(--ff-blue); color: var(--ff-blue-700);
+    background: rgba(0, 81, 126, 0.08); box-shadow: 0 0 0 3px rgba(0, 81, 126, 0.12);
+}
+.ff-nd-addloc-icon { display: inline-flex; width: 15px; height: 15px; flex: 0 0 auto; }
+.ff-nd-addloc-icon svg { width: 15px; height: 15px; display: block; }
+.ff-nd-stop .ff-nd-action { flex: 1 1 90px; }
+.ff-nd-remove { flex: 0 0 auto; color: var(--ff-red-700); }
+.ff-nd-remove:hover { border-color: var(--ff-red); color: var(--ff-red-700); box-shadow: 0 0 0 3px rgba(181, 88, 82, 0.18); }
+.ff-nd-addstop { width: 100%; }
+.ff-nd-create { width: 100%; font-size: 16px; padding: 14px; }
+.ff-nd-status { text-align: left; }
+
+/* ── Admin CRUD surface (FleetAdminApp) ────────────────────────────────────── */
+.ff-view.admin { overflow: auto; background: transparent; }
+
+/* The admin desktop console is FULL-BLEED FLUID — it fills the ENTIRE viewport width
+   (thin viewport-scaled gutters only), NOT a centred fixed column. A dispatch console is
+   used full-screen: the live vehicle map, schedule, data grids and dashboard should span
+   the whole monitor (product owner, 2026-06-30: "make the admin UI fully responsive" →
+   after a 1800px cap STILL left visible side gutters on a ~2500px screen, "the problem
+   persists" — so the cap was removed and the console now goes edge to edge). `max-width:
+   100%` + thin `clamp` gutters give it the full width while keeping the surfaces just off
+   the very edge. The kHTMLTabs strip + content pane (Width=0 ⇒ no fixed width) and every
+   tab's surface fill this container, so this one rule drives the whole console — map,
+   grids, schedule, dashboard all span the screen. On a small screen the gutters shrink so
+   nothing crowds the edge; the dashboard reflows to two columns on wide screens (≥1440px)
+   so the gained width reads as density, not sparse rows. */
+.ff-admin {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px clamp(14px, 1.4vw, 28px) 48px;
+}
+
+/* The admin tab strip is the shared kHTMLTabStrip (kHTMLTabs): its own
+   .kHTMLTabsContainer (button row) + chromeless .kHTMLTabsContent pane own the
+   look. Each tab button keeps .ff-admin-tab only as a stable E2E hook + the phone
+   touch-target (@media block below); kHTMLTabs' own !important rules paint the tab. */
+
+/* Object-type icon prefixed to each tab button (FleetTabIcons → public/icons/
+   entities/*.svg). The SVG rides in as a data URI and is recoloured via mask +
+   background-color:currentColor, so it follows the tab label's colour (black →
+   green on hover). The span carries no text — tab labels stay intact for the E2E. */
+.ff-tab-icon {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-right: 7px;
+    vertical-align: -3px;
+    background-color: currentColor;
+    /* Use longhand mask properties for the broadest browser support. Some
+       Chromium/Edge builds reject the shorthand with a var() URL, which leaves
+       the whole box painted as a solid black square. */
+    -webkit-mask-image: var(--ff-tab-icon-src);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: var(--ff-tab-icon-src);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+}
+
+/* Active-tab indicator (#2): the shared kHTMLTabStrip marks the selected tab with an
+   inline white background + bold black label (via !important, so its background can't be
+   restyled here) and now also aria-selected="true". A near-white active tab on a light
+   bar is too subtle, so key a prominent Langate-green underline off aria-selected — a
+   standard, accessible active-tab pattern that doesn't fight the lib's inline styles.
+   box-shadow (not border/background) so it never shifts the tab's box or height. Applies
+   to the main admin tabs AND the Configuration/Operations sub-tab strips. */
+.ff-admin-tab[aria-selected="true"],
+.ff-admin-subtab[aria-selected="true"] {
+    box-shadow: inset 0 -3px 0 0 var(--ff-green) !important;
+    border-radius: 6px 6px 0 0;
+}
+
+.ff-admin-entity {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+
+/* The tab titles were removed (the tab strip already names the view, 2026-07-06). A plain
+ * ehead now carries only a descriptive subtitle (Incidents), so it stays left-aligned in flow. */
+.ff-admin-ehead {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+/* An ACTION header (Jobs "+ New", Vehicles/Drivers report button) sits to the RIGHT of the grid
+ * instead of a full-width header row that wastes a ~40px vertical band above it (product owner
+ * 2026-07-06). Fallback / old browsers: a right-aligned in-flow header row. */
+.ff-admin-ehead-action { justify-content: flex-end; }
+
+/* Modern browsers: lay the card out as [ grid | action ] so the button reclaims the wasted
+ * vertical band and sits to the RIGHT of the grid. The grid column is minmax(0,1fr) so a WIDE
+ * grid SCROLLS inside its column (overflow-x:auto) rather than pushing the button off or
+ * overlapping it; the button takes its own auto-width column. Scoped via :has() to cards that
+ * actually carry an action header (Customers/Locations have none; Incidents has a subtitle). */
+.ff-admin-entity:has(> .ff-admin-ehead-action) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 14px;
+}
+.ff-admin-entity:has(> .ff-admin-ehead-action) > .ff-admin-ehead-action { grid-column: 2; grid-row: 1; margin: 0; }
+.ff-admin-entity:has(> .ff-admin-ehead-action) > .ff-admin-gridhost { grid-column: 1; grid-row: 1; }
+.ff-admin-entity:has(> .ff-admin-ehead-action) > .ff-admin-status { grid-column: 1 / -1; }
+
+/* Admin New button is inline-sized (override the mobile full-width primary). */
+.ff-admin-new { flex: 0 0 auto; min-width: 0; flex-basis: auto; margin-top: 0; }
+
+.ff-admin-gridhost { overflow-x: auto; }
+
+/* The always-present trailing blank row IS the add affordance (product decision). Show a
+   faint "+ new…" hint in its first (still-empty) cell so it reads as "add here", not stray
+   data (#6). kEditableTable marks only the trailing blank row's first cell with
+   .kEditableTableAddHint + data-addhint; the hint disappears the moment that cell gets a
+   value (:empty) and follows the add-row as new rows are typed. */
+.ff-admin-gridhost td.kEditableTableAddHint:empty::before {
+    content: attr(data-addhint);
+    color: var(--ff-faint);
+    font-style: italic;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+/* Jobs-grid pager (shared kEditableTable pagination) themed to the admin glass:
+   the shared lib ships a functional light-grey bar — restyle it to the Langate
+   tokens so a large fleet's paged Jobs list matches the surface. Scoped to the
+   gridhost so it never touches the stops-grid or other kEditableTable hosts. */
+.ff-admin-gridhost .kEditableTablePagination {
+    justify-content: flex-end;
+    padding: 10px 2px 2px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ff-muted);
+}
+.ff-admin-gridhost .kEditableTablePageBtn {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 5px 14px;
+    border: 1px solid var(--ff-hairline);
+    border-radius: 8px;
+    background: var(--ff-glass-strong);
+    color: var(--ff-ink);
+}
+.ff-admin-gridhost .kEditableTablePageBtn:hover:not(:disabled) {
+    background: var(--ff-glass-hi);
+    border-color: var(--ff-blue);
+}
+.ff-admin-gridhost .kEditableTablePageInfo { min-width: 110px; }
+
+/* Admin configuration catalog (choice domains): stacked header + sub-tab strip. The
+   subtitle-only header stays top-aligned (overriding the base ehead flex-end). */
+.ff-admin-confhead { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+.ff-admin-esub { margin: 4px 0 0; font-size: 13px; color: var(--ff-muted); }
+/* The Configuration sub-tab strip is also kHTMLTabStrip; .ff-admin-subtab stays on
+   each button as the E2E hook + phone touch-target only (@media block below). */
+.ff-admin-config-content { width: 100%; }
+/* The Configuration tab is ONE glass panel holding the header + sub-tab strip + the
+   reused entity grid; neutralize the inner .ff-admin-entity so it sits flush (no
+   double-glass), matching every other admin tab's single-card consistency. */
+.ff-admin-config {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+.ff-admin-config .ff-admin-entity {
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+/* Operations tab (reports.md Part 1): a single unified triage list with category
+   filter chips. The sub-tab shell has been removed; the list sits inside the
+   .ff-admin-config glass panel. Unique .ff-ops-* prefix (no class collision). */
+.ff-admin-ops-content { width: 100%; }
+.ff-ops { display: flex; flex-direction: column; gap: 14px; }
+.ff-ops-head { display: flex; flex-direction: column; gap: 2px; }
+.ff-ops-title { font-size: 15px; font-weight: 800; color: var(--ff-ink-strong); margin: 0; letter-spacing: -0.01em; }
+.ff-ops-sub { margin: 0; font-size: 13px; color: var(--ff-muted); }
+.ff-ops-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* Filter chip bar above the triage list. */
+.ff-ops-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.ff-ops-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--ff-line);
+    border-radius: var(--ff-r-pill);
+    background: rgba(255, 255, 255, 0.45);
+    color: var(--ff-ink-strong);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s var(--ff-t-mid), border-color .15s var(--ff-t-mid), color .15s var(--ff-t-mid);
+}
+.ff-ops-chip:hover { background: rgba(255, 255, 255, 0.85); border-color: var(--ff-green); }
+.ff-ops-chip.active { background: var(--ff-green); border-color: var(--ff-green); color: #fff; }
+.ff-ops-chip .ff-tab-icon { width: 14px; height: 14px; margin-right: 0; opacity: 0.85; }
+.ff-ops-chip.active .ff-tab-icon { opacity: 1; }
+.ff-ops-chip-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9px;
+    background: rgba(21, 50, 74, 0.10);
+    color: var(--ff-ink-strong);
+    font-size: 11px;
+    font-weight: 700;
+}
+.ff-ops-chip.active .ff-ops-chip-count { background: rgba(255, 255, 255, 0.25); color: #fff; }
+
+/* One triage row — a full-width button that opens the related detail surface. */
+.ff-ops-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 11px 14px;
+    border: 1px solid var(--ff-line);
+    border-left-width: 3px;
+    border-radius: var(--ff-r-sm);
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: border-color .15s var(--ff-t-mid), background .15s var(--ff-t-mid), box-shadow .15s var(--ff-t-mid);
+}
+.ff-ops-row:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.85); box-shadow: var(--ff-glow-green); }
+.ff-ops-row.urgent { border-left-color: var(--ff-red); }
+.ff-ops-rowicon { width: 18px; height: 18px; margin-right: 2px; opacity: 0.75; }
+.ff-ops-row:hover .ff-ops-rowicon { opacity: 1; }
+.ff-ops-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ff-ops-main { font-size: 14px; font-weight: 700; color: var(--ff-ink-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ff-ops-meta { font-size: 12px; color: var(--ff-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Right-side reason badge (planned/info default; warn/hard/hold variants). */
+.ff-ops-badge {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: var(--ff-r-pill);
+    background: rgba(0, 81, 126, 0.10);
+    color: var(--ff-primary);
+    white-space: nowrap;
+}
+.ff-ops-badge.warn { background: rgba(176, 131, 15, 0.16); color: var(--ff-gold-700); }
+.ff-ops-badge.hard { background: rgba(181, 88, 82, 0.16); color: var(--ff-red-700); }
+.ff-ops-badge.hold { background: rgba(95, 118, 130, 0.18); color: #43555f; }
+
+.ff-ops-empty { font-size: 13px; color: var(--ff-muted); padding: 18px 4px; margin: 0; }
+
+.ff-admin-table .ff-admin-actcol { width: 1%; white-space: nowrap; }
+.ff-admin-table .ff-admin-actcell { white-space: nowrap; text-align: right; }
+.ff-admin-table .ff-admin-actcell .ff-btn {
+    flex: 0 0 auto;
+    min-width: 0;
+    flex-basis: auto;
+    margin: 0 0 0 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+.ff-admin-delete { color: var(--ff-red-700); }
+.ff-admin-delete:hover { border-color: var(--ff-red); color: var(--ff-red-700); box-shadow: 0 0 0 3px rgba(181, 88, 82, 0.18); }
+
+.ff-admin-status {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ff-muted);
+    min-height: 16px;
+}
+
+/* Modal form (create / edit) */
+.ff-admin-form { display: flex; flex-direction: column; gap: 12px; padding: 4px 2px; }
+/* In-dialog validation error (empty until the OK validator rejects). */
+.ff-admin-formerror { font-size: 13px; font-weight: 600; color: var(--ff-red-700); min-height: 16px; }
+/* A1 vehicle-fit verdict line (empty until a vehicle + container type are set). */
+.ff-admin-fit { font-size: 13px; font-weight: 600; min-height: 16px; }
+.ff-admin-fit.ok   { color: var(--ff-green-600); }
+.ff-admin-fit.warn { color: var(--ff-gold-700); }
+.ff-admin-fit.hard { color: var(--ff-red-700); }
+.ff-admin-field { display: flex; flex-direction: column; gap: 4px; }
+.ff-admin-flabel {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ff-muted);
+}
+.ff-admin-control {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 40px;
+    border: 1px solid var(--ff-line);
+    border-radius: var(--ff-r-sm);
+    padding: 9px 11px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ff-ink);
+    background: rgba(255, 255, 255, 0.85);
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-admin-control:focus { outline: none; border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+
+/* Shared drive form (Jobs "+ New" create AND route-detail edit): two-column
+   summary so the wider modal uses horizontal space. The extra class in the
+   selector beats the later .ff-detail-section { display:flex }. Full-width items
+   carry an explicit span class (customer; type when there is no status column;
+   the fit verdict line) instead of a brittle :nth-child. */
+.ff-driveform-grid.ff-detail-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 14px;
+    align-items: start;
+}
+.ff-driveform-grid > .ff-detail-shead,
+.ff-driveform-grid > .ff-driveform-meta,
+.ff-driveform-grid > .ff-driveform-full,
+.ff-driveform-grid > .ff-admin-fit {
+    grid-column: 1 / -1;
+}
+.ff-driveform-meta {
+    margin: -4px 0 10px;
+    font-size: 13px;
+    color: var(--ff-muted);
+}
+.ff-driveform-grid > .ff-admin-field { margin-bottom: 10px; }
+
+/* In-content action bar: keep buttons inline and content-sized. */
+.ff-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.ff-admin-actions .ff-btn { flex: 0 0 auto; }
+.ff-admin-actions .ff-btn.primary { flex-basis: auto; margin-top: 0; }
+/* Action bar moved to the bottom of the route detail modal.
+   Sticky so it stays visible while scrolling through timeline/proof/incidents. */
+.ff-admin-actions-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin-top: 4px;
+    padding-top: 12px;
+    padding-bottom: 4px;
+    border-top: 1px solid var(--ff-line-soft);
+    background: var(--ff-glass-strong);
+}
+
+/* Stop grid: compact Excel-like table that fills the wider modal. */
+.ff-admin-stops-section { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.ff-admin-stops { overflow-x: auto; padding: 1px; }
+.ff-admin-stops .kEditableTable { width: 100%; table-layout: fixed; float: none !important; }
+.ff-admin-stops .kEditableTableCell { vertical-align: middle; overflow: hidden; }
+.ff-admin-stops .kRowNumberHeading { width: 28px; min-width: 28px; text-align: center; }
+.ff-admin-stops .ff-chip {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.ff-admin-stops .kEditableTableCell .ff-link-btn {
+    font-size: 10px;
+    padding: 0;
+    line-height: 1.2;
+}
+.ff-admin-stop { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ff-admin-stop .ff-admin-f-location { flex: 2 1 150px; width: auto; }
+.ff-admin-stop .ff-admin-f-action { flex: 1 1 110px; width: auto; }
+.ff-admin-removestop { flex: 0 0 auto; color: var(--ff-red-700); }
+.ff-admin-addstop {
+    flex: 0 0 auto;
+    min-width: 0;
+    flex-basis: auto;
+    align-self: flex-start;
+    font-size: 12px;
+    padding: 5px 10px;
+    margin-top: 2px;
+}
+.ff-admin-stopactions { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ff-admin-stopactions .ff-link-btn { font-size: 11px; padding: 0; }
+/* Per-row "+ New location" — a blue accent link in a location-less row's actions cell. */
+.ff-admin-stopactions .ff-admin-addloc { color: var(--ff-blue-700); font-weight: 600; }
+
+.ff-admin-confirm { font-size: 14px; color: var(--ff-ink-strong); padding: 8px 4px; line-height: 1.4; }
+
+/* ── Drive-detail lifecycle strip — the single status surface (redesign) ───────
+   Derived status badge + "N / M stops done" meter + the only route-level actions
+   (Complete / Pause / Resume). Green is the meter fill / done accent only — never
+   behind text (accessibility contract). Delete lives in the bottom bar (far-left,
+   away from the footer Save); the free Status field is gone. */
+.ff-life-wrap { display: flex; flex-direction: column; gap: 10px; }
+.ff-life {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.28));
+    border: 1px solid var(--ff-glass-edge); border-radius: var(--ff-r-md);
+    padding: 13px 15px; box-shadow: var(--ff-glass-hi);
+}
+.ff-life-left { display: flex; flex-direction: column; gap: 9px; min-width: 230px; flex: 1 1 auto; }
+.ff-life-badges { display: flex; align-items: center; gap: 9px; }
+.ff-life-meterwrap { display: flex; align-items: center; gap: 10px; }
+.ff-meter { flex: 1 1 auto; height: 7px; border-radius: var(--ff-r-pill); background: var(--ff-line); overflow: hidden; min-width: 120px; }
+.ff-meter > i { display: block; height: 100%; border-radius: var(--ff-r-pill); background: var(--ff-green); }
+.ff-meter-txt { font-size: 12.5px; color: var(--ff-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ff-life-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Beat the global .ff-btn.primary { flex-basis:100% } so Complete stays compact. */
+.ff-life-actions .ff-btn { flex: 0 0 auto; }
+.ff-life-actions .ff-btn.primary { flex-basis: auto; margin-top: 0; }
+.ff-chip.onhold { background: var(--ff-office, rgba(83, 119, 128, 0.16)); color: var(--ff-teal-ink, #3d5a62); }
+.ff-chip.dot::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.9; display: inline-block; margin-right: 3px; }
+
+/* Transient in-frame success confirmation after a committed transition (law 7). */
+.ff-life-status { font-size: 12.5px; font-weight: 700; color: var(--ff-green-600); min-height: 0; opacity: 0; transition: opacity var(--ff-t-mid); }
+.ff-life-status.show { opacity: 1; min-height: 18px; }
+
+/* On-hold banner — a law-1 info state (amber), always shows WHY / WHO / WHEN + Resume. */
+.ff-holdbanner {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--ff-gold-50); border: 1px solid rgba(138, 90, 0, 0.22);
+    border-left: 4px solid var(--ff-gold-700); border-radius: var(--ff-r-md); padding: 11px 14px;
+}
+.ff-holdbanner-ico { flex: 0 0 auto; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; background: rgba(138, 90, 0, 0.14); color: var(--ff-gold-700); }
+.ff-holdbanner-txt { flex: 1 1 auto; font-size: 13px; color: var(--ff-gold-700); line-height: 1.4; }
+.ff-holdbanner-main { font-weight: 800; }
+.ff-holdbanner-meta { color: #7a5a1e; }
+.ff-holdbanner-resume { flex: 0 0 auto; background: #fff; border-color: rgba(138, 90, 0, 0.35); color: var(--ff-gold-700); }
+.ff-holdbanner-resume:hover { border-color: var(--ff-gold-700); color: var(--ff-gold-700); box-shadow: none; }
+
+/* Inline hold-reason capture panel (preset chips + free text; Confirm disabled until a reason). */
+.ff-holdpanel { border: 1px solid var(--ff-glass-edge); border-radius: var(--ff-r-md); padding: 14px 15px; background: rgba(255, 255, 255, 0.55); display: flex; flex-direction: column; gap: 11px; }
+.ff-holdpanel-title { font-size: 13px; font-weight: 800; color: var(--ff-ink-strong); }
+.ff-holdpresets { display: flex; flex-wrap: wrap; gap: 8px; }
+.ff-preset { font-size: 12px; font-weight: 600; color: var(--ff-primary); background: rgba(0, 81, 126, 0.07); border: 1px solid var(--ff-glass-edge); border-radius: var(--ff-r-pill); padding: 8px 13px; min-height: 36px; cursor: pointer; }
+.ff-preset:hover { border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-preset.on { background: rgba(0, 81, 126, 0.12); color: var(--ff-primary); border-color: var(--ff-primary-300); box-shadow: var(--ff-glow-blue); }
+.ff-holdpanel-reason { min-height: 64px; resize: vertical; }
+.ff-holdpanel-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.ff-holdpanel-actions .ff-btn { flex: 0 0 auto; }
+.ff-holdpanel-actions .ff-btn.primary { flex-basis: auto; margin-top: 0; }
+
+/* Honest completion-proof chips (stops grid Proof column + the confirm callout). */
+.ff-proof { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: var(--ff-r-pill); line-height: 1.3; }
+.ff-proof.gps, .ff-proof.photo { background: var(--ff-green-50); color: var(--ff-green-600); }
+.ff-proof.office { background: var(--ff-office, rgba(83, 119, 128, 0.16)); color: var(--ff-teal-ink, #3d5a62); }
+.ff-proof.missed { background: var(--ff-red-50); color: var(--ff-red-700); }
+.ff-proof-dash { color: var(--ff-faint); }
+.ff-admin-stops .ff-proof { font-size: 10px; padding: 1px 6px; border-radius: 3px; }
+
+/* Bottom action bar: push Share/PoD right so Delete stays far-left. */
+.ff-admin-actions-spacer { flex: 1 1 auto; }
+/* The read-only tail (timeline / proof / incidents / actions) — one replaceable block. */
+.ff-detail-tail { display: flex; flex-direction: column; gap: 16px; }
+
+/* Honest office-complete confirmation (nested kModalDialog). */
+.ff-confirm { display: flex; flex-direction: column; gap: 12px; }
+.ff-confirm-line { font-size: 14px; color: var(--ff-ink); line-height: 1.5; }
+.ff-confirm-stops { display: flex; flex-direction: column; gap: 6px; background: rgba(255, 255, 255, 0.55); border: 1px solid var(--ff-line); border-radius: var(--ff-r-sm); padding: 9px 12px; }
+.ff-confirm-stop { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--ff-ink-strong); }
+.ff-confirm-office { display: flex; gap: 9px; align-items: flex-start; background: var(--ff-office, rgba(83, 119, 128, 0.10)); border: 1px solid rgba(83, 119, 128, 0.28); border-radius: var(--ff-r-sm); padding: 10px 12px; font-size: 12.5px; color: var(--ff-teal-ink, #3d5a62); line-height: 1.45; }
+.ff-confirm-office .ff-proof { flex: 0 0 auto; margin-top: 1px; }
+.ff-confirm-note { min-height: 56px; resize: vertical; }
+
+/* ── Admin Dispatch dashboard (forms-and-views A1; rebuilt 2026-07-05) ─────
+   Six panels: attention strip · today rollup (+ day progress) · next up & at
+   risk · exception-only fleet · latest activity. Each deep-links to the tab
+   that owns the action — the dashboard never duplicates a tab. */
+.ff-admin-dash { display: flex; flex-direction: column; gap: 18px; }
+/* The dashboard "Översikt" title was removed (the tab strip names the view, 2026-07-06);
+   the header keeps only the date/purpose subtitle. */
+.ff-admin-dhead { margin-bottom: 6px; }
+.ff-admin-dsub { font-size: 13px; color: var(--ff-muted); margin: 0; }
+
+/* Attention strip — one exception tile per Operations worklist + open incidents. */
+.ff-dash-attention { display: flex; flex-direction: column; gap: 10px; }
+.ff-dash-atthead {
+    font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ff-muted); margin: 0;
+}
+.ff-dash-tilerow { display: flex; gap: 12px; flex-wrap: wrap; }
+.ff-dash-tile {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 7px;
+    flex: 1 1 150px; min-width: 150px; max-width: 220px;
+    font: inherit; text-align: left; cursor: pointer;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-lg);
+    padding: 12px 14px; box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast), background var(--ff-t-fast);
+}
+.ff-dash-tile:hover:not(:disabled) { border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-dash-tile:disabled, .ff-dash-tile.zero { cursor: default; opacity: 0.55; }
+.ff-dash-tiletop { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
+.ff-dash-tilecount { font-size: 22px; font-weight: 800; color: var(--ff-ink-strong); line-height: 1.1; }
+.ff-dash-tile.urgent .ff-dash-tilecount { color: var(--ff-red-700); }
+/* Trend delta chip — attention metrics are "more is worse", so up = red, down = green. */
+.ff-dash-tiledelta { font-size: 11px; font-weight: 800; padding: 1px 7px; border-radius: var(--ff-r-pill); white-space: nowrap; }
+.ff-dash-tiledelta.up { background: rgba(151, 60, 55, 0.12); color: var(--ff-red-700); }
+.ff-dash-tiledelta.down { background: rgba(1, 122, 100, 0.14); color: var(--ff-green-600); }
+.ff-dash-tilespark { width: 100%; height: 26px; display: block; }
+.ff-dash-tilelabel { font-size: 12px; font-weight: 700; color: var(--ff-muted); }
+
+/* Hero priority card — the single most urgent item (or a green all-clear). */
+.ff-dash-hero {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring); border-left: 5px solid var(--ff-red-700);
+    border-radius: var(--ff-r-lg); padding: 16px 20px; box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+.ff-dash-hero.clear { border-left-color: var(--ff-green); }
+.ff-dash-heroicon {
+    flex: 0 0 auto; width: 44px; height: 44px; border-radius: var(--ff-r-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 800;
+    background: rgba(151, 60, 55, 0.12); color: var(--ff-red-700);
+}
+.ff-dash-hero.clear .ff-dash-heroicon { background: rgba(1, 122, 100, 0.14); color: var(--ff-green-600); }
+.ff-dash-herobody { flex: 1 1 auto; min-width: 0; }
+.ff-dash-herolabel {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--ff-red-700); margin: 0 0 3px;
+}
+.ff-dash-herotitle { font-size: 16px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 3px; }
+.ff-dash-herometa { font-size: 13px; color: var(--ff-muted); margin: 0; }
+.ff-dash-heroaction {
+    flex: 0 0 auto; font: inherit; font-size: 13px; font-weight: 700; white-space: nowrap;
+    color: #fff; border: none; border-radius: var(--ff-r-md); cursor: pointer;
+    padding: 9px 16px; background: linear-gradient(180deg, #0c6ea0 0%, var(--ff-primary) 100%);
+    transition: box-shadow var(--ff-t-fast);
+}
+.ff-dash-heroaction:hover { box-shadow: var(--ff-glow-blue); }
+
+/* Shared glass panel (today / next-up / fleet / activity). */
+.ff-dash-panel {
+    min-width: 0;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-lg);
+    padding: 18px 20px; box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+.ff-dash-panelhead { font-size: 14px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 12px; }
+
+/* Today panel — the four TODAY-scoped status bars + the day-progress line. */
+.ff-dash-today {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-lg);
+    padding: 18px 20px; box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+}
+.ff-dash-todayhead { font-size: 14px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.ff-dash-count {
+    display: inline-block; font-size: 12px; font-weight: 800; color: var(--ff-primary);
+    background: rgba(0, 81, 126, 0.10); border-radius: var(--ff-r-pill); padding: 1px 9px;
+}
+/* Today's-drives donut beside the clickable status bars (donut = instant proportion,
+   bars = exact counts + drill-down). Wraps to a single column on a narrow panel. */
+.ff-dash-todaychart { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.ff-dash-donutwrap { flex: 0 0 auto; }
+.ff-dash-donut { width: 132px; height: 132px; display: block; }
+.ff-dash-rollup { flex: 1 1 220px; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
+.ff-dash-bucket {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    font: inherit; text-align: left; border: 1px solid transparent; background: none;
+    border-radius: var(--ff-r-md); padding: 5px 7px; cursor: pointer;
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast);
+}
+.ff-dash-bucket:hover:not(:disabled) { background: rgba(255, 255, 255, 0.55); border-color: var(--ff-line); }
+.ff-dash-bucket:disabled { cursor: default; opacity: 0.6; }
+.ff-dash-blabel { flex: 0 0 110px; font-size: 13px; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-dash-bbar { flex: 1 1 auto; height: 14px; background: rgba(0, 81, 126, 0.10); border-radius: var(--ff-r-pill); overflow: hidden; }
+.ff-dash-bfill { display: block; height: 100%; border-radius: var(--ff-r-pill); transition: width .35s var(--ff-t-mid); min-width: 2px; }
+.ff-dash-bcount { flex: 0 0 auto; font-size: 14px; font-weight: 800; color: var(--ff-ink-strong); min-width: 28px; text-align: right; }
+.ff-dash-bucket.planned    .ff-dash-bfill { background: var(--ff-primary); }
+.ff-dash-bucket.inprogress .ff-dash-bfill { background: var(--ff-gold); }
+.ff-dash-bucket.onhold     .ff-dash-bfill { background: #5f7682; }
+.ff-dash-bucket.completed  .ff-dash-bfill { background: var(--ff-green); }
+
+/* Day progress — "stops completed today: N / M". */
+.ff-dash-progress { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--ff-line); }
+.ff-dash-plabel { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--ff-muted); }
+.ff-dash-pbar { flex: 1 1 auto; height: 10px; background: rgba(0, 81, 126, 0.10); border-radius: var(--ff-r-pill); overflow: hidden; }
+.ff-dash-pfill { display: block; height: 100%; border-radius: var(--ff-r-pill); background: var(--ff-green); transition: width .35s var(--ff-t-mid); min-width: 2px; }
+.ff-dash-pcount { flex: 0 0 auto; font-size: 13px; font-weight: 800; color: var(--ff-ink-strong); }
+
+/* Timeframe panels — one glass panel per horizon: In progress / Running late / Next up
+   (2026-07-05: "break Next up & at risk into one panel for each time frame"). The
+   Next-up panel header carries the "Open the full day" → Schedule link; the Late panel
+   heading is red-accented (its rows are what's overdue TODAY). */
+.ff-dash-nexthead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ff-dash-schedlink {
+    font: inherit; font-size: 12px; font-weight: 700; color: var(--ff-primary);
+    background: none; border: none; cursor: pointer; padding: 2px 0; white-space: nowrap;
+}
+.ff-dash-schedlink:hover { text-decoration: underline; }
+.ff-dash-late .ff-dash-panelhead { color: var(--ff-red-700); }
+.ff-dash-jobrow {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-md); padding: 11px 13px;
+    background: rgba(255, 255, 255, 0.55); font: inherit; cursor: pointer; margin: 0 0 8px;
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast), background var(--ff-t-fast);
+}
+.ff-dash-jobrow:last-child { margin-bottom: 0; }
+.ff-dash-jobrow:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.8); box-shadow: var(--ff-glow-green); }
+.ff-dash-jcust { flex: 1 1 auto; font-size: 14px; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-dash-jmeta { flex: 0 1 auto; font-size: 13px; color: var(--ff-muted); text-align: right; }
+
+/* Full Fleet status grid — every vehicle as a status tile (→ vehicle detail). */
+.ff-dash-fleetline { font-size: 13px; font-weight: 700; color: var(--ff-muted); margin: 0 0 12px; }
+.ff-dash-allclear { font-size: 13px; font-weight: 700; color: var(--ff-green-600); margin: 0; }
+.ff-dash-fleetgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.ff-dash-vtile {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font: inherit;
+    cursor: pointer; padding: 10px 12px; border-radius: var(--ff-r-md);
+    border: 1px solid var(--ff-line); background: rgba(255, 255, 255, 0.55);
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast), background var(--ff-t-fast);
+}
+.ff-dash-vtile:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.85); box-shadow: var(--ff-glow-green); }
+.ff-dash-vdot { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; background: #9fb6c3; }
+.ff-dash-vtile.active .ff-dash-vdot { background: var(--ff-green); }
+.ff-dash-vtile.maintenance .ff-dash-vdot { background: var(--ff-gold); }
+.ff-dash-vtile.onleave .ff-dash-vdot { background: var(--ff-teal); }
+.ff-dash-vtile.inactive .ff-dash-vdot { background: var(--ff-red); }
+.ff-dash-vbody { min-width: 0; display: flex; flex-direction: column; }
+.ff-dash-vname { font-size: 13px; font-weight: 700; color: var(--ff-ink-strong); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ff-dash-vmeta { font-size: 11px; color: var(--ff-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Live embedded fleet mini-map (FleetDashMiniMap → full Vehicle map). */
+.ff-dash-map { display: flex; flex-direction: column; }
+.ff-dash-maphead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ff-dash-maphead .ff-dash-panelhead { margin: 0; }
+.ff-dash-maplink {
+    font: inherit; font-size: 12px; font-weight: 700; color: var(--ff-primary);
+    background: none; border: none; cursor: pointer; padding: 2px 0; white-space: nowrap;
+}
+.ff-dash-maplink:hover { text-decoration: underline; }
+.ff-dash-mapchips { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+.ff-dash-mapchip { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: var(--ff-r-pill); background: rgba(0, 81, 126, 0.08); color: var(--ff-muted); }
+.ff-dash-mapchip.active { color: var(--ff-green-600); background: rgba(1, 122, 100, 0.12); }
+.ff-dash-mapchip.attention { color: var(--ff-red-700); background: rgba(151, 60, 55, 0.12); }
+.ff-dash-mapchip.idle { color: var(--ff-gold-700); background: rgba(138, 90, 0, 0.12); }
+.ff-dash-mapframe { position: relative; height: 260px; border-radius: var(--ff-r-md); overflow: hidden; }
+.ff-dash-mapinner { position: absolute; inset: 0; }
+.ff-dash-maploading {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 13px; font-weight: 700; color: var(--ff-muted); pointer-events: none;
+}
+
+/* Latest activity feed (event rows → route detail). */
+.ff-dash-eventrow {
+    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-md); padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.5); font: inherit; cursor: pointer; margin: 0 0 8px;
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast), background var(--ff-t-fast);
+}
+.ff-dash-eventrow:last-child { margin-bottom: 0; }
+.ff-dash-eventrow:hover:not(:disabled) { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.8); box-shadow: var(--ff-glow-green); }
+.ff-dash-eventrow:disabled { cursor: default; }
+.ff-dash-ewhen { flex: 0 0 72px; font-size: 12px; font-weight: 700; color: var(--ff-muted); }
+.ff-dash-ewhat { flex: 1 1 auto; font-size: 13px; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-dash-ewho { flex: 0 1 auto; font-size: 12px; color: var(--ff-muted); text-align: right; }
+
+/* The dashboard grid: header + quick actions + hero + attention strip stack full-width,
+   then a two-column grid — LEFT = operational context (today's drives + live mini-map +
+   fleet grid), RIGHT = the actionable lists (in progress / late / next up / activity).
+   Two columns only ≥1200px; narrower stacks to one column (so the phone + 1280px audits
+   are unaffected — a stacked single column there). */
+.ff-dash-grid { display: grid; grid-template-columns: 1fr; gap: 18px; align-items: start; }
+.ff-dash-col { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+@media (min-width: 1200px) {
+    .ff-dash-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+/* In-app PDF download buttons (PoD / customer statement). */
+.ff-pdf-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 2px; }
+.ff-pdfbtn { white-space: nowrap; }
+.ff-pdfbtn:disabled { opacity: .6; cursor: default; }
+
+/* The Vehicles / Drivers entity-tab header report button (opens the printable view).
+   Scoped (0,2,0) so it beats `.ff-btn.primary { flex-basis: 100% }` and stays compact
+   on the right of the flex header instead of stretching full-width. */
+.ff-admin-ehead .ff-admin-reportbtn { flex: 0 0 auto; margin-top: 0; white-space: nowrap; }
+
+/* The Jobs "+ New" header button (#11). Like the report button, it inherits the global
+   `.ff-btn.primary { flex-basis: 100% }`, which made it wrap to a full-width dark bar
+   under the title instead of a compact right-docked button. Scoped (0,2,0) so it beats
+   the global rule and stays a normal-sized button on the right of the flex header. */
+.ff-admin-ehead .ff-admin-new { flex: 0 0 auto; margin-top: 0; white-space: nowrap; }
+
+/* Vehicle-status chips (distinct from the route-status chips above). */
+.ff-chip.active      { background: var(--ff-green-50); color: var(--ff-green-600); }
+.ff-chip.maintenance { background: var(--ff-gold-50); color: var(--ff-gold-700); }
+.ff-chip.onleave     { background: rgba(0, 81, 126, 0.10); color: var(--ff-primary); }
+.ff-chip.inactive    { background: rgba(79, 107, 124, 0.14); color: var(--ff-muted); }
+
+/* ── Read-only master-data detail modals (A11 / A20) ─────────────────────── */
+.ff-detail { display: flex; flex-direction: column; gap: 16px; }
+.ff-detail-section { display: flex; flex-direction: column; gap: 6px; }
+.ff-detail-shead {
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--ff-muted); margin: 0 0 4px;
+}
+.ff-detail-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ff-detail-label { flex: 0 0 auto; font-size: 13px; color: var(--ff-muted); }
+.ff-detail-value { flex: 1 1 auto; font-size: 14px; font-weight: 600; color: var(--ff-ink-strong); text-align: right; word-break: break-word; }
+.ff-detail-jobrow {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-md); padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.5);
+}
+/* Clickable related-job row (gap 1 / gap 4 bucket list) — opens the route detail. */
+.ff-detail-jobrow-link {
+    width: 100%; font: inherit; text-align: left; cursor: pointer;
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast), background var(--ff-t-fast);
+}
+.ff-detail-jobrow-link:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.85); box-shadow: var(--ff-glow-green); }
+.ff-detail-jmain { flex: 1 1 auto; font-size: 13px; color: var(--ff-ink-strong); }
+/* A value rendered as a cross-link (gap 7) or a tel:/mailto: anchor (gap 3). */
+.ff-detail-vlink {
+    border: none; background: none; padding: 0; font: inherit; font-weight: 600;
+    color: var(--ff-primary); cursor: pointer; text-decoration: none; text-align: right;
+}
+.ff-detail-vlink:hover { text-decoration: underline; }
+/* Contact phone/email links (gap 3). */
+.ff-detail-clink { color: var(--ff-primary); text-decoration: none; }
+.ff-detail-clink:hover { text-decoration: underline; }
+.ff-detail-contact {
+    display: flex; flex-direction: column; gap: 2px;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-md); padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.5);
+}
+.ff-detail-cname { font-size: 14px; font-weight: 700; color: var(--ff-ink-strong); }
+.ff-detail-cmeta { font-size: 12px; color: var(--ff-muted); word-break: break-word; }
+/* A8 route detail — activity timeline + completion proof */
+.ff-detail-eventrow { display: flex; gap: 10px; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--ff-line-soft); }
+.ff-detail-eventrow:last-child { border-bottom: none; }
+.ff-detail-ewhen { flex: 0 0 auto; font-size: 11px; color: var(--ff-muted); font-variant-numeric: tabular-nums; }
+.ff-detail-ewhat { flex: 1 1 auto; font-size: 13px; color: var(--ff-ink-strong); }
+/* Expandable activity-timeline event row (gap 8): a clickable head + a hidden detail. */
+.ff-detail-eventitem { border-bottom: 1px solid var(--ff-line-soft); }
+.ff-detail-eventitem:last-child { border-bottom: none; }
+.ff-detail-eventhead { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 6px 0; border-bottom: none; }
+.ff-detail-eventhead:hover .ff-detail-ewhat { color: var(--ff-blue-700); }
+.ff-detail-echevron { flex: 0 0 auto; font-size: 11px; color: var(--ff-muted); }
+.ff-event-sev { flex: 0 0 auto; font-size: 11px; padding: 1px 8px; }
+.ff-event-sev-warning { background: rgba(180, 120, 0, 0.14); color: var(--ff-gold-700, #8a5a00); }
+.ff-event-sev-critical { background: rgba(190, 30, 30, 0.14); color: #a11; }
+.ff-detail-eventdetail { padding: 2px 0 8px 0; }
+.ff-detail-eventline { display: flex; gap: 10px; font-size: 12px; padding: 2px 0; }
+.ff-detail-eventlinelabel { flex: 0 0 34%; color: var(--ff-muted); }
+.ff-detail-eventlineval { flex: 1 1 auto; color: var(--ff-ink-strong); word-break: break-word; }
+.ff-detail-docrow { display: flex; gap: 10px; align-items: center; padding: 6px 0; }
+.ff-detail-docthumb { width: 40px; height: 40px; object-fit: cover; border-radius: 8px; border: 1px solid var(--ff-line); display: block; }
+.ff-detail-docname { font-size: 13px; color: var(--ff-ink-strong); word-break: break-word; }
+/* Clickable cross-link chips (e.g. a vehicle's compatible container types → type detail). */
+.ff-detail-chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.ff-detail-chip { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--ff-surface-2, rgba(0,81,126,0.08)); color: var(--ff-ink-strong); border: 1px solid var(--ff-line); }
+.ff-detail-chiplink { cursor: pointer; color: var(--ff-blue-700); font-weight: 600; }
+.ff-detail-chiplink:hover { border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+/* Download / Preview controls for a non-inline attachment (e.g. the archived PoD PDF). */
+.ff-detail-docactions { display: inline-flex; gap: 10px; align-items: center; }
+.ff-detail-docdl, .ff-detail-docpreview { white-space: nowrap; }
+/* Proof-photo thumbnail button — enlarges to the lightbox on click (gap 2). */
+.ff-detail-thumbbtn { border: none; background: none; padding: 0; line-height: 0; cursor: zoom-in; border-radius: 8px; }
+.ff-detail-thumbbtn:hover .ff-detail-docthumb { border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+.ff-lightbox-img { display: block; max-width: 100%; max-height: 78vh; border-radius: 8px; margin: 0 auto; }
+/* Entity-grid "Details" action cell (gap 6) — opens the read-only detail modal. */
+.ff-admin-detailbtn {
+    border: none; background: none; padding: 2px 4px; font: inherit; font-size: 12px;
+    font-weight: 700; color: var(--ff-primary); cursor: pointer; text-decoration: none;
+}
+.ff-admin-detailbtn:hover { text-decoration: underline; }
+
+/* ── Shared kModalDialog chrome — themed to match the glass system ──────────── */
+/* Scoped under `body` so these win over the shared lib's runtime kStyles rules
+   regardless of <style> injection order (0,1,1 > 0,1,0). Visual props only —
+   layout/sizing/positioning stays owned by kModalDialog. */
+body .kDialogContainer {
+    background: rgba(4, 28, 43, 0.46);
+    -webkit-backdrop-filter: saturate(120%) blur(6px);
+    backdrop-filter: saturate(120%) blur(6px);
+    /* kModalDialog sets an inline `font-family: Segoe UI` on its container, so ALL dialog
+       content (buttons using `font-family: inherit`, labels, …) fell off the DM Sans brand
+       font — visible once the OK/Cancel buttons were rethemed (Spara/Stäng = DM Sans vs the
+       strip's Slutför/Pausa = Segoe UI). Force the brand font on all dialog content. */
+    font-family: var(--ff-font) !important;
+}
+body .kDialogContent {
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+}
+/* kModalDialog with Height=0 forces the box to a fixed height:80% of the viewport, so a
+   drive-detail dialog whose content is ~85% tall ALWAYS shows a vertical scrollbar even
+   when it would otherwise fit. Fix (scoped via :has() so other dialogs keep the shared
+   default): let the route-detail box (uniquely marked by its .ff-detail-tail block) size
+   to its content, AND cap its scroll area (kDialogInnerContent) at the viewport minus the
+   title/buttons/padding chrome. So when the content fits it shows NO scrollbar, and when
+   it is genuinely taller than the screen the content area scrolls gracefully (never clips
+   behind the buttons — capping the box height alone would clip, since the flex scroll
+   child needs a definite bound to scroll within). */
+body .kDialogContent:has(.ff-detail-tail) { height: auto !important; }
+body .kDialogContent:has(.ff-detail-tail) #kDialogInnerContent { max-height: calc(100vh - 86px); }
+body .kDialogTitle {
+    color: var(--ff-ink-strong);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+/* Dialog OK / Cancel buttons on the Langate button system (2026-07-06, product owner:
+   "all buttons should share the same design"). The shared `khtmlButton("kDialogOKButton")`
+   sets the string as the element **id** (not a class) and applies a runtime `kHTMLButton`
+   grey look + JS-driven inline hover/disable styles — so every dialog's Spara/Stäng
+   (Save/Close, Print/Close, …) looked like plain default buttons, unlike the `.ff-btn`
+   CTAs beside them (e.g. the lifecycle strip's Slutför körning / Pausa). Retheme the two
+   ids so OK == `.ff-btn.primary` (deep-blue CTA) and Cancel == `.ff-btn` (ghost) app-wide.
+   `!important` beats BOTH the lib's runtime class AND its inline JS hover (`filter`/
+   `boxShadow`) + disable (`backgroundColor`/`color`) styles; this is a project-scoped
+   theme (no shared-lib change → the ~15 other consumers keep the built-in look). Keep OK
+   and Cancel visually distinct (primary vs ghost) so a confirm never reads as a cancel. */
+body #kDialogOKButton,
+body #kDialogCancelButton {
+    border-radius: var(--ff-r-sm) !important;
+    padding: 9px 18px !important;
+    font-family: var(--ff-font) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    filter: none !important;
+    cursor: pointer;
+    transition: background var(--ff-t-fast), border-color var(--ff-t-fast),
+                color var(--ff-t-fast), box-shadow var(--ff-t-fast), transform var(--ff-t-fast);
+}
+body #kDialogOKButton {
+    background: linear-gradient(180deg, #0c6ea0, var(--ff-primary)) !important;
+    border: 1px solid transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(0, 81, 126, 0.30) !important;
+}
+body #kDialogOKButton:hover:not(:disabled) {
+    background: linear-gradient(180deg, #0f7aac, #045f90) !important;
+    box-shadow: 0 6px 20px rgba(0, 81, 126, 0.42), var(--ff-glow-blue) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+}
+body #kDialogCancelButton {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid var(--ff-line) !important;
+    color: var(--ff-primary) !important;
+    box-shadow: none !important;
+}
+body #kDialogCancelButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: var(--ff-green) !important;
+    color: var(--ff-primary-700) !important;
+    box-shadow: var(--ff-glow-green) !important;
+}
+body #kDialogOKButton:active,
+body #kDialogCancelButton:active { transform: translateY(1px); }
+body #kDialogOKButton:disabled,
+body #kDialogCancelButton:disabled { opacity: .5 !important; box-shadow: none !important; cursor: default !important; }
+/* The top-right × close affordance (#8). The shared lib sets it `color: white` inline
+   for dark-titled dialogs, but FleetFlow's dialogs have a LIGHT glass content/title, so
+   white-on-white made the × invisible — users could only close via the bottom button.
+   Re-colour it to a visible muted ink with a clear hover (0,1,1 beats the shared 0,1,0). */
+body .kDialogTopRightClose {
+    color: var(--ff-muted);
+    font-size: 20px;
+    transition: color var(--ff-t-fast), background var(--ff-t-fast);
+}
+body .kDialogTopRightClose:hover { color: var(--ff-primary); background: rgba(0, 81, 126, 0.10); }
+
+/* ── Owner live-map: replay scrubber + customer-tracking preview ───────────── */
+.ff-scrubber {
+    position: absolute; left: 16px; right: 16px; bottom: 52px; z-index: 5;
+    display: flex; align-items: center; gap: 10px;
+    background: var(--ff-glass-dark-strong); color: #fff;
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--ff-r-md); padding: 9px 13px; box-shadow: var(--ff-elev-2);
+}
+.ff-scrubber.hidden { display: none; }
+.ff-scrubber-label { flex: 0 0 auto; font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+.ff-scrubber-range { flex: 1 1 auto; width: 100%; accent-color: var(--ff-green); cursor: pointer; }
+/* While the day is playing the scrubber doubles as a live progress bar that fills as
+   the drive advances; it is non-interactive (no drag) until the replay is ready. */
+.ff-scrubber.progress .ff-scrubber-range { pointer-events: none; cursor: default; }
+
+/* The customer-tracking preview overlay is now opened from a drive surface (the share
+   button moved off the overview map), appended body-level — so it is FIXED to the
+   viewport and its z-index beats the shared kModalDialog (2147483640) so a preview
+   opened from the admin route-detail modal paints over it, not behind. */
+.ff-cust-overlay {
+    position: fixed; inset: 0; z-index: 2147483645;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(4, 28, 43, 0.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+/* Share tracking link — the full labelled button (admin route-detail action bar) and
+   the compact icon (driver detail header, docked top-right so it never eats the map). */
+.ff-share-btn { display: inline-flex; align-items: center; gap: 7px; }
+.ff-share-glyph { display: inline-flex; width: 16px; height: 16px; flex: 0 0 auto; }
+.ff-share-glyph svg { width: 16px; height: 16px; display: block; }
+.ff-share-icon {
+    flex: 0 0 auto; width: 38px; height: 38px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-sm);
+    background: rgba(255, 255, 255, 0.7); color: var(--ff-primary);
+    cursor: pointer; font-family: inherit; padding: 0;
+    transition: border-color var(--ff-t-fast), color var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-share-icon svg { width: 19px; height: 19px; display: block; }
+.ff-share-icon:hover { border-color: var(--ff-green); color: var(--ff-green-600); box-shadow: var(--ff-glow-green); }
+.ff-share-icon:active { transform: translateY(1px); }
+/* Driver detail header: anchor the compact share icon to the top-right corner (above
+   the title), so it is present in every state incl. the one-line in-progress header. */
+.ff-d-header { position: relative; }
+.ff-d-share { position: absolute; top: 0; right: 0; }
+.ff-cust-card {
+    display: flex; flex-direction: column; gap: 6px;
+    width: 280px; max-width: 86%;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg); padding: 18px 18px 16px;
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+}
+.ff-cust-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ff-green-600); }
+.ff-cust-sub { font-size: 16px; font-weight: 800; color: var(--ff-ink-strong); }
+.ff-cust-row { font-size: 13px; color: var(--ff-muted); }
+.ff-cust-eta { font-size: 15px; font-weight: 700; color: var(--ff-green-600); margin-top: 4px; }
+.ff-cust-barwrap { height: 8px; border-radius: 5px; background: rgba(0, 81, 126, 0.12); overflow: hidden; }
+.ff-cust-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--ff-green), var(--ff-green-600)); transition: width .4s var(--ff-t-mid); }
+.ff-cust-share { font-size: 11px; color: var(--ff-muted); font-style: italic; margin-top: 2px; }
+
+/* ── Example-data tab (FleetSampleDataView) ─────────────────────────────────── */
+/* NOTE: prefix is ff-exdata, NOT ff-sample — the database inspector already owns
+   .ff-sample / .ff-sample-head (its dark JSON <pre>), so reusing that prefix here
+   bled a navy background + overflow:auto onto this card grid (fixed 2026-06-28). */
+.ff-exdata { max-width: 1320px; margin: 0 auto; padding: 24px 22px 60px; color: var(--ff-ink); }
+.ff-exdata-title { font-size: 24px; font-weight: 800; color: var(--ff-ink-strong); margin: 0 0 2px; letter-spacing: -0.02em; }
+.ff-exdata-sub { font-size: 13px; color: var(--ff-muted); margin: 0 0 14px; max-width: 760px; line-height: 1.5; }
+.ff-exdata-statusrow { display: flex; align-items: center; gap: 10px; min-height: 22px; margin: 0 0 14px; }
+.ff-exdata-status { font-size: 13px; font-weight: 600; color: var(--ff-ink-strong); }
+.ff-exdata-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.ff-exdata-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    padding: 15px 17px;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-mid), transform var(--ff-t-fast);
+}
+.ff-exdata-card:hover { border-color: var(--ff-green); box-shadow: var(--ff-elev-2), var(--ff-glow-green); transform: translateY(-1px); }
+.ff-exdata-card:active { transform: translateY(0); }
+.ff-exdata-card:disabled { opacity: .55; cursor: default; box-shadow: var(--ff-elev-1); transform: none; }
+.ff-exdata-card.active { border-color: var(--ff-green); box-shadow: var(--ff-elev-1), var(--ff-glow-green); }
+.ff-exdata-head { display: flex; align-items: baseline; gap: 8px; }
+.ff-exdata-nn { font-weight: 800; font-size: 11px; color: #fff; background: var(--ff-primary); border-radius: 6px; padding: 2px 7px; }
+.ff-exdata-name { font-weight: 700; font-size: 15px; color: var(--ff-ink-strong); }
+.ff-exdata-current { margin-left: auto; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ff-green-600); background: var(--ff-green-50); border-radius: 5px; padding: 2px 7px; }
+.ff-exdata-company { font-size: 13px; color: var(--ff-muted); }
+.ff-exdata-counts { display: flex; gap: 16px; margin-top: 2px; }
+.ff-exdata-stat { display: flex; flex-direction: column; }
+.ff-exdata-statnum { font-size: 16px; font-weight: 800; color: var(--ff-ink-strong); }
+.ff-exdata-statcap { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--ff-faint); }
+
+/* ── Driver home: header row + ☰ overflow menu (D10/D9/D12 + Settings) ───────── */
+/* Title block on the left, the ☰ menu on the right. */
+.ff-d-headerrow { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.ff-d-menuwrap { position: relative; flex: 0 0 auto; }
+.ff-d-menubtn {
+    border: 1px solid var(--ff-line); background: rgba(255, 255, 255, 0.7);
+    color: var(--ff-primary); border-radius: var(--ff-r-sm);
+    width: 42px; height: 42px; font-size: 18px; line-height: 1; cursor: pointer;
+    font-family: inherit; transition: border-color var(--ff-t-fast), background var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-d-menubtn:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.92); box-shadow: var(--ff-glow-green); }
+/* The dropdown — anchored to the ☰ button, hidden until opened. */
+.ff-d-menu {
+    display: none; position: absolute; top: calc(100% + 6px); right: 0; z-index: 20;
+    min-width: 200px; flex-direction: column; gap: 2px; padding: 6px;
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
+}
+.ff-d-menu.open { display: flex; }
+.ff-d-menu-btn {
+    display: block; width: 100%; text-align: left;
+    font-size: 14px; font-weight: 600; padding: 10px 12px;
+    border: none; border-radius: var(--ff-r-sm); background: none; color: var(--ff-ink-strong);
+    cursor: pointer; font-family: inherit; transition: background var(--ff-t-fast);
+}
+.ff-d-menu-btn:hover { background: rgba(2, 184, 150, 0.10); }
+
+/* ── D10 My vehicle ─────────────────────────────────────────────────────────── */
+.ff-mv-card { display: flex; flex-direction: column; gap: 6px; }
+.ff-mv-vtitle { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 800; color: var(--ff-ink-strong); margin-bottom: 4px; }
+.ff-mv-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 5px 0; border-bottom: 1px solid var(--ff-line-soft); }
+.ff-mv-row:last-child { border-bottom: none; }
+.ff-mv-label { color: var(--ff-muted); }
+.ff-mv-val { color: var(--ff-ink-strong); font-weight: 600; text-align: right; }
+
+/* ── D12 Settings ───────────────────────────────────────────────────────────── */
+.ff-settings-section { display: flex; flex-direction: column; gap: 10px; }
+.ff-settings-lang { display: inline-flex; gap: 6px; }
+.ff-settings-signout { align-self: flex-start; }
+.ff-settings-version { flex-direction: row; align-items: baseline; justify-content: space-between; }
+.ff-settings-vlabel { color: var(--ff-muted); font-size: 13px; }
+.ff-settings-vval { color: var(--ff-ink-strong); font-weight: 700; font-size: 14px; }
+
+/* ── A3 Scheduling calendar (shared jqWidgets kJQXSchedule) ──────────────────── */
+.ff-admin-sched { display: flex; flex-direction: column; }
+.ff-sched-sub { font-size: 13px; color: var(--ff-muted); margin: 0 0 14px; }
+/* Host for the jqx scheduler widget. The widget sizes itself (width 100%, height
+   in Props) and keeps its OWN internal theme — we only frame the host so it sits
+   on the aurora like the other surfaces. No backdrop-filter / overflow clip here:
+   the jqx view buttons + popups must not be trapped in a new containing block. */
+.ff-sched-cal {
+    width: 100%;
+    min-height: 760px;
+    background: #fff;
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-1);
+}
+
+/* ── Landing page (FleetLandingView) — the two-app workspace chooser ─────────── */
+.ff-view.landing { overflow: auto; background: transparent; }
+.ff-landing {
+    min-height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    padding: 48px 22px 64px;
+}
+
+.ff-landing-hero { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.ff-landing-brand { display: inline-flex; align-items: flex-start; }
+.ff-landing-wordmark { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: var(--ff-ink-strong); }
+.ff-landing-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--ff-green); box-shadow: 0 0 16px rgba(2, 184, 150, 0.85);
+    margin: 11px 0 0 9px; flex: 0 0 auto;
+}
+.ff-landing-tagline { font-size: 16px; color: var(--ff-muted); margin: 2px 0 0; }
+.ff-landing-version { font-size: 12px; font-weight: 600; color: var(--ff-faint); font-variant-numeric: tabular-nums; }
+.ff-landing-lang { display: inline-flex; gap: 6px; margin-top: 8px; }
+/* The shared language toggle is dark-nav styled; on the light landing give the
+   flag buttons a light frame so they read on the aurora. */
+.ff-landing-lang .ff-lang-btn { background: rgba(0, 81, 126, 0.06); }
+.ff-landing-lang .ff-lang-btn:hover { background: rgba(0, 81, 126, 0.12); }
+.ff-landing-lang .ff-lang-btn.active { background: rgba(2, 184, 150, 0.12); border-color: var(--ff-green); }
+
+.ff-landing-apps { display: flex; gap: 22px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 880px; }
+.ff-landing-app {
+    flex: 1 1 340px; max-width: 420px; min-width: 0;
+    display: flex; flex-direction: column; gap: 10px; text-align: left;
+    font: inherit; color: inherit; cursor: pointer;
+    padding: 26px 26px 28px;
+    border: 1px solid var(--ff-glass-ring);
+    border-left: 3px solid var(--ff-green);   /* Langate green accent stripe */
+    border-radius: var(--ff-r-xl);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
+    backdrop-filter: var(--ff-glass-blur-lg);
+    box-shadow: var(--ff-elev-1), var(--ff-glass-hi);
+    transition: transform var(--ff-t-fast), box-shadow var(--ff-t-mid), border-color var(--ff-t-fast);
+}
+.ff-landing-app:hover { transform: translateY(-3px); border-color: var(--ff-green); box-shadow: var(--ff-elev-2), var(--ff-glow-green); }
+.ff-landing-app:active { transform: translateY(-1px); }
+.ff-landing-apptop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ff-landing-appicon { font-size: 34px; line-height: 1; }
+.ff-landing-apptag {
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--ff-primary); background: rgba(0, 81, 126, 0.10);
+    border-radius: var(--ff-r-pill); padding: 3px 11px;
+}
+.ff-landing-apptitle { font-size: 23px; font-weight: 800; color: var(--ff-ink-strong); letter-spacing: -0.01em; }
+.ff-landing-appdesc { font-size: 14px; color: var(--ff-muted); line-height: 1.5; }
+
+.ff-landing-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.ff-landing-toolslabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ff-faint); }
+.ff-landing-link {
+    font: inherit; font-size: 13px; font-weight: 600; color: var(--ff-primary);
+    background: rgba(255, 255, 255, 0.6); border: 1px solid var(--ff-line);
+    border-radius: var(--ff-r-pill); padding: 7px 15px; cursor: pointer;
+    transition: border-color var(--ff-t-fast), background var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+.ff-landing-link:hover { border-color: var(--ff-green); background: rgba(255, 255, 255, 0.85); box-shadow: var(--ff-glow-green); }
+
+/* ── Driver in-progress detail: the live map embedded inline (FleetNavView) ───── */
+/* A fixed-height, position:relative frame so the navigator's absolute map/panels
+   fill it (not the whole window). Sits between the header/progress and the stops. */
+.ff-d-mapwrap {
+    position: relative;
+    width: 100%;
+    /* The map is the PRIMARY surface here — give it the dominant share of the screen
+       (the nav UI now docks to the top/bottom edges as trimmed clusters, so a taller map
+       reads as more map, not more chrome). */
+    height: 70vh;
+    min-height: 460px;
+    margin: 14px 0;
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-lg);
+    box-shadow: var(--ff-elev-1);
+    overflow: hidden;
+}
+
+/* Klarmarkering capture overlays the detail (so the embedded map is not torn down). */
+.ff-d-overlay {
+    position: absolute; inset: 0; z-index: 30; overflow-y: auto;
+    background: var(--ff-aurora);
+    background-attachment: fixed;
+}
+
+/* ── Admin Vehicle-map tab — frame the owner live-map at a fixed height ──────── */
+.ff-admin-mapwrap {
+    position: relative;
+    width: 100%;
+    /* Fill the viewport below the top bar + tab strip instead of a fixed 72vh, which
+       left a wide band of empty admin background under the map on a tall monitor (#14).
+       calc() reserves only the chrome above; min-height keeps it usable when short. */
+    height: calc(100vh - 150px);
+    min-height: 520px;
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-1);
+    overflow: hidden;
+}
+
+/* Touch press-feedback on the dashboard rows (hover never fires on touch). */
+.ff-dash-jobrow:active, .ff-dash-launchrow:active { transform: translateY(1px); border-color: var(--ff-green); }
+
+/* ── Incident management ──────────────────────────────────────────────────────── */
+/* Driver report form (FleetIncidentReport) — the three steps reuse .ff-d-section cards. */
+.ff-inc-step { margin-top: 0; }
+.ff-inc-record {
+    display: inline-flex; align-items: center; gap: 7px;
+    color: var(--ff-red-700); border-color: rgba(181, 88, 82, 0.35);
+}
+.ff-inc-record:hover { border-color: var(--ff-red); color: var(--ff-red-700); box-shadow: 0 0 0 3px rgba(181, 88, 82, 0.18); }
+.ff-inc-record.recording { background: var(--ff-red-50); color: var(--ff-red-700); border-color: var(--ff-red); animation: ff-inc-pulse 1.2s ease-in-out infinite; }
+@keyframes ff-inc-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(181, 88, 82, 0.35); } 50% { box-shadow: 0 0 0 6px rgba(181, 88, 82, 0.0); } }
+.ff-inc-audio { margin-top: 10px; }
+.ff-inc-audio-el { width: 100%; }
+.ff-inc-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ff-inc-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: var(--ff-r-sm); border: 1px solid var(--ff-line); }
+.ff-inc-submitrow { display: flex; flex-direction: column; gap: 8px; }
+.ff-inc-submit { width: 100%; }
+.ff-inc-ackcomment { margin-top: 8px; }
+.ff-inc-empty { padding: 18px 4px; }
+
+/* The "Report incident" control is injected into the navigator's bottom-right tools
+   cluster (FleetDriverDetail → FleetNavView.ExtraTool) — same 40px icon shape as the
+   mute / open-in-Maps buttons, but tinted red so the safety affordance stands out
+   without a full-width button competing with the map. */
+.ff-nav-icon.ff-d-incident { color: var(--ff-red-700); border-color: rgba(181, 88, 82, 0.45); background: rgba(181, 88, 82, 0.12); }
+.ff-nav-icon.ff-d-incident:hover { border-color: var(--ff-red); color: var(--ff-red-700); box-shadow: 0 0 0 3px rgba(181, 88, 82, 0.20); }
+
+/* Severity chips (admin incident detail + the related-incident rows) — a calm→alarm
+   scale mirroring the status chips; critical is filled for emphasis. */
+.ff-sev {
+    display: inline-block; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em;
+    padding: 3px 9px; border-radius: var(--ff-r-pill); white-space: nowrap;
+}
+.ff-sev-low { background: var(--ff-green-50); color: var(--ff-green-600); }
+.ff-sev-medium { background: var(--ff-gold-50); color: var(--ff-gold-700); }
+.ff-sev-high { background: var(--ff-red-50); color: var(--ff-red-700); }
+.ff-sev-critical { background: var(--ff-red-700); color: #fff; }
+
+/* Inline audio player in a detail-modal attachment row (incident voice recording). */
+.ff-detail-audio { height: 34px; max-width: 260px; }
+
+/* ── Mobile / touch (the driver surface is phone-first; the shell nav is shared) ── */
+@media (max-width: 720px) {
+    /* The shared nav packs brand + dot + version + tabs + lang + gear: WRAP it to a
+       second row on a phone instead of overflowing / forcing horizontal page scroll
+       (which made the Map/Navigate tabs unreachable). */
+    .ff-nav { flex-wrap: wrap; row-gap: 8px; }
+
+    /* WCAG 2.5.5 — raise interactive controls to a 44px touch target. Desktop density
+       is untouched; these only apply at the phone breakpoint. */
+    .ff-nav-btn, .ff-btn, .ff-d-menu-btn, .ff-admin-tab, .ff-admin-subtab,
+    .ff-stop-complete, .ff-admin-control, .ff-select { min-height: 44px; }
+    .ff-gear-btn, .ff-lang-btn, .ff-nav-icon {
+        min-height: 44px; min-width: 44px;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    /* Bound the blur passes: the driver list can stack many cards, each its own
+       real-time backdrop-filter over the fixed aurora. Drop the per-card blur on
+       phones (a flat translucent fill reads the same) and reserve blur for chrome. */
+    .ff-jobcard, .ff-d-section, .ff-signin-btn {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: rgba(255, 255, 255, 0.92);
+    }
+
+    /* Landing: stack the two app cards full-width, tighten the hero. */
+    .ff-landing { gap: 26px; padding: 32px 18px 48px; }
+    .ff-landing-wordmark { font-size: 32px; }
+    .ff-landing-apps { flex-direction: column; }
+    .ff-landing-app { max-width: none; flex-basis: auto; -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, 0.92); }
+    /* The admin map tab fills more of the short viewport on a phone. */
+    .ff-admin-mapwrap { height: 78vh; }
+}
+
+/* ── Driver surfaces: desktop layout (≥1100px) ─────────────────────────────── */
+/* The driver app is mobile-first. On desktop the list, sign-in, new-drive,
+   settings and read-only surfaces keep a comfortable centred single column so
+   they look like the mobile view blown up to a readable size. Only the
+   in-progress route detail (with the embedded live map) widens into a two-column
+   layout that places the map beside the stop list. */
+@media (min-width: 1100px) {
+    /* Driver surfaces look like an intentional mobile viewport when blown up on a
+       desktop monitor: a soft card/frame around the centred column so the content
+       does not feel like it is floating in empty space. Form-style surfaces widen
+       the column a little so long form lines remain readable. */
+    .ff-driver {
+        padding: 24px 28px 80px;
+        background: rgba(255, 255, 255, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 28px;
+        box-shadow: 0 24px 70px rgba(0, 81, 126, 0.10), 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+    .ff-driver.ff-signin,
+    .ff-driver.ff-nd,
+    .ff-driver.ff-settings {
+        max-width: 800px;
+        display: block;
+        padding: 32px 28px 80px;
+    }
+
+    /* In-progress drive detail — the live map is the PRIMARY surface, so the layout
+       goes FULL-BLEED (no centred 1100px cap that wasted most of a wide monitor and
+       left the map a small card — product owner 2026-07-01): a narrow, readable info
+       column on the LEFT (back · header · instructions · stops) and the embedded map
+       filling the ENTIRE remaining width AND the full viewport height on the RIGHT.
+       Mirrors the admin console's full-bleed treatment. Below 1100px the base
+       single-column mobile stacking (map 70vh, stops under it) still applies. */
+    .ff-driver.ff-driver-detail-map {
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 16px clamp(14px, 1.4vw, 28px) 20px;
+        /* Full-bleed: drop the soft card frame the centred driver surfaces carry. */
+        background: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        display: grid;
+        grid-template-columns: minmax(340px, 460px) 1fr;
+        /* back · header · instructions size to content; the stops row (1fr) absorbs the
+           slack so the whole grid — and the map spanning it — fills the viewport. */
+        grid-template-rows: auto auto auto 1fr;
+        gap: 0 22px;
+        align-items: start;
+        min-height: calc(100vh - 100px);
+    }
+    .ff-driver.ff-driver-detail-map > .ff-link-btn       { grid-column: 1; grid-row: 1; }
+    .ff-driver.ff-driver-detail-map > .ff-d-header       { grid-column: 1; grid-row: 2; }
+    .ff-driver.ff-driver-detail-map > .ff-d-instrsection { grid-column: 1; grid-row: 3; margin-top: 12px; }
+    /* The action bar is empty for an in-progress drive (hidden by .ff-d-actionbar:empty),
+       so it never actually occupies its cell — pin it with the stops for safety. */
+    .ff-driver.ff-driver-detail-map > .ff-d-actionbar    { grid-column: 1; grid-row: 4; }
+    .ff-driver.ff-driver-detail-map > .ff-d-stops        { grid-column: 1; grid-row: 4; align-self: start; margin-top: 14px; }
+    /* The map spans every row of the info column and stretches to the full grid height. */
+    .ff-driver.ff-driver-detail-map > .ff-d-mapwrap {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        align-self: stretch;
+        height: auto;
+        min-height: 460px;
+        margin: 0;
+    }
+}
+
+/* ── Printable report views (vehicle utilization / driver productivity) ────────────
+   The management reports are on-screen, print-ready "sheets" rendered by FleetReportHtml
+   inside the SHARED kModalDialog (the same modal the detail views use — FleetReportView
+   marks its container `.ff-report-dialog`). The @media print block flattens that dialog
+   to print ONLY the sheet — the browser's "Save as PDF" then yields the same shareable
+   artifact, no PDF engine bundled. Brand colours are literal hex (matching FleetPdfTokens)
+   so the printed colours are exact and identical to the PDF reports. */
+.ff-report-sheet {
+    width: 100%; max-width: 820px; margin: 0 auto;
+    background: #fff; color: #1a2330;
+    box-sizing: border-box; font-size: 13px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact;
+}
+/* Inside the dialog the sheet IS the document body — drop its own card chrome (the
+   dialog already supplies the white box) and fill the width. */
+.ff-report-dialog .ff-report-sheet { max-width: none; box-shadow: none; padding: 2px 2px 4px; }
+.ff-rpt-letterhead {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    border-bottom: 1.5px solid #02b896; padding-bottom: 6px; margin-bottom: 14px;
+}
+.ff-rpt-company { color: #00517e; font-weight: 700; font-size: 14px; }
+.ff-rpt-product { color: #017a64; font-weight: 700; font-size: 12px; text-align: right; }
+.ff-rpt-hero {
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    background: linear-gradient(135deg, #0a5e8e 0%, #063b5a 100%);
+    border-radius: 12px; padding: 18px 22px; margin-bottom: 16px;
+}
+.ff-rpt-herotext { min-width: 0; }
+.ff-rpt-title { margin: 0; color: #fff; font-size: 24px; font-weight: 800; }
+.ff-rpt-strap { margin: 6px 0 0; color: #b9d2e2; font-size: 13px; }
+.ff-rpt-pill {
+    flex: 0 0 auto; align-self: flex-start; white-space: nowrap;
+    background: #e1edf5; color: #00517e; font-weight: 700; font-size: 12px;
+    padding: 5px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: .3px;
+}
+.ff-rpt-summary { display: flex; gap: 18px; align-items: center; margin-bottom: 18px; }
+.ff-rpt-donut { flex: 0 0 auto; }
+.ff-rpt-donut svg { width: 96px; height: 96px; display: block; }
+.ff-rpt-tiles { flex: 1 1 auto; display: grid; gap: 9px; }
+.ff-rpt-tile {
+    background: #eef4f8; border: 1px solid #dbe6ee; border-radius: 9px;
+    padding: 9px 12px; display: flex; flex-direction: column; gap: 3px;
+}
+.ff-rpt-tile-label { font-size: 11px; font-weight: 700; color: #6b7a85; text-transform: uppercase; letter-spacing: .4px; }
+.ff-rpt-tile-value { font-size: 17px; font-weight: 800; color: #1a2330; }
+.ff-rpt-section { margin-top: 16px; }
+.ff-rpt-sectitle {
+    margin: 0 0 6px; color: #00517e; font-size: 15px; font-weight: 800;
+    border-bottom: 1.5px solid #02b896; padding-bottom: 4px;
+}
+.ff-rpt-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.ff-rpt-table th {
+    background: #00517e; color: #fff; font-weight: 700; font-size: 11.5px;
+    text-align: left; padding: 6px 8px;
+}
+.ff-rpt-table td { padding: 6px 8px; border-bottom: 1px solid #d4dde4; color: #41525c; vertical-align: middle; }
+.ff-rpt-table tbody tr:nth-child(even) td { background: #f4f8fb; }
+.ff-rpt-barcell svg { display: block; }
+.ff-rpt-chip {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .3px;
+    white-space: nowrap;
+}
+.ff-rpt-chip.done    { background: #dff5ee; color: #017a64; }
+.ff-rpt-chip.info    { background: #e1edf5; color: #00517e; }
+.ff-rpt-chip.pending { background: #e9eef2; color: #41525c; }
+.ff-rpt-chip.hold    { background: #e6edf1; color: #43555f; }
+.ff-rpt-chip.hard    { background: #fbe3e1; color: #b3261e; }
+.ff-rpt-chip.warn    { background: #fbeccd; color: #8a5a00; }
+.ff-rpt-foot {
+    margin-top: 18px; padding-top: 8px; border-top: 1px solid #d4dde4;
+    color: #6b7a85; font-size: 11px;
+}
+
+@media print {
+    @page { size: A4; margin: 14mm; }
+    /* Hide the whole app + any other body child; print only the report dialog. */
+    body > *:not(.ff-report-dialog) { display: none !important; }
+    /* Flatten the kModalDialog overlay/box to just the document sheet: drop the dim
+       backdrop, the centred fixed box, its border/shadow/padding, and the scroll. */
+    .ff-report-dialog,
+    .ff-report-dialog .kDialogContent,
+    .ff-report-dialog .kDialogInnerContent {
+        position: static !important; inset: auto !important; display: block !important;
+        width: auto !important; height: auto !important; max-width: none !important; max-height: none !important;
+        overflow: visible !important; background: #fff !important;
+        margin: 0 !important; padding: 0 !important; border: 0 !important;
+        border-radius: 0 !important; box-shadow: none !important;
+        -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    }
+    /* The dialog chrome (title bar, × close, the OK/Cancel button row) never prints. */
+    .ff-report-dialog .kDialogTitle,
+    .ff-report-dialog .kDialogTopRightClose,
+    .ff-report-dialog #kDialogOKButton,
+    .ff-report-dialog #kDialogCancelButton { display: none !important; }
+    .ff-report-dialog .ff-report-sheet {
+        max-width: none !important; width: 100% !important;
+        box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important;
+    }
+}
+
+/* ── Mini-doc tooltips (FleetTooltip) ─────────────────────────────────────────
+   A single shared dark-glass bubble reveals a short localized help text on hover,
+   keyboard focus, or long-press (the mobile driver app). pointer-events:none + a very
+   high z-index ⇒ it never intercepts input and always paints above modals / the map. */
+.ff-tip-bubble {
+    position: fixed;
+    left: 0;
+    top: 0;
+    /* Above the shared kModalDialog (z-index 2147483640) so a tooltip inside a modal —
+       e.g. the drive create/edit form — paints over the dialog, not behind its panel. */
+    z-index: 2147483646;
+    max-width: 280px;
+    padding: 8px 11px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    font-weight: 500;
+    color: var(--ff-on-dark);
+    background: var(--ff-glass-dark-strong);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--ff-r-sm);
+    box-shadow: var(--ff-elev-2);
+    -webkit-backdrop-filter: var(--ff-glass-blur);
+    backdrop-filter: var(--ff-glass-blur);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(2px);
+    transition: opacity var(--ff-t-fast), transform var(--ff-t-fast);
+    white-space: normal;
+    text-align: left;
+}
+.ff-tip-bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* The small circled-i affordance (a tap-able / hover-able help target — the
+   mobile-discoverable alternative to a hidden long-press). */
+.ff-tip-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    padding: 0;
+    font-size: 11px;
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--ff-primary);
+    background: rgba(0, 81, 126, 0.10);
+    border: 1px solid var(--ff-glass-edge);
+    border-radius: 50%;
+    cursor: help;
+    vertical-align: middle;
+    flex: 0 0 auto;
+    transition: background var(--ff-t-fast), color var(--ff-t-fast);
+}
+.ff-tip-info:hover {
+    background: var(--ff-green);
+    color: #fff;
+    border-color: transparent;
+}
+
+/* A non-interactive element carrying a hidden tip gets a help cursor as a subtle
+   discoverability cue on desktop; buttons / links / controls keep their own cursor. */
+label[data-fftip],
+h3[data-fftip],
+.ff-detail-shead[data-fftip],
+.ff-admin-flabel[data-fftip],
+.ff-nd-flabel[data-fftip] {
+    cursor: help;
+}
