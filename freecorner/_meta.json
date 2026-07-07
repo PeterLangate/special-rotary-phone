@@ -1,8 +1,13 @@
 {
-  "syncedAt": "2026-07-06T10:33:07Z",
   "files": {
-    "Screenshots": {
-      "updated": "2026-04-26"
+    "index.html": {
+      "updated": "2026-04-27"
+    },
+    "freecorner-mockup-no-kleer.html": {
+      "updated": "2026-04-27"
+    },
+    "mockup-base.css": {
+      "updated": "2026-04-27"
     },
     "FreeCorner.html": {
       "updated": "2026-04-27"
@@ -10,23 +15,18 @@
     "freecorner-mockup-chat-kleer.html": {
       "updated": "2026-04-27"
     },
-    "freecorner-mockup-no-kleer.html": {
-      "updated": "2026-04-27"
-    },
     "freecorner-mockup-chat.html": {
-      "updated": "2026-04-27"
-    },
-    "FreeCorner-onepager.html": {
       "updated": "2026-04-27"
     },
     "freecorner-mockup.html": {
       "updated": "2026-04-27"
     },
-    "index.html": {
+    "FreeCorner-onepager.html": {
       "updated": "2026-04-27"
     },
-    "mockup-base.css": {
-      "updated": "2026-04-27"
+    "Screenshots": {
+      "updated": "2026-04-26"
     }
-  }
+  },
+  "syncedAt": "2026-07-07T15:45:08Z"
 }

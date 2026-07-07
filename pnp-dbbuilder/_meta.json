@@ -1,14 +1,14 @@
 {
-  "syncedAt": "2026-07-06T10:33:07Z",
   "files": {
+    "dist/dbbuilder.js": {
+      "updated": "2026-05-01"
+    },
     "dist/dbbuilder.js.LICENSE.txt": {
       "updated": "2026-05-01"
     },
     "index.html": {
       "updated": "2026-05-01"
-    },
-    "dist/dbbuilder.js": {
-      "updated": "2026-05-01"
     }
-  }
+  },
+  "syncedAt": "2026-07-07T15:45:08Z"
 }

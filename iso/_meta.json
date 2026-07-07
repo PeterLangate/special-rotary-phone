@@ -1,5 +1,4 @@
 {
-  "syncedAt": "2026-07-06T10:33:07Z",
   "files": {
     "index.html": {
       "updated": "2026-06-01"
@@ -7,5 +6,6 @@
     "iso-tool.html": {
       "updated": "2026-06-22"
     }
-  }
+  },
+  "syncedAt": "2026-07-07T15:45:08Z"
 }

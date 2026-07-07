@@ -287,7 +287,9 @@ body {
 .folder-card { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: var(--ff-r-md); margin-bottom: 8px;
     background: var(--ff-glass-strong); border: 1px solid var(--ff-glass-ring); box-shadow: var(--ff-glass-hi), var(--ff-elev-1);
     transition: box-shadow var(--ff-t-fast), border-color var(--ff-t-fast); }
-.folder-card:hover { border-color: var(--ff-glass-edge); box-shadow: var(--ff-glass-hi), var(--ff-elev-2); }
+.folder-card:not(.held) { cursor: pointer; }
+.folder-card.held { cursor: not-allowed; }
+.folder-card:not(.held):hover { border-color: var(--ff-glass-edge); box-shadow: var(--ff-glass-hi), var(--ff-elev-2); }
 .folder-card.suggested { border-left: 3px solid var(--ff-green); }
 .folder-card.selected { box-shadow: var(--ff-glow-green), var(--ff-elev-1); border-color: rgba(2,184,150,0.4); }
 .folder-card.held { border-left: 3px solid var(--ff-red); background: rgba(181,88,82,0.04); }
@@ -295,7 +297,12 @@ body {
     cursor: pointer; flex-shrink: 0; position: relative; transition: background var(--ff-t-fast), border-color var(--ff-t-fast); }
 .chk[aria-checked="true"] { background: var(--ff-green); border-color: var(--ff-green); }
 .chk[aria-checked="true"]::after { content:''; position: absolute; left: 6px; top: 2px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(43deg); }
-.chk[disabled], .chk[aria-disabled="true"] { cursor: not-allowed; background: repeating-linear-gradient(45deg, #f0f2f4, #f0f2f4 3px, #e6eaed 3px, #e6eaed 6px); border-color: var(--ff-line); }
+/* disabled + UNCHECKED = hatched (legal hold); disabled + checked = locked-included (green, dimmed) */
+.chk[disabled]:not([aria-checked="true"]), .chk[aria-disabled="true"]:not([aria-checked="true"]) { cursor: not-allowed; background: repeating-linear-gradient(45deg, #f0f2f4, #f0f2f4 3px, #e6eaed 3px, #e6eaed 6px); border-color: var(--ff-line); }
+.chk[aria-checked="true"][disabled] { opacity: 0.5; cursor: not-allowed; }
+.file-chk { width: 18px; height: 18px; border-radius: 5px; }
+.file-chk[aria-checked="true"]::after { left: 5px; top: 1px; width: 5px; height: 9px; border-width: 0 2px 2px 0; }
+.file-row.selected { background: rgba(2,184,150,0.08); border-radius: 6px; }
 .fc-icon { width: 42px; height: 42px; border-radius: var(--ff-r-sm); background: #ebf2f5; display: grid; place-items: center; flex-shrink: 0; }
 .fc-body { flex: 1; min-width: 0; }
 .fc-title { font-size: 14.5px; font-weight: 700; color: var(--ff-ink-strong); display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
@@ -312,9 +319,10 @@ body {
 
 .file-rows { margin: 2px 0 10px 52px; border-left: 1px dashed var(--ff-line); padding-left: 14px; display: none; }
 .file-rows.open { display: block; }
-.file-row { display: flex; align-items: center; gap: 11px; padding: 8px 4px; font-size: 13px; border-bottom: 1px solid var(--ff-line-soft); }
+.file-row { display: flex; align-items: center; gap: 11px; padding: 8px 6px; font-size: 13px; border-bottom: 1px solid var(--ff-line-soft); cursor: pointer; }
+.file-row.more { cursor: default; }
 .file-row:last-child { border-bottom: none; }
-.file-row:hover { background: rgba(0,81,126,0.045); border-radius: 6px; }
+.file-row:not(.more):hover { background: rgba(0,81,126,0.045); border-radius: 6px; }
 .file-row .fn { flex: 1; color: var(--ff-ink); font-weight: 500; }
 .file-row .fmeta { color: var(--ff-muted); font-size: 11.5px; }
 .file-row.more .fn { color: var(--ff-muted); }
@@ -647,9 +655,9 @@ body {
                     <div class="fc-meta"><div class="fc-count">24 <span>items</span></div><div style="margin-top:6px"><span class="ff-badge b-blue">1.4 GB</span></div></div>
                 </div>
                 <div class="file-rows" id="f1">
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">Bonus_Plan_2025_Final.xlsx</span><span class="fmeta">matched "bonuses" · 2.1 MB · L. Berg</span></div>
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Incentive_Scheme_Sales.docx</span><span class="fmeta">matched "incentives" · 480 KB · L. Berg</span></div>
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">Q4_Payout_Summary.pdf</span><span class="fmeta">no keyword match · carried with folder · 900 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Bonus_Plan_2025_Final.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">Bonus_Plan_2025_Final.xlsx</span><span class="fmeta">matched "bonuses" · 2.1 MB · L. Berg</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Incentive_Scheme_Sales.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Incentive_Scheme_Sales.docx</span><span class="fmeta">matched "incentives" · 480 KB · L. Berg</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Q4_Payout_Summary.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">Q4_Payout_Summary.pdf</span><span class="fmeta">no keyword match · carried with folder · 900 KB</span></div>
                     <div class="file-row more"><span class="fn" style="padding-left:27px">…and 21 more in this folder (6 matched, 15 carried)</span></div>
                 </div>
 
@@ -685,9 +693,9 @@ body {
                     <div class="fc-meta"><div class="fc-count">3 <span>items</span></div></div>
                 </div>
                 <div class="file-rows" id="f2">
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Salary_review_notes.docx</span><span class="fmeta">matched "salaries" · 120 KB</span></div>
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">HR_headcount.xlsx</span><span class="fmeta">matched "HR" · 88 KB</span></div>
-                    <div class="file-row"><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">draft_offer.pdf</span><span class="fmeta">matched "salaries" · 210 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Salary_review_notes.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Salary_review_notes.docx</span><span class="fmeta">matched "salaries" · 120 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select HR_headcount.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">HR_headcount.xlsx</span><span class="fmeta">matched "HR" · 88 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select draft_offer.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">draft_offer.pdf</span><span class="fmeta">matched "salaries" · 210 KB</span></div>
                 </div>
             </div>
         </div>
@@ -734,7 +742,7 @@ body {
     <button class="ff-btn ghost sm" id="clearSel">Clear</button>
     <button class="ff-btn primary" id="moveBtn">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Review &amp; move…
+        Move to secure area…
     </button>
 </div>
 
@@ -944,67 +952,102 @@ function syncDestination() {
 }
 destSelect.addEventListener('change', syncDestination);
 
-// ── Selection ──────────────────────────────────────────────
+// ── Selection (whole-folder + per-document) ────────────────
 var actionBar = $('actionBar');
-function selectedChecks() { return Array.prototype.slice.call(document.querySelectorAll('.folder-card .chk[aria-checked="true"]')); }
-function selectableChecks() { return Array.prototype.slice.call(document.querySelectorAll('.loc-group:not(.hidden) .folder-card:not(.held) .chk')); }
+function selectableCards() { return Array.prototype.slice.call(document.querySelectorAll('.loc-group:not(.hidden) .folder-card:not(.held)')); }
+function fileRowsForCard(card) { var ex = card.querySelector('.expander'); return ex ? $(ex.dataset.toggle) : null; }
+function cardForFileRows(fr) { var ex = document.querySelector('.expander[data-toggle="' + fr.id + '"]'); return ex ? ex.closest('.folder-card') : null; }
+
+// Select/clear a whole folder, mirroring the state onto its document rows
+// (which become locked-included while the whole folder is selected).
+function setFolder(card, on) {
+    if (card.classList.contains('held')) { return; }
+    card.querySelector('.chk').setAttribute('aria-checked', on ? 'true' : 'false');
+    card.classList.toggle('selected', on);
+    var fr = fileRowsForCard(card);
+    if (fr) {
+        fr.querySelectorAll('.file-chk').forEach(function (fc) {
+            fc.setAttribute('aria-checked', on ? 'true' : 'false');
+            fc.closest('.file-row').classList.toggle('selected', on);
+            if (on) { fc.setAttribute('disabled', ''); } else { fc.removeAttribute('disabled'); }
+        });
+    }
+}
 
 function updateSelection() {
-    var sel = selectedChecks();
-    var items = 0, carried = 0, folders = 0, locs = {};
-    sel.forEach(function (c) {
-        var card = c.closest('.folder-card');
+    var items = 0, carried = 0, touched = {}, locs = {};
+    // whole folders
+    document.querySelectorAll('.folder-card:not(.held) .chk[aria-checked="true"]').forEach(function (chk) {
+        var card = chk.closest('.folder-card');
         var count = parseInt(card.dataset.count, 10) || 0;
         var matched = parseInt(card.dataset.matched, 10) || 0;
-        items += count; carried += (count - matched); folders += 1;
-        var g = card.closest('.loc-group');
-        if (g) { locs[g.dataset.loc] = true; }
+        items += count; carried += (count - matched);
+        touched[card.dataset.name] = true;
+        var g = card.closest('.loc-group'); if (g) { locs[g.dataset.loc] = true; }
     });
+    // individual documents (skip those locked under a whole-selected folder — already counted)
+    document.querySelectorAll('.file-chk[aria-checked="true"]').forEach(function (fc) {
+        if (fc.hasAttribute('disabled')) { return; }
+        items += 1;
+        var fr = fc.closest('.file-rows');
+        var card = fr ? cardForFileRows(fr) : null;
+        if (card) { touched[card.dataset.name] = true; var g = card.closest('.loc-group'); if (g) { locs[g.dataset.loc] = true; } }
+    });
+    var folders = Object.keys(touched).length;
     var locCount = Object.keys(locs).length;
     $('selN').textContent = items;
     $('selSub').textContent = 'in ' + plural(folders, 'folder') + ' across ' + plural(locCount, 'location');
-    actionBar.classList.toggle('show', sel.length > 0);
-    // stash for confirm dialog
+    actionBar.classList.toggle('show', items > 0);
     actionBar.dataset.items = items; actionBar.dataset.carried = carried;
     actionBar.dataset.folders = folders; actionBar.dataset.locs = locCount;
     // sync select-all state
-    var selectable = selectableChecks();
-    var allOn = selectable.length > 0 && selectable.every(function (c) { return c.getAttribute('aria-checked') === 'true'; });
+    var cards = selectableCards();
+    var allOn = cards.length > 0 && cards.every(function (c) { return c.querySelector('.chk').getAttribute('aria-checked') === 'true'; });
     $('selAll').setAttribute('aria-pressed', allOn ? 'true' : 'false');
     $('selAll').querySelector('.chk').setAttribute('aria-checked', allOn ? 'true' : 'false');
 }
 
-function toggleCheck(c, force) {
-    if (c.hasAttribute('disabled')) { return; }
-    var on = (typeof force === 'boolean') ? force : (c.getAttribute('aria-checked') !== 'true');
-    c.setAttribute('aria-checked', on ? 'true' : 'false');
-    c.closest('.folder-card').classList.toggle('selected', on);
-}
+// Clicking anywhere on a folder card toggles the whole folder (except the expander).
+document.querySelectorAll('.folder-card').forEach(function (card) {
+    if (card.classList.contains('held')) { return; }
+    card.addEventListener('click', function (e) {
+        if (e.target.closest('.expander')) { return; }
+        setFolder(card, card.querySelector('.chk').getAttribute('aria-checked') !== 'true');
+        updateSelection();
+    });
+});
 
-document.querySelectorAll('.folder-card .chk').forEach(function (c) {
-    c.addEventListener('click', function () {
-        if (c.hasAttribute('disabled')) { return; }
-        toggleCheck(c);
+// Clicking a document row toggles that single file (unless locked by a whole-folder selection).
+document.querySelectorAll('.file-rows .file-row').forEach(function (row) {
+    var fc = row.querySelector('.file-chk');
+    if (!fc) { return; }
+    row.addEventListener('click', function () {
+        if (fc.hasAttribute('disabled')) { return; }
+        var on = fc.getAttribute('aria-checked') !== 'true';
+        fc.setAttribute('aria-checked', on ? 'true' : 'false');
+        row.classList.toggle('selected', on);
         updateSelection();
     });
 });
 
 $('selAll').addEventListener('click', function () {
-    var selectable = selectableChecks();
-    var allOn = selectable.length > 0 && selectable.every(function (c) { return c.getAttribute('aria-checked') === 'true'; });
-    selectable.forEach(function (c) { toggleCheck(c, !allOn); });
+    var cards = selectableCards();
+    var allOn = cards.length > 0 && cards.every(function (c) { return c.querySelector('.chk').getAttribute('aria-checked') === 'true'; });
+    cards.forEach(function (c) { setFolder(c, !allOn); });
     updateSelection();
 });
 
 function clearSelection() {
-    document.querySelectorAll('.folder-card .chk[aria-checked="true"]').forEach(function (c) { toggleCheck(c, false); });
+    document.querySelectorAll('.folder-card:not(.held)').forEach(function (c) { setFolder(c, false); });
+    document.querySelectorAll('.file-chk[aria-checked="true"]').forEach(function (fc) {
+        fc.setAttribute('aria-checked', 'false'); fc.closest('.file-row').classList.remove('selected');
+    });
     updateSelection();
 }
 $('clearSel').addEventListener('click', clearSelection);
 
-// Update select-all label with live selectable count when results shown
 function refreshSelAllLabel() {
-    $('selAllLabel').textContent = 'Select all selectable (' + selectableChecks().length + ')';
+    $('selAllLabel').textContent = 'Select all selectable (' + selectableCards().length + ')';
 }
 
 // ── Confirm → move flow ────────────────────────────────────

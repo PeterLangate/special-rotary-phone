@@ -655,6 +655,14 @@ html, body {
 .ff-mappop-actions { display: flex; flex-direction: column; gap: 6px; }
 .ff-mappop-actions .ff-btn { flex: 0 0 auto; width: 100%; justify-content: center; margin-top: 0; }
 
+/* Stop-house popup: the read-only list of pending stops at one site (Show stops layer). */
+.ff-stoppop { max-width: 280px; }
+.ff-stoppop-list { display: flex; flex-direction: column; max-height: 240px; overflow-y: auto; }
+.ff-stoppop-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; padding: 5px 0; border-top: 1px solid var(--ff-line); }
+.ff-stoppop-row:first-child { border-top: none; }
+.ff-stoppop-action { font-weight: 600; color: var(--ff-ink); }
+.ff-stoppop-meta { font: 11px/1.35 var(--ff-font); color: var(--ff-muted); }
+
 /* ── Owner live-map: truck-click popup (the day's drives — each linked + shareable) ── */
 .ff-truckpop { font: 13px/1.4 var(--ff-font); color: var(--ff-ink); min-width: 210px; max-width: 300px; max-height: 340px; overflow-y: auto; }
 .ff-truckpop-title { font-weight: 700; color: var(--ff-ink); }
@@ -687,149 +695,6 @@ html, body {
     padding: 7px 10px;
 }
 .ff-btn.icon svg { width: 18px; height: 18px; display: block; pointer-events: none; }
-
-/* ── Owner live-map: cluster popup / side panel ─────────────────────────────── */
-.ff-cluster-popup {
-    font: 13px/1.45 var(--ff-font);
-    color: var(--ff-ink);
-    min-width: 220px;
-    max-width: 280px;
-}
-.mapboxgl-popup-content:has(.ff-cluster-popup) {
-    padding: 0;
-    border-radius: var(--ff-r-lg);
-}
-
-.ff-cluster-panel {
-    position: absolute;
-    top: 80px;
-    right: 16px;
-    z-index: 5;
-    width: 320px;
-    max-width: calc(100% - 32px);
-    max-height: calc(100% - 96px);
-    background: var(--ff-glass-strong);
-    -webkit-backdrop-filter: var(--ff-glass-blur-lg);
-    backdrop-filter: var(--ff-glass-blur-lg);
-    border: 1px solid var(--ff-glass-ring);
-    border-radius: var(--ff-r-lg);
-    box-shadow: var(--ff-elev-2), var(--ff-glass-hi);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.ff-cluster-head {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--ff-line-soft);
-}
-
-.ff-cluster-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--ff-ink-strong);
-    line-height: 1.25;
-}
-
-.ff-cluster-sub {
-    font-size: 12px;
-    color: var(--ff-muted);
-    margin-top: 2px;
-}
-
-.ff-cluster-close {
-    flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--ff-line);
-    border-radius: var(--ff-r-sm);
-    background: rgba(255, 255, 255, 0.7);
-    color: var(--ff-primary);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    transition: background var(--ff-t-fast), border-color var(--ff-t-fast), color var(--ff-t-fast);
-}
-.ff-cluster-close:hover {
-    border-color: var(--ff-green);
-    color: var(--ff-green-600);
-    background: #fff;
-}
-
-.ff-cluster-body {
-    flex: 1 1 auto;
-    overflow-y: auto;
-    min-height: 0;
-}
-
-.ff-cluster-group {
-    padding: 6px 0;
-    border-bottom: 1px solid var(--ff-line-soft);
-}
-.ff-cluster-group:last-child { border-bottom: none; }
-
-.ff-cluster-group-label {
-    font-size: 11px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: var(--ff-muted);
-    padding: 4px 14px;
-}
-
-.ff-cluster-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 8px 14px;
-    border: none;
-    background: none;
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: background var(--ff-t-fast);
-}
-.ff-cluster-row:hover { background: rgba(2, 184, 150, 0.08); }
-.ff-cluster-row:focus-visible { outline-offset: -2px; }
-
-.ff-cluster-dot {
-    flex: 0 0 auto;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-}
-
-.ff-cluster-action {
-    flex: 0 0 auto;
-    font-weight: 700;
-    color: var(--ff-ink-strong);
-}
-
-.ff-cluster-meta {
-    flex: 0 1 auto;
-    min-width: 0;
-    font-size: 12px;
-    color: var(--ff-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.ff-cluster-meta::before {
-    content: "·";
-    margin-right: 6px;
-    color: var(--ff-line);
-}
 
 /* ── App shell (nav + content) ─────────────────────────────────────────────── */
 .ff-shell {
@@ -1399,6 +1264,39 @@ html, body {
 }
 .ff-admin-gridhost .kEditableTablePageInfo { min-width: 110px; }
 
+/* List-grid "search rows" box (shared kEditableTable ToContainer toolbar). The admin
+   LIST grids (Customers/Locations/Vehicles/Drivers + config domains, Jobs, Incidents)
+   render via ToContainer with just a search input (ShowToolbar + ShowFilterInput) —
+   the per-column filter UI is deliberately OFF (ShowColumnFilters = false), so this
+   is the simple search box only. Themed to the Langate glass and scoped to
+   .ff-admin-gridhost so it never touches the stops/form grids. */
+/* The shared .kEditableTable floats left; inside the container that would collapse the
+   toolbar-above-table layout — un-float so toolbar → table → pager flow vertically
+   (the gridhost's overflow-x:auto still scrolls a wide table). */
+.ff-admin-gridhost .kEditableTable { float: none; }
+.ff-admin-gridhost .kEditableTableToolbar {
+    display: flex;
+    align-items: center;
+    padding: 0 0 10px;
+}
+.ff-admin-gridhost .kEditableTableFilter {
+    flex: 0 1 300px;
+    min-width: 190px;
+    max-width: 360px;
+    box-sizing: border-box;
+    height: 38px;
+    padding: 0 13px;
+    font: 13px/1.2 var(--ff-font);
+    color: var(--ff-ink);
+    background: var(--ff-glass-strong);
+    border: 1px solid var(--ff-glass-ring);
+    border-radius: var(--ff-r-md);
+    box-shadow: var(--ff-elev-1);
+    outline: none;
+}
+.ff-admin-gridhost .kEditableTableFilter::placeholder { color: var(--ff-muted); }
+.ff-admin-gridhost .kEditableTableFilter:focus { border-color: var(--ff-green); box-shadow: var(--ff-elev-1), var(--ff-glow-green); }
+
 /* Admin configuration catalog (choice domains): stacked header + sub-tab strip. The
    subtitle-only header stays top-aligned (overriding the base ehead flex-end). */
 .ff-admin-confhead { flex-direction: column; align-items: flex-start; justify-content: flex-start; }
@@ -1498,7 +1396,7 @@ html, body {
 .ff-ops-row.urgent { border-left-color: var(--ff-red); }
 .ff-ops-rowicon { width: 18px; height: 18px; margin-right: 2px; opacity: 0.75; }
 .ff-ops-row:hover .ff-ops-rowicon { opacity: 1; }
-.ff-ops-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ff-ops-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; margin-right: auto; text-align: left; }
 .ff-ops-main { font-size: 14px; font-weight: 700; color: var(--ff-ink-strong); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ff-ops-meta { font-size: 12px; color: var(--ff-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -1568,6 +1466,71 @@ html, body {
     transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast);
 }
 .ff-admin-control:focus { outline: none; border-color: var(--ff-green); box-shadow: var(--ff-glow-green); }
+
+/* ── Searchable combobox (shared kSearchableSelect → Tom Select) ─────────────────
+   A long dropdown (>= 8 options) is enhanced by the shared kSearchableSelect into a
+   Tom Select combobox (type-to-filter, keyboard nav, a themable drop-down) over the KEPT
+   native <select> (value store + a11y + bubbling change). We only THEME its `.ts-*`
+   classes to Langate Glass + DM Sans; Tom Select owns positioning / keyboard / ARIA and
+   the modal-safe popup (the dropdown lives inside the field wrapper, so it never fights a
+   modal's z-index — the reason it replaced the hand-rolled popup). The base structural
+   CSS ships beside the widget (tomselect.css, imported by the component). The consumer's
+   control class is copied onto .ts-wrapper, so we neutralise it there and re-apply the
+   control look to the inner .ts-control. Rules are prefixed with `body ` (the shared-
+   component theming pattern, like `body .kDialog*`) so they beat Tom Select's base CSS
+   regardless of style-injection order. The DM Sans font on the LIST is the whole point —
+   the OS datalist popup could never be font-matched. */
+body .ts-wrapper.ff-nd-control,
+body .ts-wrapper.ff-admin-control {
+    border: 0; padding: 0; min-height: 0; height: auto;
+    background: none; box-shadow: none; transition: none;
+}
+body .ts-wrapper .ts-control {
+    box-sizing: border-box; width: 100%;
+    border: 1px solid var(--ff-line); border-radius: var(--ff-r-sm);
+    background: rgba(255, 255, 255, 0.85); color: var(--ff-ink);
+    font-family: var(--ff-font); box-shadow: none; cursor: text;
+    transition: border-color var(--ff-t-fast), box-shadow var(--ff-t-fast);
+}
+body .ts-wrapper.ff-nd-control .ts-control { min-height: 44px; padding: 9px 32px 9px 13px; font-size: 15px; }
+body .ts-wrapper.ff-admin-control .ts-control { min-height: 40px; padding: 7px 30px 7px 11px; font-size: 14px; }
+body .ts-wrapper.focus .ts-control,
+body .ts-wrapper.dropdown-active .ts-control {
+    border-color: var(--ff-green); box-shadow: var(--ff-glow-green); outline: none;
+}
+body .ts-wrapper .ts-control > input,
+body .ts-wrapper .ts-control > .item {
+    font-family: var(--ff-font); color: var(--ff-ink); font-size: inherit;
+}
+body .ts-wrapper .ts-control > input::placeholder { color: var(--ff-muted); opacity: 1; }
+/* Drop-down caret (Tom Select's base build draws none). */
+body .ts-wrapper.single .ts-control::after {
+    content: ""; position: absolute; top: 50%; right: 13px; margin-top: -2px;
+    width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid var(--ff-ink); opacity: 0.5; pointer-events: none;
+}
+body .ts-wrapper.single.dropdown-active .ts-control::after { transform: rotate(180deg); }
+/* The drop-down list — white glass, DM Sans (matches the app; the whole point). */
+body .ts-dropdown {
+    margin: 4px 0 0; border: 1px solid var(--ff-glass-ring); border-radius: var(--ff-r-sm);
+    background: var(--ff-glass-strong);
+    -webkit-backdrop-filter: var(--ff-glass-blur-lg); backdrop-filter: var(--ff-glass-blur-lg);
+    box-shadow: var(--ff-elev-2); color: var(--ff-ink);
+    font-family: var(--ff-font); font-size: 14px; overflow: hidden;
+    /* Portalled to <body> (dropdownParent), so it must clear a kModalDialog (2147483640)
+       while staying below a mini-doc tooltip (2147483646). */
+    z-index: 2147483643;
+}
+body .ts-dropdown .ts-dropdown-content { padding: 4px; max-height: 280px; }
+body .ts-dropdown .option {
+    padding: 8px 12px; border-radius: 6px; cursor: pointer;
+    color: var(--ff-ink); font-family: var(--ff-font);
+}
+body .ts-dropdown .option:hover { background: rgba(0, 81, 126, 0.07); }
+body .ts-dropdown .option.active { background: rgba(2, 184, 150, 0.14); color: var(--ff-ink-strong); }
+body .ts-dropdown .option[aria-selected="true"] { font-weight: 600; }
+body .ts-dropdown .no-results { padding: 8px 12px; color: var(--ff-muted); }
+.kSearchableInput { cursor: text; }
 
 /* Shared drive form (Jobs "+ New" create AND route-detail edit): two-column
    summary so the wider modal uses horizontal space. The extra class in the

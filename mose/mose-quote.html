@@ -145,6 +145,29 @@ tr:nth-child(even) td { background: #f6f9fb; }
 .reuse-list { list-style: none; margin: 2mm 0; padding: 0; }
 .reuse-list li { display: flex; align-items: baseline; gap: 3mm; margin-bottom: 1.5mm; font-size: 9.8pt; }
 .reuse-list .comp { font-family: 'DM Sans', monospace; font-weight: 700; color: var(--primary); min-width: 42mm; }
+
+/* ── Screenshots ── */
+.shot { max-width: 148mm; margin: 3mm auto 5mm; break-inside: avoid; }
+.shot figure { margin: 0; }
+.shot .frame { border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,81,126,0.10); background: #fff;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.shot .frame img { display: block; width: 100%; height: auto; }
+.shot figcaption { font-size: 8.8pt; color: var(--text-muted); margin-top: 2mm; line-height: 1.45; }
+.shot figcaption b { color: var(--primary); }
+.shot .cap-num { display: inline-grid; place-items: center; width: 4.5mm; height: 4.5mm; border-radius: 50%;
+    background: var(--accent-green); color: #fff; font-size: 7.5pt; font-weight: 800; margin-right: 1.5mm;
+    vertical-align: middle; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* ── Process diagrams (inline SVG) ── */
+.diagram { margin: 5mm 0 4mm; break-inside: avoid;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.diagram svg { display: block; width: 100%; height: auto; overflow: visible;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.diagram-title { font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--accent-green); margin: 4mm 0 0; }
+.diagram .d-cap { font-size: 8.6pt; color: var(--text-muted); margin-top: 1.5mm; line-height: 1.45; text-align: center; }
+.diagram .d-cap b { color: var(--primary); }
 </style>
 </head>
 <body>
@@ -252,7 +275,67 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
 </div>
 
-<!-- ══════════ PAGE 4 — How we deliver ══════════ -->
+<!-- ══════════ PAGE 4 — Product tour: Create a secure area ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Solution &middot; product tour</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Product tour &middot; Step 1</span>Create a secure area</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Administrators see every protected area at a glance — its SharePoint address, the sensitivity label enforced on arrival, and how much content it already holds. Creating a new area takes only a name, a label, and a single click.</p>
+
+        <div class="shot" style="max-width:170mm">
+            <figure>
+                <div class="frame"><img src="img/screen-areas.png?v=20260707-1745" alt="MOSE Secure Areas dashboard showing HR, Finance and Legal & Contracts protected areas, each with its sensitivity label and item counts, plus a create-secure-area panel"></div>
+                <figcaption><span class="cap-num">1</span>The <b>Secure Areas</b> dashboard. Each card is a dedicated SharePoint site whose default sensitivity label is applied automatically to everything added — here <b>HR</b>, <b>Finance</b>, and <b>Legal &amp; Contracts</b>. The panel below provisions a new area in one step.</figcaption>
+            </figure>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 5 — Product tour: Discover & move ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Solution &middot; product tour</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Product tour &middot; Step 2</span>Discover &amp; move</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Search the tenant for the words that describe sensitive material, review exactly what MOSE finds, and move only what you approve — the secure area's label is applied the moment content arrives.</p>
+
+        <div class="shot" style="max-width:170mm">
+            <figure>
+                <div class="frame"><img src="img/screen-discover.png?v=20260707-1745" alt="MOSE Discover & Move screen: keyword chips (HR, salaries, bonuses, incentives, severance), destination secure area, scope toggles, and results listing matched folders with folder-suggest and a legal-hold exclusion"></div>
+                <figcaption><span class="cap-num">2</span>The <b>Discover &amp; Move</b> screen. Keyword search runs across SharePoint sites and, optionally, OneDrive. MOSE suggests <b>whole folders</b> when they contain a match, shows how many non-matching files would be carried along, and <b>blocks items on legal hold</b> from being moved.</figcaption>
+            </figure>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 6 — How we deliver ══════════ -->
 <div class="page">
     <div class="page-header">
         <div class="page-header-accent"></div>
@@ -297,11 +380,11 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
     <div class="page-footer">
         <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
-        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
     </div>
 </div>
 
-<!-- ══════════ PAGE 5 — Investment ══════════ -->
+<!-- ══════════ PAGE 7 — Investment ══════════ -->
 <div class="page">
     <div class="page-header">
         <div class="page-header-accent"></div>
@@ -345,11 +428,11 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
     <div class="page-footer">
         <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
-        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
     </div>
 </div>
 
-<!-- ══════════ PAGE 6 — Security & compliance ══════════ -->
+<!-- ══════════ PAGE 8 — Security & compliance ══════════ -->
 <div class="page">
     <div class="page-header">
         <div class="page-header-accent"></div>
@@ -387,11 +470,11 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
     <div class="page-footer">
         <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
-        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
     </div>
 </div>
 
-<!-- ══════════ PAGE 7 — Security & compliance (cont.) ══════════ -->
+<!-- ══════════ PAGE 9 — Security & compliance (cont.) ══════════ -->
 <div class="page">
     <div class="page-header">
         <div class="page-header-accent"></div>
@@ -431,11 +514,48 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
     <div class="page-footer">
         <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
-        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 9</div>
     </div>
 </div>
 
-<!-- ══════════ PAGE 8 — Terms & acceptance ══════════ -->
+<!-- ══════════ PAGE 10 — Security in the product (screenshots) ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Security &amp; compliance</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Security &middot; in the product</span>Safeguards you can see</h1>
+        <div class="chapter-rule"></div>
+
+        <p>The controls described in Section&nbsp;5 are enforced in the interface itself: every move is previewed in full before it commits, and every action is written to an audit trail.</p>
+
+        <div class="shot" style="max-width:138mm">
+            <figure>
+                <div class="frame"><img src="img/screen-confirm.png?v=20260707-1745" alt="MOSE move-confirmation dialog listing items to move, folders and locations, non-matching files carried along, destination, and label applied, with warnings that sharing links stop working and that legal-hold items are excluded"></div>
+                <figcaption><span class="cap-num">1</span>The <b>confirm step</b> spells out exactly what will change before anything moves — item count, non-matching files carried along, destination, and the label applied — and warns that existing sharing links stop working and that items on <b>legal hold are excluded and left in place</b>.</figcaption>
+            </figure>
+        </div>
+
+        <div class="shot" style="max-width:138mm">
+            <figure>
+                <div class="frame"><img src="img/screen-activity.png?v=20260707-1745" alt="MOSE Activity audit trail listing who moved what, from where, into which secure area, which label was applied, and what was skipped, including a scheduled-job discovery entry"></div>
+                <figcaption><span class="cap-num">2</span>The <b>Activity</b> audit trail records who authorised each move, what moved, from where, into which area, which label was applied, and what was skipped — written to a SharePoint list and mirrored to the Microsoft&nbsp;365 unified audit log.</figcaption>
+            </figure>
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 11 — Terms & acceptance ══════════ -->
 <div class="page">
     <div class="page-header">
         <div class="page-header-accent"></div>
@@ -479,7 +599,7 @@ tr:nth-child(even) td { background: #f6f9fb; }
     </div>
     <div class="page-footer">
         <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
-        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 11</div>
     </div>
 </div>
 

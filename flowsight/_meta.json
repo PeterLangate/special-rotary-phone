@@ -1,14 +1,14 @@
 {
-  "syncedAt": "2026-07-06T10:33:06Z",
   "files": {
+    "flowsight-plan.html": {
+      "updated": "2026-04-24"
+    },
     "flowsight-mockup.html": {
       "updated": "2026-04-22"
     },
     "index.html": {
       "updated": "2026-04-22"
-    },
-    "flowsight-plan.html": {
-      "updated": "2026-04-24"
     }
-  }
+  },
+  "syncedAt": "2026-07-07T15:45:05Z"
 }
