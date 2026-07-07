@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOSE — Move to Security · Product mockup</title>
+<title>MOSE — Flytta till säkerhet · Produktmockup</title>
 <meta name="author" content="Langate AB">
-<meta name="description" content="MOSE (Move to Security) — interactive product UI mockup (Langate Glass)">
+<meta name="description" content="MOSE (Flytta till säkerhet) — interaktiv mockup av produktgränssnittet (Langate Glass)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
@@ -454,13 +454,13 @@ body {
     <div class="brand"><span class="brand-word">Langate</span><span class="brand-dot"></span></div>
     <div class="product-pill">
         <svg class="shield" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" fill="#fff" opacity="0.22"/><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#fff" stroke-width="1.4"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#02b896" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        MOSE <small>Move to Security</small>
+        MOSE <small>Flytta till säkerhet</small>
     </div>
     <div class="appbar-spacer"></div>
-    <nav class="appbar-tabs" role="tablist" aria-label="MOSE sections">
-        <button class="tab" role="tab" aria-selected="true" aria-controls="areas" data-screen="areas"><span class="step-n">1</span>Secure Areas</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="discover" data-screen="discover"><span class="step-n">2</span>Discover &amp; Move</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="activity" data-screen="activity"><span class="step-n" aria-hidden="true">·</span>Activity</button>
+    <nav class="appbar-tabs" role="tablist" aria-label="MOSE-avsnitt">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="areas" data-screen="areas"><span class="step-n">1</span>Säkra områden</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="discover" data-screen="discover"><span class="step-n">2</span>Sök &amp; flytta</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="activity" data-screen="activity"><span class="step-n" aria-hidden="true">·</span>Aktivitet</button>
     </nav>
     <div class="user-chip"><span class="avatar-img av-anna" role="img" aria-label="Anna Lund"></span>Anna Lund</div>
 </header>
@@ -468,14 +468,14 @@ body {
 <main class="wrap">
 
 <!-- ═══════════════ SCREEN 1: Secure Areas (Step 1) ═══════════════ -->
-<section id="areas" class="screen active" role="tabpanel" aria-label="Secure Areas">
+<section id="areas" class="screen active" role="tabpanel" aria-label="Säkra områden">
     <div class="page-head">
         <div>
-            <div class="label-kicker">Step 1 of 2 · Secure areas</div>
-            <h1 class="page-title">Your secure areas</h1>
-            <p class="page-sub">A secure area is a dedicated SharePoint site with a sensitivity label applied automatically to everything added to it. Create one per category of sensitive content, then discover and move matching material into it.</p>
+            <div class="label-kicker">Steg 1 av 2 · Säkra områden</div>
+            <h1 class="page-title">Dina säkra områden</h1>
+            <p class="page-sub">Ett säkert område är en dedikerad SharePoint-webbplats där en känslighetsetikett tillämpas automatiskt på allt som läggs till. Skapa ett per kategori av känsligt innehåll och flytta sedan matchande material dit.</p>
         </div>
-        <button class="ff-btn primary" data-screen="discover">Continue to Discover &amp; Move →</button>
+        <button class="ff-btn primary" data-screen="discover">Fortsätt till Sök &amp; flytta →</button>
     </div>
 
     <div class="area-grid">
@@ -485,131 +485,131 @@ body {
                 <div class="area-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" fill="#02b896" opacity="0.16"/><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#017a64" stroke-width="1.3"/></svg></div>
                 <div><div class="area-name">HR</div><div class="area-url">/sites/secure-hr</div></div>
             </div>
-            <span class="ff-badge b-green">Confidential · HR</span>
+            <span class="ff-badge b-green">Konfidentiell · HR</span>
             <div class="area-stats">
-                <div class="s"><b>1,204</b><span>items secured</span></div>
-                <div class="s"><b>8.6 GB</b><span>content size</span></div>
-                <div class="s"><b>42</b><span>this week</span></div>
+                <div class="s"><b>1 204</b><span>skyddade objekt</span></div>
+                <div class="s"><b>8,6 GB</b><span>innehållsstorlek</span></div>
+                <div class="s"><b>42</b><span>denna vecka</span></div>
             </div>
-            <div class="autolabel"><span>Auto-apply label on add</span><span class="ff-badge b-green">On</span></div>
+            <div class="autolabel"><span>Tillämpa etikett automatiskt</span><span class="ff-badge b-green">På</span></div>
         </div>
         <!-- Finance -->
         <div class="ff-panel area-card">
             <div class="area-top">
                 <div class="area-icon" style="background:var(--ff-gold-50)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" fill="#f5a623" opacity="0.16"/><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#8a5a00" stroke-width="1.3"/></svg></div>
-                <div><div class="area-name">Finance</div><div class="area-url">/sites/secure-finance</div></div>
+                <div><div class="area-name">Ekonomi</div><div class="area-url">/sites/secure-finance</div></div>
             </div>
-            <span class="ff-badge b-gold">Highly Confidential</span>
+            <span class="ff-badge b-gold">Mycket konfidentiell</span>
             <div class="area-stats">
-                <div class="s"><b>3,880</b><span>items secured</span></div>
-                <div class="s"><b>47 GB</b><span>content size</span></div>
-                <div class="s"><b>0</b><span>this week</span></div>
+                <div class="s"><b>3 880</b><span>skyddade objekt</span></div>
+                <div class="s"><b>47 GB</b><span>innehållsstorlek</span></div>
+                <div class="s"><b>0</b><span>denna vecka</span></div>
             </div>
-            <div class="autolabel"><span>Auto-apply label on add</span><span class="ff-badge b-green">On</span></div>
+            <div class="autolabel"><span>Tillämpa etikett automatiskt</span><span class="ff-badge b-green">På</span></div>
         </div>
         <!-- Legal -->
         <div class="ff-panel area-card">
             <div class="area-top">
                 <div class="area-icon" style="background:#ebf2f5"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" fill="#00517e" opacity="0.14"/><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#00517e" stroke-width="1.3"/></svg></div>
-                <div><div class="area-name">Legal &amp; Contracts</div><div class="area-url">/sites/secure-legal</div></div>
+                <div><div class="area-name">Juridik &amp; avtal</div><div class="area-url">/sites/secure-legal</div></div>
             </div>
-            <span class="ff-badge b-blue">Confidential · Legal</span>
+            <span class="ff-badge b-blue">Konfidentiell · Juridik</span>
             <div class="area-stats">
-                <div class="s"><b>612</b><span>items secured</span></div>
-                <div class="s"><b>3.1 GB</b><span>content size</span></div>
-                <div class="s"><b>7</b><span>this week</span></div>
+                <div class="s"><b>612</b><span>skyddade objekt</span></div>
+                <div class="s"><b>3,1 GB</b><span>innehållsstorlek</span></div>
+                <div class="s"><b>7</b><span>denna vecka</span></div>
             </div>
-            <div class="autolabel"><span>Auto-apply label on add</span><span class="ff-badge b-green">On</span></div>
+            <div class="autolabel"><span>Tillämpa etikett automatiskt</span><span class="ff-badge b-green">På</span></div>
         </div>
         <!-- Create -->
         <div class="ff-panel area-card create-card">
-            <h3>Create a secure area</h3>
-            <p>MOSE provisions a new SharePoint site and sets its default sensitivity label — every item added is protected on arrival.</p>
-            <label class="sr-only" for="newAreaName">Area name</label>
-            <input class="inp" id="newAreaName" placeholder="Area name — e.g. Board &amp; Governance">
-            <label class="sr-only" for="newAreaLabel">Sensitivity label</label>
-            <select class="inp" id="newAreaLabel"><option>Choose a sensitivity label…</option><option>Confidential</option><option>Highly Confidential</option><option>Confidential · HR</option><option>Restricted</option></select>
+            <h3>Skapa ett säkert område</h3>
+            <p>MOSE skapar en ny SharePoint-webbplats och anger dess standardetikett för känslighet — varje objekt som läggs till skyddas direkt.</p>
+            <label class="sr-only" for="newAreaName">Namn på område</label>
+            <input class="inp" id="newAreaName" placeholder="Namn på område — t.ex. Styrelse &amp; styrning">
+            <label class="sr-only" for="newAreaLabel">Känslighetsetikett</label>
+            <select class="inp" id="newAreaLabel"><option>Välj en känslighetsetikett…</option><option>Konfidentiell</option><option>Mycket konfidentiell</option><option>Konfidentiell · HR</option><option>Begränsad</option></select>
             <div style="flex:1"></div>
-            <button class="ff-btn primary" id="provisionBtn" style="width:100%; justify-content:center">Provision secure area</button>
+            <button class="ff-btn primary" id="provisionBtn" style="width:100%; justify-content:center">Skapa säkert område</button>
         </div>
     </div>
     <div class="ff-panel" style="margin-top:16px; display:flex; gap:12px; align-items:flex-start;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex-shrink:0; margin-top:1px"><path d="M5 12h14M13 6l6 6-6 6" stroke="#017a64" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div style="font-size:13.5px; color:var(--ff-muted)"><strong style="color:var(--ff-ink-strong)">Move between secure areas too.</strong> MOSE is not only for bringing content in — it also relocates content from one secure area to another, for example to re-classify from Confidential to Highly Confidential, applying the destination area's label on arrival.</div>
+        <div style="font-size:13.5px; color:var(--ff-muted)"><strong style="color:var(--ff-ink-strong)">Flyttar även mellan säkra områden.</strong> MOSE är inte bara till för att föra in innehåll — det flyttar även innehåll från ett säkert område till ett annat, till exempel för att omklassificera från Konfidentiell till Mycket konfidentiell, och tillämpar målområdets etikett vid ankomst.</div>
     </div>
-    <div class="footnote">Secure-area provisioning and sensitivity-label selection are powered by <b>Langate's production-hardened shared components</b>.</div>
+    <div class="footnote">Etablering av säkra områden och val av känslighetsetikett drivs av <b>Langates produktionshärdade delade komponenter</b>.</div>
 </section>
 
 <!-- ═══════════════ SCREEN 2: Discover & Move (Step 2) ═══════════════ -->
-<section id="discover" class="screen" role="tabpanel" aria-label="Discover and Move">
+<section id="discover" class="screen" role="tabpanel" aria-label="Sök och flytta">
     <div class="page-head">
         <div>
-            <div class="label-kicker">Step 2 of 2 · Discover &amp; move</div>
-            <h1 class="page-title">Find content that belongs in a secure area</h1>
-            <p class="page-sub">Search your SharePoint sites (and, if enabled, users' OneDrive) for the words that describe sensitive material. Review the suggestions, then move what you approve — the secure area's sensitivity label is applied automatically on arrival.</p>
+            <div class="label-kicker">Steg 2 av 2 · Sök &amp; flytta</div>
+            <h1 class="page-title">Hitta innehåll som hör hemma i ett säkert område</h1>
+            <p class="page-sub">Sök i dina SharePoint-webbplatser (och användarnas OneDrive om det är aktiverat) efter orden som beskriver känsligt material. Granska förslagen och flytta det du godkänner — det säkra områdets känslighetsetikett tillämpas automatiskt vid ankomst.</p>
         </div>
-        <button class="ff-btn ghost sm" id="saveSearchBtn">Save this search</button>
+        <button class="ff-btn ghost sm" id="saveSearchBtn">Spara sökningen</button>
     </div>
 
     <!-- Toolbar -->
     <div class="ff-panel">
         <div class="toolbar">
             <div>
-                <div class="field-label" id="kwLabel">Keywords to search for</div>
+                <div class="field-label" id="kwLabel">Nyckelord att söka efter</div>
                 <div class="kw-box" id="kwBox" role="group" aria-labelledby="kwLabel">
-                    <span class="ff-chip kw">HR <button class="x" aria-label="Remove keyword HR">×</button></span>
-                    <span class="ff-chip kw">Salaries <button class="x" aria-label="Remove keyword Salaries">×</button></span>
-                    <span class="ff-chip kw">Bonuses <button class="x" aria-label="Remove keyword Bonuses">×</button></span>
-                    <span class="ff-chip kw">Incentives <button class="x" aria-label="Remove keyword Incentives">×</button></span>
-                    <span class="ff-chip kw">Severance <button class="x" aria-label="Remove keyword Severance">×</button></span>
-                    <input class="kw-input" id="kwInput" aria-label="Add a keyword" placeholder="Type a word…">
-                    <button class="kw-add" id="kwAdd" type="button">Add</button>
+                    <span class="ff-chip kw">HR <button class="x" aria-label="Ta bort nyckelord HR">×</button></span>
+                    <span class="ff-chip kw">Löner <button class="x" aria-label="Ta bort nyckelord Löner">×</button></span>
+                    <span class="ff-chip kw">Bonusar <button class="x" aria-label="Ta bort nyckelord Bonusar">×</button></span>
+                    <span class="ff-chip kw">Incitament <button class="x" aria-label="Ta bort nyckelord Incitament">×</button></span>
+                    <span class="ff-chip kw">Avgångsvederlag <button class="x" aria-label="Ta bort nyckelord Avgångsvederlag">×</button></span>
+                    <input class="kw-input" id="kwInput" aria-label="Lägg till ett nyckelord" placeholder="Skriv ett ord…">
+                    <button class="kw-add" id="kwAdd" type="button">Lägg till</button>
                 </div>
                 <div class="match-row">
-                    Match
-                    <span class="seg" role="group" aria-label="Keyword match mode">
-                        <button id="matchAny" aria-pressed="true">any word</button>
-                        <button id="matchAll" aria-pressed="false">all words</button>
+                    Matcha
+                    <span class="seg" role="group" aria-label="Matchningsläge för nyckelord">
+                        <button id="matchAny" aria-pressed="true">något ord</button>
+                        <button id="matchAll" aria-pressed="false">alla ord</button>
                     </span>
-                    of the keywords
+                    av nyckelorden
                 </div>
             </div>
             <div>
-                <div class="field-label">Move selected items into</div>
+                <div class="field-label">Flytta valda objekt till</div>
                 <div class="target-select">
                     <div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" fill="#02b896" opacity="0.16"/><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z" stroke="#017a64" stroke-width="1.3"/></svg></div>
                     <div>
-                        <label class="lbl" for="destSelect">Secure area (destination)</label><br>
-                        <select id="destSelect" data-label="Confidential · HR"><option value="HR" data-label="Confidential · HR">HR — Human Resources</option><option value="Finance" data-label="Highly Confidential">Finance</option><option value="Legal &amp; Contracts" data-label="Confidential · Legal">Legal &amp; Contracts</option></select>
+                        <label class="lbl" for="destSelect">Säkert område (mål)</label><br>
+                        <select id="destSelect" data-label="Konfidentiell · HR"><option value="HR" data-label="Konfidentiell · HR">HR — Personal</option><option value="Ekonomi" data-label="Mycket konfidentiell">Ekonomi</option><option value="Juridik &amp; avtal" data-label="Konfidentiell · Juridik">Juridik &amp; avtal</option></select>
                     </div>
-                    <div style="margin-left:auto"><span class="ff-badge b-green" id="destLabelBadge">Confidential · HR</span></div>
+                    <div style="margin-left:auto"><span class="ff-badge b-green" id="destLabelBadge">Konfidentiell · HR</span></div>
                 </div>
             </div>
         </div>
         <div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">
             <div>
-                <div class="field-label" style="margin-bottom:8px">Scope</div>
+                <div class="field-label" style="margin-bottom:8px">Omfattning</div>
                 <div class="scope-row">
-                    <button class="scope-toggle" role="switch" aria-checked="true" data-scope="sharepoint"><span class="sw"></span>SharePoint sites</button>
-                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="onedrive"><span class="sw"></span>OneDrive accounts</button>
-                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="teams"><span class="sw"></span>Teams files</button>
-                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="email"><span class="sw"></span>Email (Exchange)</button>
+                    <button class="scope-toggle" role="switch" aria-checked="true" data-scope="sharepoint"><span class="sw"></span>SharePoint-webbplatser</button>
+                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="onedrive"><span class="sw"></span>OneDrive-konton</button>
+                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="teams"><span class="sw"></span>Teams-filer</button>
+                    <button class="scope-toggle" role="switch" aria-checked="false" data-scope="email"><span class="sw"></span>E-post (Exchange)</button>
                 </div>
                 <div class="scope-note hidden" id="odNote">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 4.3 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0z" stroke="#8a5a00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Scanning personal OneDrive reads every employee's private files — enable only with authorisation.
+                    Genomsökning av personlig OneDrive läser varje anställds privata filer — aktivera endast med behörighet.
                 </div>
                 <div class="scope-note hidden" id="emailNote">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 4.3 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0z" stroke="#8a5a00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Searching Exchange mailboxes reads employees' private email — enable only with authorisation.
+                    Att söka i Exchange-postlådor läser anställdas privata e-post — aktivera endast med behörighet.
                 </div>
             </div>
             <div style="flex:1"></div>
             <div style="display:flex; align-items:center; gap:12px; align-self:flex-start; margin-top:22px">
-                <span class="validation hidden" id="kwValidation">Add at least one keyword</span>
+                <span class="validation hidden" id="kwValidation">Lägg till minst ett nyckelord</span>
                 <button class="ff-btn primary" id="runSearch">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-                    Run search
+                    Kör sökning
                 </button>
             </div>
         </div>
@@ -620,78 +620,78 @@ body {
     <!-- START state -->
     <div class="state-panel" id="stateStart">
         <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#017a64" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="#017a64" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Ready to discover content</h3>
-        <p>Set your keywords and scope above, then <strong>Run search</strong>. Nothing is scanned until you do — and nothing moves until you review and confirm.</p>
+        <h3>Redo att söka innehåll</h3>
+        <p>Ange nyckelord och omfattning ovan och välj sedan <strong>Kör sökning</strong>. Inget genomsöks förrän du gör det — och inget flyttas förrän du granskar och bekräftar.</p>
     </div>
 
     <!-- RUNNING state -->
     <div class="state-panel hidden" id="stateRunning">
         <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9" stroke="#017a64" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Scanning the tenant…</h3>
-        <p id="runningSub">Searching SharePoint sites for your keywords.</p>
+        <h3>Genomsöker organisationen…</h3>
+        <p id="runningSub">Söker efter dina nyckelord i SharePoint-webbplatser.</p>
         <div class="scan-bar"><i></i></div>
     </div>
 
     <!-- STALE banner -->
     <div class="stale-banner hidden" id="staleBanner">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5M12 16h.01" stroke="#8a5a00" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#8a5a00" stroke-width="1.6"/></svg>
-        Keywords or scope changed — results are out of date.
-        <button class="ff-btn primary sm" id="staleRun" style="margin-left:auto">Run search to update</button>
+        Nyckelord eller omfattning ändrades — resultaten är inaktuella.
+        <button class="ff-btn primary sm" id="staleRun" style="margin-left:auto">Kör sökning för att uppdatera</button>
     </div>
 
     <!-- RESULTS -->
     <div id="resultsWrap" class="hidden">
         <div class="ff-panel ff-strong summary-bar">
-            <div class="stat"><b id="sumItems">0</b><span>items matched</span></div>
+            <div class="stat"><b id="sumItems">0</b><span>matchade objekt</span></div>
             <div class="divider"></div>
-            <div class="stat"><b id="sumLocs">0</b><span>locations</span></div>
+            <div class="stat"><b id="sumLocs">0</b><span>platser</span></div>
             <div class="divider"></div>
-            <div class="stat"><b id="sumFolders">0</b><span>folders flagged</span></div>
+            <div class="stat"><b id="sumFolders">0</b><span>flaggade mappar</span></div>
             <div class="divider"></div>
-            <div class="stat"><span id="sumCoverage" style="color:var(--ff-green-600); font-weight:700">Scanned 214 sites in 38s</span></div>
+            <div class="stat"><span id="sumCoverage" style="color:var(--ff-green-600); font-weight:700">Genomsökte 214 webbplatser på 38 s</span></div>
             <div class="spacer" style="flex:1"></div>
             <button class="selall-btn" id="selAll" aria-pressed="false">
                 <span class="chk" aria-hidden="true" aria-checked="false"></span>
-                <span id="selAllLabel">Select all selectable</span>
+                <span id="selAllLabel">Markera alla valbara</span>
             </button>
         </div>
 
         <div id="results">
             <!-- SharePoint / Finance -->
             <div class="loc-group" data-scope="sharepoint" data-loc="Finance Department">
-                <div class="loc-head"><span class="src"><span class="src-icon src-sp" aria-hidden="true">SP</span> Finance Department</span> · <span class="url">finance.contoso.sharepoint.com</span></div>
+                <div class="loc-head"><span class="src"><span class="src-icon src-sp" aria-hidden="true">SP</span> Ekonomiavdelningen</span> · <span class="url">finance.contoso.sharepoint.com</span></div>
 
                 <div class="folder-card suggested" data-count="24" data-matched="9" data-name="Compensation 2025">
-                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Select folder Compensation 2025 (24 items)"></button>
+                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Markera mappen Compensation 2025 (24 objekt)"></button>
                     <div class="fc-icon"><svg class="fc-file" aria-hidden="true"><use href="#ic-folder-gold"/></svg></div>
                     <div class="fc-body">
-                        <div class="fc-title">Compensation 2025 <span class="ff-badge b-gold">Folder suggested</span></div>
+                        <div class="fc-title">Compensation 2025 <span class="ff-badge b-gold">Föreslagen mapp</span></div>
                         <div class="fc-path">/Shared Documents/Payroll/Compensation 2025</div>
-                        <div class="fc-reason">9 files matched <span class="hit">"bonuses"</span>, <span class="hit">"incentives"</span>. <span class="fc-carry">Moving the folder relocates all 24 items — including 15 that did not match your keywords.</span></div>
-                        <button class="expander" data-toggle="f1" aria-expanded="false" aria-controls="f1">▾ Show 24 items</button>
+                        <div class="fc-reason">9 filer matchade <span class="hit">”bonusar”</span>, <span class="hit">”incitament”</span>. <span class="fc-carry">Om mappen flyttas omplaceras alla 24 objekt — inklusive 15 som inte matchade dina nyckelord.</span></div>
+                        <button class="expander" data-toggle="f1" aria-expanded="false" aria-controls="f1">▾ Visa 24 objekt</button>
                     </div>
-                    <div class="fc-meta"><div class="fc-count">24 <span>items</span></div><div style="margin-top:6px"><span class="ff-badge b-blue">1.4 GB</span></div></div>
+                    <div class="fc-meta"><div class="fc-count">24 <span>objekt</span></div><div style="margin-top:6px"><span class="ff-badge b-blue">1,4 GB</span></div></div>
                 </div>
                 <div class="file-rows" id="f1">
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Bonus_Plan_2025_Final.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">Bonus_Plan_2025_Final.xlsx</span><span class="fmeta">matched "bonuses" · 2.1 MB · L. Berg</span></div>
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Incentive_Scheme_Sales.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Incentive_Scheme_Sales.docx</span><span class="fmeta">matched "incentives" · 480 KB · L. Berg</span></div>
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Q4_Payout_Summary.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">Q4_Payout_Summary.pdf</span><span class="fmeta">no keyword match · carried with folder · 900 KB</span></div>
-                    <div class="file-row more"><span class="fn" style="padding-left:27px">…and 21 more in this folder (6 matched, 15 carried)</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera Bonus_Plan_2025_Final.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">Bonus_Plan_2025_Final.xlsx</span><span class="fmeta">matchade ”bonusar” · 2,1 MB · L. Berg</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera Incentive_Scheme_Sales.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Incentive_Scheme_Sales.docx</span><span class="fmeta">matchade ”incitament” · 480 KB · L. Berg</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera Q4_Payout_Summary.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">Q4_Payout_Summary.pdf</span><span class="fmeta">ingen nyckelordsträff · flyttas med mappen · 900 KB</span></div>
+                    <div class="file-row more"><span class="fn" style="padding-left:27px">…och 21 till i den här mappen (6 matchade, 15 medföljande)</span></div>
                 </div>
 
                 <div class="folder-card held" data-count="6" data-matched="6" data-name="Severance agreements — 2024" data-held="1">
-                    <button class="chk" role="checkbox" aria-checked="false" aria-disabled="true" disabled aria-label="Severance agreements 2024 — on legal hold, cannot be moved"></button>
+                    <button class="chk" role="checkbox" aria-checked="false" aria-disabled="true" disabled aria-label="Severance agreements 2024 — omfattas av juridisk kvarhållning, kan inte flyttas"></button>
                     <div class="fc-icon"><svg class="fc-file" aria-hidden="true"><use href="#ic-folder"/></svg></div>
                     <div class="fc-body">
-                        <div class="fc-title">Severance agreements — 2024 <span class="ff-badge b-red">Legal hold</span></div>
+                        <div class="fc-title">Severance agreements — 2024 <span class="ff-badge b-red">Juridisk kvarhållning</span></div>
                         <div class="fc-path">/Shared Documents/HR/Severance</div>
-                        <div class="fc-reason">6 documents matched <span class="hit">"severance"</span>, <span class="hit">"salaries"</span>.</div>
+                        <div class="fc-reason">6 dokument matchade <span class="hit">”avgångsvederlag”</span>, <span class="hit">”löner”</span>.</div>
                         <div class="fc-held-note">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" stroke="#973c37" stroke-width="1.6"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#973c37" stroke-width="1.6"/></svg>
-                            On legal hold — cannot be moved. Excluded from selection and blocked from any move.
+                            Omfattas av juridisk kvarhållning — kan inte flyttas. Utesluts från markering och blockeras från flytt.
                         </div>
                     </div>
-                    <div class="fc-meta"><div class="fc-count">6 <span>items</span></div></div>
+                    <div class="fc-meta"><div class="fc-count">6 <span>objekt</span></div></div>
                 </div>
             </div>
 
@@ -700,42 +700,41 @@ body {
                 <div class="loc-head"><span class="src"><span class="src-icon src-od" aria-hidden="true">OD</span> <span class="avatar-img av-lars" role="img" aria-label="Lars Berg" style="width:20px;height:20px;box-shadow:none"></span> Lars Berg — OneDrive</span> · <span class="url">contoso-my.sharepoint.com/lars.berg</span></div>
 
                 <div class="folder-card" data-count="3" data-matched="3" data-name="Loose HR files">
-                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Select 3 files in Lars Berg's OneDrive"></button>
+                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Markera 3 filer i Lars Bergs OneDrive"></button>
                     <div class="fc-icon"><svg class="fc-file" aria-hidden="true"><use href="#ic-folder"/></svg></div>
                     <div class="fc-body">
-                        <div class="fc-title">Loose HR files <span class="ff-badge b-blue">Personal OneDrive</span></div>
+                        <div class="fc-title">Loose HR files <span class="ff-badge b-blue">Personlig OneDrive</span></div>
                         <div class="fc-path">/Documents/Personal work</div>
-                        <div class="fc-reason">3 individual files matched <span class="hit">"HR"</span>, <span class="hit">"salaries"</span> — only the matched files are selected (no folder roll-up).</div>
-                        <button class="expander" data-toggle="f2" aria-expanded="false" aria-controls="f2">▾ Show 3 items</button>
+                        <div class="fc-reason">3 enskilda filer matchade <span class="hit">”HR”</span>, <span class="hit">”löner”</span> — endast de matchade filerna markeras (ingen hopslagning av mappen).</div>
+                        <button class="expander" data-toggle="f2" aria-expanded="false" aria-controls="f2">▾ Visa 3 objekt</button>
                     </div>
-                    <div class="fc-meta"><div class="fc-count">3 <span>items</span></div></div>
+                    <div class="fc-meta"><div class="fc-count">3 <span>objekt</span></div></div>
                 </div>
                 <div class="file-rows" id="f2">
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select Salary_review_notes.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Salary_review_notes.docx</span><span class="fmeta">matched "salaries" · 120 KB</span></div>
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select HR_headcount.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">HR_headcount.xlsx</span><span class="fmeta">matched "HR" · 88 KB</span></div>
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select draft_offer.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">draft_offer.pdf</span><span class="fmeta">matched "salaries" · 210 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera Salary_review_notes.docx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-word"/></svg><span class="fn">Salary_review_notes.docx</span><span class="fmeta">matchade ”löner” · 120 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera HR_headcount.xlsx"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-excel"/></svg><span class="fn">HR_headcount.xlsx</span><span class="fmeta">matchade ”HR” · 88 KB</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera draft_offer.pdf"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-pdf"/></svg><span class="fn">draft_offer.pdf</span><span class="fmeta">matchade ”löner” · 210 KB</span></div>
                 </div>
             </div>
 
-            <!-- Email / Exchange (only when Email scope is on) -->
-            <div class="loc-group" data-scope="email" data-loc="Anna Lund — Mailbox">
-                <div class="loc-head"><span class="src"><span class="src-icon src-em" aria-hidden="true">EX</span> <span class="avatar-img av-anna" role="img" aria-label="Anna Lund" style="width:20px;height:20px;box-shadow:none"></span> Anna Lund — Mailbox</span> · <span class="url">Exchange Online</span></div>
-
-                <div class="folder-card" data-count="4" data-matched="4" data-name="Matching emails — Anna Lund">
-                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Select 4 matching emails in Anna Lund's mailbox"></button>
+            <!-- E-post / Exchange (visas endast när E-post-omfattningen är på) -->
+            <div class="loc-group" data-scope="email" data-loc="Anna Lund — Postlåda">
+                <div class="loc-head"><span class="src"><span class="src-icon src-em" aria-hidden="true">EX</span> <span class="avatar-img av-anna" role="img" aria-label="Anna Lund" style="width:20px;height:20px;box-shadow:none"></span> Anna Lund — Postlåda</span> · <span class="url">Exchange Online</span></div>
+                <div class="folder-card" data-count="4" data-matched="4" data-name="Matchande e-post — Anna Lund">
+                    <button class="chk" role="checkbox" aria-checked="false" aria-label="Markera 4 matchande e-postmeddelanden i Anna Lunds postlåda"></button>
                     <div class="fc-icon"><svg class="fc-file" aria-hidden="true"><use href="#ic-email"/></svg></div>
                     <div class="fc-body">
-                        <div class="fc-title">Matching emails <span class="ff-badge b-blue">Mailbox</span></div>
-                        <div class="fc-path">Inbox · Sent Items</div>
-                        <div class="fc-reason">4 messages matched <span class="hit">"bonuses"</span>, <span class="hit">"salaries"</span> — the attachments are moved to the secure area and labelled; the message itself stays in the mailbox.</div>
-                        <button class="expander" data-toggle="f3" aria-expanded="false" aria-controls="f3">▾ Show 4 items</button>
+                        <div class="fc-title">Matchande e-post <span class="ff-badge b-blue">Postlåda</span></div>
+                        <div class="fc-path">Inkorg · Skickat</div>
+                        <div class="fc-reason">4 meddelanden matchade <span class="hit">”bonusar”</span>, <span class="hit">”löner”</span> — bifogade filer flyttas till det säkra området och etiketteras; själva meddelandet stannar kvar i postlådan.</div>
+                        <button class="expander" data-toggle="f3" aria-expanded="false" aria-controls="f3">▾ Visa 4 objekt</button>
                     </div>
-                    <div class="fc-meta"><div class="fc-count">4 <span>items</span></div></div>
+                    <div class="fc-meta"><div class="fc-count">4 <span>objekt</span></div></div>
                 </div>
                 <div class="file-rows" id="f3">
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select email Re: Q4 bonus letters"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-email"/></svg><span class="fn">Re: Q4 bonus letters</span><span class="fmeta">from CFO · 2 attachments · matched "bonuses"</span></div>
-                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Select email Salary review 2025 — draft"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-email"/></svg><span class="fn">Salary review 2025 — draft</span><span class="fmeta">Sent Items · 1 attachment · matched "salaries"</span></div>
-                    <div class="file-row more"><span class="fn" style="padding-left:27px">…and 2 more messages with attachments</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera e-post Re: Q4 bonus letters"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-email"/></svg><span class="fn">Re: Q4 bonus letters</span><span class="fmeta">från CFO · 2 bilagor · matchade ”bonusar”</span></div>
+                    <div class="file-row"><button class="chk file-chk" role="checkbox" aria-checked="false" aria-label="Markera e-post Salary review 2025 — draft"></button><svg class="fileicon" aria-hidden="true"><use href="#ic-email"/></svg><span class="fn">Salary review 2025 — draft</span><span class="fmeta">Skickat · 1 bilaga · matchade ”löner”</span></div>
+                    <div class="file-row more"><span class="fn" style="padding-left:27px">…och 2 meddelanden till med bilagor</span></div>
                 </div>
             </div>
         </div>
@@ -744,65 +743,65 @@ body {
     <!-- EMPTY state -->
     <div class="state-panel hidden" id="stateEmpty">
         <div class="ico" style="background:var(--ff-glass-strong)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#4f6b7c" stroke-width="2"/><path d="M20 20l-3.5-3.5M8 11h6" stroke="#4f6b7c" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>No matches in the selected scope</h3>
-        <p>Nothing matched these keywords in the scope you searched. Try broadening the keywords, switching Match to <strong>any word</strong>, or including more scope.</p>
+        <h3>Inga träffar i den valda omfattningen</h3>
+        <p>Inget matchade dessa nyckelord i den omfattning du sökte. Försök att bredda nyckelorden, växla Matcha till <strong>något ord</strong> eller inkludera mer omfattning.</p>
     </div>
 
-    <div class="footnote">Mockup — illustrative data. Search, folder roll-up, cross-site move, and label application are powered by <b>Langate's production-hardened shared components</b>.</div>
+    <div class="footnote">Mockup — illustrativa data. Sökning, hopslagning av mappar, flytt mellan webbplatser och tillämpning av etiketter drivs av <b>Langates produktionshärdade delade komponenter</b>.</div>
 </section>
 
 <!-- ═══════════════ SCREEN 3: Activity ═══════════════ -->
-<section id="activity" class="screen" role="tabpanel" aria-label="Activity">
+<section id="activity" class="screen" role="tabpanel" aria-label="Aktivitet">
     <div class="page-head">
         <div>
-            <div class="label-kicker">Audit trail</div>
-            <h1 class="page-title">Activity</h1>
-            <p class="page-sub">Every move is logged — who authorised it, what was moved, from where, into which secure area, which label was applied, and what was skipped. Full audit trail for compliance.</p>
+            <div class="label-kicker">Granskningslogg</div>
+            <h1 class="page-title">Aktivitet</h1>
+            <p class="page-sub">Varje flytt loggas — vem som godkände den, vad som flyttades, varifrån, till vilket säkert område, vilken etikett som tillämpades och vad som hoppades över. Fullständig granskningslogg för efterlevnad.</p>
         </div>
     </div>
     <div class="ff-panel ff-strong">
-        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">moved <b>24 items</b> from Finance › Compensation 2025 → <b>HR</b>, applied <b>Confidential · HR</b> · <b>0 skipped</b></span><span class="when">2 min ago</span></div>
-        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">provisioned secure area <b>Legal &amp; Contracts</b> with label <b>Confidential · Legal</b></span><span class="when">1 h ago</span></div>
-        <div class="act-row"><span class="bot-icon" role="img" aria-label="Scheduled job"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.4" stroke="#00517e" stroke-width="1.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.4 5.4l2.1 2.1M16.5 16.5l2.1 2.1M18.6 5.4l-2.1 2.1M7.5 16.5l-2.1 2.1" stroke="#00517e" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="who">Scheduled job</span><span class="what">re-ran saved search <b>"HR keywords"</b> — 3 new candidates found (discovery only, no move)</span><span class="when">3 h ago</span></div>
-        <div class="act-row"><span class="avatar-img av-sm av-erik" role="img" aria-label="Erik Sund"></span><span class="who">Erik Sund</span><span class="what">moved <b>4 items</b> to Finance · <b>2 skipped</b> (legal hold, left in place)</span><span class="when">Yesterday</span></div>
-        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">moved <b>112 items</b> from 14 OneDrive accounts → <b>HR</b> · approved by <b>M. Ek</b></span><span class="when">2 days ago</span></div>
+        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">flyttade <b>24 objekt</b> från Ekonomi › Compensation 2025 → <b>HR</b>, tillämpade <b>Konfidentiell · HR</b> · <b>0 överhoppade</b></span><span class="when">2 min sedan</span></div>
+        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">etablerade säkert område <b>Juridik &amp; avtal</b> med etikett <b>Konfidentiell · Juridik</b></span><span class="when">1 tim sedan</span></div>
+        <div class="act-row"><span class="bot-icon" role="img" aria-label="Schemalagt jobb"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.4" stroke="#00517e" stroke-width="1.6"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.4 5.4l2.1 2.1M16.5 16.5l2.1 2.1M18.6 5.4l-2.1 2.1M7.5 16.5l-2.1 2.1" stroke="#00517e" stroke-width="1.5" stroke-linecap="round"/></svg></span><span class="who">Schemalagt jobb</span><span class="what">körde om sparad sökning <b>”HR-nyckelord”</b> — 3 nya kandidater hittades (endast sökning, ingen flytt)</span><span class="when">3 tim sedan</span></div>
+        <div class="act-row"><span class="avatar-img av-sm av-erik" role="img" aria-label="Erik Sund"></span><span class="who">Erik Sund</span><span class="what">flyttade <b>4 objekt</b> till Ekonomi · <b>2 överhoppade</b> (juridisk kvarhållning, kvar på plats)</span><span class="when">Igår</span></div>
+        <div class="act-row"><span class="avatar-img av-sm av-anna" role="img" aria-label="Anna Lund"></span><span class="who">Anna Lund</span><span class="what">flyttade <b>112 objekt</b> från 14 OneDrive-konton → <b>HR</b> · godkänt av <b>M. Ek</b></span><span class="when">2 dagar sedan</span></div>
     </div>
-    <div class="footnote">Audit entries are written to a SharePoint list and mirrored to the Microsoft&nbsp;365 unified audit log for tamper-evidence.</div>
+    <div class="footnote">Granskningsposter skrivs till en SharePoint-lista och speglas till den enhetliga granskningsloggen i Microsoft&nbsp;365 för manipuleringsskydd.</div>
 </section>
 </main>
 
 <!-- ═══ Sticky action bar ═══ -->
-<div class="action-bar" id="actionBar" role="region" aria-label="Move selection">
+<div class="action-bar" id="actionBar" role="region" aria-label="Flytta markering">
     <div>
-        <div class="sel-count"><b id="selN">0</b> items selected</div>
-        <div class="sel-sub" id="selSub">in 0 folders across 0 locations</div>
+        <div class="sel-count"><b id="selN">0</b> objekt markerade</div>
+        <div class="sel-sub" id="selSub">i 0 mappar på 0 platser</div>
     </div>
     <div class="spacer"></div>
-    <div class="ab-target">Destination <span class="ff-badge b-green" id="abTarget">HR · Confidential · HR</span></div>
-    <button class="ff-btn ghost sm" id="clearSel">Clear</button>
+    <div class="ab-target">Mål <span class="ff-badge b-green" id="abTarget">HR · Konfidentiell · HR</span></div>
+    <button class="ff-btn ghost sm" id="clearSel">Rensa</button>
     <button class="ff-btn primary" id="moveBtn">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Move to secure area…
+        Flytta till säkert område…
     </button>
 </div>
 
 <!-- ═══ Confirm dialog ═══ -->
 <div class="overlay" id="confirmOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-        <h3 id="confirmTitle">Move to secure area?</h3>
-        <p>Review exactly what will change before you commit.</p>
+        <h3 id="confirmTitle">Flytta till säkert område?</h3>
+        <p>Granska exakt vad som ändras innan du bekräftar.</p>
         <ul class="confirm-list">
-            <li><span class="k">Items to move</span><span class="v" id="cItems">0</span></li>
-            <li><span class="k">Folders · locations</span><span class="v" id="cScope">0 · 0</span></li>
-            <li><span class="k">Non-matching files carried along</span><span class="v" id="cCarry">0</span></li>
-            <li><span class="k">Destination</span><span class="v" id="cDest">HR</span></li>
-            <li><span class="k">Label applied on arrival</span><span class="v" id="cLabel">Confidential · HR</span></li>
+            <li><span class="k">Objekt att flytta</span><span class="v" id="cItems">0</span></li>
+            <li><span class="k">Mappar · platser</span><span class="v" id="cScope">0 · 0</span></li>
+            <li><span class="k">Filer utan träff som följer med</span><span class="v" id="cCarry">0</span></li>
+            <li><span class="k">Mål</span><span class="v" id="cDest">HR</span></li>
+            <li><span class="k">Etikett som tillämpas vid ankomst</span><span class="v" id="cLabel">Konfidentiell · HR</span></li>
         </ul>
-        <div class="warn-box"><strong>Access changes.</strong> Moved items leave their current location. Existing sharing links stop working and access becomes governed by the destination area's membership.</div>
-        <div class="warn-box stop"><strong>This cannot be undone.</strong> <span id="cHeldNote">Items on legal hold are excluded automatically and left in place.</span></div>
+        <div class="warn-box"><strong>Åtkomsten ändras.</strong> Flyttade objekt lämnar sin nuvarande plats. Befintliga delningslänkar slutar fungera och åtkomsten styrs av målområdets medlemskap.</div>
+        <div class="warn-box stop"><strong>Detta kan inte ångras.</strong> <span id="cHeldNote">Objekt med juridisk kvarhållning utesluts automatiskt och lämnas kvar på plats.</span></div>
         <div class="modal-actions">
-            <button class="ff-btn ghost sm" id="confirmCancel">Cancel</button>
-            <button class="ff-btn danger" id="confirmGo">Move <span id="cGoN">0</span> items</button>
+            <button class="ff-btn ghost sm" id="confirmCancel">Avbryt</button>
+            <button class="ff-btn danger" id="confirmGo">Flytta <span id="cGoN">0</span> objekt</button>
         </div>
     </div>
 </div>
@@ -810,18 +809,18 @@ body {
 <!-- ═══ Progress modal ═══ -->
 <div class="overlay" id="overlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <h3 id="modalTitle">Moving to HR</h3>
-        <p id="modalSub">Relocating items and applying the label. Sharing links to the original location will stop working.</p>
+        <h3 id="modalTitle">Flyttar till HR</h3>
+        <p id="modalSub">Omplacerar objekt och tillämpar etiketten. Delningslänkar till den ursprungliga platsen slutar fungera.</p>
         <div class="ff-progress"><div class="bar" id="bar"></div></div>
-        <div class="prog-line"><span id="progLabel">Preparing…</span><span id="progPct">0%</span></div>
+        <div class="prog-line"><span id="progLabel">Förbereder…</span><span id="progPct">0 %</span></div>
         <div class="prog-current" id="progCurrent" aria-live="polite"></div>
         <div class="prog-done" id="progDone">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#02b896" opacity="0.16"/><path d="M7.5 12.5l3 3 6-7" stroke="#017a64" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <div><span id="doneText">Done</span><div class="tally" id="doneTally"></div></div>
+            <div><span id="doneText">Klar</span><div class="tally" id="doneTally"></div></div>
         </div>
         <div class="modal-actions">
-            <button class="ff-btn ghost sm" id="cancelMove">Cancel remaining</button>
-            <button class="ff-btn ghost sm hidden" id="closeModal">Close</button>
+            <button class="ff-btn ghost sm" id="cancelMove">Avbryt återstående</button>
+            <button class="ff-btn ghost sm hidden" id="closeModal">Stäng</button>
         </div>
     </div>
 </div>
@@ -831,7 +830,7 @@ body {
 <script>
 // ── Helpers ────────────────────────────────────────────────
 function $(id) { return document.getElementById(id); }
-function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
 var toastTimer = null;
 function showToast(msg) {
@@ -871,7 +870,7 @@ function setStale() {
 function runSearch() {
     if (keywordCount() === 0) {
         $('kwValidation').classList.remove('hidden');
-        $('searchStatus').textContent = 'Add at least one keyword to search.';
+        $('searchStatus').textContent = 'Lägg till minst ett nyckelord att söka efter.';
         return;
     }
     $('kwValidation').classList.add('hidden');
@@ -879,9 +878,9 @@ function runSearch() {
     $('stateStart').classList.add('hidden');
     $('stateEmpty').classList.add('hidden');
     $('resultsWrap').classList.add('hidden');
-    $('runningSub').textContent = 'Searching the scope you selected for your keywords.';
+    $('runningSub').textContent = 'Söker i den omfattning du valt efter dina nyckelord.';
     $('stateRunning').classList.remove('hidden');
-    $('searchStatus').textContent = 'Scanning the tenant…';
+    $('searchStatus').textContent = 'Genomsöker organisationen…';
     clearSelection();
 
     if (runTimer) { clearTimeout(runTimer); }
@@ -910,20 +909,20 @@ function finishSearch() {
     if (locs === 0 || visibleFolders === 0) {
         $('resultsWrap').classList.add('hidden');
         $('stateEmpty').classList.remove('hidden');
-        $('searchStatus').textContent = 'No matches found.';
+        $('searchStatus').textContent = 'Inga träffar hittades.';
         return;
     }
 
     $('sumItems').textContent = matchedItems;
     $('sumLocs').textContent = locs;
     $('sumFolders').textContent = visibleFolders;
-    var cov = 'Scanned 214 sites';
-    if (scopeOn('onedrive')) { cov += ' · 96 OneDrives'; }
-    if (scopeOn('email')) { cov += ' · 84 mailboxes'; }
-    cov += ' in ' + ((scopeOn('onedrive') || scopeOn('email')) ? '41s' : '38s');
+    var cov = 'Genomsökte 214 webbplatser';
+    if (scopeOn('onedrive')) { cov += ' · 96 OneDrive'; }
+    if (scopeOn('email')) { cov += ' · 84 postlådor'; }
+    cov += ' på ' + ((scopeOn('onedrive') || scopeOn('email')) ? '41 s' : '38 s');
     $('sumCoverage').textContent = cov;
     $('resultsWrap').classList.remove('hidden');
-    $('searchStatus').textContent = matchedItems + ' items matched across ' + locs + ' locations.';
+    $('searchStatus').textContent = matchedItems + ' objekt matchade på ' + locs + ' platser.';
 }
 
 $('runSearch').addEventListener('click', runSearch);
@@ -955,7 +954,7 @@ function addKeyword() {
     if (word === '') { kwInput.focus(); return; }
     var chip = document.createElement('span');
     chip.className = 'ff-chip kw';
-    chip.innerHTML = word + ' <button class="x" aria-label="Remove keyword ' + word + '">×</button>';
+    chip.innerHTML = word + ' <button class="x" aria-label="Ta bort nyckelord ' + word + '">×</button>';
     $('kwBox').insertBefore(chip, kwInput);
     kwInput.value = '';
     $('kwValidation').classList.add('hidden');
@@ -976,7 +975,7 @@ document.querySelectorAll('.expander').forEach(function (ex) {
         var rows = $(ex.dataset.toggle);
         var open = rows.classList.toggle('open');
         ex.setAttribute('aria-expanded', open ? 'true' : 'false');
-        ex.textContent = open ? '▴ Hide items' : '▾ Show ' + rows.querySelectorAll('.file-row').length + ' items';
+        ex.textContent = open ? '▴ Dölj objekt' : '▾ Visa ' + rows.querySelectorAll('.file-row').length + ' objekt';
     });
 });
 
@@ -1037,7 +1036,7 @@ function updateSelection() {
     var folders = Object.keys(touched).length;
     var locCount = Object.keys(locs).length;
     $('selN').textContent = items;
-    $('selSub').textContent = 'in ' + plural(folders, 'folder') + ' across ' + plural(locCount, 'location');
+    $('selSub').textContent = 'i ' + plural(folders, 'mapp', 'mappar') + ' på ' + plural(locCount, 'plats', 'platser');
     actionBar.classList.toggle('show', items > 0);
     actionBar.dataset.items = items; actionBar.dataset.carried = carried;
     actionBar.dataset.folders = folders; actionBar.dataset.locs = locCount;
@@ -1088,7 +1087,7 @@ function clearSelection() {
 $('clearSel').addEventListener('click', clearSelection);
 
 function refreshSelAllLabel() {
-    $('selAllLabel').textContent = 'Select all selectable (' + selectableCards().length + ')';
+    $('selAllLabel').textContent = 'Markera alla valbara (' + selectableCards().length + ')';
 }
 
 // ── Confirm → move flow ────────────────────────────────────
@@ -1116,25 +1115,25 @@ $('confirmGo').addEventListener('click', function () {
     confirmOverlay.classList.remove('show');
     var d = currentDest();
     var total = parseInt(actionBar.dataset.items, 10) || 0;
-    $('modalTitle').textContent = 'Moving to ' + d.area;
-    $('modalSub').textContent = 'Relocating items and applying ' + d.label + '. Sharing links to the original location will stop working.';
+    $('modalTitle').textContent = 'Flyttar till ' + d.area;
+    $('modalSub').textContent = 'Omplacerar objekt och tillämpar ' + d.label + '. Delningslänkar till den ursprungliga platsen slutar fungera.';
     $('progDone').classList.remove('show');
     $('closeModal').classList.add('hidden');
     $('cancelMove').classList.remove('hidden');
-    $('bar').style.width = '0%'; $('progPct').textContent = '0%';
+    $('bar').style.width = '0%'; $('progPct').textContent = '0 %';
     cancelled = false;
     overlay.classList.add('show');
     var done = 0;
-    $('progLabel').textContent = 'Moving items…';
+    $('progLabel').textContent = 'Flyttar objekt…';
     moveTimer = setInterval(function () {
         if (cancelled) { return; }
         done += Math.max(1, Math.round(total / 22));
         if (done >= total) { done = total; }
         var pct = Math.round(done / total * 100);
         $('bar').style.width = pct + '%';
-        $('progPct').textContent = pct + '%';
-        $('progLabel').textContent = 'Moving ' + done + ' / ' + total;
-        $('progCurrent').textContent = '→ ' + sampleFiles[done % sampleFiles.length] + '  ·  applying label…';
+        $('progPct').textContent = pct + ' %';
+        $('progLabel').textContent = 'Flyttar ' + done + ' / ' + total;
+        $('progCurrent').textContent = '→ ' + sampleFiles[done % sampleFiles.length] + '  ·  tillämpar etikett…';
         if (done >= total) { clearInterval(moveTimer); finishMove(done, total, false); }
     }, 120);
 });
@@ -1142,14 +1141,14 @@ $('confirmGo').addEventListener('click', function () {
 function finishMove(movedCount, total, wasCancelled) {
     var skipped = 0; // legal-hold items were excluded up-front
     var remaining = total - movedCount;
-    $('progLabel').textContent = wasCancelled ? 'Stopped' : 'Complete';
+    $('progLabel').textContent = wasCancelled ? 'Stoppad' : 'Klar';
     $('progCurrent').textContent = '';
     $('doneText').textContent = wasCancelled
-        ? 'Stopped — ' + movedCount + ' of ' + total + ' items moved'
-        : 'Done — ' + movedCount + ' items secured, label applied';
+        ? 'Stoppad — ' + movedCount + ' av ' + total + ' objekt flyttade'
+        : 'Klar — ' + movedCount + ' objekt skyddade, etikett tillämpad';
     $('doneTally').textContent = wasCancelled
-        ? 'Moved ' + movedCount + ' · Not moved ' + remaining + ' · Skipped ' + skipped + ' (legal hold)'
-        : 'Moved ' + movedCount + ' · Skipped ' + skipped + ' · Failed 0';
+        ? 'Flyttade ' + movedCount + ' · Ej flyttade ' + remaining + ' · Överhoppade ' + skipped + ' (juridisk kvarhållning)'
+        : 'Flyttade ' + movedCount + ' · Överhoppade ' + skipped + ' · Misslyckade 0';
     $('progDone').classList.add('show');
     $('cancelMove').classList.add('hidden');
     $('closeModal').classList.remove('hidden');
@@ -1166,7 +1165,7 @@ $('cancelMove').addEventListener('click', function () {
 $('closeModal').addEventListener('click', function () {
     overlay.classList.remove('show');
     clearSelection();
-    showToast('Move complete — see Activity for the audit entry');
+    showToast('Flytten är klar — se Aktivitet för granskningsposten');
 });
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
@@ -1178,12 +1177,12 @@ document.addEventListener('keydown', function (e) {
 // ── Secondary actions ──────────────────────────────────────
 $('saveSearchBtn').addEventListener('click', function () {
     if (keywordCount() === 0) { $('kwValidation').classList.remove('hidden'); return; }
-    showToast('Search saved — the scheduled job will re-run it (discovery only)');
+    showToast('Sökningen sparad — det schemalagda jobbet kör om den (endast sökning)');
 });
 $('provisionBtn').addEventListener('click', function () {
     var name = $('newAreaName').value.trim();
     if (name === '') { $('newAreaName').focus(); return; }
-    showToast('Secure area “' + name + '” provisioning started…');
+    showToast('Etablering av säkert område ”' + name + '” har startat…');
 });
 
 // ── Init ───────────────────────────────────────────────────
