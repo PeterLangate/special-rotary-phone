@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MOSE — Quotation</title>
+<meta name="author" content="Langate AB">
+<meta name="description" content="MOSE (Move to Security) — quotation for [CUSTOMER]">
+<meta name="date" content="[TBD DATE]">
+<!-- No external font dependency: the document uses the system fallback stack
+     (Avenir / Helvetica / Arial) so it renders identically offline and as a PDF,
+     with no call-out to Google when a confidential quote is opened. -->
+<style>
+:root {
+    --primary:      #00517e;
+    --primary-teal: #537780;
+    --accent-green: #02B896;
+    --accent-gold:  #F5A623;
+    --accent-red:   #B55852;
+    --bg-subtle:    #ebf2f5;
+    --bg-grey:      #EAEAEC;
+    --text:         #4A4A4A;
+    --text-muted:   #888888;
+    --text-light:   #A0A0A0;
+    --border:       #DBE4EA;
+    --border-light: #E0E0E0;
+    --green-600:    #017a64;
+    --gold-700:     #c07800;
+}
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.6; color: var(--text);
+    background: #e8edf2;
+    -webkit-font-smoothing: antialiased;
+}
+.page {
+    width: 210mm; min-height: 297mm; background: #fff;
+    margin: 8mm auto; position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 9mm 10mm 22mm 13mm; }
+@media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control */
+h1, h2, h3 { break-after: avoid; }
+p, li, tr  { break-inside: avoid; }
+.note-box, .tip-box, .info-box, .warn-box, .feature-card, .two-col, table, .price-table, .sig-block { break-inside: avoid; }
+
+/* ── Header (banner) ── */
+.page-header { background: var(--primary); display: flex; align-items: stretch; height: 14mm;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.page-header-accent { width: 3mm; background: var(--accent-green); flex-shrink: 0; }
+.page-header-inner { flex: 1; padding: 0 8mm; display: flex; align-items: center; gap: 6mm; }
+.page-header-brand { color: #fff; font-size: 9.5pt; font-weight: 700; letter-spacing: 0.06em; }
+.page-header-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent-green); }
+.page-header-line { flex: 1; height: 1px; background: rgba(255,255,255,0.18); }
+.page-header-section { color: rgba(255,255,255,0.65); font-size: 7.5pt; font-weight: 500; }
+
+/* ── Footer ── */
+.page-footer { position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 3mm 10mm 3mm 13mm; display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); background: var(--bg-subtle);
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.page-footer-left  { font-size: 7.5pt; color: var(--text-muted); }
+.page-footer-right { font-size: 7.5pt; color: var(--primary-teal); font-weight: 600; }
+
+/* ── Typography ── */
+h1 { font-size: 19pt; font-weight: 800; color: var(--primary); margin: 6mm 0 1mm; }
+.chapter-num { display: block; font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent-green); margin-bottom: 2mm; }
+.chapter-rule { width: 100%; height: 2px; background: linear-gradient(90deg, var(--primary) 0%, var(--bg-subtle) 100%); margin: 3mm 0 6mm; }
+h2 { font-size: 12pt; font-weight: 700; color: var(--primary); margin: 7mm 0 2.5mm; display: flex; align-items: center; gap: 2mm; }
+h2::before { content: ''; display: inline-block; width: 3px; height: 12pt; background: var(--accent-green); border-radius: 2px; flex-shrink: 0; }
+h3 { font-size: 10.5pt; font-weight: 700; color: var(--primary); margin: 4mm 0 1.5mm; }
+p { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 4mm; }
+li { margin-bottom: 1.5mm; }
+strong { color: var(--primary); }
+.lead { font-size: 11.5pt; color: var(--text); line-height: 1.55; }
+
+/* ── Cover ── */
+.page-cover { min-height: 297mm; display: flex; flex-direction: column;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.cover-top-bar { background: var(--accent-green); height: 3mm; }
+.cover-body { background: var(--primary); flex: 1; padding: 20mm 18mm 14mm; display: flex; flex-direction: column; justify-content: space-between; color: #fff; }
+.cover-logo-area { display: flex; align-items: center; gap: 4px; }
+.cover-logo-text { font-size: 15pt; font-weight: 800; color: #fff; }
+.cover-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent-green); margin-top: 7px; }
+.cover-mid { }
+.cover-kicker { font-size: 9pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent-green); margin-bottom: 5mm; }
+.cover-title { font-size: 40pt; font-weight: 800; line-height: 1.05; }
+.cover-sub { font-size: 15pt; font-weight: 300; color: rgba(255,255,255,0.62); margin-top: 5mm; max-width: 130mm; }
+.cover-divider { width: 16mm; height: 3px; background: var(--accent-green); margin: 8mm 0; }
+.cover-prepared { font-size: 10pt; color: rgba(255,255,255,0.85); line-height: 1.9; }
+.cover-prepared .k { color: rgba(255,255,255,0.45); display: inline-block; width: 30mm; }
+.cover-foot { display: flex; justify-content: space-between; font-size: 8.5pt; color: rgba(255,255,255,0.4); border-top: 1px solid rgba(255,255,255,0.12); padding-top: 5mm; }
+
+/* ── Boxes ── */
+.note-box { background: #fff8e6; border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; }
+.tip-box  { background: #e6faf6; border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; }
+.info-box { background: var(--bg-subtle); border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; }
+
+/* ── Two column feature cards ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card { background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 5px; padding: 4mm 5mm; }
+.feature-card h3 { margin-top: 0; display: flex; align-items: center; gap: 2mm; }
+.feature-card .num { display: inline-grid; place-items: center; width: 6mm; height: 6mm; border-radius: 50%; background: var(--accent-green); color: #fff; font-size: 9pt; font-weight: 800; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.feature-card p { font-size: 9.5pt; margin-bottom: 0; color: var(--text); }
+
+/* ── Steps ── */
+.step-list { counter-reset: step; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before { content: counter(step); background: var(--primary); color: #fff; font-size: 8pt; font-weight: 700;
+    min-width: 5.5mm; height: 5.5mm; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.5mm; flex-shrink: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.8pt; line-height: 1.4; }
+th { background: var(--primary); color: #fff; text-align: left; padding: 2.5mm 3mm; font-size: 8.5pt; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.04em; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+td { padding: 2.5mm 3mm; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:nth-child(even) td { background: #f6f9fb; }
+.price-table td.amt, .price-table th.amt { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.price-table .sub td { font-weight: 700; color: var(--primary); background: var(--bg-subtle); border-top: 1px solid var(--border); }
+.price-table .total td { font-weight: 800; color: var(--primary); background: #e6faf6; font-size: 11pt; border-top: 2px solid var(--accent-green); }
+.tbd { color: var(--gold-700); font-weight: 700; background: #fff8e6; padding: 0 4px; border-radius: 3px; }
+
+/* ── Badges ── */
+.badge { display: inline-block; font-size: 7.5pt; font-weight: 700; padding: 0.5mm 2mm; border-radius: 10px; letter-spacing: 0.04em; text-transform: uppercase; }
+.badge-green { background: #e6faf6; color: var(--green-600); }
+.badge-blue  { background: var(--bg-subtle); color: var(--primary); }
+.badge-gold  { background: #fff8e6; color: var(--gold-700); }
+
+/* ── Signature ── */
+.sig-block { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; margin-top: 10mm; }
+.sig-line { border-bottom: 1px solid var(--text); height: 12mm; }
+.sig-label { font-size: 8.5pt; color: var(--text-muted); margin-top: 1.5mm; }
+
+.meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 1mm 6mm; font-size: 9.5pt; margin: 4mm 0; }
+.meta-grid .k { color: var(--text-muted); font-weight: 600; }
+.reuse-list { list-style: none; margin: 2mm 0; padding: 0; }
+.reuse-list li { display: flex; align-items: baseline; gap: 3mm; margin-bottom: 1.5mm; font-size: 9.8pt; }
+.reuse-list .comp { font-family: 'DM Sans', monospace; font-weight: 700; color: var(--primary); min-width: 42mm; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="page page-cover">
+    <div class="cover-top-bar"></div>
+    <div class="cover-body">
+        <div class="cover-logo-area"><span class="cover-logo-text">Langate</span><span class="cover-logo-dot"></span></div>
+        <div class="cover-mid">
+            <div class="cover-kicker">Quotation &middot; Sensitivity-label protection</div>
+            <div class="cover-title">MOSE</div>
+            <div class="cover-sub">Move to Security — make Microsoft&nbsp;365 sensitivity labels simple to adopt across your entire tenant.</div>
+            <div class="cover-divider"></div>
+            <div class="cover-prepared">
+                <div><span class="k">Prepared for</span> <strong style="color:#fff">[CUSTOMER NAME]</strong></div>
+                <div><span class="k">Attention</span> [CONTACT NAME], [ROLE]</div>
+                <div><span class="k">Quotation no.</span> [TBD QUOTE-NO]</div>
+                <div><span class="k">Date</span> [TBD DATE]</div>
+                <div><span class="k">Valid until</span> [TBD DATE + 30 days]</div>
+            </div>
+        </div>
+        <div class="cover-foot">
+            <div>Langate AB &middot; langate.se</div>
+            <div>Quotation &mdash; MOSE v1 &middot; Confidential</div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 2 — Introduction ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Introduction</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 1</span>The opportunity</h1>
+        <div class="chapter-rule"></div>
+
+        <p class="lead">Many organisations want the protection that Microsoft&nbsp;365 <strong>sensitivity labels</strong> provide — encryption, access control, and a clear audit trail — but adoption stalls. The labels exist in the tenant, yet sensitive material stays scattered across hundreds of SharePoint sites and personal OneDrive accounts, unlabelled and unprotected.</p>
+
+        <p><strong>MOSE — Move to Security</strong> — closes that gap. It gives your administrators a guided way to <strong>create protected areas</strong> and to <strong>find and consolidate sensitive content</strong> into them, so a label is applied automatically the moment content arrives. What is normally a manual, error-prone project becomes a repeatable, auditable workflow.</p>
+
+        <div class="tip-box"><strong>In one sentence:</strong> MOSE lets you set up a secure SharePoint area with a sensitivity label, search the whole tenant for the words that describe your sensitive content, and move what you approve into that area — where it is protected on arrival.</div>
+
+        <h2>Who this quotation is for</h2>
+        <p>This proposal is prepared for <strong>[CUSTOMER NAME]</strong> following our discussion about simplifying sensitivity-label adoption across your Microsoft&nbsp;365 tenant. It outlines what MOSE does, how we deliver it, and the structure of the investment. Commercial figures are shown as placeholders and will be confirmed with you before any commitment.</p>
+
+        <div class="note-box"><strong>Note:</strong> all amounts in this document are marked <span class="tbd">[TBD]</span> and are placeholders only. Currency is Swedish kronor (SEK). Final pricing, model, and scope will be agreed jointly.</div>
+
+        <h2>Why Langate</h2>
+        <p>MOSE is built on the same proven Microsoft&nbsp;365 platform that powers Langate's established products — including <strong>ISO</strong> and <strong>Core Tenant Security</strong>. It reuses battle-tested Langate components for SharePoint access, search, sensitivity labels, site provisioning, and content movement, rather than being written from scratch. That means <strong>lower risk, faster delivery, and a shorter path to production</strong>.</p>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 3 — What MOSE does ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Solution</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 2</span>What MOSE does</h1>
+        <div class="chapter-rule"></div>
+
+        <p>MOSE delivers two capabilities that work together. An administrator uses them in sequence: first define where protected content should live, then find the content that belongs there.</p>
+
+        <div class="two-col">
+            <div class="feature-card">
+                <h3><span class="num">1</span>Create a secure area</h3>
+                <p>MOSE provisions a new SharePoint site and applies a chosen sensitivity label as its default. From then on, <strong>everything added to that area is labelled and protected automatically</strong> — no per-file action needed. Create one area per category, e.g. <em>HR</em>, <em>Finance</em>, <em>Legal</em>.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="num">2</span>Discover &amp; move</h3>
+                <p>MOSE searches <strong>every SharePoint site and OneDrive</strong> in the tenant for the words that describe sensitive material. Results are presented for review; the administrator decides what to move into the secure area, where the label is applied on arrival.</p>
+            </div>
+        </div>
+
+        <h2>A worked example</h2>
+        <p>An HR administrator sets up a secure area named <strong>HR</strong> with the <span class="badge badge-green">Confidential · HR</span> label. They then search the tenant for <em>HR, salaries, bonuses, incentives, severance</em>. MOSE returns every matching item across all sites and OneDrive accounts.</p>
+
+        <div class="info-box"><strong>Folder-level intelligence:</strong> if a folder contains a match — for example a document with the word <em>bonus</em> — MOSE suggests <strong>the whole folder</strong> as a move candidate, so related material is not left behind. The administrator can accept the folder, or drill in and pick individual items.</div>
+
+        <p>The administrator reviews the suggestions, selects what should be protected, and clicks <strong>Move to security</strong>. MOSE relocates the approved content into the HR area, the sensitivity label is applied automatically, and every action is written to an audit log.</p>
+
+        <div class="tip-box"><strong>The user stays in control.</strong> MOSE never moves anything on its own — it discovers and suggests; a person approves. Items under legal hold or other constraints are flagged and left in place.</div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 4 — How we deliver ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Delivery &amp; scope</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 3</span>How we deliver</h1>
+        <div class="chapter-rule"></div>
+
+        <h2>Architecture</h2>
+        <p>MOSE is delivered as two connected parts that share the same proven code:</p>
+        <ul>
+            <li><strong>SharePoint dashboard</strong> — a SharePoint Framework (SPFx) web part where administrators create secure areas, run searches, review candidates, and trigger moves.</li>
+            <li><strong>Azure Function companion</strong> — a scheduled background service that re-runs saved searches to catch new matching content over time, so protection stays current without manual effort.</li>
+        </ul>
+
+        <h2>Built on proven components</h2>
+        <p>Rather than building from scratch, MOSE assembles Langate's existing, production-hardened shared components — the same libraries that power our established Microsoft&nbsp;365 products. Every capability MOSE needs is already solved and battle-tested:</p>
+        <ul>
+            <li><strong>Secure-area provisioning</strong> — creating the SharePoint site and setting its default sensitivity label</li>
+            <li><strong>Tenant search</strong> — finding matching content across SharePoint sites and OneDrive</li>
+            <li><strong>Content movement</strong> — relocating approved items into the secure area and applying the label</li>
+            <li><strong>Configuration &amp; audit</strong> — storing settings and a full, tamper-evident activity log</li>
+        </ul>
+        <p>This reuse is the core of the reduced risk and faster timeline. A detailed technical component map is available to your team as a separate addendum under NDA.</p>
+
+        <h2>Implementation stages</h2>
+        <ol class="step-list">
+            <li><strong>Discovery &amp; assessment</strong> — confirm your labels, target areas, and keyword sets; validate tenant permissions.</li>
+            <li><strong>Deployment</strong> — install the MOSE dashboard and Azure Function into your tenant; configure app-only access.</li>
+            <li><strong>Secure-area setup</strong> — provision your initial protected areas and default labels.</li>
+            <li><strong>Pilot move</strong> — run a controlled discovery and move on a limited scope to validate results.</li>
+            <li><strong>Rollout &amp; handover</strong> — full-scale use, administrator training, and documentation.</li>
+        </ol>
+
+        <div class="note-box"><strong>Timeline:</strong> indicative delivery is <span class="tbd">[TBD]</span> weeks from kick-off, depending on tenant size and the number of secure areas. A firm schedule is set during Discovery.</div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 5 — Investment ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Investment</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 4</span>Investment</h1>
+        <div class="chapter-rule"></div>
+
+        <p>The table below sets out the structure of the investment. All amounts are placeholders in Swedish kronor (SEK) and will be confirmed with you; the commercial model (one-time, subscription, or a combination) is open and will be agreed jointly.</p>
+
+        <table class="price-table">
+            <thead>
+                <tr><th>Item</th><th>Description</th><th class="amt">Amount (SEK)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Discovery &amp; assessment</td><td>Labels, target areas, keyword sets, permissions</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Deployment</td><td>MOSE dashboard + Azure Function into your tenant</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Secure-area setup</td><td>Per protected area provisioned (× <span class="tbd">[TBD]</span>)</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Migration / move execution</td><td>Guided discovery and move across the tenant</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Training &amp; handover</td><td>Administrator training and documentation</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr class="sub"><td colspan="2">One-time subtotal</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Ongoing service <span class="badge badge-gold">Optional</span></td><td>Scheduled re-scan, support &amp; updates (per year)</td><td class="amt"><span class="tbd">[TBD]</span>/yr</td></tr>
+                <tr class="sub"><td colspan="2">VAT (moms 25%)</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr class="total"><td colspan="2">Total (incl. VAT)</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+            </tbody>
+        </table>
+
+        <h2>What is included</h2>
+        <div class="two-col">
+            <div class="feature-card"><p><strong>Included:</strong> deployment into one tenant, initial secure areas, guided migration, audit logging, administrator training, and documentation.</p></div>
+            <div class="feature-card"><p><strong>Not included (unless agreed):</strong> Microsoft&nbsp;365 licensing, sensitivity-label policy design, and content remediation beyond the agreed scope.</p></div>
+        </div>
+
+        <div class="info-box"><strong>Prerequisites:</strong> a Microsoft&nbsp;365 tenant with sensitivity labels published, and administrator consent for MOSE's app registration. These are confirmed during Discovery.</div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 6 — Security & compliance ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Security &amp; compliance</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 5</span>Security &amp; compliance</h1>
+        <div class="chapter-rule"></div>
+
+        <p class="lead">MOSE is granted broad reach over your content by design — it must be able to search every site and move approved material. We treat that trust as the core of the engagement. This section sets out how that access is scoped, protected, logged, and kept inside your control.</p>
+
+        <h2>Runs inside your tenant</h2>
+        <p>Both parts of MOSE — the SharePoint dashboard and the Azure&nbsp;Function companion — are deployed into <strong>your own Microsoft&nbsp;365 tenant and Azure subscription</strong>. Your content is read, indexed, and moved <strong>within your tenant</strong>; it is never copied to Langate systems or any third party. Microsoft (as your existing cloud provider) is the only sub-processor. Data residency follows your tenant's region.</p>
+
+        <h2>Least-privilege access</h2>
+        <p>MOSE runs as a single app registration using app-only access with a certificate credential stored in <strong>Azure Key&nbsp;Vault</strong>. Only the permissions below are requested; the exact scopes are confirmed and consented during Discovery, and are scoped to the sites in play wherever your policies allow it.</p>
+        <table>
+            <thead>
+                <tr><th>Capability</th><th>Purpose</th><th>Scope</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Read content</td><td>Discover candidates across sites and OneDrive</td><td class="amt"><span class="tbd">[TBD — confirmed in Discovery]</span></td></tr>
+                <tr><td>Write / move content</td><td>Relocate approved items into secure areas</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Provision site</td><td>Create the secure-area SharePoint site</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+                <tr><td>Apply sensitivity label</td><td>Label the secure area and moved content</td><td class="amt"><span class="tbd">[TBD]</span></td></tr>
+            </tbody>
+        </table>
+        <div class="note-box"><strong>Credential hygiene:</strong> app credentials live in Key&nbsp;Vault, are rotated on an agreed schedule, and MOSE's own activity is visible to your security team through the tenant's standard Microsoft&nbsp;365 audit stream — so the tool that moves content is itself monitored.</div>
+
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 7 — Security & compliance (cont.) ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Security &amp; compliance</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h2 style="margin-top:0">Safe by construction</h2>
+        <div class="two-col">
+            <div class="feature-card">
+                <h3>Human approves every move</h3>
+                <p>MOSE discovers and suggests; a person selects and confirms. Nothing moves autonomously. High-impact scopes can require a second approver.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Label verified on arrival</h3>
+                <p>The move completes only once the sensitivity label is confirmed applied. If labelling fails, the action is rolled back and reported — never left silently unprotected.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Holds respected</h3>
+                <p>Items under legal hold, retention, or other constraints are detected, flagged, and left in place rather than moved.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Sharing reviewed</h3>
+                <p>Existing sharing links on moved items are surfaced for remediation, so "protected" does not hide a still-open link.</p>
+            </div>
+        </div>
+        <h2>Audit trail</h2>
+        <p>Every action — who, what, source, destination, label applied, timestamp, and outcome — is written to an append-only audit log. Records are retained for an agreed period and can be exported for your compliance evidence.</p>
+
+        <div class="info-box"><strong>Discovery is best-effort, not a guarantee.</strong> Keyword search finds indexed, text-bearing content; scanned images, unindexed files, and material outside the chosen keywords may not surface. MOSE reduces exposure and makes it auditable — it does not claim to locate every sensitive item in the tenant.</div>
+
+        <div class="tip-box"><strong>Before we start:</strong> we provide a short security addendum — requested permissions, a data-flow diagram, credential storage, and a Data Processing Agreement — for your security team to review alongside this quotation.</div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+
+<!-- ══════════ PAGE 8 — Terms & acceptance ══════════ -->
+<div class="page">
+    <div class="page-header">
+        <div class="page-header-accent"></div>
+        <div class="page-header-inner">
+            <div class="page-header-brand">Langate &middot; MOSE Quotation</div>
+            <div class="page-header-dot"></div>
+            <div class="page-header-line"></div>
+            <div class="page-header-section">Terms &amp; acceptance</div>
+        </div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1><span class="chapter-num">Section 6</span>Terms &amp; acceptance</h1>
+        <div class="chapter-rule"></div>
+
+        <h2>Terms</h2>
+        <table>
+            <tr><td style="width:38mm; font-weight:600; color:var(--primary)">Validity</td><td>This quotation is valid until <span class="tbd">[TBD DATE]</span>.</td></tr>
+            <tr><td style="font-weight:600; color:var(--primary)">Currency</td><td>All amounts in Swedish kronor (SEK). VAT (moms) at 25% shown separately.</td></tr>
+            <tr><td style="font-weight:600; color:var(--primary)">Payment terms</td><td><span class="tbd">[TBD]</span> — e.g. net 30 days from invoice.</td></tr>
+            <tr><td style="font-weight:600; color:var(--primary)">Delivery</td><td>Indicative <span class="tbd">[TBD]</span> weeks from kick-off; firmed during Discovery.</td></tr>
+            <tr><td style="font-weight:600; color:var(--primary)">Data &amp; privacy</td><td>MOSE runs inside your tenant; content is not sent to third parties. See Section&nbsp;5 and the security addendum. A Data Processing Agreement is provided.</td></tr>
+        </table>
+
+        <h2>Next step</h2>
+        <p>To proceed, sign below or reply to confirm, and we will schedule the Discovery session to finalise scope, secure areas, and the commercial model.</p>
+
+        <div class="sig-block">
+            <div>
+                <div class="sig-line"></div>
+                <div class="sig-label">For [CUSTOMER NAME] — name, title, date</div>
+            </div>
+            <div>
+                <div class="sig-line"></div>
+                <div class="sig-label">For Langate AB — name, title, date</div>
+            </div>
+        </div>
+
+        <div class="tip-box" style="margin-top:12mm"><strong>Questions?</strong> Contact [LANGATE CONTACT NAME], [ROLE] &middot; [EMAIL] &middot; [PHONE] &middot; Langate AB, langate.se</div>
+
+        <div class="note-box"><strong>Reminder — placeholders to complete before sending:</strong> customer &amp; contact names, quotation number, dates, all <span class="tbd">[TBD]</span> amounts, number of secure areas, payment terms, delivery weeks, and Langate contact details.</div>
+    </div>
+    <div class="page-footer">
+        <div class="page-footer-left">[CUSTOMER NAME] &middot; MOSE Quotation</div>
+        <div class="page-footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+</body>
+</html>
