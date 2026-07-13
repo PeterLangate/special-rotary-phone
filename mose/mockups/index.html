@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOSE mockups — index</title>
+<style>
+/*
+  MOSE mockups hub — links to every current mockup in this folder.
+  Langate Glass design system: the --ff-* tokens + aurora backdrop are reused
+  verbatim from quote-sites-mockup so the hub is visually consistent with the
+  product mockups. Pure static links (no JavaScript) — nothing can throw.
+*/
+:root{
+  --ff-primary:#00517e; --ff-primary-700:#013d5f; --ff-primary-900:#04293f;
+  --ff-primary-300:#2b86b8; --ff-teal:#537780; --ff-navy:#0b3ebe;
+  --ff-green:#02b896; --ff-green-600:#017a64; --ff-green-50:#e6faf6;
+  --ff-gold:#f5a623; --ff-gold-700:#8a5a00; --ff-gold-50:#fff8e6;
+  --ff-red:#b55852; --ff-red-700:#973c37; --ff-red-50:#fbeeed;
+  --ff-ink:#1d3a4b; --ff-ink-strong:#00517e; --ff-muted:#4f6b7c; --ff-faint:#7d94a2;
+  --ff-line:rgba(0,81,126,.13); --ff-line-soft:rgba(0,81,126,.07);
+  --ff-glass:rgba(255,255,255,.66); --ff-glass-strong:rgba(255,255,255,.82);
+  --ff-glass-blur:saturate(155%) blur(20px); --ff-glass-blur-lg:saturate(170%) blur(28px);
+  --ff-glass-hi:inset 0 1px 0 rgba(255,255,255,.75);
+  --ff-glass-ring:rgba(255,255,255,.6); --ff-glass-edge:rgba(0,81,126,.10);
+  --ff-elev-1:0 1px 2px rgba(2,38,58,.05),0 8px 22px rgba(2,38,58,.07);
+  --ff-elev-2:0 2px 8px rgba(2,38,58,.10),0 22px 60px rgba(2,38,58,.18);
+  --ff-glow-blue:0 0 0 3px rgba(0,81,126,.18);
+  --ff-r-sm:9px; --ff-r-md:13px; --ff-r-lg:17px; --ff-r-xl:22px; --ff-r-pill:999px;
+  --ff-t-fast:140ms ease-out; --ff-t-mid:240ms cubic-bezier(.4,0,.2,1);
+  --ff-aurora:
+    radial-gradient(118% 120% at 0% 0%, rgba(2,184,150,.22), transparent 46%),
+    radial-gradient(120% 120% at 100% 2%, rgba(13,62,190,.16), transparent 52%),
+    radial-gradient(100% 100% at 100% 100%, rgba(0,81,126,.12), transparent 60%),
+    linear-gradient(157deg,#e9f4f8 0%,#dde9f0 48%,#e8f6f2 100%);
+  --ff-font:'DM Sans',Avenir,'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  min-height:100vh; color:var(--ff-ink); font-family:var(--ff-font);
+  font-size:15px; line-height:1.5; background:var(--ff-aurora); background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{ line-height:1.2; text-wrap:balance; color:var(--ff-ink-strong); }
+:focus-visible{ outline:2px solid var(--ff-green); outline-offset:3px; border-radius:6px; }
+
+/* top bar */
+.topbar{
+  display:flex; align-items:center; gap:16px; padding:12px 24px; min-height:60px;
+  background:var(--ff-glass-strong); -webkit-backdrop-filter:var(--ff-glass-blur-lg); backdrop-filter:var(--ff-glass-blur-lg);
+  border-bottom:1px solid var(--ff-glass-edge); position:sticky; top:0; z-index:30; box-shadow:var(--ff-elev-1);
+}
+.brand{ display:flex; align-items:center; gap:12px; font-weight:700; letter-spacing:-.01em; color:var(--ff-ink-strong); }
+.brand .mark{
+  width:38px; height:38px; border-radius:11px; display:grid; place-items:center; color:#fff; font-weight:800; font-size:18px;
+  background:linear-gradient(155deg,var(--ff-primary-300),var(--ff-primary)); box-shadow:var(--ff-elev-1);
+}
+.brand .nm{ font-size:18px; line-height:1.05; }
+.brand small{ display:block; font-weight:500; color:var(--ff-muted); font-size:11.5px; letter-spacing:.02em; }
+.badge{
+  margin-left:auto; font-size:11px; font-weight:600; color:var(--ff-gold-700); background:var(--ff-gold-50);
+  border:1px solid rgba(138,90,0,.22); padding:5px 12px; border-radius:var(--ff-r-pill);
+}
+
+/* layout */
+.wrap{ max-width:1120px; margin:0 auto; padding:38px 24px 64px; }
+.hero{ margin-bottom:30px; }
+.hero .eyebrow{ font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ff-faint); }
+.hero h1{ font-size:34px; font-weight:800; letter-spacing:-.015em; margin-top:6px; }
+.hero p{ color:var(--ff-muted); font-size:15.5px; max-width:70ch; margin-top:10px; }
+
+/* flow strip */
+.flow{ display:flex; align-items:stretch; flex-wrap:wrap; gap:10px; margin-top:22px; }
+.flow .step{
+  display:flex; align-items:center; gap:10px; padding:10px 15px; border-radius:var(--ff-r-pill);
+  background:var(--ff-glass); -webkit-backdrop-filter:var(--ff-glass-blur); backdrop-filter:var(--ff-glass-blur);
+  border:1px solid var(--ff-glass-ring); box-shadow:var(--ff-elev-1); font-size:13.5px; font-weight:600; color:var(--ff-ink);
+}
+.flow .n{ width:22px; height:22px; border-radius:50%; display:grid; place-items:center; font-size:12px; font-weight:800; color:#fff; background:var(--ff-green); }
+.flow .arrow{ display:flex; align-items:center; color:var(--ff-faint); font-size:18px; }
+
+/* groups */
+.group{ margin-top:38px; }
+.group-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:16px; }
+.group-head h2{ font-size:19px; font-weight:800; letter-spacing:-.01em; }
+.group-head .hint{ font-size:13px; color:var(--ff-muted); }
+
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); gap:20px; }
+
+.card{
+  position:relative; display:flex; flex-direction:column; overflow:hidden; border-radius:var(--ff-r-lg);
+  background:var(--ff-glass-strong); -webkit-backdrop-filter:var(--ff-glass-blur-lg); backdrop-filter:var(--ff-glass-blur-lg);
+  border:1px solid var(--ff-glass-ring); box-shadow:var(--ff-glass-hi),var(--ff-elev-1);
+  transition:transform var(--ff-t-mid), box-shadow var(--ff-t-mid);
+}
+.card:hover{ transform:translateY(-4px); box-shadow:var(--ff-glass-hi),var(--ff-elev-2); }
+.card:focus-within{ box-shadow:var(--ff-glow-blue),var(--ff-elev-2); }
+.thumb{ aspect-ratio:16/10; border-bottom:1px solid var(--ff-glass-edge); position:relative; overflow:hidden; background:linear-gradient(157deg,#eef6fa,#e2edf3); }
+.thumb svg{ position:absolute; inset:0; width:100%; height:100%; }
+.card-body{ padding:16px 18px 18px; display:flex; flex-direction:column; gap:9px; flex:1; }
+.tags{ display:flex; gap:6px; flex-wrap:wrap; }
+.tag{ font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ff-primary); background:#ebf2f5; padding:3px 9px; border-radius:var(--ff-r-pill); }
+.tag.accent{ color:var(--ff-green-600); background:var(--ff-green-50); }
+.card h3{ font-size:17px; }
+.card h3 a{ color:var(--ff-ink-strong); text-decoration:none; }
+.card h3 a::after{ content:""; position:absolute; inset:0; }  /* whole card is the primary link */
+.card p{ color:var(--ff-muted); font-size:13.5px; margin:0; }
+.card-foot{ margin-top:auto; display:flex; align-items:center; gap:16px; padding-top:8px; }
+.open{ font-weight:700; color:var(--ff-primary); font-size:13.5px; }
+.card:hover .open{ color:var(--ff-primary-700); }
+.alt{ position:relative; z-index:2; font-size:13px; font-weight:600; color:var(--ff-primary); text-decoration:underline; text-underline-offset:2px; }
+.alt:hover{ color:var(--ff-primary-700); }
+
+footer{ margin-top:46px; padding-top:22px; border-top:1px solid var(--ff-line); color:var(--ff-muted); font-size:13px; }
+footer code{ font-family:'Cascadia Code',ui-monospace,Consolas,monospace; font-size:12px; background:#eef4f7; padding:1px 6px; border-radius:6px; color:var(--ff-primary-700); }
+
+@media (max-width:620px){
+  .hero h1{ font-size:28px; }
+  .wrap{ padding:28px 16px 48px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .card{ transition:none; }
+  .card:hover{ transform:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">M</span>
+    <span class="nm">MOSE<small>Move to Security</small></span>
+  </div>
+  <span class="badge">Mockups — no live actions</span>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Design prototypes</div>
+    <h1>MOSE mockups</h1>
+    <p>Everything MOSE — <strong>Move to Security</strong> — currently has as a clickable prototype. Pick a card to open it in this browser. Nothing here is live: no data is saved and no SharePoint, OneDrive or label is touched.</p>
+
+    <div class="flow" aria-label="The MOSE flow">
+      <span class="step"><span class="n">1</span> Create a secure area</span>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+      <span class="step"><span class="n">2</span> Find &amp; move sensitive content</span>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+      <span class="step"><span class="n">3</span> It lands in the right people&rsquo;s OneDrive</span>
+    </div>
+  </div>
+
+  <!-- ============ group: product app ============ -->
+  <section class="group">
+    <div class="group-head"><h2>The product</h2><span class="hint">the MOSE app itself</span></div>
+    <div class="grid">
+
+      <div class="card">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="MOSE app preview: sidebar and a list of secure areas">
+            <rect x="24" y="22" width="272" height="156" rx="13" fill="#ffffff" opacity=".95"/>
+            <rect x="24" y="22" width="272" height="30" rx="13" fill="#eef5f9"/>
+            <circle cx="41" cy="37" r="4" fill="#2b86b8"/><rect x="52" y="34" width="70" height="6" rx="3" fill="#cfe0ea"/>
+            <rect x="24" y="52" width="78" height="126" fill="#eaf2f6"/>
+            <rect x="36" y="66" width="54" height="9" rx="4.5" fill="#2b86b8"/><rect x="30" y="66" width="3" height="9" rx="1.5" fill="#02b896"/>
+            <rect x="36" y="84" width="46" height="8" rx="4" fill="#c3d5df"/>
+            <rect x="36" y="100" width="50" height="8" rx="4" fill="#c3d5df"/>
+            <rect x="118" y="66" width="120" height="11" rx="5" fill="#00517e"/>
+            <g>
+              <rect x="118" y="92" width="160" height="26" rx="7" fill="#f4f9fb" stroke="#e0ecf2"/>
+              <rect x="126" y="101" width="60" height="8" rx="4" fill="#b9cdd8"/>
+              <rect x="210" y="99" width="46" height="12" rx="6" fill="#e6faf6"/><rect x="216" y="103" width="34" height="4" rx="2" fill="#02b896"/>
+              <circle cx="270" cy="105" r="6" fill="#2b86b8"/>
+            </g>
+            <g>
+              <rect x="118" y="124" width="160" height="26" rx="7" fill="#f4f9fb" stroke="#e0ecf2"/>
+              <rect x="126" y="133" width="72" height="8" rx="4" fill="#b9cdd8"/>
+              <rect x="210" y="131" width="46" height="12" rx="6" fill="#fff8e6"/><rect x="216" y="135" width="34" height="4" rx="2" fill="#8a5a00"/>
+              <circle cx="270" cy="137" r="6" fill="#537780"/>
+            </g>
+            <g>
+              <rect x="118" y="156" width="160" height="16" rx="7" fill="#f4f9fb" stroke="#e0ecf2"/>
+              <rect x="126" y="160" width="52" height="8" rx="4" fill="#cddbe4"/>
+              <rect x="210" y="159" width="46" height="10" rx="5" fill="#fbeeed"/>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="tags"><span class="tag">The app</span><span class="tag accent">Langate Glass</span><span class="tag accent">Real kEditableTable</span></div>
+          <h3><a href="mose-app.html">MOSE — Move to Security</a></h3>
+          <p>The whole app in one place: browse <strong>Secure areas</strong> (friendly tiles or the admin grid), <strong>Discover &amp; move</strong> sensitive content into them, create areas in the <strong>staged wizard</strong>, and read a full <strong>Activity</strong> audit trail. Stages are edited in the shared <strong>kEditableTable</strong>.</p>
+          <div class="card-foot"><span class="open">Open app &rarr;</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ group: delivered ============ -->
+  <section class="group">
+    <div class="group-head"><h2>What lands on the team&rsquo;s PCs</h2><span class="hint">the Path B end state — need-to-know, per person</span></div>
+    <div class="grid">
+
+      <div class="card">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="Carlos's File Explorer preview: six synced stage folders, one Costing highlighted">
+            <rect x="24" y="22" width="272" height="156" rx="10" fill="#ffffff" opacity=".97"/>
+            <rect x="24" y="22" width="272" height="24" rx="10" fill="#f2f6f9"/>
+            <circle cx="284" cy="34" r="3.4" fill="#c34"/><circle cx="273" cy="34" r="3.4" fill="#cbb"/><circle cx="262" cy="34" r="3.4" fill="#cbb"/>
+            <rect x="40" y="30" width="120" height="7" rx="3.5" fill="#c8d6de"/>
+            <rect x="24" y="46" width="108" height="132" fill="#f7fafc"/>
+            <g font-family="Arial">
+              <!-- 6 synced folders, costing (row 2 & 5) accented gold -->
+              <g transform="translate(36,58)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="60" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,76)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#f5a623"/><rect x="22" y="4" width="66" height="6" rx="3" fill="#8a5a00"/></g>
+              <g transform="translate(36,94)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="58" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,112)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="62" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,130)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#f5a623"/><rect x="22" y="4" width="66" height="6" rx="3" fill="#8a5a00"/></g>
+              <g transform="translate(36,148)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="54" height="6" rx="3" fill="#9fb6c4"/></g>
+            </g>
+            <!-- file pane -->
+            <g font-family="Arial">
+              <rect x="140" y="52" width="146" height="12" rx="4" fill="#eef4f7"/>
+              <g transform="translate(148,74)"><rect width="13" height="16" rx="1.5" fill="#217346"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><path d="M10.6 16l1.6 1.6 3-3.2" stroke="#fff" stroke-width="1.2" fill="none"/><rect x="22" y="4" width="90" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,96)"><rect width="13" height="16" rx="1.5" fill="#217346"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><rect x="22" y="4" width="78" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,118)"><rect width="13" height="16" rx="1.5" fill="#2b579a"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><rect x="22" y="4" width="96" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,140)"><rect width="13" height="16" rx="1.5" fill="#217346"/><circle cx="13" cy="16" r="5" fill="#3b7fd0"/><rect x="22" y="4" width="70" height="6" rx="3" fill="#bcccd6"/></g>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="tags"><span class="tag">OneDrive end state</span><span class="tag">Windows 10</span></div>
+          <h3><a href="onedrive-explorer-carlosg.html">On Carlos G.&rsquo;s PC</a></h3>
+          <p><strong>6</strong> stage libraries auto-synced across two areas — including both <strong>Highly-Confidential Costing</strong> libraries, because he&rsquo;s in the costing team. Open inside <em>Turbine Retrofit — Costing &amp; margins</em>.</p>
+          <div class="card-foot"><span class="open">Open mockup &rarr;</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="thumb">
+          <svg viewBox="0 0 320 200" role="img" aria-label="Mary's File Explorer preview: four synced stage folders, no Costing">
+            <rect x="24" y="22" width="272" height="156" rx="10" fill="#ffffff" opacity=".97"/>
+            <rect x="24" y="22" width="272" height="24" rx="10" fill="#f2f6f9"/>
+            <circle cx="284" cy="34" r="3.4" fill="#c34"/><circle cx="273" cy="34" r="3.4" fill="#cbb"/><circle cx="262" cy="34" r="3.4" fill="#cbb"/>
+            <rect x="40" y="30" width="120" height="7" rx="3.5" fill="#c8d6de"/>
+            <rect x="24" y="46" width="108" height="132" fill="#f7fafc"/>
+            <g font-family="Arial">
+              <!-- only 4 synced folders, all plain (no Costing) -->
+              <g transform="translate(36,66)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="66" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,86)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="58" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,106)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="66" height="6" rx="3" fill="#9fb6c4"/></g>
+              <g transform="translate(36,126)"><path d="M0 3a1 1 0 0 1 1-1h4l1.4 1.4H15a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1z" fill="#ffcf5e"/><rect x="22" y="4" width="54" height="6" rx="3" fill="#9fb6c4"/></g>
+            </g>
+            <!-- file pane (proposal docs) -->
+            <g font-family="Arial">
+              <rect x="140" y="52" width="146" height="12" rx="4" fill="#eef4f7"/>
+              <g transform="translate(148,74)"><rect width="13" height="16" rx="1.5" fill="#2b579a"/><circle cx="13" cy="16" r="5" fill="#3b7fd0"/><rect x="22" y="4" width="86" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,96)"><rect width="13" height="16" rx="1.5" fill="#2b579a"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><rect x="22" y="4" width="72" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,118)"><rect width="13" height="16" rx="1.5" fill="#217346"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><rect x="22" y="4" width="94" height="6" rx="3" fill="#bcccd6"/></g>
+              <g transform="translate(148,140)"><rect width="13" height="16" rx="1.5" fill="#2b579a"/><circle cx="13" cy="16" r="5" fill="#4aa64d"/><rect x="22" y="4" width="66" height="6" rx="3" fill="#bcccd6"/></g>
+            </g>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="tags"><span class="tag">OneDrive end state</span><span class="tag">Windows 10</span></div>
+          <h3><a href="onedrive-explorer-maryc.html">On Mary C.&rsquo;s PC</a></h3>
+          <p>The <strong>same two areas</strong>, but only <strong>4</strong> libraries — Qualification + Customer proposal. The <strong>Costing &amp; Contract</strong> libraries never reach her PC (need-to-know).</p>
+          <div class="card-foot"><span class="open">Open mockup &rarr;</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    All files live in <code>x:\Source\MOSE\mockups\</code>. The MOSE app rebuilds with <code>build-mose-app.ps1</code>
+    (embeds real faces + the shared <code>stages-grid.bundle.js</code>, which is rebuilt by <code>build-grid.ps1</code>);
+    the per-user OneDrive desktops with <code>build-explorer.ps1</code>. See <code>README.md</code> for the full build + verification notes.
+  </footer>
+</div>
+
+</body>
+</html>

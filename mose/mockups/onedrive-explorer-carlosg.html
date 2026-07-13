@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carlos G. - synced stages - MOSE secure areas mockup</title>
+<style>
+/*
+  MOSE secure areas — "what a team member sees" mockup (per-user, generated).
+  Pixel-faithful Windows 10 desktop showing the Path B end state: each quote
+  STAGE is its own SharePoint site + library, silently auto-mounted into File
+  Explorer via OneDrive — but only the stages this person is a member of.
+  Generated from onedrive-explorer.template.html by build-explorer.ps1; the tree
+  is DERIVED from the same stage/membership data as the quotes mockup, so a
+  person only ever sees stages they are actually on (need-to-know).
+
+  Static replica only — no runtime logic. Segoe UI is used natively (Windows), so
+  no webfont is embedded. The whole scene lives on a fixed 1600x1260 design canvas
+  (1rem = 10px) and scales to fit the viewport purely in CSS via the root
+  font-size min() below — no JS, so nothing can throw.
+*/
+:root{ font-size: min(0.625vw, 0.79365vh); }
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  display:flex; align-items:center; justify-content:center;
+  background:#050810; overflow:hidden;
+  font-family:"Segoe UI","Segoe UI Web",Tahoma,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.stage{ position:relative; width:160rem; height:126rem; overflow:hidden; }
+
+/* ---------- wallpaper (Windows 10 "hero" approximation) ---------- */
+.wall{ position:absolute; inset:0;
+  background:radial-gradient(130% 105% at 60% 44%, #3479b0 0%, #1e5789 26%, #123f68 52%, #0a2c4d 78%, #071f39 100%); }
+.wall::before{ content:""; position:absolute; inset:0; mix-blend-mode:screen;
+  background:
+    linear-gradient(118deg, transparent 38%, rgba(140,195,240,.10) 50%, transparent 58%),
+    linear-gradient(102deg, transparent 54%, rgba(95,160,215,.13) 66%, transparent 75%),
+    radial-gradient(60% 40% at 78% 30%, rgba(120,185,235,.14), transparent 70%); }
+.wall::after{ content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,.18) 100%); }
+
+/* ---------- mockup caption (clearly an annotation, not OS chrome) ---------- */
+.figcap{ position:absolute; top:2.2rem; left:50%; transform:translateX(-50%);
+  max-width:108rem; padding:1.1rem 2.2rem; border-radius:1.3rem;
+  background:rgba(255,255,255,.84); backdrop-filter:blur(9px); -webkit-backdrop-filter:blur(9px);
+  border:.1rem solid rgba(255,255,255,.62); box-shadow:0 1.2rem 3.4rem rgba(4,20,40,.32);
+  display:flex; flex-direction:column; align-items:center; gap:.25rem; text-align:center; z-index:5; }
+.figcap .eye{ font-size:1.06rem; letter-spacing:.16em; text-transform:uppercase; color:#2b6fb8; font-weight:700; }
+.figcap .who{ font-size:1.75rem; font-weight:700; color:#12314e; }
+.figcap .who b{ color:#2b6fb8; }
+.figcap .sub{ font-size:1.24rem; color:#33475b; line-height:1.36; max-width:102rem; }
+
+/* ---------- desktop icons ---------- */
+.desk{ position:absolute; left:1.2rem; top:2.2rem; width:13.5rem;
+  display:flex; flex-direction:column; gap:4.6rem; align-items:center; }
+.di{ width:11.5rem; display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+.di .ic{ width:4.7rem; height:4.7rem; display:block; }
+.di .lbl{ color:#fff; font-size:1.24rem; line-height:1.12; text-align:center;
+  text-shadow:0 .1rem .25rem rgba(0,0,0,.75); max-width:11.5rem; }
+
+/* ---------- explorer window ---------- */
+.win{ position:absolute; left:52rem; top:17.5rem; width:104rem; height:100rem;
+  background:#fff; border:.1rem solid #b6b6b6;
+  box-shadow:0 2.4rem 7rem rgba(0,0,0,.5), 0 .4rem 1.2rem rgba(0,0,0,.35);
+  display:flex; flex-direction:column; overflow:hidden; }
+.titlebar{ height:3.6rem; display:flex; align-items:center; padding-left:.7rem; background:#fff; }
+.qat{ display:flex; align-items:center; gap:.1rem; }
+.qat .qi{ width:2.4rem; height:2.4rem; display:flex; align-items:center; justify-content:center; }
+.qat .qi svg{ width:1.7rem; height:1.7rem; }
+.qat .qcaret{ width:1.6rem; height:2.4rem; display:flex; align-items:center; justify-content:center; color:#5a5a5a; font-size:.9rem; }
+.win-title{ flex:1; text-align:center; font-size:1.35rem; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 1rem; }
+.caption{ display:flex; align-items:stretch; }
+.cbtn{ width:4.7rem; height:3.6rem; display:flex; align-items:center; justify-content:center; color:#2b2b2b; }
+.cbtn svg{ width:1.1rem; height:1.1rem; }
+.cbtn.close:hover{ background:#e81123; color:#fff; }
+
+.tabs{ height:3.7rem; display:flex; align-items:stretch; border-bottom:.1rem solid #dcdcdc; background:#fff; }
+.tab{ display:flex; align-items:center; padding:0 1.5rem; font-size:1.3rem; color:#242424; }
+.tab.file{ background:#2b6fb8; color:#fff; }
+.tabs .grow{ flex:1; }
+.tabtool{ width:3rem; display:flex; align-items:center; justify-content:center; color:#5b5b5b; font-size:1.25rem; }
+
+.navbar{ height:4.4rem; display:flex; align-items:center; gap:.5rem; padding:0 .8rem; border-bottom:.1rem solid #ececec; background:#fff; }
+.navb{ width:2.7rem; height:2.7rem; display:flex; align-items:center; justify-content:center; color:#2f6ea6; border-radius:.3rem; }
+.navb svg{ width:1.9rem; height:1.9rem; }
+.navb.dis{ color:#c6c6c6; }
+.navb.mini{ width:1.7rem; }
+.navb.mini svg{ width:1.1rem; height:1.1rem; }
+.address{ flex:1; height:2.8rem; border:.1rem solid #cfcfcf; background:#fff; display:flex; align-items:center; gap:.5rem; padding:0 .3rem 0 .7rem; overflow:hidden; }
+.address .cico{ width:1.7rem; height:1.7rem; flex:none; }
+.crumb{ font-size:1.26rem; color:#1e1e1e; flex:0 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.crumb .sep{ color:#8a8a8a; margin:0 .35rem; font-size:1.05rem; }
+.address .acaret{ margin-left:auto; width:2.2rem; height:100%; display:flex; align-items:center; justify-content:center; color:#4f4f4f; font-size:.95rem; border-left:.1rem solid #e6e6e6; }
+.refresh{ width:2.8rem; height:2.8rem; display:flex; align-items:center; justify-content:center; color:#4a4a4a; }
+.refresh svg{ width:1.55rem; height:1.55rem; }
+.search{ width:26rem; height:2.8rem; border:.1rem solid #cfcfcf; background:#fff; display:flex; align-items:center; gap:.6rem; padding:0 .8rem; }
+.search svg{ width:1.5rem; height:1.5rem; color:#7a7a7a; }
+.search .ph{ font-size:1.24rem; color:#8f8f8f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.content{ flex:1; display:flex; overflow:hidden; }
+.nav-pane{ width:41rem; background:#fff; border-right:.1rem solid #eaeaea; padding-top:.6rem; overflow:hidden; }
+.trow{ height:2.85rem; display:flex; align-items:center; font-size:1.3rem; color:#1c1c1c; padding-right:1rem; }
+.trow .chev{ width:2.4rem; display:flex; align-items:center; justify-content:center; color:#6b6b6b; font-size:1rem; }
+.trow .tico{ width:2.9rem; height:2.1rem; display:flex; align-items:center; justify-content:center; }
+.trow .tico svg{ width:1.9rem; height:1.9rem; }
+.trow .tlbl{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.trow .pin{ width:1.9rem; height:1.9rem; opacity:.5; }
+.trow.child{ padding-left:2.4rem; }
+.trow.sel{ background:#cfe6fb; }
+.trow.sel .tlbl{ color:#0b0b0b; font-weight:600; }
+
+.file-pane{ flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.colhead{ height:2.9rem; display:flex; align-items:stretch; border-bottom:.1rem solid #e4e4e4; font-size:1.2rem; color:#3a3a3a; background:#fff; }
+.ch{ display:flex; align-items:center; padding:0 .9rem; border-right:.1rem solid #f0f0f0; position:relative; }
+.ch.name{ width:40rem; }
+.ch.date{ width:22rem; }
+.ch.type{ width:22rem; }
+.ch.size{ width:12rem; }
+.ch.name::after{ content:""; position:absolute; top:.15rem; left:50%; transform:translateX(-50%);
+  border-left:.55rem solid transparent; border-right:.55rem solid transparent; border-bottom:.55rem solid #b7b7b7; }
+.file-list{ flex:1; overflow:hidden; }
+.frow{ height:2.9rem; display:flex; align-items:stretch; font-size:1.3rem; color:#1c1c1c; }
+.frow:hover{ background:#f1f7fe; }
+.fc{ display:flex; align-items:center; padding:0 .9rem; white-space:nowrap; overflow:hidden; }
+.fc.name{ width:40rem; gap:1rem; }
+.fc.date{ width:22rem; color:#2c2c2c; }
+.fc.type{ width:22rem; color:#2c2c2c; }
+.fc.size{ width:12rem; color:#2c2c2c; justify-content:flex-start; }
+.ficon{ position:relative; width:2.6rem; height:2.6rem; flex:none; }
+.ficon svg{ width:2.6rem; height:2.6rem; display:block; }
+.ficon .badge{ position:absolute; right:-.35rem; bottom:-.35rem; width:1.6rem; height:1.6rem; }
+.fname{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.hscroll{ height:1.5rem; background:#f4f4f4; border-top:.1rem solid #e4e4e4; display:flex; align-items:center; }
+.hscroll .track{ position:relative; flex:1; height:100%; }
+.hscroll .thumb{ position:absolute; top:.25rem; height:1rem; left:1.5%; width:53%; background:#cfcfcf; border-radius:.5rem; }
+.hscroll .cap{ width:1.5rem; display:flex; align-items:center; justify-content:center; color:#8a8a8a; font-size:.9rem; }
+
+.statusbar{ height:2.7rem; background:#f0f0f0; border-top:.1rem solid #dcdcdc; display:flex; align-items:center; font-size:1.2rem; color:#2f2f2f; padding-left:1.1rem; }
+.status-left{ flex:1; }
+.views{ display:flex; }
+.vt{ width:3rem; height:2.7rem; display:flex; align-items:center; justify-content:center; color:#5a5a5a; }
+.vt svg{ width:1.6rem; height:1.6rem; }
+.vt.active{ background:#dfeefc; color:#1e6bb8; }
+
+/* ---------- taskbar ---------- */
+.taskbar{ position:absolute; left:0; right:0; bottom:0; height:4.6rem; background:rgba(0,0,0,.84); display:flex; align-items:center; }
+.tbstart{ width:5.2rem; height:100%; display:flex; align-items:center; justify-content:center; }
+.tbstart svg{ width:2.1rem; height:2.1rem; }
+.tbapp{ width:5.6rem; height:100%; display:flex; align-items:center; justify-content:center; position:relative; }
+.tbapp svg{ width:2.5rem; height:2.5rem; }
+.tbapp.active{ background:rgba(255,255,255,.14); }
+.tbapp.active::after{ content:""; position:absolute; left:16%; right:16%; bottom:0; height:.32rem; background:#79b0f2; }
+.tray{ margin-left:auto; display:flex; align-items:center; gap:1.35rem; padding-right:1.4rem; color:#fff; }
+.tray .tri{ width:1.85rem; height:1.85rem; display:flex; align-items:center; }
+.tray .tri svg{ width:1.85rem; height:1.85rem; }
+.tray .eng{ font-size:1.2rem; }
+.clock{ display:flex; flex-direction:column; align-items:flex-end; line-height:1.15; font-size:1.18rem; }
+.notif{ position:relative; width:2.6rem; height:100%; display:flex; align-items:center; justify-content:center; }
+.notif svg{ width:1.9rem; height:1.9rem; }
+.notif .cnt{ position:absolute; right:.1rem; bottom:.7rem; min-width:1.5rem; height:1.5rem; padding:0 .3rem; background:#0a84ff; color:#fff; border-radius:.8rem; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+
+<!-- reusable icon symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-folder" viewBox="0 0 32 32">
+    <path fill="#d9a441" d="M2 8a2 2 0 0 1 2-2h7.2l2.6 2.6H28a2 2 0 0 1 2 2V26a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/>
+    <path fill="#ffcf5e" d="M2 12.4h28V26a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/>
+  </symbol>
+  <symbol id="ic-word" viewBox="0 0 24 24">
+    <path fill="#fff" stroke="#c6d1e0" stroke-width=".7" d="M13.4 2H5a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8.4z"/>
+    <path fill="#dbe4f1" d="M13.4 2 20 8.4h-6.6z"/>
+    <rect x="3" y="11" width="13.2" height="9" rx="1" fill="#2b579a"/>
+    <text x="9.6" y="18" font-size="6.4" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial">W</text>
+  </symbol>
+  <symbol id="ic-excel" viewBox="0 0 24 24">
+    <path fill="#fff" stroke="#c6d1e0" stroke-width=".7" d="M13.4 2H5a1 1 0 0 0-1 1v18a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8.4z"/>
+    <path fill="#d5ead9" d="M13.4 2 20 8.4h-6.6z"/>
+    <rect x="3" y="11" width="13.2" height="9" rx="1" fill="#217346"/>
+    <text x="9.6" y="18" font-size="6.4" font-weight="700" fill="#fff" text-anchor="middle" font-family="Arial">X</text>
+  </symbol>
+  <symbol id="ic-ok" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="7.4" fill="#fff"/>
+    <circle cx="8" cy="8" r="6.4" fill="#4aa64d"/>
+    <path d="M4.7 8.2 6.7 10.2 11.2 5.4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ic-cloud" viewBox="0 0 16 16">
+    <circle cx="8" cy="8" r="7.6" fill="#fff"/>
+    <path d="M5 11.2h6.1a2.1 2.1 0 0 0 .2-4.19A3 3 0 0 0 5.4 6.6 2.3 2.3 0 0 0 5 11.2z" fill="none" stroke="#3b7fd0" stroke-width="1.1" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<div class="stage">
+  <div class="wall"></div>
+
+  <!-- mockup caption -->
+  <div class="figcap">
+    <span class="eye">Team member view &middot; mockup</span>
+    <span class="who"><b>Carlos G.</b> &middot; carlosg</span>
+    <span class="sub">Auto-synced to his PC: the stages Carlos is a member of across Turbine Retrofit and Logistics Framework Bid - including the Highly Confidential Costing libraries, because he is in the costing team. The Contract stages stay off his machine (need-to-know).</span>
+  </div>
+
+  <!-- ================= desktop icons ================= -->
+  <div class="desk">
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32">
+        <path d="M8.5 11h15l-1.4 16.4a2 2 0 0 1-2 1.8H11.9a2 2 0 0 1-2-1.8z" fill="rgba(206,221,236,.5)" stroke="#9fb6cc" stroke-width=".8"/>
+        <rect x="6.5" y="8.6" width="19" height="2.6" rx="1" fill="rgba(188,206,224,.7)" stroke="#9fb6cc" stroke-width=".6"/>
+        <path d="M13 8.6l1-1.6h4l1 1.6" fill="none" stroke="#9fb6cc" stroke-width=".8"/>
+        <path d="M13 15l-1.6 2.6 2.4.3" fill="none" stroke="#7fa8cf" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18.8 15.4l1.7 2.6-2.5.2" fill="none" stroke="#7fa8cf" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M14 24.3l-2.2-.7 1.3-2.2" fill="none" stroke="#7fa8cf" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="lbl">Recycle Bin</span>
+    </div>
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="26" rx="4.5" fill="#e5252a"/>
+        <text x="16" y="23.5" font-size="19" font-weight="800" fill="#fff" text-anchor="middle" font-family="Arial">A</text></svg>
+      <span class="lbl">Adobe<br>Acrobat</span>
+    </div>
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32">
+        <rect x="7.2" y="7.2" width="17.6" height="17.6" rx="3" transform="rotate(45 16 16)" fill="#f05133"/>
+        <g stroke="#fff" stroke-width="1.7" stroke-linecap="round"><path d="M16 11.5v9"/><path d="M16 15.5l3.3-3.3"/></g>
+        <circle cx="16" cy="21" r="1.9" fill="#fff"/><circle cx="16" cy="12" r="1.9" fill="#fff"/><circle cx="20.2" cy="11.8" r="1.9" fill="#fff"/>
+      </svg>
+      <span class="lbl">Git Bash</span>
+    </div>
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32">
+        <circle cx="16" cy="16" r="14.5" fill="#fff"/>
+        <path d="M16 1.5 A14.5 14.5 0 0 1 28.6 8.9 L16 16 Z" fill="#ea4335"/>
+        <path d="M28.6 8.9 A14.5 14.5 0 0 1 21.9 29.6 L16 16 Z" fill="#fbbc05"/>
+        <path d="M21.9 29.6 A14.5 14.5 0 0 1 3.4 8.9 L16 16 Z" fill="#34a853"/>
+        <circle cx="16" cy="16" r="6.3" fill="#fff"/><circle cx="16" cy="16" r="4.9" fill="#4285f4"/>
+      </svg>
+      <span class="lbl">Google<br>Chrome</span>
+    </div>
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32">
+        <path d="M23 3.4 29.4 6.5v19L23 28.6 11.3 19.2 5.8 23 2.6 21.3v-10.6L5.8 9l5.5 3.8z" fill="#1f9cf0"/>
+        <path d="M23 3.4v25.2L9.6 16z" fill="#0e70b8" opacity=".65"/>
+        <path d="M5.8 9 11.3 12.8 5.8 23z" fill="#0e70b8" opacity=".35"/>
+      </svg>
+      <span class="lbl">Visual Studio<br>Code</span>
+    </div>
+    <div class="di">
+      <svg class="ic" viewBox="0 0 32 32">
+        <defs><linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#37c2b1"/><stop offset=".5" stop-color="#1b9de2"/><stop offset="1" stop-color="#2b62d6"/></linearGradient></defs>
+        <path d="M16 3a13 13 0 0 1 12.6 9.8 A11 11 0 0 0 12 12 c-4 2-4.7 6-4.4 9A13 13 0 0 1 16 3z" fill="#2b62d6"/>
+        <path d="M28.9 20.5A13 13 0 0 1 8.4 24.8 c3.2 2.4 8.9 3 12.9.4 3-2 4.4-3.8 4.9-6 .3-1.2.7 .5 2.7 1.3z" fill="url(#edge)"/>
+        <path d="M7.6 21c-1.2-3.8-.2-8.4 4.4-10.8 3.4-1.8 7.6-1 10.4 1 A13 13 0 0 0 5.4 17 c-.2 1.6 0 3 .8 4.6z" fill="#37c2b1"/>
+      </svg>
+      <span class="lbl">Microsoft<br>Edge</span>
+    </div>
+  </div>
+
+  <!-- ================= file explorer window ================= -->
+  <div class="win">
+    <div class="titlebar">
+      <div class="qat">
+        <span class="qi"><svg viewBox="0 0 32 32"><use href="#ic-folder"/></svg></span>
+        <span class="qi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2.5" fill="#fff" stroke="#7a7a7a" stroke-width="1.4"/><path d="M8 12.2l2.6 2.6L17 8" fill="none" stroke="#2f8f3f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="qi"><svg viewBox="0 0 32 32"><use href="#ic-folder"/></svg></span>
+        <span class="qcaret">&#9662;</span>
+      </div>
+      <div class="win-title">Turbine Retrofit — Costing &amp; margins</div>
+      <div class="caption">
+        <span class="cbtn"><svg viewBox="0 0 12 12"><line x1="1" y1="6.5" x2="11" y2="6.5" stroke="currentColor" stroke-width="1.1"/></svg></span>
+        <span class="cbtn"><svg viewBox="0 0 12 12"><rect x="1.2" y="1.2" width="9.6" height="9.6" fill="none" stroke="currentColor" stroke-width="1.1"/></svg></span>
+        <span class="cbtn close"><svg viewBox="0 0 12 12"><line x1="1.4" y1="1.4" x2="10.6" y2="10.6" stroke="currentColor" stroke-width="1.1"/><line x1="10.6" y1="1.4" x2="1.4" y2="10.6" stroke="currentColor" stroke-width="1.1"/></svg></span>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab file">File</div><div class="tab">Home</div><div class="tab">Share</div><div class="tab">View</div>
+      <div class="grow"></div><div class="tabtool">&#9652;</div><div class="tabtool">?</div>
+    </div>
+
+    <div class="navbar">
+      <span class="navb"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="navb dis"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="navb mini"><svg viewBox="0 0 12 12"><path d="M1 3.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+      <span class="navb"><svg viewBox="0 0 24 24"><path d="M12 5l-7 7M12 5l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="address">
+        <svg class="cico" viewBox="0 0 32 32"><use href="#ic-folder"/></svg>
+        <span class="crumb">Lang&#8230;<span class="sep">&#8250;</span>Turbine Retrofit — Costing &amp; margins</span>
+        <span class="acaret">&#9662;</span>
+      </div>
+      <span class="refresh"><svg viewBox="0 0 24 24"><path d="M19 8a8 8 0 1 0 1.5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 3v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><line x1="15.2" y1="15.2" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="ph">Search Turbine Retrofit — Costing &amp; margins</span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="nav-pane">
+        <div class="trow">
+          <span class="chev">&#9662;</span>
+          <span class="tico"><svg viewBox="0 0 16 16"><path d="M8 1.4l1.8 4.1 4.5.4-3.4 3 1 4.4L8 11l-3.9 2.3 1-4.4-3.4-3 4.5-.4z" fill="#f2c24a" stroke="#d9a52f" stroke-width=".5"/></svg></span>
+          <span class="tlbl">Quick access</span>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="8.5" rx="1" fill="#5a9bd8"/><rect x="2.6" y="3.6" width="10.8" height="6.3" fill="#eaf2fb"/><path d="M5 13.4h6M8 11v2.4" stroke="#5a9bd8" stroke-width="1.1" stroke-linecap="round"/></svg></span>
+          <span class="tlbl">Desktop</span>
+          <svg class="pin" viewBox="0 0 16 16"><path d="M10 1.6l4.4 4.4-1.9.5-2.9 2.9.4 2.7-1.1 1.1-2.7-2.7-3 3-.9-.9 3-3-2.7-2.7 1.1-1.1 2.7.4L9 3.5z" fill="#6f6f6f"/></svg>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><path d="M8 2v7m0 0l-3-3m3 3l3-3" fill="none" stroke="#3f86cf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 11.5h10v1.6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="#3f86cf"/></svg></span>
+          <span class="tlbl">Downloads</span>
+          <svg class="pin" viewBox="0 0 16 16"><path d="M10 1.6l4.4 4.4-1.9.5-2.9 2.9.4 2.7-1.1 1.1-2.7-2.7-3 3-.9-.9 3-3-2.7-2.7 1.1-1.1 2.7.4L9 3.5z" fill="#6f6f6f"/></svg>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">MOSE</span>
+          <svg class="pin" viewBox="0 0 16 16"><path d="M10 1.6l4.4 4.4-1.9.5-2.9 2.9.4 2.7-1.1 1.1-2.7-2.7-3 3-.9-.9 3-3-2.7-2.7 1.1-1.1 2.7.4L9 3.5z" fill="#6f6f6f"/></svg>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><path d="M4 1.6h6.4L13 4.2V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2.6a1 1 0 0 1 1-1z" fill="#eef1f4" stroke="#9aa7b3" stroke-width=".7"/><path d="M5.2 6h5.6M5.2 8h5.6M5.2 10h4" stroke="#7f8b97" stroke-width=".8" stroke-linecap="round"/></svg></span>
+          <span class="tlbl">Documents</span>
+          <svg class="pin" viewBox="0 0 16 16"><path d="M10 1.6l4.4 4.4-1.9.5-2.9 2.9.4 2.7-1.1 1.1-2.7-2.7-3 3-.9-.9 3-3-2.7-2.7 1.1-1.1 2.7.4L9 3.5z" fill="#6f6f6f"/></svg>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" fill="#eef1f4" stroke="#9aa7b3" stroke-width=".7"/><circle cx="6" cy="6.4" r="1.3" fill="#f0b429"/><path d="M3 12l3.4-3.6 2.4 2.2 2.6-2.8L14 11.4V12z" fill="#5aa469"/></svg></span>
+          <span class="tlbl">Pictures</span>
+          <svg class="pin" viewBox="0 0 16 16"><path d="M10 1.6l4.4 4.4-1.9.5-2.9 2.9.4 2.7-1.1 1.1-2.7-2.7-3 3-.9-.9 3-3-2.7-2.7 1.1-1.1 2.7.4L9 3.5z" fill="#6f6f6f"/></svg>
+        </div>
+
+        <div class="trow">
+          <span class="chev">&#9662;</span>
+          <span class="tico"><svg viewBox="0 0 16 16"><rect x="2.5" y="2" width="7" height="12" fill="#9aa7b3"/><rect x="8.5" y="5" width="5" height="9" fill="#7f8b97"/><g fill="#eef1f4"><rect x="3.6" y="3.2" width="1.4" height="1.4"/><rect x="6" y="3.2" width="1.4" height="1.4"/><rect x="3.6" y="5.6" width="1.4" height="1.4"/><rect x="6" y="5.6" width="1.4" height="1.4"/><rect x="3.6" y="8" width="1.4" height="1.4"/><rect x="6" y="8" width="1.4" height="1.4"/><rect x="9.6" y="6.4" width="1.2" height="1.2"/><rect x="11.4" y="6.4" width="1.2" height="1.2"/><rect x="9.6" y="8.6" width="1.2" height="1.2"/><rect x="11.4" y="8.6" width="1.2" height="1.2"/></g></svg></span>
+          <span class="tlbl">Langate System AB</span>
+        </div>
+        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Logistics Framework Bid — Costing &amp; margins</span>
+        </div>        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Logistics Framework Bid — Customer proposal</span>
+        </div>        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Logistics Framework Bid — Qualification</span>
+        </div>        <div class="trow child sel">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Turbine Retrofit — Costing &amp; margins</span>
+        </div>        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Turbine Retrofit — Customer proposal</span>
+        </div>        <div class="trow child">
+          <span class="tico"><svg viewBox="0 0 16 16"><use href="#ic-folder"/></svg></span>
+          <span class="tlbl">Turbine Retrofit — Qualification</span>
+        </div>
+
+        <div class="trow">
+          <span class="chev">&#9656;</span>
+          <span class="tico"><svg viewBox="0 0 16 16"><path d="M6.4 12.4h5.6a2.9 2.9 0 0 0 .5-5.75A4 4 0 0 0 5 5.4a3.1 3.1 0 0 0 .1 6.1z" fill="#1a92e0"/><path d="M3.4 12.4h3.2a2.5 2.5 0 0 1-.2-4.7A3 3 0 0 1 6 7.2 2.6 2.6 0 0 0 3.4 12.4z" fill="#0a6cc0"/></svg></span>
+          <span class="tlbl">OneDrive - Langate System AB</span>
+        </div>
+        <div class="trow">
+          <span class="chev">&#9656;</span>
+          <span class="tico"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="8" rx="1" fill="#7f8b97"/><rect x="3" y="4" width="10" height="6" fill="#cdd6df"/><rect x="5.5" y="11.5" width="5" height="1.2" fill="#7f8b97"/><rect x="4.5" y="12.7" width="7" height="1.3" rx=".6" fill="#9aa7b3"/></svg></span>
+          <span class="tlbl">This PC</span>
+        </div>
+        <div class="trow">
+          <span class="chev">&#9656;</span>
+          <span class="tico"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="#6f8296" stroke-width="1"/><ellipse cx="8" cy="8" rx="2.6" ry="6.2" fill="none" stroke="#6f8296" stroke-width="1"/><path d="M2 8h12M3 5.4h10M3 10.6h10" stroke="#6f8296" stroke-width=".8"/></svg></span>
+          <span class="tlbl">Network</span>
+        </div>
+      </div>
+
+      <div class="file-pane">
+        <div class="colhead">
+          <div class="ch name">Name</div><div class="ch date">Date modified</div><div class="ch type">Type</div><div class="ch size">Size</div>
+        </div>
+        <div class="file-list">
+          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 32 32"><use href="#ic-folder"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-cloud"/></svg></span><span class="fname">Supplier quotes</span></div>
+            <div class="fc date">7/9/2026 4:02 PM</div><div class="fc type">File folder</div><div class="fc size"></div>
+          </div>          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 24 24"><use href="#ic-excel"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-ok"/></svg></span><span class="fname">Cost model.xlsx</span></div>
+            <div class="fc date">7/11/2026 5:32 PM</div><div class="fc type">Microsoft Excel Worksheet</div><div class="fc size">214 KB</div>
+          </div>          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 24 24"><use href="#ic-excel"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-ok"/></svg></span><span class="fname">Margin analysis.xlsx</span></div>
+            <div class="fc date">7/11/2026 2:47 PM</div><div class="fc type">Microsoft Excel Worksheet</div><div class="fc size">96 KB</div>
+          </div>          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 24 24"><use href="#ic-excel"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-ok"/></svg></span><span class="fname">BOM - turbine retrofit.xlsx</span></div>
+            <div class="fc date">7/10/2026 11:18 AM</div><div class="fc type">Microsoft Excel Worksheet</div><div class="fc size">142 KB</div>
+          </div>          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 24 24"><use href="#ic-excel"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-cloud"/></svg></span><span class="fname">Risk &amp; contingency.xlsx</span></div>
+            <div class="fc date">7/8/2026 9:05 AM</div><div class="fc type">Microsoft Excel Worksheet</div><div class="fc size">58 KB</div>
+          </div>          <div class="frow">
+            <div class="fc name"><span class="ficon"><svg viewBox="0 0 24 24"><use href="#ic-word"/></svg><svg class="badge" viewBox="0 0 16 16"><use href="#ic-ok"/></svg></span><span class="fname">Costing summary.docx</span></div>
+            <div class="fc date">7/11/2026 5:40 PM</div><div class="fc type">Microsoft Word Document</div><div class="fc size">47 KB</div>
+          </div>
+        </div>
+        <div class="hscroll"><span class="cap">&#9664;</span><span class="track"><span class="thumb"></span></span><span class="cap">&#9654;</span></div>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <span class="status-left">6 items</span>
+      <div class="views">
+        <span class="vt active"><svg viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 5h2M8 5h9M3 10h2M8 10h9M3 15h2M8 15h9"/></g></svg></span>
+        <span class="vt"><svg viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g></svg></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= taskbar ================= -->
+  <div class="taskbar">
+    <span class="tbstart"><svg viewBox="0 0 24 24" fill="#fff"><rect x="1" y="1" width="10" height="10"/><rect x="13" y="1" width="10" height="10"/><rect x="1" y="13" width="10" height="10"/><rect x="13" y="13" width="10" height="10"/></svg></span>
+    <span class="tbapp"><svg viewBox="0 0 32 32">
+      <defs><linearGradient id="edge2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#37c2b1"/><stop offset=".5" stop-color="#1b9de2"/><stop offset="1" stop-color="#2b62d6"/></linearGradient></defs>
+      <path d="M16 3a13 13 0 0 1 12.6 9.8 A11 11 0 0 0 12 12 c-4 2-4.7 6-4.4 9A13 13 0 0 1 16 3z" fill="#2b62d6"/>
+      <path d="M28.9 20.5A13 13 0 0 1 8.4 24.8 c3.2 2.4 8.9 3 12.9.4 3-2 4.4-3.8 4.9-6z" fill="url(#edge2)"/>
+      <path d="M7.6 21c-1.2-3.8-.2-8.4 4.4-10.8 3.4-1.8 7.6-1 10.4 1 A13 13 0 0 0 5.4 17 c-.2 1.6 0 3 .8 4.6z" fill="#37c2b1"/></svg></span>
+    <span class="tbapp active"><svg viewBox="0 0 32 32">
+      <path d="M3 8a1.6 1.6 0 0 1 1.6-1.6h7l2.4 2.4H17a1.6 1.6 0 0 1 1.6 1.6v1.2H3z" fill="#f9c65b"/>
+      <path d="M3 10.4h26a1.6 1.6 0 0 1 1.6 1.9l-1.7 10.6A1.9 1.9 0 0 1 27 24.6H5a1.9 1.9 0 0 1-1.9-1.7L1.4 12.3A1.6 1.6 0 0 1 3 10.4z" fill="#ffd980"/>
+      <rect x="3" y="6.4" width="18" height="11" rx="1.4" fill="#3a97dd"/><rect x="4.4" y="7.8" width="15.2" height="8.2" rx=".8" fill="#eaf4fc"/></svg></span>
+    <span class="tbapp"><svg viewBox="0 0 32 32">
+      <circle cx="16" cy="16" r="13" fill="#fff"/>
+      <path d="M16 3 A13 13 0 0 1 27.3 9.5 L16 16 Z" fill="#ea4335"/>
+      <path d="M27.3 9.5 A13 13 0 0 1 21.3 27.9 L16 16 Z" fill="#fbbc05"/>
+      <path d="M21.3 27.9 A13 13 0 0 1 4.7 9.5 L16 16 Z" fill="#34a853"/>
+      <circle cx="16" cy="16" r="5.6" fill="#fff"/><circle cx="16" cy="16" r="4.3" fill="#4285f4"/></svg></span>
+    <div class="tray">
+      <span class="tri"><svg viewBox="0 0 24 24"><path d="M6.5 18h11a4 4 0 0 0 .6-7.95A5.5 5.5 0 0 0 7 8.2 4.3 4.3 0 0 0 6.5 18z" fill="none" stroke="#dfe6ee" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+      <span class="tri"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="13" height="10" rx="1.2" fill="none" stroke="#dfe6ee" stroke-width="1.3"/><path d="M17 9l3-2v10l-3-2z" fill="none" stroke="#dfe6ee" stroke-width="1.3" stroke-linejoin="round"/></svg></span>
+      <span class="tri"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="11" rx="1" fill="none" stroke="#dfe6ee" stroke-width="1.3"/><path d="M8 19h8" stroke="#dfe6ee" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+      <span class="tri"><svg viewBox="0 0 24 24"><path d="M4 9v6h3l5 4V5L7 9z" fill="#dfe6ee"/><path d="M16 8.5a5 5 0 0 1 0 7" fill="none" stroke="#dfe6ee" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+      <span class="eng">ENG</span>
+      <span class="clock"><span>6:00 PM</span><span>7/11/2026</span></span>
+      <span class="notif"><svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-4 3v-3H6a2 2 0 0 1-2-2z" fill="none" stroke="#dfe6ee" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="cnt">2</span></span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
