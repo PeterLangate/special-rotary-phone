@@ -1,17 +1,17 @@
 {
+  "syncedAt": "2026-07-14T12:21:00Z",
   "files": {
-    "index.html": {
-      "updated": "2026-07-13"
-    },
-    "tailgate.css": {
-      "updated": "2026-04-22"
-    },
     "tailgate.js": {
       "updated": "2026-06-01"
     },
     ".nojekyll": {
       "updated": "2026-04-22"
+    },
+    "index.html": {
+      "updated": "2026-07-14"
+    },
+    "tailgate.css": {
+      "updated": "2026-04-22"
     }
-  },
-  "syncedAt": "2026-07-13T07:00:48Z"
+  }
 }

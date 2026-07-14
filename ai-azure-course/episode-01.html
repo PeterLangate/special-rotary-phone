@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Azure with Claude Code — Episode 1 shooting script</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+/* ==========================================================================
+   Langate — A4 print/HTML document stylesheet
+   Palette + typography per the branding-langate skill.
+   No-template mode: plain CSS; DM Sans loaded via chapters/_head.html.
+   ========================================================================== */
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    /* Langate brand tokens */
+    --primary:        #00517e;   /* primary blue — headers, dark surfaces, accents */
+    --primary-teal:   #537780;   /* links, secondary text, footer / TOC page numbers */
+    --primary-navy:   #0b3ebe;   /* rare gradient endpoint */
+    --accent-green:   #02B896;   /* chapter numbers, h2 bar, cover dot, tips */
+    --accent-gold:    #F5A623;   /* note callouts */
+    --accent-red:     #B55852;   /* attention / warning */
+    --panel:          #ebf2f5;   /* light-blue panel background */
+    --panel-line:     #DBE4EA;   /* borders / row dividers */
+
+    /* Back-compat aliases: existing chapter markup uses var(--brand-*) inline */
+    --brand-navy:   var(--primary);        /* cover bg, group-band, dark surfaces */
+    --brand-blue:   var(--primary);        /* accents, step numbers, chips */
+    --brand-soft:   #a2bfd6;               /* soft dividers, gradient partner */
+    --brand-ink:    #4A4A4A;               /* all body text and headings */
+    --brand-red:    var(--accent-red);     /* attention / warning */
+    --brand-green:  var(--accent-green);   /* success / tip */
+}
+
+body {
+    font-family: 'DM Sans', Avenir, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--brand-ink);
+    background: #e8edf2;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: white; margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 20mm 26mm 18mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* ---- Page-break control (Chromium print-to-PDF) ---- */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col, .three-col  { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.group-band           { break-inside: avoid; break-after: avoid; }
+
+/* ==========================================================================
+   Cover
+   ========================================================================== */
+.cover-page {
+    background: var(--brand-navy);
+    color: #ffffff;
+    display: flex; flex-direction: column; min-height: 297mm;
+}
+.cover-accent-bar {
+    height: 3mm;
+    background: var(--accent-green);
+}
+.cover-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 24mm 26mm;
+}
+/* Langate wordmark — text mark + green dot (replaces the logo-panel image) */
+.cover-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 15mm; }
+.cover-brand-name { font-size: 25pt; font-weight: 800; letter-spacing: 0.01em; color: #ffffff; }
+.cover-brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-green); }
+.cover-eyebrow {
+    font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 6mm;
+}
+.cover-title { font-size: 33pt; font-weight: 800; line-height: 1.12; }
+.cover-subtitle {
+    font-size: 14pt; font-weight: 300; line-height: 1.4;
+    color: rgba(255,255,255,0.72); margin-top: 6mm; max-width: 150mm;
+}
+.cover-footer {
+    padding: 8mm 26mm; border-top: 1px solid rgba(255,255,255,0.16);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 8.5pt; color: rgba(255,255,255,0.65);
+}
+
+/* ==========================================================================
+   Page header / footer
+   ========================================================================== */
+.page-header {
+    padding: 9mm 26mm 0;
+    padding-bottom: 4mm; margin-bottom: 7mm;
+    text-align: center;
+}
+.page-header::before {
+    content: 'Langate';
+    display: block;
+    font-size: 11pt; font-weight: 800; letter-spacing: 0.02em;
+    color: var(--primary);
+}
+.page-header-line {
+    width: 40mm; height: 2px;
+    background: var(--accent-green); margin: 2.5mm auto 0;
+    border-radius: 1px;
+}
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 5mm 26mm; border-top: 1px solid var(--panel-line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 7.5pt; color: #8a8a8a;
+}
+.page-footer div:last-child { color: var(--primary-teal); font-weight: 600; }
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+h1 {
+    font-size: 20pt; font-weight: 800; color: var(--brand-ink);
+    margin-bottom: 5mm; line-height: 1.2;
+}
+h1 .chapter-num {
+    display: block; font-size: 9pt; font-weight: 700;
+    color: var(--accent-green); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 2.5mm;
+}
+h2 {
+    font-size: 13pt; font-weight: 700; color: var(--primary);
+    margin-top: 6mm; margin-bottom: 3mm;
+    border-left: 3px solid var(--accent-green); padding-left: 3mm;
+}
+h3 {
+    font-size: 11pt; font-weight: 700; color: var(--primary);
+    margin-top: 5mm; margin-bottom: 2mm;
+}
+h4 { font-size: 10pt; font-weight: 700; color: var(--brand-ink); margin-bottom: 1.5mm; }
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--primary-teal); text-decoration: none; }
+strong { color: var(--brand-ink); }
+em { font-style: italic; }
+
+/* ==========================================================================
+   Callouts
+   ========================================================================== */
+.chapter-intro {
+    background: var(--panel); border-left: 4px solid var(--primary);
+    padding: 3mm 6mm; margin-bottom: 5mm; border-radius: 0 4px 4px 0;
+}
+.chapter-intro p:last-child { margin-bottom: 0; }
+.note-box { background: #fff8e6; border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.tip-box  { background: #e6faf6; border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.info-box { background: var(--panel); border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.warn-box { background: #fbeeed; border-left: 3px solid var(--accent-red); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.note-box p:last-child, .tip-box p:last-child, .info-box p:last-child, .warn-box p:last-child { margin-bottom: 0; }
+
+/* ==========================================================================
+   Running-order group band + episode tables
+   ========================================================================== */
+.group-band {
+    background: var(--brand-navy); color: #ffffff;
+    padding: 2.5mm 5mm; margin: 6mm 0 3mm; border-radius: 4px;
+    font-size: 10pt; font-weight: 700; letter-spacing: 0.04em;
+    display: flex; align-items: baseline; gap: 4mm;
+}
+.group-band .group-tag {
+    font-size: 8pt; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--brand-soft);
+}
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.8pt; line-height: 1.4; }
+th {
+    text-align: left; background: var(--panel); color: var(--brand-ink);
+    font-weight: 700; padding: 2.5mm 3mm; border-bottom: 2px solid var(--accent-green);
+}
+td { padding: 2.5mm 3mm; border-bottom: 1px solid var(--panel-line); vertical-align: top; }
+td.ep-num { width: 9mm; font-weight: 700; color: var(--primary); }
+tr:last-child td { border-bottom: none; }
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card {
+    background: var(--panel); border: 1px solid var(--panel-line);
+    border-radius: 5px; padding: 4mm 5mm;
+}
+.feature-card h4 { color: var(--primary); margin-bottom: 1.5mm; }
+.feature-card p:last-child { margin-bottom: 0; }
+
+/* Step list with circle counters */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--primary); color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5.5mm; height: 5.5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.3mm; flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Table of contents
+   ========================================================================== */
+.toc-title { font-size: 18pt; font-weight: 800; color: var(--brand-ink); margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.6mm 0; color: var(--brand-ink); }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.6pt; color: #5a5a5a; font-weight: 400; }
+.toc-num  { min-width: 12mm; flex-shrink: 0; color: var(--accent-green); }
+.toc-entry.toc-h2 .toc-num { min-width: 14mm; }
+.toc-dots { flex: 1; border-bottom: 1px dotted #c3ccd6; margin: 0 2mm 1.2mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; flex-shrink: 0; }
+
+/* ==========================================================================
+   Shooting-script components (episode scripts)
+   ========================================================================== */
+
+/* Episode brief — key/value facts row */
+.brief { display: grid; grid-template-columns: 34mm 1fr; gap: 1mm 4mm; margin: 3mm 0 4mm; font-size: 9.8pt; }
+.brief dt { font-weight: 700; color: var(--primary); }
+.brief dd { margin: 0; }
+
+/* Scene heading — an h2 (so it lands in the TOC) with a number chip */
+h2 .scene-no {
+    display: inline-block; vertical-align: 1.5px;
+    font-size: 7.5pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #ffffff; background: var(--primary);
+    padding: 0.6mm 2.2mm; border-radius: 3px; margin-right: 3mm;
+}
+h2 .scene-time { float: right; font-size: 8pt; font-weight: 400; color: #8a8a8a; }
+
+/* Beat — label + content */
+.beat { display: grid; grid-template-columns: 22mm 1fr; gap: 3mm; margin: 2.2mm 0; break-inside: avoid; }
+.beat-k {
+    font-size: 7.2pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding-top: 0.6mm; color: #8a8a8a;
+}
+.beat-k.k-screen { color: #6a7683; }
+.beat-k.k-prompt { color: var(--primary); }
+.beat-k.k-claude { color: var(--primary-teal); }
+.beat-k.k-say    { color: var(--accent-green); }
+.beat-v { font-size: 9.8pt; }
+.beat-v p { margin-bottom: 1.5mm; }
+.beat-v .narration { font-style: italic; color: #33414d; }
+
+/* Prompt + command code blocks */
+.codeblock {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.6pt; line-height: 1.45; white-space: pre-wrap; word-break: break-word;
+    padding: 2.2mm 3mm; border-radius: 3px; margin: 0.5mm 0;
+}
+.codeblock.prompt { background: var(--panel); border-left: 3px solid var(--primary); color: #23384a; }
+.codeblock.cmd    { background: #10202f; border-left: 3px solid var(--brand-soft); color: #dfe9f2; }
+.codeblock.cmd .comment { color: #8fb0c9; }
+.codeblock.file   { background: #f4f5f0; border-left: 3px solid var(--accent-green); color: #333; }
+.codeblock .lbl { display:block; font-size: 7pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1mm; opacity: 0.7; }
+
+    </style>
+</head>
+<body>
+
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-body">
+        <div class="cover-brand"><span class="cover-brand-name">Langate</span><span class="cover-brand-dot"></span></div>
+        <div class="cover-eyebrow">Manage Azure with Claude Code &mdash; Episode 1 &middot; shooting script</div>
+        <div class="cover-title">Set up and connect<br>to Azure</div>
+        <div class="cover-subtitle">The first episode &mdash; install Claude Code and the Azure
+            CLI, sign in to Azure, and learn the read, change and delete mindset by managing real
+            resources by chatting with Claude Code.</div>
+    </div>
+    <div class="cover-footer">
+        <div>Langate</div>
+        <div>Shooting script &nbsp;&middot;&nbsp; July 2026</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <a class="toc-entry toc-h1" href="#episode-brief"><span class="toc-num"></span>Episode brief<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#recording-setup"><span class="toc-num"></span>Recording setup<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#names-used-on-screen"><span class="toc-num"></span>Names used on screen<div class="toc-dots"></div><span class="toc-page">4</span></a>
+
+        <a class="toc-entry toc-h1" href="#companion-text"><span class="toc-num"></span>Companion text<div class="toc-dots"></div><span class="toc-page">5</span></a>
+
+        <a class="toc-entry toc-h1" href="#shooting-script"><span class="toc-num"></span>Shooting script<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#scene-1set-up0-00-1-00"><span class="toc-num"></span>Scene 1Set up0:00 – 1:00<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#scene-2install-the-cli-and-connect1-00-1-45"><span class="toc-num"></span>Scene 2Install the CLI and connect1:00 – 1:45<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h2" href="#scene-3reading-explore-the-subscription1-45-3-30"><span class="toc-num"></span>Scene 3Reading &mdash; explore the subscription1:45 – 3:30<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#scene-4changing-and-letting-claude-recover1-45-4-00"><span class="toc-num"></span>Scene 4Changing &mdash; and letting Claude recover1:45 – 4:00<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#scene-5a-guardrail-in-claude-md4-00-5-30"><span class="toc-num"></span>Scene 5A guardrail in CLAUDE.md4:00 – 5:30<div class="toc-dots"></div><span class="toc-page">10</span></a>
+        <a class="toc-entry toc-h2" href="#scene-6deleting-behind-the-guardrail5-30-7-00"><span class="toc-num"></span>Scene 6Deleting &mdash; behind the guardrail5:30 – 7:00<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h2" href="#scene-7where-claude-md-lives-and-sharing-it-across-projects7"><span class="toc-num"></span>Scene 7Where CLAUDE.md lives &mdash; and sharing it across projects7:00 – 8:00<div class="toc-dots"></div><span class="toc-page">12</span></a>
+        <a class="toc-entry toc-h2" href="#scene-8save-the-working-pattern-as-a-skill8-00-9-30"><span class="toc-num"></span>Scene 8Save the working pattern as a skill8:00 – 9:30<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#scene-9close-and-next-episode9-30-10-00"><span class="toc-num"></span>Scene 9Close and next episode9:30 – 10:00<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="episode-brief">Episode brief</h1>
+        <div class="chapter-intro">
+            <p>This episode sets everything up from zero &mdash; Claude Code, the Azure CLI, and a
+            first sign-in to Azure &mdash; then teaches the read, change and delete mindset by
+            doing each one on real resources.</p>
+        </div>
+        <dl class="brief">
+            <dt>Running time</dt><dd>About 10 minutes.</dd>
+            <dt>Surface</dt><dd>Azure CLI (<code>az</code>), run by Claude Code in the Visual Studio Code terminal.</dd>
+            <dt>Viewer can then</dt><dd>Read a subscription, make a safe change, and delete a resource &mdash; each with the right amount of review.</dd>
+            <dt>Prerequisites</dt><dd>None beyond a machine with Visual Studio Code and an Azure subscription. This episode installs Claude Code and the Azure CLI, and signs in.</dd>
+        </dl>
+<h2 id="recording-setup">Recording setup</h2>
+        <ul>
+            <li>A clean Visual Studio Code, so the extension install is shown on screen; the Claude
+            Code panel and a docked terminal appear once it is added.</li>
+            <li>A test subscription with a few resource groups (one holding a web app), so the
+            reading task has something to show.</li>
+            <li>Permission mode is set to <strong>bypass</strong>, so reads and safe changes run
+            without a click. The delete guardrail comes from a <code>CLAUDE.md</code> rule, not
+            from the permission prompt.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="names-used-on-screen">Names used on screen</h2>
+        <p>To keep the commands consistent, the demo uses these names:</p>
+        <dl class="brief">
+            <dt>Web app group</dt><dd><code>rg-langate-web</code> &mdash; an existing group in the test subscription.</dd>
+            <dt>Test group</dt><dd><code>rg-azure-demo</code> &mdash; created and deleted in this episode.</dd>
+            <dt>Region</dt><dd>Sweden Central (<code>swedencentral</code>).</dd>
+        </dl>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="companion-text">Companion text</h1>
+        <div class="chapter-intro">
+            <p>The copy below is the companion page for the video, written in the Langate
+            Tips voice. It is what a reader sees under the embedded demo.</p>
+        </div>
+
+        <h3 style="font-size:14pt;color:var(--brand-ink);margin-top:2mm;">Manage a whole Azure subscription by chatting</h3>
+        <p style="font-style:italic;color:#5a5a5a;margin-top:1mm;">A Manage Azure with Claude Code tutorial by Langate</p>
+
+        <p>It is possible to manage a whole Microsoft Azure subscription just by chatting with
+        Claude Code in Visual Studio Code &mdash; doing the work by conversation rather than
+        clicking through the Azure portal, and opening the portal to check the results.</p>
+
+        <p>In the demo below, Langate shows how to set up Claude Code, connect to an Azure
+        subscription, and then manage its resources by chatting. The presenter reads the
+        subscription, makes a safe change, and deletes a test resource &mdash; each with the
+        right amount of review.</p>
+
+        <p>The demo keeps a simple rule in mind. Reading is safe, so Claude runs it freely. A
+        change is approved after the presenter reads the command. A delete is always described
+        first, and the presenter confirms it before it runs. A rule in the project
+        <code>CLAUDE.md</code> file makes Claude follow that habit, even in bypass permission mode.</p>
+
+        <p>In the next episode the presenter explores the subscription by asking &mdash; resource
+        groups, what is running, and what it costs.</p>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="shooting-script">Shooting script</h1>
+        <div class="chapter-intro">
+            <p>Each beat is labelled: <strong>On screen</strong> (what the camera sees),
+            <strong>Prompt</strong> (what the presenter types to Claude), <strong>Claude</strong> (what
+            Claude proposes or shows), and <strong>Say</strong> (the narration the presenter speaks).
+            Spoken lines are in italics.</p>
+        </div>
+<h2 id="scene-1set-up0-00-1-00"><span class="scene-no">Scene 1</span>Set up<span class="scene-time">0:00 – 1:00</span></h2>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A clean Visual Studio Code window with no folder open; the Extensions view is on screen.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In this series we manage a whole Microsoft Azure subscription just by chatting with Claude Code, right here in Visual Studio Code &mdash; doing the work by conversation instead of clicking through the portal, and opening the portal to see the results. We start from nothing installed, so anyone can follow."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">Install the Claude Code extension; the Claude Code panel appears on the right, with a terminal docked below.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"First the tool. I add the Claude Code extension to Visual Studio Code &mdash; that is the panel on the right, with a terminal underneath. Everything in the series happens in this one window."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"And one habit runs through all of it. I set Claude a goal, let it try, and when it slips I let it read the error and fix it. When a way of working proves out, we save it as a skill so Claude repeats it next time. You will see all of that in this first episode."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="scene-2install-the-cli-and-connect1-00-1-45"><span class="scene-no">Scene 2</span>Install the CLI and connect<span class="scene-time">1:00 – 1:45</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Claude drives Azure through Microsoft's own command line, the Azure CLI. Let us have Claude install it and sign in."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Install the Azure CLI, then sign me in to Azure and show which subscription I'm on.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Installs the CLI with the right tool for the machine &mdash; <code>winget</code> on Windows, Homebrew on a Mac &mdash; then starts the browser sign-in and reads the active subscription.<div class="codeblock cmd">winget install -e --id Microsoft.AzureCLI   # Windows
+brew install azure-cli                      # macOS
+az login
+az account show --output table</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">The browser sign-in completes, then a table with the subscription name and id (blur the id in editing).</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Claude installed the CLI, I approved the sign-in in the browser, and it read back the subscription &mdash; the test one I will use through the series. Reading which subscription I am on is safe, so it just runs."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"One idea before we touch anything: every Azure task is one of three kinds &mdash; reading, changing, or deleting &mdash; and they do not carry the same risk. We will do one of each."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-3reading-explore-the-subscription1-45-3-30"><span class="scene-no">Scene 3</span>Reading &mdash; explore the subscription<span class="scene-time">1:45 – 3:30</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Let us start with the safest kind of task: reading. I will ask Claude what is in the subscription."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">List all my resource groups and what's in each of them.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Runs two read-only commands and shows the answer as plain tables.<div class="codeblock cmd">az group list --output table
+az resource list --output table</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A table of resource groups &mdash; <code>rg-langate-web</code> and one or two others &mdash; then a table of the resources inside them.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"There are a few groups already here &mdash; a web app group and a couple of others. Claude ran two read-only commands and put the answer in plain tables. No approval needed &mdash; reading never changes anything."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Can you boil that down to one line per group?</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Reads the groups and resources and writes a short summary, one line per group.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That is where chatting beats the portal. I asked a question in plain English and got exactly the view I wanted &mdash; no clicking through blades to build it."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-4changing-and-letting-claude-recover1-45-4-00"><span class="scene-no">Scene 4</span>Changing &mdash; and letting Claude recover<span class="scene-time">1:45 – 4:00</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Now a change &mdash; something that actually alters the subscription. So here I read Claude's command before it runs. And this is the important part of the whole course: I set a goal, I let Claude try, and if it slips, I watch how it recovers."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Create a resource group called rg-azure-demo in Sweden Central, then create a storage account named DemoStorage2026 inside it.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes the group first. The presenter reads it &mdash; right name, right region, only creates.<div class="codeblock cmd">az group create --name rg-azure-demo --location swedencentral --tags env=demo</div>Approved and run &mdash; provisioning state <em>Succeeded</em>.</div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Then proposes the storage account, keeping the name the presenter asked for.<div class="codeblock cmd">az storage account create --name DemoStorage2026 --resource-group rg-azure-demo \
+    --location swedencentral --sku Standard_LRS</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">The command fails. Azure rejects the name: storage account names must be 3&ndash;24 characters, lower-case letters and numbers only.</div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Reads the error, explains the rule, and retries with a valid, lower-case name &mdash; noting it must also be globally unique.<div class="codeblock cmd">az storage account create --name demostorage2026 --resource-group rg-azure-demo \
+    --location swedencentral --sku Standard_LRS</div>Succeeds.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That is the pattern I want you to get comfortable with. I set a goal, Claude made a reasonable attempt, Azure pushed back, and Claude read the error and corrected itself &mdash; lower-case name, and it remembered the name has to be unique. I did not have to know that rule in advance. I had to read what Claude proposed, and let it learn from the error."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-5a-guardrail-in-claude-md4-00-5-30"><span class="scene-no">Scene 5</span>A guardrail in CLAUDE.md<span class="scene-time">4:00 – 5:30</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Before we delete anything, let us set up a safety net that lives in the project. Deleting is the one kind of task I never want to run by accident &mdash; even in bypass mode."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">Open <code>CLAUDE.md</code> in the editor.</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Let's add a safety rule to CLAUDE.md: always check with me before you delete or replace anything, even in bypass mode. And note our defaults — Sweden Central, and rg-project-purpose naming.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes an edit to <code>CLAUDE.md</code>. The presenter reads the added section on screen.<div class="codeblock file"><span class="lbl">CLAUDE.md</span>## Azure safety
+- Before running any command that deletes or replaces an Azure
+  resource, describe in plain words exactly what will be removed
+  and wait for my confirmation &mdash; even in bypass permission mode.
+- Default region: Sweden Central (swedencentral).
+- Resource-group naming: rg-&lt;project&gt;-&lt;purpose&gt;.</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Now that rule is part of the project's memory. Claude reads CLAUDE.md at the start of every session, so from now on it will stop and describe any delete before running it. CLAUDE.md is the project's memory file &mdash; and now it is holding a guardrail."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-6deleting-behind-the-guardrail5-30-7-00"><span class="scene-no">Scene 6</span>Deleting &mdash; behind the guardrail<span class="scene-time">5:30 – 7:00</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Let us clean up the test group we just made &mdash; and watch the guardrail work."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Delete the rg-azure-demo resource group.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Because of the CLAUDE.md rule, it describes first and does <strong>not</strong> run yet.<div class="codeblock cmd">This will permanently delete the resource group rg-azure-demo in
+Sweden Central and everything inside it (1 resource: demostorage2026).
+Command: az group delete --name rg-azure-demo --yes
+Shall I run it?</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"There it is. Instead of just deleting, Claude described exactly what would go &mdash; the group, the region, and the one resource inside it &mdash; and asked first. I read it, it names only the test group, so: yes."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Yes, delete it.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Runs the delete, then confirms the group is gone with a fresh read.<div class="codeblock cmd">az group delete --name rg-azure-demo --yes
+az group list --output table</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Gone. And cleaning up what we create is a habit we keep in every episode, so nothing is left running up a bill."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-7where-claude-md-lives-and-sharing-it-across-projects7"><span class="scene-no">Scene 7</span>Where CLAUDE.md lives &mdash; and sharing it across projects<span class="scene-time">7:00 – 8:00</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That guardrail lives in this project's CLAUDE.md. But you will manage more than one Azure project, and you do not want to write the same safety rules into every one. So let me show you where this file lives &mdash; and how to keep the rules in one place."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Where does Claude Code look for CLAUDE.md files, and how can I keep my Azure safety rules in one central file that all my projects share?</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Explains that it reads two kinds of memory file. It looks for <strong>project memory</strong> &mdash; a <code>CLAUDE.md</code> in the project folder, which travels with the project and is shared with anyone who has the code &mdash; and <strong>personal memory</strong> at <code>~/.claude/CLAUDE.md</code> in your home folder, which it reads for <em>every</em> project on your machine.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So there are two homes already: one that ships with the project, and one personal file that applies everywhere. For shared rules like our safety net, I want a third option &mdash; one central file that I write once and point every project at."</div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes one central file holding the shared rules, then a single <code>@</code> line in each project's <code>CLAUDE.md</code> that pulls it in. The referenced path can be relative, absolute, or start at your home folder with <code>~</code>.<div class="codeblock file"><span class="lbl">~/azure-standards/CLAUDE.md &mdash; the central file, written once</span>## Azure safety
+- Before deleting or replacing a resource, describe exactly what
+  will be removed and wait for confirmation &mdash; even in bypass mode.
+- Default region: Sweden Central (swedencentral).
+- Resource-group naming: rg-&lt;project&gt;-&lt;purpose&gt;.</div><div class="codeblock file"><span class="lbl">the project's CLAUDE.md &mdash; one line pulls the central file in</span>@~/azure-standards/CLAUDE.md
+
+## This project
+- Test subscription; safe to create and delete demo groups.</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Now the safety rules live in one place. Every project just references that central file, so Claude reads the same rules everywhere. Change the central file once and every project follows &mdash; no copy-and-paste, and nothing to keep in sync by hand."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-8save-the-working-pattern-as-a-skill8-00-9-30"><span class="scene-no">Scene 8</span>Save the working pattern as a skill<span class="scene-time">8:00 – 9:30</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"We have found a way of working that works: set a goal, read the command before it runs, let Claude recover from errors, and clean up afterwards. When a pattern proves itself like that, we save it as a skill &mdash; so Claude does it the same way next time, without me repeating the rules."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Save the way we just worked as a skill — call it managing-azure-safely — so you'll do it the same way next time, without me repeating the rules.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes a new skill file. The presenter reads it on screen.<div class="codeblock file"><span class="lbl">skills / managing-azure-safely / SKILL.md</span>---
+name: managing-azure-safely
+description: Manage Azure by chatting - set a goal, propose the
+  az command, wait for review, recover from errors, confirm deletes.
+---
+
+# Managing Azure safely
+
+1. Take the goal in plain words; restate it before acting.
+2. Propose one `az` command and wait &mdash; do not run changes unread.
+3. If Azure returns an error, read it, explain the cause, and retry.
+4. Before any delete or replace, describe exactly what will be
+   removed and wait for confirmation.
+5. Default region swedencentral; groups named rg-&lt;project&gt;-&lt;purpose&gt;.
+6. Clean up test resources when the task is done.</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Now that lesson is not just in my head, or in one line of CLAUDE.md &mdash; it is a reusable skill. In the coming episodes we keep doing exactly this: set a goal, let Claude try and sometimes fail, learn from the error, and save what works as a skill. That is how the course builds a toolbox that keeps getting better."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-9close-and-next-episode9-30-10-00"><span class="scene-no">Scene 9</span>Close and next episode<span class="scene-time">9:30 – 10:00</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So that is the whole loop, all by chatting. We read the subscription, made a change after reading the command, let Claude recover from an error, deleted a resource behind a guardrail we wrote into CLAUDE.md, and saved the working pattern as a skill. That is how we will manage everything else in Azure from here."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A short recap card summarising the loop.</div></div>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>The task mindset</h4>
+                <p><strong>Read</strong> runs freely. <strong>Change</strong> is approved after
+                you read the command. <strong>Delete</strong> is described and confirmed first.</p>
+            </div>
+            <div class="feature-card">
+                <h4>The learning loop</h4>
+                <p>Set a goal &rarr; let Claude try &rarr; read and fix the error &rarr; save the
+                proven pattern as a skill.</p>
+            </div>
+        </div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In the next episode we explore the subscription by asking &mdash; what is running, and what it is costing. See you there."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">End slate: series title and the next-episode title.</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 1 &mdash; Set up and connect to Azure</div>
+        <div>Langate &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+
+
+</body>
+</html>

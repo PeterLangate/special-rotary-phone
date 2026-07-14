@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Azure with Claude Code — Series Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+/* ==========================================================================
+   Langate — A4 print/HTML document stylesheet
+   Palette + typography per the branding-langate skill.
+   No-template mode: plain CSS; DM Sans loaded via chapters/_head.html.
+   ========================================================================== */
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    /* Langate brand tokens */
+    --primary:        #00517e;   /* primary blue — headers, dark surfaces, accents */
+    --primary-teal:   #537780;   /* links, secondary text, footer / TOC page numbers */
+    --primary-navy:   #0b3ebe;   /* rare gradient endpoint */
+    --accent-green:   #02B896;   /* chapter numbers, h2 bar, cover dot, tips */
+    --accent-gold:    #F5A623;   /* note callouts */
+    --accent-red:     #B55852;   /* attention / warning */
+    --panel:          #ebf2f5;   /* light-blue panel background */
+    --panel-line:     #DBE4EA;   /* borders / row dividers */
+
+    /* Back-compat aliases: existing chapter markup uses var(--brand-*) inline */
+    --brand-navy:   var(--primary);        /* cover bg, group-band, dark surfaces */
+    --brand-blue:   var(--primary);        /* accents, step numbers, chips */
+    --brand-soft:   #a2bfd6;               /* soft dividers, gradient partner */
+    --brand-ink:    #4A4A4A;               /* all body text and headings */
+    --brand-red:    var(--accent-red);     /* attention / warning */
+    --brand-green:  var(--accent-green);   /* success / tip */
+}
+
+body {
+    font-family: 'DM Sans', Avenir, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--brand-ink);
+    background: #e8edf2;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: white; margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 20mm 26mm 18mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* ---- Page-break control (Chromium print-to-PDF) ---- */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box,
+.remember-box         { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col, .three-col  { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.group-band           { break-inside: avoid; break-after: avoid; }
+
+/* ==========================================================================
+   Cover
+   ========================================================================== */
+.cover-page {
+    background: var(--brand-navy);
+    color: #ffffff;
+    display: flex; flex-direction: column; min-height: 297mm;
+}
+.cover-accent-bar {
+    height: 3mm;
+    background: var(--accent-green);
+}
+.cover-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 24mm 26mm;
+}
+/* Langate wordmark — text mark + green dot (replaces the logo-panel image) */
+.cover-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 15mm; }
+.cover-brand-name { font-size: 25pt; font-weight: 800; letter-spacing: 0.01em; color: #ffffff; }
+.cover-brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-green); }
+.cover-eyebrow {
+    font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 6mm;
+}
+.cover-title { font-size: 33pt; font-weight: 800; line-height: 1.12; }
+.cover-subtitle {
+    font-size: 14pt; font-weight: 300; line-height: 1.4;
+    color: rgba(255,255,255,0.72); margin-top: 6mm; max-width: 150mm;
+}
+.cover-footer {
+    padding: 8mm 26mm; border-top: 1px solid rgba(255,255,255,0.16);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 8.5pt; color: rgba(255,255,255,0.65);
+}
+
+/* ==========================================================================
+   Page header / footer
+   ========================================================================== */
+.page-header {
+    padding: 9mm 26mm 0;
+    padding-bottom: 4mm; margin-bottom: 7mm;
+    text-align: center;
+}
+.page-header::before {
+    content: 'Langate';
+    display: block;
+    font-size: 11pt; font-weight: 800; letter-spacing: 0.02em;
+    color: var(--primary);
+}
+.page-header-line {
+    width: 40mm; height: 2px;
+    background: var(--accent-green); margin: 2.5mm auto 0;
+    border-radius: 1px;
+}
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 5mm 26mm; border-top: 1px solid var(--panel-line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 7.5pt; color: #8a8a8a;
+}
+.page-footer div:last-child { color: var(--primary-teal); font-weight: 600; }
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+h1 {
+    font-size: 20pt; font-weight: 800; color: var(--brand-ink);
+    margin-bottom: 5mm; line-height: 1.2;
+}
+h1 .chapter-num {
+    display: block; font-size: 9pt; font-weight: 700;
+    color: var(--accent-green); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 2.5mm;
+}
+h2 {
+    font-size: 13pt; font-weight: 700; color: var(--primary);
+    margin-top: 6mm; margin-bottom: 3mm;
+    border-left: 3px solid var(--accent-green); padding-left: 3mm;
+}
+h3 {
+    font-size: 11pt; font-weight: 700; color: var(--primary);
+    margin-top: 5mm; margin-bottom: 2mm;
+}
+h4 { font-size: 10pt; font-weight: 700; color: var(--brand-ink); margin-bottom: 1.5mm; }
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--primary-teal); text-decoration: none; }
+strong { color: var(--brand-ink); }
+em { font-style: italic; }
+
+/* ==========================================================================
+   Callouts
+   ========================================================================== */
+.chapter-intro {
+    background: var(--panel); border-left: 4px solid var(--primary);
+    padding: 3mm 6mm; margin-bottom: 5mm; border-radius: 0 4px 4px 0;
+}
+.chapter-intro p:last-child { margin-bottom: 0; }
+.note-box { background: #fff8e6; border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.tip-box  { background: #e6faf6; border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.info-box { background: var(--panel); border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.warn-box { background: #fbeeed; border-left: 3px solid var(--accent-red); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.note-box p:last-child, .tip-box p:last-child, .info-box p:last-child, .warn-box p:last-child { margin-bottom: 0; }
+
+/* "Remember" floating recap pane — a point stated in full earlier, recalled briefly.
+   Mint card + soft blue shadow reads as a floating aside; the label rides the top edge. */
+.remember-box {
+    position: relative;
+    background: #f4faf8; border: 1px solid #cde9e2;
+    border-radius: 7px; padding: 5mm 5mm 3.5mm; margin: 6mm 0 5mm;
+    box-shadow: 0 3px 10px rgba(0, 81, 126, 0.13);
+    font-size: 9.6pt; line-height: 1.5;
+}
+.remember-box::before {
+    content: 'Remember';
+    position: absolute; top: -2.6mm; left: 5mm;
+    background: var(--primary); color: #ffffff;
+    font-size: 7pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 1mm 3mm; border-radius: 3px;
+}
+.remember-box p { margin-bottom: 0; }
+
+/* ==========================================================================
+   Running-order group band + episode tables
+   ========================================================================== */
+.group-band {
+    background: var(--brand-navy); color: #ffffff;
+    padding: 2.5mm 5mm; margin: 6mm 0 3mm; border-radius: 4px;
+    font-size: 10pt; font-weight: 700; letter-spacing: 0.04em;
+    display: flex; align-items: baseline; gap: 4mm;
+}
+.group-band .group-tag {
+    font-size: 8pt; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--brand-soft);
+}
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.8pt; line-height: 1.4; }
+th {
+    text-align: left; background: var(--panel); color: var(--brand-ink);
+    font-weight: 700; padding: 2.5mm 3mm; border-bottom: 2px solid var(--accent-green);
+}
+td { padding: 2.5mm 3mm; border-bottom: 1px solid var(--panel-line); vertical-align: top; }
+td.ep-num { width: 9mm; font-weight: 700; color: var(--primary); }
+tr:last-child td { border-bottom: none; }
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card {
+    background: var(--panel); border: 1px solid var(--panel-line);
+    border-radius: 5px; padding: 4mm 5mm;
+}
+.feature-card h4 { color: var(--primary); margin-bottom: 1.5mm; }
+.feature-card p:last-child { margin-bottom: 0; }
+
+/* Step list with circle counters */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--primary); color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5.5mm; height: 5.5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.3mm; flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Table of contents
+   ========================================================================== */
+.toc-title { font-size: 18pt; font-weight: 800; color: var(--brand-ink); margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.6mm 0; color: var(--brand-ink); }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.6pt; color: #5a5a5a; font-weight: 400; }
+.toc-num  { min-width: 12mm; flex-shrink: 0; color: var(--accent-green); }
+.toc-entry.toc-h2 .toc-num { min-width: 14mm; }
+.toc-dots { flex: 1; border-bottom: 1px dotted #c3ccd6; margin: 0 2mm 1.2mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; flex-shrink: 0; }
+
+/* Learning-loop strip — the course spine (goal -> try -> learn -> skill) */
+.loop-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 3mm 0 4mm; break-inside: avoid; }
+.loop-step { background: var(--panel); border-top: 3px solid var(--accent-green); border-radius: 0 0 4px 4px; padding: 3mm 3mm 3.5mm; }
+.loop-step .n { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-green); }
+.loop-step h4 { font-size: 9.5pt; color: var(--brand-ink); margin: 1mm 0; }
+.loop-step p { font-size: 8.4pt; line-height: 1.4; margin: 0; color: #4a4a4a; }
+
+    </style>
+</head>
+<body>
+
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-body">
+        <div class="cover-brand"><span class="cover-brand-name">Langate</span><span class="cover-brand-dot"></span></div>
+        <div class="cover-eyebrow">Langate Tips &mdash; video series plan</div>
+        <div class="cover-title">Manage Azure with<br>Claude Code</div>
+        <div class="cover-subtitle">A plan for a self-contained Tips series on managing a whole
+            Microsoft Azure subscription by chatting with Claude Code &mdash; from nothing
+            installed to full control, using Claude and Microsoft only.</div>
+    </div>
+    <div class="cover-footer">
+        <div>Langate</div>
+        <div>Series plan &nbsp;&middot;&nbsp; July 2026</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <a class="toc-entry toc-h1" href="#kap-1"><span class="toc-num">1</span>Manage Azure by chatting with Claude Code<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#read-change-delete"><span class="toc-num"></span>Read, change, delete<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#claude-and-microsoft-only"><span class="toc-num"></span>Claude and Microsoft only<div class="toc-dots"></div><span class="toc-page">3</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-2"><span class="toc-num">2</span>Before you start<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#episode-1-sets-it-all-up"><span class="toc-num"></span>Episode 1 sets it all up<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#keep-the-extension-framing-and-lean-on-claude-md"><span class="toc-num"></span>Keep the extension framing, and lean on CLAUDE.md<div class="toc-dots"></div><span class="toc-page">4</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-3"><span class="toc-num">3</span>The Microsoft surfaces Claude drives<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#show-all-three-command-surfaces"><span class="toc-num"></span>Show all three command surfaces<div class="toc-dots"></div><span class="toc-page">5</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-4"><span class="toc-num">4</span>The running order<div class="toc-dots"></div><span class="toc-page">6</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-5"><span class="toc-num">5</span>Threads through every episode<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#the-learning-loop-the-course-spine"><span class="toc-num"></span>The learning loop &mdash; the course spine<div class="toc-dots"></div><span class="toc-page">8</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-6"><span class="toc-num">6</span>End-to-end testing with Playwright<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#why-an-end-to-end-test"><span class="toc-num"></span>Why an end-to-end test<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#the-verify-loop"><span class="toc-num"></span>The verify loop<div class="toc-dots"></div><span class="toc-page">9</span></a>
+
+        <a class="toc-entry toc-h1" href="#kap-7"><span class="toc-num">7</span>Topic coverage<div class="toc-dots"></div><span class="toc-page">10</span></a>
+
+        <a class="toc-entry toc-h1" href="#appendix-definitions"><span class="toc-num"></span>Appendix: Definitions<div class="toc-dots"></div><span class="toc-page">12</span></a>
+        </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-1"><span class="chapter-num">Chapter 1</span>Manage Azure by chatting with Claude Code</h1>
+        <div class="chapter-intro">
+            <p>It is possible to manage Microsoft Azure just by chatting with Claude Code in
+            Visual Studio Code &mdash; doing the work by conversation rather than by clicking
+            through the Azure portal. We still open the portal often, to see the results of what
+            Claude did. This series shows how.</p>
+        </div>
+        <p>It starts from nothing installed and builds up to creating, changing, investigating and
+        governing every resource in a subscription by conversation, one short task at a time &mdash;
+        and every change is documented as it is made.</p>
+        <p>The presenter works with the Claude Code extension in Visual Studio Code, so every demo stays
+        inside one editor. The first episode installs everything and connects to Azure; from
+        there, Claude proposes each command and the presenter reads it before it runs.</p>
+
+        <h2 id="read-change-delete">Read, change, delete</h2>
+        <p>The safety mindset runs through every episode. Azure tasks come in three kinds that
+        carry different risk:</p>
+        <ul>
+            <li><strong>Read</strong> &mdash; listing resources, reading logs, checking costs.
+            These are safe, so Claude can run them freely.</li>
+            <li><strong>Change</strong> &mdash; creating a resource, resizing a virtual machine,
+            editing a configuration. Read Claude's proposed command first, then approve it.</li>
+            <li><strong>Delete</strong> &mdash; removing a resource or a resource group. Always
+            read the command, and confirm that it names only what you mean to remove.</li>
+        </ul>
+        <div class="warn-box"><strong>Always ask before deleting.</strong> A rule in the project
+        <code>CLAUDE.md</code> file tells Claude to describe what it will remove and wait for
+        approval first.</div>
+
+        <h2 id="claude-and-microsoft-only">Claude and Microsoft only</h2>
+        <p>The whole series stays inside two houses: Anthropic's Claude and Microsoft's own
+        command surfaces. Where a task could use an outside tool, the series picks the
+        Microsoft-native one instead &mdash; Bicep, Microsoft's own infrastructure-as-code
+        language, and its official Azure MCP Server rather than a community server.
+        Chapter&nbsp;3 lists the surfaces Claude drives.</p>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-2"><span class="chapter-num">Chapter 2</span>Before you start</h1>
+        <div class="chapter-intro">
+            <p>The series is a fresh start. It assumes nothing is installed and nobody has touched
+            Azure yet &mdash; the very first episode sets everything up and connects to a
+            subscription, so anyone can follow from zero.</p>
+        </div>
+        <p>All a viewer needs before Episode&nbsp;1 is short:</p>
+        <ul>
+            <li><strong>A machine with Visual Studio Code</strong> &mdash; Windows or Mac. Visual
+            Studio Code is free, and every demo happens inside it.</li>
+            <li><strong>An Azure subscription</strong> &mdash; a paid one or a free trial. This is
+            the only thing the series cannot create for you.</li>
+        </ul>
+        <p>Everything else is installed and configured on screen in Episode&nbsp;1, so the series
+        never depends on any earlier video.</p>
+
+        <h2 id="episode-1-sets-it-all-up">Episode 1 sets it all up</h2>
+        <p>The first episode installs Claude Code and the Visual Studio Code extension, installs
+        the Azure CLI and Azure PowerShell, and signs in to Azure with <code>az login</code>. By
+        the end of it the viewer has a working setup and has already read, changed and deleted a
+        resource by chatting &mdash; so the later episodes can go straight to real management.</p>
+
+        <h2 id="keep-the-extension-framing-and-lean-on-claude-md">Keep the extension framing, and lean on CLAUDE.md</h2>
+        <p>The demos stay in the Visual Studio Code extension, not the raw terminal, so there is
+        one editor to learn. Episode&nbsp;1 also creates the <code>CLAUDE.md</code> memory file,
+        which becomes the natural place to store subscription IDs, resource-naming conventions,
+        and guardrails such as "always ask before deleting". That recurring thread is unique to
+        this series, so every later episode leans on it.</p>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-3"><span class="chapter-num">Chapter 3</span>The Microsoft surfaces Claude drives</h1>
+        <div class="chapter-intro">
+            <p>To manage Azure with Claude and Microsoft only, Claude drives Microsoft's own
+            command surfaces. Four of them form the backbone of the series, and all four are
+            first-party.</p>
+        </div>
+        <table>
+            <thead>
+                <tr><th style="width:34mm">Surface</th><th>What it is</th><th style="width:52mm">Where the series uses it</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Azure CLI</strong><br><code>az</code></td>
+                    <td>The cross-platform command line for Azure &mdash; the workhorse. Claude
+                    runs it in the terminal.</td>
+                    <td>Most everyday reading and changing tasks.</td>
+                </tr>
+                <tr>
+                    <td><strong>Azure PowerShell</strong><br><code>Az</code> module</td>
+                    <td>The same operations expressed in PowerShell.</td>
+                    <td>Shown as the natural choice for the PowerShell-oriented viewer.</td>
+                </tr>
+                <tr>
+                    <td><strong>Azure MCP Server</strong></td>
+                    <td>Microsoft's official MCP server. It gives Claude structured Azure tools
+                    instead of raw commands.</td>
+                    <td>The automation episode, compared against raw <code>az</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Bicep</strong></td>
+                    <td>Microsoft-native infrastructure-as-code. Claude writes the file, you
+                    deploy it.</td>
+                    <td>The infrastructure-as-code episodes.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 id="show-all-three-command-surfaces">Show all three command surfaces</h2>
+        <p>Azure CLI, Azure PowerShell and the Azure MCP Server reach the same subscription in
+        different ways. The series shows each of them at least once, so viewers can pick the one
+        that suits how they already work. Claude reads an Azure error message and corrects itself
+        on any of the three &mdash; a strong point in favour of chatting over clicking in the
+        portal.</p>
+
+        <div class="remember-box"><p>The series stays Claude + Microsoft only &mdash; Bicep for
+        infrastructure as code, and Microsoft's official Azure MCP Server, not a community one.</p></div>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-4"><span class="chapter-num">Chapter 4</span>The running order</h1>
+        <div class="chapter-intro">
+            <p>Nineteen episodes in seven groups, starting from nothing installed. Each episode is
+            one short task the presenter shows by chatting with Claude Code, useful on its own.</p>
+        </div>
+
+        <div class="group-band"><span class="group-tag">01</span> Getting started</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">1</td><td><strong>Set up and connect to Azure</strong>
+                &mdash; install Claude Code and the Visual Studio Code extension, install the Azure
+                CLI, sign in with <code>az login</code>, and set up the <code>CLAUDE.md</code>
+                guardrail &mdash; then read, change and delete a resource to learn the safe mindset.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="group-band"><span class="group-tag">02</span> Everyday management</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">2</td><td><strong>Explore your subscription by asking</strong>
+                &mdash; list resource groups, see what is running, and read costs by conversation.</td></tr>
+                <tr><td class="ep-num">3</td><td><strong>Virtual machines</strong> &mdash; create,
+                start, stop, resize and delete a virtual machine to save money.</td></tr>
+                <tr><td class="ep-num">4</td><td><strong>Storage and databases</strong> &mdash; blob
+                containers, Azure SQL and Cosmos DB, connection strings and firewall rules.</td></tr>
+                <tr><td class="ep-num">5</td><td><strong>Azure AI services</strong> &mdash; provision an
+                Azure OpenAI or AI Foundry resource, manage model deployments, keys and quota, and read
+                its spend &mdash; managing an AI service by chatting with one.</td></tr>
+                <tr><td class="ep-num">6</td><td><strong>Networking and troubleshooting</strong>
+                &mdash; virtual networks, and "why can this resource not connect?".</td></tr>
+            </tbody>
+        </table>
+
+        <div class="group-band"><span class="group-tag">03</span> Where chat beats the portal</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">7</td><td><strong>Cost investigation</strong> &mdash; "what is
+                costing me the most this month?", read from Azure Cost Management.</td></tr>
+                <tr><td class="ep-num">8</td><td><strong>Reading logs and diagnosing</strong> &mdash;
+                find a failing resource in Azure Monitor and Log Analytics, then fix it.</td></tr>
+                <tr><td class="ep-num">9</td><td><strong>Bulk operations</strong> &mdash; tag every
+                virtual machine, or shut down all development resources at night.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <div class="group-band"><span class="group-tag">04</span> Infrastructure as code</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">10</td><td><strong>Write and deploy Bicep</strong> &mdash;
+                Claude writes a Bicep file from your description, then deploys it.</td></tr>
+                <tr><td class="ep-num">11</td><td><strong>Explain an existing resource group</strong>
+                &mdash; point Claude at a resource group and get a readable summary. Useful for an
+                environment you have inherited.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="group-band"><span class="group-tag">05</span> Automation and safety</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">12</td><td><strong>Save tasks as reusable skills</strong>
+                &mdash; turn common tasks into Claude Code skills and slash commands, the way the
+                PowerPoint Skill episode does.</td></tr>
+                <tr><td class="ep-num">13</td><td><strong>The Azure MCP Server</strong> &mdash; install
+                Microsoft's official server and compare its structured tools with raw <code>az</code>.</td></tr>
+                <tr><td class="ep-num">14</td><td><strong>Guardrails for a team</strong> &mdash;
+                <code>az login</code> identity, RBAC and least privilege, and <code>CLAUDE.md</code>
+                rules that keep non-experts safe.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="group-band"><span class="group-tag">06</span> Hosting applications</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">15</td><td><strong>Web apps on App Service</strong> &mdash;
+                deploy and manage a web app or API without running the server, and swap a staging
+                slot into production.</td></tr>
+                <tr><td class="ep-num">16</td><td><strong>Containers &mdash; AKS and Container Apps</strong>
+                &mdash; run containers on Azure and store their images in a container registry.</td></tr>
+                <tr><td class="ep-num">17</td><td><strong>Serverless with Azure Functions</strong>
+                &mdash; run a small piece of code on demand, triggered by an event, with no server
+                to manage.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="group-band"><span class="group-tag">07</span> Security and governance</div>
+        <table>
+            <tbody>
+                <tr><td class="ep-num">18</td><td><strong>Security posture</strong> &mdash; score the
+                subscription with Microsoft Defender for Cloud and act on its Zero Trust
+                recommendations.</td></tr>
+                <tr><td class="ep-num">19</td><td><strong>Governance with Azure Policy</strong> &mdash;
+                enforce tag and guardrail rules across a subscription so it stays tidy and
+                compliant.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info-box"><strong>Each episode stands alone.</strong> The episodes build on
+        each other, but a viewer can drop in at any single task. Every hands-on episode follows the
+        same learning loop &mdash; set a goal, let Claude try, learn from the error, and save what
+        works as a skill (Chapter&nbsp;5).</div>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-5"><span class="chapter-num">Chapter 5</span>Threads through every episode</h1>
+        <div class="chapter-intro">
+            <p>Some ideas are too important for a single episode. The strongest is the
+            <strong>learning loop</strong> &mdash; the way the course teaches. It runs through
+            every hands-on demo, and the supporting threads below run alongside it.</p>
+        </div>
+
+        <h2 id="the-learning-loop-the-course-spine">The learning loop &mdash; the course spine</h2>
+        <p>The audience is not shown a finished answer to copy. They watch the presenter set a goal, let
+        Claude attempt it, read the error when it slips, and save the pattern as a skill once it
+        proves reliable.</p>
+        <div class="loop-strip">
+            <div class="loop-step"><div class="n">1 &middot; Goal</div><h4>Set a goal</h4><p>Say what you want in plain words, and let Claude restate it.</p></div>
+            <div class="loop-step"><div class="n">2 &middot; Try</div><h4>Let Claude try</h4><p>Read the proposed command, then let it run &mdash; mistakes allowed.</p></div>
+            <div class="loop-step"><div class="n">3 &middot; Learn</div><h4>Learn from the error</h4><p>Claude reads the Azure error, explains it, and self-corrects.</p></div>
+            <div class="loop-step"><div class="n">4 &middot; Skill</div><h4>Save what works</h4><p>Capture the proven pattern as a skill Claude reuses next time.</p></div>
+        </div>
+
+        <p style="margin-top:5mm;"><strong>Alongside the loop, six threads recur:</strong></p>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>Rely on Claude, but verify</h4>
+                <p>Keep prompts short and conversational and let Claude work out the details &mdash;
+                then check the result. Verify by hand and in the portal, and automatically: have
+                Claude write end-to-end tests (Chapter&nbsp;6) and let a critical sub-agent review
+                the work.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Authentication and identity</h4>
+                <p><code>az login</code>, the right subscription and tenant, and service
+                principals or managed identity for unattended runs.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Review before running</h4>
+                <p>Read Claude's proposed command before approving, and use <code>what-if</code>
+                or <code>--dry-run</code> where Azure supports it.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Read versus change</h4>
+                <p>Keep safe reading and querying clearly apart from create, delete and modify
+                tasks &mdash; the split the whole series is built on.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Cost, clean-up and RBAC</h4>
+                <p>Clean up what you create so nothing is left billing, and set least-privilege
+                access before any automation episode.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Document every change</h4>
+                <p>Every change is written down, not just made. The command is shown before it
+                runs, resources are tagged with their purpose, and any notable change is noted so
+                the subscription's history stays readable.</p>
+            </div>
+        </div>
+        <div class="tip-box"><strong>The loop is the point.</strong> Mistakes are where the
+        learning happens, and each saved skill makes the next episode start stronger.</div>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="kap-6"><span class="chapter-num">Chapter 6</span>End-to-end testing with Playwright</h1>
+        <div class="chapter-intro">
+            <p>The series runs on one rule: <strong>rely on Claude, but verify</strong>. Keep the
+            prompt short and let Claude work out the details &mdash; then prove the result is right,
+            by hand and automatically. For anything with a web front end, that automatic proof is an
+            end-to-end test written with Playwright.</p>
+        </div>
+
+        <h2 id="why-an-end-to-end-test">Why an end-to-end test</h2>
+        <p>Azure reporting a deployment as <em>Succeeded</em> only means the resource was created. It
+        does not mean a visitor can open the site, sign in and use it. An end-to-end (E2E) test
+        drives a real browser through those same steps, so it checks the experience, not just the
+        resource. Once written it stays as a safety net: run it again after the next change and it
+        catches whatever broke.</p>
+
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>First-party, like the rest</h4>
+                <p>Playwright is Microsoft's own open-source browser-automation tool, so it fits the
+                Claude&nbsp;+&nbsp;Microsoft only rule. One test drives Chromium, Firefox and WebKit,
+                and it waits for the page on its own instead of guessing with sleeps.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Claude writes it</h4>
+                <p>You describe the flow in plain words; Claude writes the test &mdash; or records a
+                first draft with <code>npx&nbsp;playwright&nbsp;codegen</code> &mdash; runs it with
+                <code>npx&nbsp;playwright&nbsp;test</code>, reads any failure and fixes it. The same
+                learning loop as everywhere else in the series.</p>
+            </div>
+        </div>
+
+        <h2 id="the-verify-loop">The verify loop</h2>
+        <div class="loop-strip">
+            <div class="loop-step"><div class="n">1 &middot; Ask</div><h4>Describe the flow</h4><p>"Open the site, check the home page loads and sign-in works."</p></div>
+            <div class="loop-step"><div class="n">2 &middot; Write</div><h4>Claude writes the test</h4><p>A Playwright test against the deployed URL, then run from the terminal.</p></div>
+            <div class="loop-step"><div class="n">3 &middot; Check</div><h4>Verify two ways</h4><p>You spot-check by hand and in the portal; the test proves the flow automatically.</p></div>
+            <div class="loop-step"><div class="n">4 &middot; Review</div><h4>A critical sub-agent</h4><p>A second Claude reviews the test and the code, hunting for what the first one missed.</p></div>
+        </div>
+
+        <div class="tip-box"><strong>Two kinds of proof.</strong> The portal shows the state of a
+        resource; a Playwright test proves the experience still works. Rely on Claude to build both
+        the app and its test &mdash; then trust the green test, not just the word "Succeeded".</div>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="kap-7"><span class="chapter-num">Chapter 7</span>Topic coverage</h1>
+        <div class="chapter-intro">
+            <p>What the series covers, area by area. Every area is managed the same way &mdash; by
+            chatting with Claude &mdash; and the table below shows where each one is taught.</p>
+        </div>
+
+        <p>The nineteen episodes cover every area a beginner-to-intermediate learner meets:
+        compute, storage and databases, networking, cost, monitoring, identity and access,
+        infrastructure as code, and Azure AI services &mdash; and, newly added, web apps,
+        containers, serverless, security posture and governance.</p>
+<table>
+            <thead>
+                <tr><th style="width:50mm">Azure area</th><th>Why people learn it</th><th style="width:46mm">Where the series covers it</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Compute &mdash; virtual machines</strong></td><td>The first hands-on resource most people create and run.</td><td>Episode&nbsp;3</td></tr>
+                <tr><td><strong>Storage and databases</strong></td><td>Blob storage, Azure SQL and Cosmos DB back almost every workload.</td><td>Episode&nbsp;4</td></tr>
+                <tr><td><strong>Networking</strong></td><td>Virtual networks, subnets and NSGs, and why a resource cannot connect.</td><td>Episode&nbsp;6</td></tr>
+                <tr><td><strong>Cost management</strong></td><td>The most common reason a team opens the portal at all.</td><td>Episode&nbsp;7, and the cost / clean-up thread</td></tr>
+                <tr><td><strong>Monitoring and diagnostics</strong></td><td>Azure Monitor and Log Analytics, to find and fix a failing resource.</td><td>Episode&nbsp;8</td></tr>
+                <tr><td><strong>Identity and access</strong></td><td>Microsoft Entra ID and RBAC &mdash; the top security topic employers ask for.</td><td>Episode&nbsp;14, and the identity thread</td></tr>
+                <tr><td><strong>Infrastructure as code</strong></td><td>Bicep and ARM, to make resources repeatable.</td><td>Episodes&nbsp;10&ndash;11</td></tr>
+                <tr><td><strong>Automation</strong></td><td>Reusable skills, the Azure MCP Server and service principals.</td><td>Episodes&nbsp;9, 12 and 13</td></tr>
+                <tr><td><strong>Web apps &mdash; App Service</strong></td><td>One of the most-used services; the PaaS way to host a site or API.</td><td>Episode&nbsp;15</td></tr>
+                <tr><td><strong>Containers &mdash; AKS, Container Apps</strong></td><td>A recurring must-know service and a strong job-market skill.</td><td>Episode&nbsp;16</td></tr>
+                <tr><td><strong>Serverless &mdash; Azure Functions</strong></td><td>The third compute type beside virtual machines and containers.</td><td>Episode&nbsp;17</td></tr>
+                <tr><td><strong>Azure AI services</strong></td><td>Azure OpenAI and AI Foundry &mdash; fast-rising demand, and the theme of this series.</td><td>Episode&nbsp;5</td></tr>
+                <tr><td><strong>Security posture</strong></td><td>Microsoft Defender for Cloud and Zero Trust, beyond access control.</td><td>Episode&nbsp;18</td></tr>
+                <tr><td><strong>Governance &mdash; Azure Policy</strong></td><td>Guardrails and tag rules that keep a subscription tidy.</td><td>Episode&nbsp;19</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<div class="tip-box"><strong>Every area is in the running order.</strong> All nineteen
+        episodes are mapped above &mdash; compute, storage, networking, cost, monitoring, identity,
+        infrastructure as code and Azure AI, plus web apps, containers, serverless, security
+        posture and governance &mdash; each taught the same way, by asking Claude.</div>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 11</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="appendix-definitions">Appendix: Definitions</h1>
+        <div class="chapter-intro">
+            <p>The series assumes no prior Azure knowledge. This appendix defines the tools and
+            concepts it uses, in plain language. Terms are listed alphabetically; a word shown in
+            <em>italics</em> has its own entry.</p>
+        </div>
+<table>
+<thead>
+                <tr><th style="width:46mm">Term</th><th>What it is</th></tr>
+            </thead>
+<tbody>
+<tr><td><strong>AKS (Azure Kubernetes Service)</strong></td><td>A managed Azure service that runs <em>containers</em> grouped into a cluster, and handles scaling and restarting them for you.</td></tr>
+<tr><td><strong>App Service</strong></td><td>An Azure service that hosts a website or web API without you managing the server underneath &mdash; a <em>PaaS</em> service.</td></tr>
+<tr><td><strong>ARM template</strong></td><td>An Azure Resource Manager file (in JSON) that lists resources to create. <em>Bicep</em> is a friendlier language that turns into an ARM template.</td></tr>
+<tr><td><strong>Azure</strong></td><td>Microsoft's cloud platform: you rent computing, storage and networking instead of running your own servers.</td></tr>
+<tr><td><strong>Azure AI services</strong></td><td>Azure's services for adding AI to apps, including Azure OpenAI (models such as GPT) and AI Foundry (a workspace for building AI solutions).</td></tr>
+<tr><td><strong>Azure CLI (<code>az</code>)</strong></td><td>Microsoft's cross-platform command line for Azure; every command begins with <code>az</code>. Claude runs these for you.</td></tr>
+<tr><td><strong>Azure Cost Management</strong></td><td>The part of Azure that shows what resources cost and where the spend goes.</td></tr>
+<tr><td><strong>Azure Functions</strong></td><td>A "serverless" service that runs a small piece of code on demand (say, when a file arrives), without you managing a server.</td></tr>
+<tr><td><strong>Azure MCP Server</strong></td><td>Microsoft's official <em>MCP</em> server that gives Claude ready-made Azure tools instead of raw <code>az</code> commands.</td></tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 12</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<table>
+<thead>
+                <tr><th style="width:46mm">Term</th><th>What it is</th></tr>
+            </thead>
+<tbody>
+<tr><td><strong>Azure Monitor</strong></td><td>Azure's service for metrics, logs and alerts, used to watch resources and diagnose faults. Logs are searched with <em>Log Analytics</em>.</td></tr>
+<tr><td><strong>Azure Policy</strong></td><td>A governance service that enforces rules across a <em>subscription</em>, such as "every resource must be tagged".</td></tr>
+<tr><td><strong>Azure PowerShell (<code>Az</code>)</strong></td><td>The same Azure operations as the <em>Azure CLI</em>, written as PowerShell commands.</td></tr>
+<tr><td><strong>Azure portal</strong></td><td>Microsoft's web dashboard for Azure. In this series the work is done by chatting with Claude rather than clicking here, but the portal is still used often to see the results of a change.</td></tr>
+<tr><td><strong>Azure SQL</strong></td><td>Azure's managed relational (table-based) database, based on Microsoft SQL Server.</td></tr>
+<tr><td><strong>Bicep</strong></td><td>Microsoft's own, first-party language for <em>infrastructure as code</em>: describe the resources you want in a readable file and Azure builds them.</td></tr>
+<tr><td><strong>Blob storage</strong></td><td>Azure's store for files ("blobs") such as images and backups, kept in containers.</td></tr>
+<tr><td><strong>Claude Code</strong></td><td>Anthropic's AI assistant that runs in your editor. You chat with it in plain words and it proposes and runs commands. The series manages Azure through it.</td></tr>
+<tr><td><strong>CLAUDE.md</strong></td><td>A memory file <em>Claude Code</em> reads at the start of every session; it holds project facts and rules, such as "always ask before deleting". It lives in the project folder (shared with the team); a personal file at <code>~/.claude/CLAUDE.md</code> applies to every project, and one file can pull in another with an <code>@path</code> line so several projects share a central file.</td></tr>
+<tr><td><strong>Container Apps (containers, ACR)</strong></td><td>A container bundles an app with everything it needs to run. Azure Container Apps runs them; Azure Container Registry (ACR) stores their images.</td></tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 13</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<table>
+<thead>
+                <tr><th style="width:46mm">Term</th><th>What it is</th></tr>
+            </thead>
+<tbody>
+<tr><td><strong>Cosmos DB</strong></td><td>Azure's globally distributed NoSQL database, for data that does not fit neat tables.</td></tr>
+<tr><td><strong>Defender for Cloud</strong></td><td>Microsoft's security service that scores your setup and recommends fixes to reduce risk.</td></tr>
+<tr><td><strong>Deployment slot</strong></td><td>A live copy of an <em>App Service</em> app (for example "staging") you can test, then swap into production.</td></tr>
+<tr><td><strong>Entra ID (Microsoft Entra ID)</strong></td><td>Microsoft's identity service (formerly Azure Active Directory); it holds accounts and controls who may sign in and what they may do.</td></tr>
+<tr><td><strong>Infrastructure as code (IaC)</strong></td><td>Describing cloud resources in text files (<em>Bicep</em>, <em>ARM template</em>) so they can be recreated exactly and reviewed like source code.</td></tr>
+<tr><td><strong>Log Analytics</strong></td><td>The tool inside <em>Azure Monitor</em> for searching log data.</td></tr>
+<tr><td><strong>Managed identity</strong></td><td>An automatic Azure identity for a resource, so it can reach other resources without a stored password. Compare <em>service principal</em>.</td></tr>
+<tr><td><strong>MCP (Model Context Protocol)</strong></td><td>An open standard that lets an AI assistant use external tools through a "server". See <em>Azure MCP Server</em>.</td></tr>
+<tr><td><strong>NSG (Network Security Group)</strong></td><td>A set of rules that allow or block network traffic to Azure resources.</td></tr>
+<tr><td><strong>PaaS (Platform as a Service)</strong></td><td>A cloud service where you supply the app and the provider runs and scales the servers (for example <em>App Service</em>).</td></tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 14</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<table>
+<thead>
+                <tr><th style="width:46mm">Term</th><th>What it is</th></tr>
+            </thead>
+<tbody>
+<tr><td><strong>RBAC (Role-based access control)</strong></td><td>Azure's permission system: grant a person or app a <em>role</em> (Reader, Contributor, and so on) rather than all-or-nothing access.</td></tr>
+<tr><td><strong>Resource group</strong></td><td>A named container for related resources (a site, its database, its storage) so they are managed and deleted together.</td></tr>
+<tr><td><strong>Service principal</strong></td><td>A non-human "app account" used so scripts and automation can sign in to Azure without a person present.</td></tr>
+<tr><td><strong>Skill / slash command</strong></td><td>A saved, reusable instruction for <em>Claude Code</em>; a slash command (typed <code>/name</code>) runs one on demand.</td></tr>
+<tr><td><strong>Static Web Apps</strong></td><td>An Azure service that hosts a website of static files plus optional serverless functions.</td></tr>
+<tr><td><strong>Subscription</strong></td><td>Azure's billing and management boundary; resources live in a subscription and costs are tracked per subscription.</td></tr>
+<tr><td><strong>Tenant</strong></td><td>Your organisation's directory in <em>Entra ID</em>; one tenant can hold several subscriptions.</td></tr>
+<tr><td><strong>Virtual machine (VM)</strong></td><td>A full computer, with an operating system, running in Azure; you start, stop, resize and pay for it by the hour.</td></tr>
+<tr><td><strong>Virtual network (VNet)</strong></td><td>A private network in Azure that connects resources and controls how they reach each other and the internet; divided into subnets (see <em>NSG</em>).</td></tr>
+<tr><td><strong>Zero Trust</strong></td><td>A security approach that verifies every request and trusts nothing by default, wherever it comes from.</td></tr>
+</tbody>
+</table>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 15</div>
+    </div>
+</div>
+
+
+</body>
+</html>

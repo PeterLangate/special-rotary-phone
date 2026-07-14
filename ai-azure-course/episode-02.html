@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Azure with Claude Code — Episode 2 shooting script</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+/* ==========================================================================
+   Langate — A4 print/HTML document stylesheet
+   Palette + typography per the branding-langate skill.
+   No-template mode: plain CSS; DM Sans loaded via chapters/_head.html.
+   ========================================================================== */
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    /* Langate brand tokens */
+    --primary:        #00517e;   /* primary blue — headers, dark surfaces, accents */
+    --primary-teal:   #537780;   /* links, secondary text, footer / TOC page numbers */
+    --primary-navy:   #0b3ebe;   /* rare gradient endpoint */
+    --accent-green:   #02B896;   /* chapter numbers, h2 bar, cover dot, tips */
+    --accent-gold:    #F5A623;   /* note callouts */
+    --accent-red:     #B55852;   /* attention / warning */
+    --panel:          #ebf2f5;   /* light-blue panel background */
+    --panel-line:     #DBE4EA;   /* borders / row dividers */
+
+    /* Back-compat aliases: existing chapter markup uses var(--brand-*) inline */
+    --brand-navy:   var(--primary);        /* cover bg, group-band, dark surfaces */
+    --brand-blue:   var(--primary);        /* accents, step numbers, chips */
+    --brand-soft:   #a2bfd6;               /* soft dividers, gradient partner */
+    --brand-ink:    #4A4A4A;               /* all body text and headings */
+    --brand-red:    var(--accent-red);     /* attention / warning */
+    --brand-green:  var(--accent-green);   /* success / tip */
+}
+
+body {
+    font-family: 'DM Sans', Avenir, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.6;
+    color: var(--brand-ink);
+    background: #e8edf2;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: white; margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 20mm 26mm 18mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* ---- Page-break control (Chromium print-to-PDF) ---- */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.remember-box         { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col, .three-col  { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.group-band           { break-inside: avoid; break-after: avoid; }
+
+/* ==========================================================================
+   Cover
+   ========================================================================== */
+.cover-page {
+    background: var(--brand-navy);
+    color: #ffffff;
+    display: flex; flex-direction: column; min-height: 297mm;
+}
+.cover-accent-bar {
+    height: 3mm;
+    background: var(--accent-green);
+}
+.cover-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 24mm 26mm;
+}
+/* Langate wordmark — text mark + green dot (replaces the logo-panel image) */
+.cover-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 15mm; }
+.cover-brand-name { font-size: 25pt; font-weight: 800; letter-spacing: 0.01em; color: #ffffff; }
+.cover-brand-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-green); }
+.cover-eyebrow {
+    font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 6mm;
+}
+.cover-title { font-size: 33pt; font-weight: 800; line-height: 1.12; }
+.cover-subtitle {
+    font-size: 14pt; font-weight: 300; line-height: 1.4;
+    color: rgba(255,255,255,0.72); margin-top: 6mm; max-width: 150mm;
+}
+.cover-footer {
+    padding: 8mm 26mm; border-top: 1px solid rgba(255,255,255,0.16);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 8.5pt; color: rgba(255,255,255,0.65);
+}
+
+/* ==========================================================================
+   Page header / footer
+   ========================================================================== */
+.page-header {
+    padding: 9mm 26mm 0;
+    padding-bottom: 4mm; margin-bottom: 7mm;
+    text-align: center;
+}
+.page-header::before {
+    content: 'Langate';
+    display: block;
+    font-size: 11pt; font-weight: 800; letter-spacing: 0.02em;
+    color: var(--primary);
+}
+.page-header-line {
+    width: 40mm; height: 2px;
+    background: var(--accent-green); margin: 2.5mm auto 0;
+    border-radius: 1px;
+}
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 5mm 26mm; border-top: 1px solid var(--panel-line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 7.5pt; color: #8a8a8a;
+}
+.page-footer div:last-child { color: var(--primary-teal); font-weight: 600; }
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+h1 {
+    font-size: 20pt; font-weight: 800; color: var(--brand-ink);
+    margin-bottom: 5mm; line-height: 1.2;
+}
+h1 .chapter-num {
+    display: block; font-size: 9pt; font-weight: 700;
+    color: var(--accent-green); letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 2.5mm;
+}
+h2 {
+    font-size: 13pt; font-weight: 700; color: var(--primary);
+    margin-top: 6mm; margin-bottom: 3mm;
+    border-left: 3px solid var(--accent-green); padding-left: 3mm;
+}
+h3 {
+    font-size: 11pt; font-weight: 700; color: var(--primary);
+    margin-top: 5mm; margin-bottom: 2mm;
+}
+h4 { font-size: 10pt; font-weight: 700; color: var(--brand-ink); margin-bottom: 1.5mm; }
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--primary-teal); text-decoration: none; }
+strong { color: var(--brand-ink); }
+em { font-style: italic; }
+
+/* ==========================================================================
+   Callouts
+   ========================================================================== */
+.chapter-intro {
+    background: var(--panel); border-left: 4px solid var(--primary);
+    padding: 3mm 6mm; margin-bottom: 5mm; border-radius: 0 4px 4px 0;
+}
+.chapter-intro p:last-child { margin-bottom: 0; }
+.note-box { background: #fff8e6; border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.tip-box  { background: #e6faf6; border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.info-box { background: var(--panel); border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.warn-box { background: #fbeeed; border-left: 3px solid var(--accent-red); padding: 3mm 5mm; margin: 4mm 0; font-size: 9.8pt; border-radius: 0 4px 4px 0; }
+.note-box p:last-child, .tip-box p:last-child, .info-box p:last-child, .warn-box p:last-child { margin-bottom: 0; }
+
+/* "Remember" floating recap pane — a point stated in full earlier, recalled briefly.
+   Mint card + soft blue shadow reads as a floating aside; the label rides the top edge. */
+.remember-box {
+    position: relative;
+    background: #f4faf8; border: 1px solid #cde9e2;
+    border-radius: 7px; padding: 5mm 5mm 3.5mm; margin: 6mm 0 5mm;
+    box-shadow: 0 3px 10px rgba(0, 81, 126, 0.13);
+    font-size: 9.6pt; line-height: 1.5;
+}
+.remember-box::before {
+    content: 'Remember';
+    position: absolute; top: -2.6mm; left: 5mm;
+    background: var(--primary); color: #ffffff;
+    font-size: 7pt; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 1mm 3mm; border-radius: 3px;
+}
+.remember-box p { margin-bottom: 0; }
+
+/* ==========================================================================
+   Running-order group band + episode tables
+   ========================================================================== */
+.group-band {
+    background: var(--brand-navy); color: #ffffff;
+    padding: 2.5mm 5mm; margin: 6mm 0 3mm; border-radius: 4px;
+    font-size: 10pt; font-weight: 700; letter-spacing: 0.04em;
+    display: flex; align-items: baseline; gap: 4mm;
+}
+.group-band .group-tag {
+    font-size: 8pt; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--brand-soft);
+}
+table { width: 100%; border-collapse: collapse; margin: 3mm 0 4mm; font-size: 9.8pt; line-height: 1.4; }
+th {
+    text-align: left; background: var(--panel); color: var(--brand-ink);
+    font-weight: 700; padding: 2.5mm 3mm; border-bottom: 2px solid var(--accent-green);
+}
+td { padding: 2.5mm 3mm; border-bottom: 1px solid var(--panel-line); vertical-align: top; }
+td.ep-num { width: 9mm; font-weight: 700; color: var(--primary); }
+tr:last-child td { border-bottom: none; }
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card {
+    background: var(--panel); border: 1px solid var(--panel-line);
+    border-radius: 5px; padding: 4mm 5mm;
+}
+.feature-card h4 { color: var(--primary); margin-bottom: 1.5mm; }
+.feature-card p:last-child { margin-bottom: 0; }
+
+/* Step list with circle counters */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+.step-list li { counter-increment: step-counter; display: flex; align-items: flex-start; margin-bottom: 2.5mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    background: var(--primary); color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5.5mm; height: 5.5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-right: 3mm; margin-top: 0.3mm; flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Table of contents
+   ========================================================================== */
+.toc-title { font-size: 18pt; font-weight: 800; color: var(--brand-ink); margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.6mm 0; color: var(--brand-ink); }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.6pt; color: #5a5a5a; font-weight: 400; }
+.toc-num  { min-width: 12mm; flex-shrink: 0; color: var(--accent-green); }
+.toc-entry.toc-h2 .toc-num { min-width: 14mm; }
+.toc-dots { flex: 1; border-bottom: 1px dotted #c3ccd6; margin: 0 2mm 1.2mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; flex-shrink: 0; }
+
+/* ==========================================================================
+   Shooting-script components (episode scripts)
+   ========================================================================== */
+
+/* Episode brief — key/value facts row */
+.brief { display: grid; grid-template-columns: 34mm 1fr; gap: 1mm 4mm; margin: 3mm 0 4mm; font-size: 9.8pt; }
+.brief dt { font-weight: 700; color: var(--primary); }
+.brief dd { margin: 0; }
+
+/* Scene heading — an h2 (so it lands in the TOC) with a number chip */
+h2 .scene-no {
+    display: inline-block; vertical-align: 1.5px;
+    font-size: 7.5pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #ffffff; background: var(--primary);
+    padding: 0.6mm 2.2mm; border-radius: 3px; margin-right: 3mm;
+}
+h2 .scene-time { float: right; font-size: 8pt; font-weight: 400; color: #8a8a8a; }
+
+/* Beat — label + content */
+.beat { display: grid; grid-template-columns: 22mm 1fr; gap: 3mm; margin: 2.2mm 0; break-inside: avoid; }
+.beat-k {
+    font-size: 7.2pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding-top: 0.6mm; color: #8a8a8a;
+}
+.beat-k.k-screen { color: #6a7683; }
+.beat-k.k-prompt { color: var(--primary); }
+.beat-k.k-claude { color: var(--primary-teal); }
+.beat-k.k-say    { color: var(--accent-green); }
+.beat-v { font-size: 9.8pt; }
+.beat-v p { margin-bottom: 1.5mm; }
+.beat-v .narration { font-style: italic; color: #33414d; }
+
+/* Prompt + command code blocks */
+.codeblock {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.6pt; line-height: 1.45; white-space: pre-wrap; word-break: break-word;
+    padding: 2.2mm 3mm; border-radius: 3px; margin: 0.5mm 0;
+}
+.codeblock.prompt { background: var(--panel); border-left: 3px solid var(--primary); color: #23384a; }
+.codeblock.cmd    { background: #10202f; border-left: 3px solid var(--brand-soft); color: #dfe9f2; }
+.codeblock.cmd .comment { color: #8fb0c9; }
+.codeblock.file   { background: #f4f5f0; border-left: 3px solid var(--accent-green); color: #333; }
+.codeblock .lbl { display:block; font-size: 7pt; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1mm; opacity: 0.7; }
+
+    </style>
+</head>
+<body>
+
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-body">
+        <div class="cover-brand"><span class="cover-brand-name">Langate</span><span class="cover-brand-dot"></span></div>
+        <div class="cover-eyebrow">Manage Azure with Claude Code &mdash; Episode 2 &middot; shooting script</div>
+        <div class="cover-title">Explore your subscription<br>by asking</div>
+        <div class="cover-subtitle">The reading episode &mdash; ask Claude Code what is in a
+            Microsoft Azure subscription, what is running, and what it costs, and watch it recover
+            when its first cost command is the wrong one.</div>
+    </div>
+    <div class="cover-footer">
+        <div>Langate</div>
+        <div>Shooting script &nbsp;&middot;&nbsp; July 2026</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                        <a class="toc-entry toc-h1" href="#episode-brief"><span class="toc-num"></span>Episode brief<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#recording-setup"><span class="toc-num"></span>Recording setup<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#names-used-on-screen"><span class="toc-num"></span>Names used on screen<div class="toc-dots"></div><span class="toc-page">4</span></a>
+
+        <a class="toc-entry toc-h1" href="#companion-text"><span class="toc-num"></span>Companion text<div class="toc-dots"></div><span class="toc-page">5</span></a>
+
+        <a class="toc-entry toc-h1" href="#shooting-script"><span class="toc-num"></span>Shooting script<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#scene-1recap-and-the-skill-we-already-have0-00-1-15"><span class="toc-num"></span>Scene 1Recap &mdash; and the skill we already have0:00 – 1:15<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#scene-2what-is-in-the-subscription1-15-2-45"><span class="toc-num"></span>Scene 2What is in the subscription1:15 – 2:45<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#scene-3what-is-running-right-now2-45-4-15"><span class="toc-num"></span>Scene 3What is running right now2:45 – 4:15<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h2" href="#scene-4what-is-it-costing-the-loop-again4-15-6-30"><span class="toc-num"></span>Scene 4What is it costing &mdash; the loop again4:15 – 6:30<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#scene-5save-the-exploration-as-a-skill6-30-8-00"><span class="toc-num"></span>Scene 5Save the exploration as a skill6:30 – 8:00<div class="toc-dots"></div><span class="toc-page">9</span></a>
+        <a class="toc-entry toc-h2" href="#scene-6close-and-next-episode8-00-8-45"><span class="toc-num"></span>Scene 6Close and next episode8:00 – 8:45<div class="toc-dots"></div><span class="toc-page">10</span></a>
+        </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="episode-brief">Episode brief</h1>
+        <div class="chapter-intro">
+            <p>The first hands-on episode after the getting-started episode. It is all reading &mdash; the safest
+            kind of task &mdash; so every command just runs. The audience learns to get a whole
+            picture of a subscription by asking three questions, and sees the learning loop again
+            when Claude's first cost command turns out to be the wrong one.</p>
+        </div>
+        <dl class="brief">
+            <dt>Running time</dt><dd>About 9 minutes.</dd>
+            <dt>Surface</dt><dd>Azure CLI (<code>az</code>), read-only, run by Claude Code in the Visual Studio Code terminal.</dd>
+            <dt>Viewer can then</dt><dd>Ask what is in a subscription, what is running, and what it costs &mdash; and recognise a wrong command from a right one.</dd>
+            <dt>Prerequisites</dt><dd>Episode 1. The <code>managing-azure-safely</code> skill saved there is already in the project, so Claude follows the read / change / delete rules from the start.</dd>
+        </dl>
+
+        <div class="remember-box"><p>Claude reads the project's <code>CLAUDE.md</code> at the start of
+        every session, so the delete guardrail written in Episode 1 is still in force here. As you add
+        more Azure projects, keep such rules in one central <code>CLAUDE.md</code> and reference it from
+        each &mdash; every project then inherits the same safety net.</p></div>
+<h2 id="recording-setup">Recording setup</h2>
+        <ul>
+            <li>A test subscription with a few resource groups, one or two virtual machines
+            (at least one running, one stopped), a web app, and a little cost history.</li>
+            <li>Visual Studio Code with the Claude Code panel and the terminal docked below.</li>
+            <li>Permission mode is <strong>bypass</strong>; because everything here is reading,
+            nothing needs approval.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="names-used-on-screen">Names used on screen</h2>
+        <dl class="brief">
+            <dt>Web app group</dt><dd><code>rg-langate-web</code> &mdash; an existing group, seen in Episode 1.</dd>
+            <dt>Skill in use</dt><dd><code>managing-azure-safely</code> &mdash; saved in Episode 1.</dd>
+            <dt>Cost command</dt><dd><code>az consumption usage list</code> (preview).</dd>
+        </dl>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="companion-text">Companion text</h1>
+        <div class="chapter-intro">
+            <p>The copy below is the companion page for the video &mdash; what a reader sees
+            under the embedded demo.</p>
+        </div>
+
+        <h3 style="font-size:14pt;color:var(--brand-ink);margin-top:2mm;">Explore an Azure subscription by asking</h3>
+        <p style="font-style:italic;color:#5a5a5a;margin-top:1mm;">A Manage Azure with Claude Code tutorial by Langate</p>
+
+        <p>It is possible to get a full picture of a Microsoft Azure subscription just by asking
+        Claude Code in plain words, rather than clicking through the Azure portal &mdash; though
+        the portal is still the place to see a result in full.</p>
+
+        <p>In the demo below, Langate shows how to answer three questions by chatting: what is in
+        the subscription, what is running right now, and what it has cost this month. Reading never
+        changes anything, so every command runs without approval.</p>
+
+        <p>The cost question does not go smoothly at first. Claude's first command is one that
+        sounds right but is no longer part of the tooling, so it fails. Claude reads the error and
+        switches to the command that works. The presenter keeps that habit from the last episode:
+        set a goal, let Claude try, and let it learn from the error.</p>
+
+        <p>In the next episode the presenter moves from reading to changing &mdash; creating,
+        starting, resizing and deleting virtual machines to save money.</p>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="shooting-script">Shooting script</h1>
+        <div class="chapter-intro">
+            <p>Each beat is labelled: <strong>On screen</strong> (what the camera sees),
+            <strong>Prompt</strong> (what the presenter types to Claude), <strong>Claude</strong> (what
+            Claude proposes or shows), and <strong>Say</strong> (the narration the presenter speaks).
+            Spoken lines are in italics.</p>
+        </div>
+
+        <h2 id="scene-1recap-and-the-skill-we-already-have0-00-1-15"><span class="scene-no">Scene 1</span>Recap &mdash; and the skill we already have<span class="scene-time">0:00 – 1:15</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In the last episode we managed Azure by chatting &mdash; we read the subscription, made a change, deleted a resource behind a guardrail, and saved what worked as a skill called managing-azure-safely."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">The Claude Code panel; briefly show <code>skills/managing-azure-safely/SKILL.md</code> in the tree.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That skill is still in the project, so Claude already knows our rules &mdash; read before running, confirm before deleting. Today is all reading, the safest kind of task, so everything just runs. By the end we will answer three questions by asking: what is in the subscription, what is running, and what it costs."</div></div>
+
+        <h2 id="scene-2what-is-in-the-subscription1-15-2-45"><span class="scene-no">Scene 2</span>What is in the subscription<span class="scene-time">1:15 – 2:45</span></h2>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Give me an overview of this subscription — a line per resource group.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Runs two read-only commands and writes a short summary, one line per group.<div class="codeblock cmd">az group list --output table
+az resource list --output table</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A tidy summary &mdash; <code>rg-langate-web</code> in Sweden Central with its web app, and the other groups beside it.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"One question, one clear answer. No approval, because reading never changes anything. Building that same view by clicking through the portal would take much longer."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-3what-is-running-right-now2-45-4-15"><span class="scene-no">Scene 3</span>What is running right now<span class="scene-time">2:45 – 4:15</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"The next question is the one that matters for the bill: what is actually running right now?"</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">What's running right now — which VMs are actually on, and any web apps?</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Runs two read-only commands. The <code>--show-details</code> flag adds the power-state column.<div class="codeblock cmd">az vm list --show-details --output table
+az webapp list --output table</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A table of virtual machines with a <strong>PowerState</strong> column &mdash; one <em>VM running</em>, one <em>VM deallocated</em> &mdash; and a web app already in the subscription.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So one machine is on and one is stopped. That running machine is costing money right now, and in a later episode we will stop it by asking. For now, the point is that I can see the whole picture at a glance &mdash; power state and all &mdash; from one plain question."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"This is the part of the series where chatting really beats the portal. I am not hunting through blades. I ask, and Claude reads exactly what I need."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-4what-is-it-costing-the-loop-again4-15-6-30"><span class="scene-no">Scene 4</span>What is it costing &mdash; the loop again<span class="scene-time">4:15 – 6:30</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"The third question is cost. And this is where the learning loop shows up again. I set the goal, I let Claude try, and I watch what happens when its first idea does not work."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">What has this subscription cost so far this month, and which resource group is the most expensive?</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Tries a cost command that is widely quoted online.<div class="codeblock cmd">az costmanagement query --type ActualCost --timeframe MonthToDate \
+    --scope /subscriptions/&lt;id&gt;</div></div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">It fails. The <code>costmanagement</code> extension no longer has a <code>query</code> command &mdash; only <code>export</code> and <code>show-operation-result</code> &mdash; so <code>az</code> reports that <code>query</code> is not recognised.</div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Reads the error, explains that the command it reached for has been removed, and switches to the core consumption command &mdash; noting it is in preview.<div class="codeblock cmd">az consumption usage list --start-date 2026-07-01 --end-date 2026-07-11 \
+    --output table</div>Then it groups the result and answers: total so far, and the most expensive resource group.</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"There is the loop. Claude's first command sounded right &mdash; I have seen it in old blog posts myself &mdash; but it is not in the tooling any more. Claude read the error, told me what had changed, and found the command that works. I did not have to know which one was current."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-5save-the-exploration-as-a-skill6-30-8-00"><span class="scene-no">Scene 5</span>Save the exploration as a skill<span class="scene-time">6:30 – 8:00</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"These three questions are ones I ask in every subscription. So let us do what we did last time &mdash; save what works as a skill, so I can get the whole picture by asking once."</div></div>
+        <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Save this exploration as a skill called exploring-a-subscription, so I can get the whole picture by asking once — and remember to use the cost command that actually worked.</div></div></div>
+        <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes a new skill file. The presenter reads it on screen.<div class="codeblock file"><span class="lbl">skills / exploring-a-subscription / SKILL.md</span>---
+name: exploring-a-subscription
+description: Read-only overview of an Azure subscription -
+  resource groups, what is running, and month-to-date cost.
+---
+
+# Exploring a subscription
+
+Reading only - never change or delete.
+
+1. Groups: `az group list` + `az resource list`, summarised
+   one line per group (region, resource count).
+2. Running: `az vm list --show-details` (power state) and
+   `az webapp list`.
+3. Cost: `az consumption usage list` (preview) for the current
+   month; group the total by resource group.</div></div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"Now the whole overview is one skill. A new session, or a colleague, can get the same picture by asking once &mdash; and it already knows to use the cost command that works. Another skill in the toolbox, and it started from a mistake."</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 9</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
+        <h2 id="scene-6close-and-next-episode8-00-8-45"><span class="scene-no">Scene 6</span>Close and next episode<span class="scene-time">8:00 – 8:45</span></h2>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So we explored a whole subscription just by asking &mdash; what is in it, what is running, and what it costs. One command was the wrong one, Claude read the error and recovered, and we saved the working overview as a skill. All reading, all safe."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A short recap card.</div></div>
+        <div class="two-col">
+            <div class="feature-card">
+                <h4>What to ask</h4>
+                <p>What is in the subscription? What is running (and its power state)? What has it
+                cost this month?</p>
+            </div>
+            <div class="feature-card">
+                <h4>The loop again</h4>
+                <p>A wrong cost command &rarr; read the error &rarr; the right one &rarr; saved as
+                the <code>exploring-a-subscription</code> skill.</p>
+            </div>
+        </div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In the next episode we move from reading to changing. We will create a virtual machine, start and stop it, resize it, and delete it &mdash; and see how much money stopping a machine can save. See you there."</div></div>
+        <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">End slate: series title and the next-episode title.</div></div>
+    </div>
+    <div class="page-footer">
+        <div>Episode 2 &mdash; Explore your subscription by asking</div>
+        <div>Langate &nbsp;&middot;&nbsp; 10</div>
+    </div>
+</div>
+
+
+</body>
+</html>
