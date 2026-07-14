@@ -1,16 +1,19 @@
 {
-  "syncedAt": "2026-07-14T12:21:00Z",
+  "syncedAt": "2026-07-14T13:12:21Z",
   "files": {
-    "episode-01.html": {
+    "episode-02.html": {
       "updated": "2026-07-14"
     },
-    "episode-02.html": {
+    "series-deck.pptx": {
+      "updated": "2026-07-14"
+    },
+    "series-plan.html": {
       "updated": "2026-07-14"
     },
     "index.html": {
       "updated": "2026-07-14"
     },
-    "series-plan.html": {
+    "episode-01.html": {
       "updated": "2026-07-14"
     }
   }
