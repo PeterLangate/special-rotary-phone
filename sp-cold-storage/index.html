@@ -1,37 +1,37 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>SP Cold Storage – Arkivera mediafiler till Azure Blob Cold</title>
-	<meta name="description" content="SP Cold Storage — SharePoint-lösning som arkiverar mediafiler till Azure Blob Storage Cold-nivån men behåller nedladdning direkt från SharePoint-UX:et. Teknisk dokumentation och två klickbara mockups.">
+	<title>SP Cold Storage – Archive SharePoint media to Azure Blob Cold</title>
+	<meta name="description" content="SP Cold Storage — a SharePoint solution that moves heavy media files to Azure Blob Storage Cold tier while keeping the download UX inside SharePoint. Technical documentation and two clickable mockups.">
 	<meta property="og:type" content="website">
-	<meta property="og:locale" content="sv_SE">
+	<meta property="og:locale" content="en_US">
 	<meta property="og:site_name" content="Langate · Demos">
-	<meta property="og:title" content="SP Cold Storage – Arkivera mediafiler till Azure Blob Cold">
-	<meta property="og:description" content="SP Cold Storage — SharePoint-lösning som arkiverar mediafiler till Azure Blob Storage Cold-nivån men behåller nedladdning direkt från SharePoint-UX:et. Teknisk dokumentation och två klickbara mockups.">
+	<meta property="og:title" content="SP Cold Storage – Archive SharePoint media to Azure Blob Cold">
+	<meta property="og:description" content="SP Cold Storage — a SharePoint solution that moves heavy media files to Azure Blob Storage Cold tier while keeping the download UX inside SharePoint. Technical documentation and two clickable mockups.">
 	<meta property="og:url" content="https://peterlangate.github.io/special-rotary-phone/sp-cold-storage/">
 	<meta property="og:image" content="https://peterlangate.github.io/special-rotary-phone/og/sp-cold-storage.png">
 	<meta name="twitter:card" content="summary_large_image">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="../tailgate.css?v=20260714-1802">
+	<link rel="stylesheet" href="../tailgate.css?v=20260714-1822">
 </head>
 <body class="is-project">
 	<header class="hero">
 		<div class="hero-inner">
 			<div class="brand-row"><span class="brand-dot"></span>LANGATE · SP COLD STORAGE</div>
 			<h1>SharePoint<br>Cold Storage</h1>
-			<p class="hero-lead">SharePoint-lösning som flyttar tunga mediafiler till Azure Blob Storage Cold-nivån för lägre lagringskostnad — men behåller nedladdning direkt från SharePoint-UX:et via en proxy där lagringsnycklarna aldrig lämnar servermiljön. Automatisk arkivering styrs via Azure Blob Lifecycle Management. Teknisk dokumentation plus två klickbara mockups som visar nedladdnings- och konfigurationsflödet.</p>
+			<p class="hero-lead">A SharePoint solution that moves heavy media files off SharePoint's default storage and into Azure Blob Storage's Cold tier for a much lower running cost — while keeping the same download experience inside SharePoint via a server-side proxy that never lets the storage keys leave the tenant. Archiving is driven by Azure Blob Lifecycle Management rules. Technical documentation plus two clickable mockups covering the end-user download path and the admin configuration flow. The underlying documents ship in Swedish.</p>
 		</div>
 	</header>
 
 	<main>
 		<div class="project-grid">
-			<a class="project-card" href="SPColdStorage.html">
+			<a class="project-card" href="SPColdStorage.html" hreflang="sv">
 				<div class="project-thumb">
-					<img src="../thumbs/sp-cold-storage-doc.png?v=20260714-1802" alt="">
+					<img src="../thumbs/sp-cold-storage-doc.png?v=20260714-1822" alt="">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
 						<path d="M15 3v4h4"/>
@@ -40,21 +40,22 @@
 				</div>
 				<div class="project-body">
 					<div class="tag-row">
-						<span class="tag">Teknisk dokumentation</span>
+						<span class="tag">Technical documentation</span>
 						<span class="tag">A4</span>
 						<span class="tag">Azure Blob</span>
+						<span class="tag">In Swedish</span>
 					</div>
-					<h2>Teknisk dokumentation</h2>
-					<div class="tagline">Arkitektur, kostnad och driftmodell — kapitel-för-kapitel</div>
-					<p class="desc">Fullständig teknisk genomgång av SP Cold Storage — dataflödet från SharePoint till Azure Blob Cold, proxy-arkitekturen som håller lagringsnycklar på servern, Lifecycle Management-regler för automatisk arkivering, kostnadskalkyl mot Hot-nivån och driftmodell för uppföljning. Klar för PDF-utskrift.</p>
+					<h2>Technical documentation</h2>
+					<div class="tagline">Architecture, cost model and operations — chapter by chapter</div>
+					<p class="desc">Full technical walk-through of SP Cold Storage — the data path from SharePoint to Azure Blob Cold, the proxy architecture that keeps storage keys on the server, the Lifecycle Management rules that drive automatic archiving, cost math against the Hot tier and the day-to-day operations model. Ready for PDF export. Body text is Swedish.</p>
 					<div class="meta-row"><span class="meta-updated" data-file="SPColdStorage.html"></span></div>
 				</div>
 				<div class="project-arrow" aria-hidden="true">&rarr;</div>
 			</a>
 
-			<a class="project-card" href="mockup-01-nedladdning.html">
+			<a class="project-card" href="mockup-01-nedladdning.html" hreflang="sv">
 				<div class="project-thumb">
-					<img src="../thumbs/sp-cold-storage-mockup-01.png?v=20260714-1802" alt="">
+					<img src="../thumbs/sp-cold-storage-mockup-01.png?v=20260714-1822" alt="">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<rect x="3" y="4" width="18" height="16" rx="1.6"/>
 						<path d="M3 9h18"/>
@@ -67,20 +68,21 @@
 				<div class="project-body">
 					<div class="tag-row">
 						<span class="tag tag-mockup">Mockup 1</span>
-						<span class="tag">Nedladdning</span>
+						<span class="tag">Download</span>
 						<span class="tag">SharePoint</span>
+						<span class="tag">In Swedish</span>
 					</div>
-					<h2>Öppna &amp; visa mediafil</h2>
-					<div class="tagline">Slutanvändarflödet — samma UX som vanlig SharePoint-fil</div>
-					<p class="desc">Klickbar prototyp av slutanvändarflödet: användaren klickar på en arkiverad mediafil i SharePoint och lösningen strömmar filen från Azure Blob Cold-nivån via en server-proxy. Fokus på att arkiveringen är osynlig för användaren — samma öppna/förhandsvisnings-UX som en icke-arkiverad fil.</p>
+					<h2>Open &amp; view a media file</h2>
+					<div class="tagline">The end-user flow — same UX as any other SharePoint file</div>
+					<p class="desc">Clickable prototype of the end-user flow: the user clicks an archived media file inside SharePoint and the solution streams it back from Azure Blob Cold through a server-side proxy. The point of the mockup is that the archiving is invisible to the user — the open and preview UX is identical to a file that was never archived. Labels are in Swedish.</p>
 					<div class="meta-row"><span class="meta-updated" data-file="mockup-01-nedladdning.html"></span></div>
 				</div>
 				<div class="project-arrow" aria-hidden="true">&rarr;</div>
 			</a>
 
-			<a class="project-card" href="mockup-02-arkivering.html">
+			<a class="project-card" href="mockup-02-arkivering.html" hreflang="sv">
 				<div class="project-thumb">
-					<img src="../thumbs/sp-cold-storage-mockup-02.png?v=20260714-1802" alt="">
+					<img src="../thumbs/sp-cold-storage-mockup-02.png?v=20260714-1822" alt="">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 						<circle cx="12" cy="12" r="3"/>
 						<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -89,12 +91,13 @@
 				<div class="project-body">
 					<div class="tag-row">
 						<span class="tag tag-mockup">Mockup 2</span>
-						<span class="tag">Arkivering</span>
+						<span class="tag">Archiving</span>
 						<span class="tag">Lifecycle Management</span>
+						<span class="tag">In Swedish</span>
 					</div>
-					<h2>Konfigurera automatisk mediaarkivering</h2>
-					<div class="tagline">Adminflödet — regler för när filer flyttas till Cold</div>
-					<p class="desc">Klickbar prototyp av administratörsflödet: definiera regler för när mediafiler automatiskt ska flyttas från SharePoint till Azure Blob Cold-nivån — per bibliotek, filstorlek, ålder och senast använda datum. Kopplar direkt mot Azure Blob Lifecycle Management-policyer.</p>
+					<h2>Configure automatic media archiving</h2>
+					<div class="tagline">The admin flow — rules for when files move to Cold</div>
+					<p class="desc">Clickable prototype of the administrator flow: define rules that decide when media files are automatically moved from SharePoint into Azure Blob Cold — per library, file size, age and last-accessed date. Talks directly to Azure Blob Lifecycle Management policies. Labels are in Swedish.</p>
 					<div class="meta-row"><span class="meta-updated" data-file="mockup-02-arkivering.html"></span></div>
 				</div>
 				<div class="project-arrow" aria-hidden="true">&rarr;</div>
@@ -102,6 +105,6 @@
 		</div>
 	</main>
 
-	<script src="../tailgate.js?v=20260714-1802"></script>
+	<script src="../tailgate.js?v=20260714-1822"></script>
 </body>
 </html>
