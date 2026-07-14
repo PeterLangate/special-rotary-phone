@@ -1,0 +1,77 @@
+================================================================================
+MANAGE AZURE WITH CLAUDE CODE
+Ta kommando över hela din Azure-miljö – från tom dator till full kontroll
+================================================================================
+
+KURSPLAN
+  Kurskod             AZ-CLC-19
+  Pris                På begäran (exkl. moms)
+  Längd               2 dagar
+  Nivå                Grundläggande till mellannivå
+  Undervisningsspråk  Svenska (kursmaterial på engelska)
+  Leveranssätt        Lärarledd – på plats eller på distans
+  Ort & startdatum    Hålls på begäran
+
+OM UTBILDNINGEN
+Tänk dig att styra din Azure-miljö genom att säga vad du vill ha gjort – och
+låta AI utföra arbetet medan du behåller kontrollen. Det är vad den här kursen
+lär dig. Du hanterar en hel Microsoft Azure-prenumeration i dialog med
+Claude Code i Visual Studio Code, i stället för att klicka dig igenom
+Azure-portalen (som du ändå öppnar för att se resultatet).
+
+Du börjar med en tom dator och slutar med full kontroll: skapa, ändra, granska
+och ta bort resurser – snabbare och tryggare än för hand. Claude föreslår varje
+kommando och du godkänner det innan det körs; läsning går fritt, ändringar
+granskas och radering bekräftas alltid först. Allt sker med Claude och
+Microsoft: Azure CLI, Azure PowerShell, Azure MCP Server och Bicep.
+
+MÅLGRUPP OCH FÖRKUNSKAPER
+Kursen vänder sig till molnutvecklare, IT-tekniker, DevOps-ingenjörer och
+lösningsarkitekter som vill arbeta snabbare i Azure med AI-stöd. Du bör känna
+till Azure-portalen och kommandoraden. Ingen erfarenhet av Claude Code krävs;
+du behöver Visual Studio Code (Windows/Mac) och en Azure-prenumeration.
+
+DETALJERAD INFORMATION
+Utbildningen består av korta, fristående moment fördelade på 19 avsnitt. Varje
+praktiskt moment följer inlärningsslingan: sätt ett mål, låt Claude försöka,
+lär av felet – och när ett mönster visat sig hålla sparas det som en färdighet.
+
+Kom igång och utforska
+  - Installera Claude Code och Azure CLI och logga in på Azure
+  - Säkerhetsmodellen läsa/ändra/ta bort, förankrad i minnesfilen CLAUDE.md –
+    bekräftelse krävs före radering, även i bypass-läge
+  - Utforska prenumerationen: resursgrupper, vad som körs och vad det kostar
+
+Ändra och driftsätt
+  - Skapa, starta, stoppa, ta bort och ändra storlek på virtuella maskiner
+  - Lagring och databaser, nätverk samt Azure AI-tjänster
+  - Infrastruktur som kod med Bicep (Microsofts eget språk) – Claude skriver
+    filen, du driftsätter den
+
+Automatisera, övervaka och verifiera
+  - Spara uppgifter som återanvändbara färdigheter (SKILL-filer i Claude Code)
+  - Strukturerade Azure-verktyg via Azure MCP Server i stället för råa kommandon
+  - Kostnad och uppstädning, övervakning och diagnostik (Azure Monitor, Log
+    Analytics) samt behörigheter (Microsoft Entra ID, RBAC)
+  - Lita på Claude, men kontrollera – för hand, i portalen och med Playwright
+    för webbgränssnitt, plus en kritisk granskning från en underagent
+
+Publicera och styra applikationer
+  - Webbappar (App Service), containrar (AKS, Container Apps) och serverlöst
+    (Azure Functions)
+  - Säkerhetsläge med Microsoft Defender for Cloud (Zero Trust-rekommendationer)
+  - Styrning med Azure Policy
+
+EFTER KURSEN
+Efter genomförd kurs har du kunskaper i att:
+  - hantera Azure-resurser i dialog med Claude Code, tryggt och spårbart
+  - tillämpa modellen läsa/ändra/ta bort med rätt grad av granskning per steg
+  - använda Azure CLI, Azure PowerShell, Azure MCP Server och Bicep
+  - övervaka och felsöka resurser med Azure Monitor och Log Analytics
+  - automatisera återkommande uppgifter och verifiera resultatet (Playwright
+    för webbappar)
+  - överblicka kostnader, behörigheter och styrning i hela prenumerationen
+
+INTRESSEANMÄLAN
+Anmäl intresse så återkommer vi med datum och upplägg.
+================================================================================

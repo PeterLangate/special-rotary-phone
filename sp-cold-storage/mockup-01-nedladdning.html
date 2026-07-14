@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP Cold Storage — Öppna & visa mediafil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Langate Glass — product-surface tokens (see branding-langate-glass) */
+  --lg-navy:       #00517e;   /* Langate primary blue: product chrome */
+  --lg-navy-lt:    #013d5f;   /* darker blue: hover / pressed */
+  --lg-coral:      #02b896;   /* SIGNATURE green accent: stripes, dots, underline */
+  --lg-coral-dk:   #017a64;   /* accessible green: green text / white-on-green */
+  --lg-blue-muted: #537780;   /* Langate teal: secondary text */
+  --green:         #02b896;
+  --green-600:     #017a64;
+  --green-50:      #e6faf6;
+
+  /* Fluent / SharePoint chrome — kept realistic for the host UI */
+  --fl-blue:       #0078d4;
+  --fl-blue-hov:   #106ebe;
+  --fl-bg:         #f3f2f1;
+  --fl-white:      #ffffff;
+  --fl-border:     #edebe9;
+  --fl-text:       #323130;
+  --fl-muted:      #605e5c;
+  --fl-select:     #deecf9;
+  --fl-hover:      #f3f2f1;
+  --success:       #017a64;
+
+  /* Langate Glass surfaces */
+  --glass:         rgba(255,255,255,.72);
+  --glass-strong:  rgba(255,255,255,.85);
+  --glass-blur:    saturate(160%) blur(22px);
+  --glass-hi:      inset 0 1px 0 rgba(255,255,255,.8);
+  --glass-ring:    rgba(255,255,255,.65);
+  --elev-1:        0 1px 2px rgba(2,38,58,.05), 0 8px 22px rgba(2,38,58,.07);
+  --elev-2:        0 2px 8px rgba(2,38,58,.10), 0 22px 60px rgba(2,38,58,.18);
+  --glow-green:    0 0 0 3px rgba(2,184,150,.22);
+  --font:          'DM Sans', Avenir, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px; color: var(--fl-text);
+  background: var(--fl-bg);
+  height: 100vh; display: flex; flex-direction: column;
+  overflow: hidden; user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+/* ── MOCKUP LABEL ── */
+.mockup-pill {
+  position: fixed; top: 56px; left: 0;
+  background: var(--green-600); color: white;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  padding: 3px 10px 3px 8px; border-radius: 0 999px 999px 0;
+  z-index: 9999; pointer-events: none;
+}
+
+/* ── M365 TOP BAR ── */
+.m365-bar {
+  height: 48px; background: var(--lg-navy);
+  display: flex; align-items: center; padding: 0 10px; gap: 4px;
+  flex-shrink: 0; z-index: 200;
+}
+.waffle {
+  width:32px; height:32px; display:grid; grid-template-columns:repeat(3,1fr);
+  gap:3px; padding:8px; cursor:pointer; border-radius:4px; transition:background .15s;
+}
+.waffle:hover { background:rgba(255,255,255,.1); }
+.waffle span { background:rgba(255,255,255,.85); border-radius:1px; }
+.m365-brand { color:white; font-weight:700; font-size:15px; padding:0 12px; white-space:nowrap; }
+.m365-nav { display:flex; gap:2px; flex:1; }
+.m365-nav a { padding:4px 10px; border-radius:4px; color:rgba(255,255,255,.75); font-size:13px; cursor:pointer; text-decoration:none; transition:background .15s,color .15s; }
+.m365-nav a:hover { background:rgba(255,255,255,.1); color:white; }
+.m365-nav a.active { color:white; font-weight:600; }
+.m365-search { flex:0 0 280px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:4px; padding:6px 12px; color:rgba(255,255,255,.55); font-size:13px; display:flex; align-items:center; gap:8px; }
+.m365-right { display:flex; align-items:center; gap:6px; margin-left:auto; }
+.cold-pill { display:flex; align-items:center; gap:5px; padding:4px 10px; background:rgba(2,184,150,.18); border:1px solid rgba(2,184,150,.45); border-radius:999px; color:#7fe7d3; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+.m365-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.75); cursor:pointer; font-size:16px; transition:background .15s; }
+.m365-icon:hover { background:rgba(255,255,255,.1); }
+.m365-avatar { width:32px; height:32px; border-radius:50%; background:var(--green-600); color:white; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; cursor:pointer; }
+
+/* ── SP HEADER ── */
+.sp-header { background:white; border-bottom:1px solid var(--fl-border); padding:0 24px; flex-shrink:0; }
+.sp-breadcrumb { display:flex; align-items:center; gap:6px; padding:8px 0 4px; font-size:12px; color:var(--fl-muted); }
+.sp-breadcrumb a { color:var(--fl-blue); text-decoration:none; }
+.sp-breadcrumb a:hover { text-decoration:underline; }
+.sp-nav { display:flex; }
+.sp-nav-item { padding:8px 14px; font-size:14px; cursor:pointer; color:var(--fl-muted); border-bottom:2px solid transparent; white-space:nowrap; transition:color .15s; }
+.sp-nav-item:hover { color:var(--fl-text); }
+.sp-nav-item.active { color:var(--lg-navy); font-weight:600; border-bottom-color:var(--lg-coral); }
+
+/* ── COMMAND BAR ── */
+.cmd-bar { background:white; border-bottom:1px solid var(--fl-border); padding:5px 24px; display:flex; align-items:center; gap:2px; flex-shrink:0; }
+.cmd { padding:5px 10px; border-radius:4px; border:none; background:none; font-family:inherit; font-size:13px; color:var(--fl-text); cursor:pointer; display:flex; align-items:center; gap:5px; white-space:nowrap; transition:background .12s; }
+.cmd:hover { background:var(--fl-hover); }
+.cmd.primary { background:var(--fl-blue); color:white; }
+.cmd.primary:hover { background:var(--fl-blue-hov); }
+.cmd-sep { width:1px; height:20px; background:var(--fl-border); margin:0 3px; }
+.cmd-space { flex:1; }
+.cmd-info { font-size:13px; color:var(--fl-muted); padding:5px 10px; }
+
+/* ── DOCUMENT LIBRARY ── */
+.lib { flex:1; overflow-y:auto; background:white; }
+.lib table { width:100%; border-collapse:collapse; }
+.lib thead { position:sticky; top:0; background:white; z-index:10; }
+.lib th { padding:8px 12px; font-size:12px; font-weight:600; color:var(--fl-muted); text-align:left; white-space:nowrap; border-bottom:1px solid var(--fl-border); }
+.lib th:hover { color:var(--fl-text); cursor:pointer; }
+.lib th.th-cb { width:36px; }
+.lib th.th-ico { width:48px; }
+.lib th.th-size { width:100px; }
+.lib th.th-mod { width:130px; }
+.lib th.th-by { width:140px; }
+.lib th.th-status { width:145px; }
+.lib tbody tr { border-bottom:1px solid var(--fl-border); cursor:pointer; transition:background .1s; }
+.lib tbody tr:hover { background:var(--fl-hover); }
+.lib tbody tr.sel { background:var(--fl-select); }
+.lib td { padding:7px 12px; vertical-align:middle; }
+.lib input[type=checkbox] { width:16px; height:16px; accent-color:var(--fl-blue); cursor:pointer; }
+
+/* File icons — image/video style */
+.ficon {
+  width:34px; height:34px; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0; overflow:hidden; position:relative;
+}
+.ficon-thumb {
+  width:100%; height:100%; object-fit:cover;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px;
+}
+.ficon.img { background:linear-gradient(135deg,#667eea,#764ba2); }
+.ficon.img2 { background:linear-gradient(135deg,#f093fb,#f5576c); }
+.ficon.img3 { background:linear-gradient(135deg,#4facfe,#00f2fe); }
+.ficon.img4 { background:linear-gradient(135deg,#43e97b,#38f9d7); }
+.ficon.vid  { background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); }
+.ficon.vid2 { background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460); }
+.ficon.zip  { background:#8e44ad; }
+.ficon.svg  { background:#e8730c; }
+.ficon.pdf  { background:linear-gradient(135deg,#c0392b,#922b21); }
+.ficon.docx { background:linear-gradient(135deg,#1e5fb3,#1446a0); }
+.ficon.xlsx { background:linear-gradient(135deg,#1d7a46,#166136); }
+
+.fname { color:var(--fl-blue); font-weight:500; }
+.fname:hover { text-decoration:underline; }
+
+.arch-badge { display:inline-flex; align-items:center; gap:4px; background:#fff8e6; color:#8a5a00; border:1px solid #ffe0a3; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:600; }
+.media-type-chip { display:inline-flex; align-items:center; gap:4px; background:#ebf2f5; color:var(--lg-navy); border:1px solid rgba(0,81,126,.2); border-radius:999px; padding:2px 9px; font-size:11px; font-weight:600; }
+
+/* ── SP COLD STORAGE PANEL ── */
+.cs-panel {
+  position:fixed; right:20px; bottom:20px; width:320px;
+  font-family:var(--font);
+  background:var(--glass-strong);
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-ring);
+  border-radius:18px; overflow:hidden;
+  box-shadow:var(--glass-hi), var(--elev-2);
+  transform:translateY(calc(100% + 40px));
+  transition:transform .4s cubic-bezier(.34,1.15,.64,1);
+  z-index:1000;
+}
+.cs-panel.open { transform:translateY(0); }
+
+.cs-head { background:linear-gradient(180deg,#013d5f 0%,var(--lg-navy) 100%); padding:12px 14px; display:flex; align-items:center; justify-content:space-between; }
+.cs-brand { display:flex; align-items:center; gap:9px; }
+.cs-logo { width:26px; height:26px; border-radius:7px; background:rgba(2,184,150,.18); border:1px solid rgba(2,184,150,.5); display:flex; align-items:center; justify-content:center; font-size:14px; }
+.cs-name { color:white; font-size:12px; font-weight:700; letter-spacing:.04em; }
+.cs-by   { color:rgba(255,255,255,.72); font-size:10px; }
+.cs-x { width:24px; height:24px; border-radius:50%; border:none; background:none; color:rgba(255,255,255,.5); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,color .15s; }
+.cs-x:hover { background:rgba(255,255,255,.12); color:white; }
+.cs-accent { height:3px; background:var(--lg-coral); }
+
+/* Preview thumbnail area */
+.cs-thumb {
+  width:100%; height:140px;
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+.cs-thumb-bg { position:absolute; inset:0; }
+.cs-thumb-overlay { position:absolute; inset:0; background:rgba(0,0,0,.25); }
+.cs-thumb-icon { position:relative; z-index:1; font-size:42px; filter:drop-shadow(0 2px 8px rgba(0,0,0,.5)); }
+.cs-thumb-badge {
+  position:absolute; bottom:8px; right:8px; z-index:2;
+  background:rgba(0,0,0,.6); color:white; border-radius:4px;
+  padding:2px 7px; font-size:10px; font-weight:700; letter-spacing:.06em;
+  backdrop-filter:blur(4px);
+}
+
+.cs-body { padding:14px 16px; }
+.cs-fname { font-size:13.5px; font-weight:700; color:var(--lg-navy); word-break:break-word; line-height:1.3; margin-bottom:4px; }
+.cs-fmeta { font-size:11px; color:var(--fl-muted); }
+
+.cs-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+.cs-kv .cs-k { font-size:10px; font-weight:700; color:var(--fl-muted); text-transform:uppercase; letter-spacing:.08em; }
+.cs-kv .cs-v { font-size:12.5px; font-weight:600; color:var(--lg-navy); margin-top:1px; }
+
+hr.cs-hr { border:none; border-top:1px solid var(--fl-border); margin:2px 0 12px; }
+
+/* PRIMARY action — open/view */
+.cs-open {
+  width:100%; padding:10px 16px;
+  background:linear-gradient(180deg,#0c6ea0 0%,var(--lg-navy) 100%); color:white;
+  border:none; border-radius:12px;
+  font-size:14px; font-weight:700; font-family:inherit;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:background .2s,transform .1s,box-shadow .2s;
+  box-shadow:0 2px 8px rgba(0,81,126,.35);
+  margin-bottom:8px;
+}
+.cs-open:hover { background:var(--lg-navy-lt); box-shadow:0 4px 14px rgba(0,81,126,.45); }
+.cs-open:active { transform:scale(.98); }
+.cs-open.loading { background:#7d94a2; cursor:not-allowed; box-shadow:none; }
+.cs-open.ok { background:var(--success); cursor:default; }
+
+/* SECONDARY action — download */
+.cs-dl-link {
+  width:100%; padding:7px 12px;
+  background:transparent; color:var(--lg-blue-muted);
+  border:1px solid var(--fl-border); border-radius:6px;
+  font-size:12.5px; font-weight:600; font-family:inherit;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .15s;
+}
+.cs-dl-link:hover { border-color:var(--lg-blue-muted); color:var(--lg-navy); background:var(--fl-hover); }
+
+/* Multi-select state */
+.cs-multi { text-align:center; padding:10px 0 14px; }
+.cs-multi-count { font-size:32px; font-weight:800; color:var(--lg-navy); line-height:1; }
+.cs-multi-label { font-size:12px; color:var(--fl-muted); margin-top:3px; }
+.cs-multi-types  { font-size:11.5px; color:var(--lg-blue-muted); margin-top:5px; font-style:italic; }
+
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin { width:15px; height:15px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .6s linear infinite; flex-shrink:0; }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:22px; left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--lg-navy); color:white; font-family:var(--font);
+  padding:11px 18px; border-radius:12px;
+  font-size:13px; font-weight:500;
+  display:flex; align-items:center; gap:9px;
+  box-shadow:0 6px 24px rgba(0,0,0,.22);
+  transition:transform .3s cubic-bezier(.34,1.2,.64,1);
+  z-index:2000; pointer-events:none; white-space:nowrap;
+  border-left:3px solid var(--green);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+.hint { position:fixed; bottom:20px; left:24px; font-size:11.5px; color:var(--fl-muted); background:white; border:1px solid var(--fl-border); padding:8px 12px; border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.08); z-index:500; transition:opacity .3s; }
+.hint span { color:var(--green-600); font-weight:600; }
+
+/* ── LIBRARY SEARCH ── */
+.lib-search { padding:8px 16px 4px; background:white; border-bottom:1px solid var(--fl-border); display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.lib-search input { flex:1; max-width:320px; border:1px solid var(--fl-border); border-radius:4px; padding:6px 10px 6px 30px; font-size:13px; font-family:inherit; color:var(--fl-text); background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23909090' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 8px center; }
+.lib-search input:focus { outline:none; border-color:var(--fl-blue); box-shadow:0 0 0 2px rgba(0,120,212,.15); }
+.lib-search-count { font-size:12px; color:var(--fl-muted); white-space:nowrap; }
+
+/* ── SORT ARROWS ── */
+.lib th { cursor:pointer; }
+.lib th .sort-ico { display:inline-block; margin-left:4px; opacity:.35; font-size:10px; }
+.lib th.sort-asc  .sort-ico, .lib th.sort-desc .sort-ico { opacity:1; color:var(--green-600); }
+
+/* ── ARCHIVE BADGE TOOLTIP ── */
+.arch-badge-wrap { position:relative; display:inline-flex; }
+.arch-badge-wrap .arch-tip {
+  display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+  background:var(--lg-navy); color:white; border-radius:5px; padding:6px 10px;
+  font-size:11px; line-height:1.5; white-space:nowrap; z-index:100;
+  box-shadow:0 4px 12px rgba(0,0,0,.2);
+  pointer-events:none;
+}
+.arch-badge-wrap .arch-tip::after {
+  content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:var(--lg-navy);
+}
+.arch-badge-wrap:hover .arch-tip { display:block; }
+
+/* ── RESTORE BUTTON ── */
+.cs-restore {
+  width:100%; padding:6px 12px; margin-top:6px;
+  background:transparent; color:var(--fl-muted);
+  border:1px dashed #c8d4e0; border-radius:6px;
+  font-size:11.5px; font-weight:600; font-family:inherit;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .2s;
+}
+.cs-restore:hover { border-color:var(--lg-blue-muted); color:var(--lg-navy); background:var(--fl-hover); }
+.cs-restore.loading { color:#8a9bb5; cursor:not-allowed; border-style:solid; }
+.cs-restore.ok { color:var(--success); border-color:var(--success); border-style:solid; }
+
+/* ── RESTORE MODAL ── */
+.rm-overlay {
+  position:fixed; inset:0; background:rgba(10,20,35,.55); z-index:3000;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+  backdrop-filter:blur(3px);
+}
+.rm-overlay.open { opacity:1; pointer-events:auto; }
+.rm-box {
+  background:var(--glass-strong); font-family:var(--font);
+  -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-ring);
+  border-radius:18px; padding:28px 28px 22px; max-width:380px; width:90%;
+  box-shadow:var(--glass-hi), 0 24px 64px rgba(0,0,0,.25);
+  transform:scale(.93) translateY(10px); transition:transform .25s cubic-bezier(.34,1.15,.64,1);
+}
+.rm-overlay.open .rm-box { transform:scale(1) translateY(0); }
+.rm-icon { font-size:32px; margin-bottom:10px; }
+.rm-title { font-size:16px; font-weight:800; color:var(--lg-navy); margin-bottom:8px; }
+.rm-body { font-size:13px; color:var(--fl-muted); line-height:1.55; margin-bottom:10px; }
+.rm-warn { font-size:12px; color:#8a5a00; background:#fff8e6; border:1px solid #ffe0a3; border-radius:8px; padding:8px 11px; margin-bottom:18px; }
+.rm-actions { display:flex; gap:10px; justify-content:flex-end; }
+.rm-cancel { padding:8px 18px; border-radius:6px; border:1px solid var(--fl-border); background:white; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; color:var(--fl-text); transition:background .15s; }
+.rm-cancel:hover { background:var(--fl-hover); }
+.rm-confirm { padding:8px 18px; border-radius:10px; border:none; background:linear-gradient(180deg,#0c6ea0 0%,var(--lg-navy) 100%); color:white; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; transition:background .15s; }
+.rm-confirm:hover { background:var(--lg-navy-lt); }
+
+/* ── VIEWED BADGE ── */
+.viewed-badge { display:inline-flex; align-items:center; gap:3px; background:#f0faf0; color:#107c10; border:1px solid #a9d8a9; border-radius:10px; padding:2px 7px; font-size:10px; font-weight:600; margin-left:5px; }
+</style>
+</head>
+<body>
+
+<div class="mockup-pill">Interaktiv Mockup — Klicka på en arkiverad fil 📦</div>
+
+<!-- M365 bar -->
+<div class="m365-bar">
+  <div class="waffle"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="m365-brand">Langate</div>
+  <nav class="m365-nav">
+    <a href="#">OneDrive</a>
+    <a href="#" class="active">SharePoint</a>
+    <a href="#">Teams</a>
+    <a href="#">Outlook</a>
+  </nav>
+  <div class="m365-search">🔍 <span>Sök i SharePoint</span></div>
+  <div class="m365-right">
+    <div class="cold-pill">❄ Cold Storage</div>
+    <div class="m365-icon">🔔</div>
+    <div class="m365-icon">⚙</div>
+    <div class="m365-avatar">AL</div>
+  </div>
+</div>
+
+<!-- SP header -->
+<div class="sp-header">
+  <div class="sp-breadcrumb">
+    <a href="#">Hem</a> › <a href="#">Langate Intranet</a> › <span>Mediearkiv</span>
+  </div>
+  <div class="sp-nav">
+    <div class="sp-nav-item">Startsida</div>
+    <div class="sp-nav-item active">Mediabibliotek</div>
+    <div class="sp-nav-item">Kampanjer</div>
+    <div class="sp-nav-item">Varumärke</div>
+    <div class="sp-nav-item">Mer ▾</div>
+  </div>
+</div>
+
+<!-- Command bar -->
+<div class="cmd-bar">
+  <button class="cmd primary">+ Nytt</button>
+  <button class="cmd">↑ Ladda upp</button>
+  <div class="cmd-sep"></div>
+  <button class="cmd">Dela</button>
+  <button class="cmd">Kopiera länk</button>
+  <div class="cmd-sep"></div>
+  <button class="cmd">⋯ Mer</button>
+  <div class="cmd-space"></div>
+  <div class="cmd-info" id="selInfo"></div>
+  <button class="cmd">☰ Vy</button>
+  <button class="cmd">⊞ Filter</button>
+</div>
+
+<!-- Library -->
+<div class="lib-search">
+  <input type="text" id="searchInput" placeholder="Sök efter filnamn…" oninput="setSearch(this.value)">
+  <span class="lib-search-count" id="searchCount"></span>
+</div>
+<div class="lib">
+  <table>
+    <thead>
+      <tr>
+        <th class="th-cb"><input type="checkbox" id="cbAll" onchange="selectAll(this)"></th>
+        <th class="th-ico"></th>
+        <th onclick="sortBy('name')" id="th-name">Namn <span class="sort-ico">↑</span></th>
+        <th class="th-mod" onclick="sortBy('mod')" id="th-mod">Ändrad <span class="sort-ico">↕</span></th>
+        <th class="th-by" onclick="sortBy('by')" id="th-by">Ändrad av <span class="sort-ico">↕</span></th>
+        <th class="th-size" onclick="sortBy('size')" id="th-size">Storlek <span class="sort-ico">↕</span></th>
+        <th class="th-status">Lagringsstatus</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- SP Cold Storage panel -->
+<div class="cs-panel" id="panel">
+  <div class="cs-head">
+    <div class="cs-brand">
+      <div class="cs-logo">❄</div>
+      <div>
+        <div class="cs-name">SP COLD STORAGE</div>
+        <div class="cs-by">by Langate · Filvisare</div>
+      </div>
+    </div>
+    <button class="cs-x" onclick="closePanel()">✕</button>
+  </div>
+  <div class="cs-accent"></div>
+  <div id="panelInner"></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span id="toastIcon">✅</span> <span id="toastText"></span></div>
+
+<!-- Restore confirmation modal -->
+<div class="rm-overlay" id="restoreModal">
+  <div class="rm-box">
+    <div class="rm-icon">♻</div>
+    <div class="rm-title">Återställ till SharePoint?</div>
+    <div class="rm-body">Filen kopieras tillbaka till ursprungligt dokumentbibliotek och tas bort från Azure Blob Cold Storage.</div>
+    <div class="rm-warn">⚠ Om källfilen raderades vid arkivering kan åtgärden inte ångras.</div>
+    <div class="rm-actions">
+      <button class="rm-cancel" onclick="cancelRestore()">Avbryt</button>
+      <button class="rm-confirm" onclick="confirmRestore()">Återställ fil</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hint -->
+<div class="hint" id="hint"><span>Tips:</span> Klicka på en fil märkt 📦 Arkiverad för att öppna eller ladda ned</div>
+
+<script>
+const FILES = [
+  { id:1,  name:'Produktfilm_Sommar_2022.mp4',    type:'mp4',  cat:'video', mod:'3 aug 2022',  by:'Erik Johansson',   size:'234 MB',  archived:true,  archDate:'15 jan 2023', iconClass:'vid',  thumbColor:'#0f2027,#203a43,#2c5364', icon:'🎬' },
+  { id:2,  name:'Konferensvideo_Q3_2022.mov',     type:'mov',  cat:'video', mod:'15 sep 2022', by:'Johan Bergström',  size:'1,2 GB',  archived:true,  archDate:'1 feb 2023',  iconClass:'vid2', thumbColor:'#1a1a2e,#16213e,#0f3460', icon:'🎬' },
+  { id:3,  name:'Sommarmöte_highlights.mp4',      type:'mp4',  cat:'video', mod:'30 jun 2022', by:'Maria Holm',       size:'456 MB',  archived:true,  archDate:'15 aug 2022', iconClass:'vid',  thumbColor:'#134e5e,#2d6a4f,#71b280', icon:'🎬' },
+  { id:4,  name:'Produktvisning_teaser.mp4',      type:'mp4',  cat:'video', mod:'5 jan 2024',  by:'Erik Johansson',   size:'78 MB',   archived:false },
+  { id:5,  name:'Brandkampanj_hero.png',          type:'png',  cat:'image', mod:'8 dec 2022',  by:'Anna Lindström',   size:'12,4 MB', archived:true,  archDate:'1 jan 2024',  iconClass:'img2', thumbColor:'#f093fb,#f5576c',         icon:'🖼️' },
+  { id:6,  name:'Årskonferens_gruppfoto.jpg',     type:'jpg',  cat:'image', mod:'30 apr 2023', by:'Anna Lindström',   size:'6,7 MB',  archived:false },
+  { id:7,  name:'Årsredovisning_2022.pdf',        type:'pdf',  cat:'doc',   mod:'15 feb 2023', by:'Johan Bergström',  size:'3,4 MB',  archived:true,  archDate:'1 mar 2023',  iconClass:'pdf',  thumbColor:'#c0392b,#7b241c',         icon:'📄' },
+  { id:8,  name:'Budget_Q3_2023.xlsx',            type:'xlsx', cat:'doc',   mod:'12 okt 2023', by:'Maria Holm',       size:'890 KB',  archived:false },
+  { id:9,  name:'Avtal_Stockholms_AB.docx',       type:'docx', cat:'doc',   mod:'20 jun 2022', by:'Erik Johansson',   size:'245 KB',  archived:true,  archDate:'10 jul 2023', iconClass:'docx', thumbColor:'#00517e,#0c6ea0',         icon:'📝' },
+];
+
+const ICON_CLASS_MAP = { jpg:'img', png:'img2', heic:'img3', svg:'img4', mp4:'vid', mov:'vid2', zip:'zip', pdf:'pdf', docx:'docx', xlsx:'xlsx' };
+const ICON_CHAR_MAP  = { jpg:'🖼️', png:'🖼️', heic:'🖼️', svg:'📐', mp4:'🎬', mov:'🎬', zip:'📦', pdf:'📄', docx:'📝', xlsx:'📊' };
+
+let selected    = new Set();
+let viewedIds   = new Set();
+let viewState   = 'idle';
+let restoreTargetId = null;
+let sortCol     = 'name';
+let sortDir     = 1;
+let searchQuery = '';
+
+// ── SORT & SEARCH ─────────────────────────────────────────────
+function sortBy(col) {
+  if (sortCol === col) sortDir = -sortDir;
+  else { sortCol = col; sortDir = 1; }
+  updateSortHeaders();
+  render();
+}
+
+function updateSortHeaders() {
+  ['name','mod','by','size'].forEach(c => {
+    const th = document.getElementById(`th-${c}`);
+    if (!th) return;
+    th.classList.remove('sort-asc','sort-desc');
+    const ico = th.querySelector('.sort-ico');
+    if (c === sortCol) {
+      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+      ico.textContent = sortDir === 1 ? '↑' : '↓';
+    } else {
+      ico.textContent = '↕';
+    }
+  });
+}
+
+function setSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  render();
+}
+
+function visibleFiles() {
+  const filtered = searchQuery
+    ? FILES.filter(f => f.name.toLowerCase().includes(searchQuery))
+    : [...FILES];
+  return filtered.sort((a, b) => {
+    const av = (a[sortCol] || '').toString().toLowerCase();
+    const bv = (b[sortCol] || '').toString().toLowerCase();
+    return av < bv ? -sortDir : av > bv ? sortDir : 0;
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render() {
+  const files = visibleFiles();
+  document.getElementById('searchCount').textContent =
+    searchQuery ? `${files.length} av ${FILES.length} filer` : '';
+  document.getElementById('tbody').innerHTML = files.map(f => {
+    const ic  = f.iconClass || ICON_CLASS_MAP[f.type] || 'zip';
+    const ico = f.icon      || ICON_CHAR_MAP[f.type]  || '📄';
+    const viewedBadge = viewedIds.has(f.id)
+      ? '<span class="viewed-badge">✓ visad</span>'
+      : '';
+    const archTip = f.archived
+      ? `Arkiverat: ${f.archDate} &bull; ${f.size} &bull; Sweden Central`
+      : '';
+    const status = f.archived
+      ? `<div class="arch-badge-wrap">
+           <span class="arch-badge">📦 Arkiverad</span>
+           <div class="arch-tip">${archTip}</div>
+         </div>${viewedBadge}`
+      : `<span style="color:var(--fl-muted);font-size:13px">—</span>`;
+    return `
+      <tr id="row${f.id}" onclick="pick(${f.id},event)">
+        <td><input type="checkbox" id="cb${f.id}" onclick="cbClick(${f.id},event)"></td>
+        <td><div class="ficon ${ic}"><span class="ficon-thumb">${ico}</span></div></td>
+        <td><span class="fname">${f.name}</span></td>
+        <td style="font-size:13px;color:var(--fl-muted)">${f.mod}</td>
+        <td style="font-size:13px;color:var(--fl-muted)">${f.by}</td>
+        <td style="font-size:13px;color:var(--fl-muted)">${f.size}</td>
+        <td>${status}</td>
+      </tr>`;
+  }).join('');
+  // Re-sync selection checkboxes after re-render
+  files.forEach(f => {
+    const row = document.getElementById(`row${f.id}`);
+    const cb  = document.getElementById(`cb${f.id}`);
+    if (row) row.classList.toggle('sel', selected.has(f.id));
+    if (cb)  cb.checked = selected.has(f.id);
+  });
+}
+
+// ── SELECTION ─────────────────────────────────────────────────
+function pick(id, e) {
+  if (e && (e.ctrlKey || e.metaKey)) {
+    selected.has(id) ? selected.delete(id) : selected.add(id);
+  } else {
+    selected.clear(); selected.add(id);
+  }
+  refresh();
+}
+
+function cbClick(id, e) {
+  e.stopPropagation();
+  selected.has(id) ? selected.delete(id) : selected.add(id);
+  refresh();
+}
+
+function selectAll(el) {
+  if (el.checked) visibleFiles().forEach(f => selected.add(f.id));
+  else selected.clear();
+  refresh();
+}
+
+function refresh() {
+  const n = selected.size;
+  document.getElementById('selInfo').textContent = n > 0 ? `${n} objekt markerat${n>1?'e':''}` : '';
+  if (n > 0) document.getElementById('hint').style.opacity = '0';
+  const archived = FILES.filter(f => selected.has(f.id) && f.archived);
+  const panel    = document.getElementById('panel');
+  if (archived.length === 0) { panel.classList.remove('open'); render(); return; }
+  panel.classList.add('open');
+  viewState = 'idle';
+  render();
+  buildPanel(archived);
+}
+
+// ── PANEL ─────────────────────────────────────────────────────
+function buildPanel(archived) {
+  const inner = document.getElementById('panelInner');
+  if (archived.length === 1) {
+    buildSinglePanel(archived[0], inner);
+  } else {
+    buildMultiPanel(archived, inner);
+  }
+}
+
+function buildSinglePanel(f, inner) {
+  const ic  = f.iconClass || ICON_CLASS_MAP[f.type] || 'zip';
+  const ico = f.icon      || ICON_CHAR_MAP[f.type]  || '📄';
+  const tc  = f.thumbColor || '30,52,72,100,100,100';
+  const typeLabel = f.cat === 'video' ? 'VIDEO' : f.cat === 'image' ? 'BILD' : f.type.toUpperCase();
+  const fileMeta  = f.cat === 'doc' ? 'Arkiverat dokument' : 'Arkiverad mediafil';
+  const { primaryBtn, secondaryBtn } = buildActionButtons(f);
+  inner.innerHTML = `
+    <div class="cs-thumb">
+      <div class="cs-thumb-bg" style="background:linear-gradient(135deg,${tc})"></div>
+      <div class="cs-thumb-overlay"></div>
+      <div class="cs-thumb-icon">${ico}</div>
+      <div class="cs-thumb-badge">${typeLabel} &nbsp;·&nbsp; ${f.type.toUpperCase()}</div>
+    </div>
+    <div class="cs-body">
+      <div class="cs-fname">${f.name}</div>
+      <div class="cs-fmeta">${fileMeta} &nbsp;·&nbsp; Azure Blob Cold</div>
+      <div class="cs-grid">
+        <div class="cs-kv"><div class="cs-k">Arkiverat</div><div class="cs-v">${f.archDate}</div></div>
+        <div class="cs-kv"><div class="cs-k">Storlek</div><div class="cs-v">${f.size}</div></div>
+        <div class="cs-kv"><div class="cs-k">Region</div><div class="cs-v">Sweden Central</div></div>
+        <div class="cs-kv"><div class="cs-k">Format</div><div class="cs-v">${f.type.toUpperCase()}</div></div>
+      </div>
+      <hr class="cs-hr">
+      ${primaryBtn}
+      ${secondaryBtn}
+      <button class="cs-restore" id="restoreBtn" onclick="startRestore(${f.id})">♻ Återställ till SharePoint</button>
+    </div>`;
+}
+
+function buildActionButtons(f) {
+  if (f.cat === 'video') {
+    return {
+      primaryBtn:   `<button class="cs-open" id="openBtn" onclick="openFile(${f.id})">▶ Spela upp video</button>`,
+      secondaryBtn: `<button class="cs-dl-link" id="dlBtn" onclick="downloadFile('${f.name}')">⬇ Ladda ned fil</button>`
+    };
+  }
+  if (f.cat === 'image') {
+    return {
+      primaryBtn:   `<button class="cs-open" id="openBtn" onclick="openFile(${f.id})">🔍 Öppna &amp; visa</button>`,
+      secondaryBtn: `<button class="cs-dl-link" id="dlBtn" onclick="downloadFile('${f.name}')">⬇ Ladda ned fil</button>`
+    };
+  }
+  if (f.type === 'pdf') {
+    return {
+      primaryBtn:   `<button class="cs-open" id="openBtn" onclick="openFile(${f.id})">📄 Visa PDF</button>`,
+      secondaryBtn: `<button class="cs-dl-link" id="dlBtn" onclick="downloadFile('${f.name}')">⬇ Ladda ned PDF</button>`
+    };
+  }
+  // docx / xlsx — no in-browser viewer
+  return {
+    primaryBtn:   `<button class="cs-open" id="openBtn" onclick="prepareDownload('${f.name}')">⬇ Ladda ned fil</button>`,
+    secondaryBtn: ''
+  };
+}
+
+function buildMultiPanel(archived, inner) {
+  const vids = archived.filter(f => f.cat === 'video').length;
+  const imgs = archived.filter(f => f.cat === 'image').length;
+  const docs = archived.filter(f => f.cat === 'doc').length;
+  const desc = [
+    vids > 0 ? `${vids} video${vids>1?'r':''}` : '',
+    imgs > 0 ? `${imgs} bild${imgs>1?'er':''}` : '',
+    docs > 0 ? `${docs} dokument` : ''
+  ].filter(Boolean).join(', ');
+  const allSameCategory = archived.every(f => f.cat === archived[0].cat);
+  const isMixedTypes = !allSameCategory;
+  const openLabel = isMixedTypes
+    ? '⬇ Ladda ned alla som ZIP'
+    : vids > 0 ? '▶ Öppna i spellista' : '🖼️ Öppna bildspel';
+  const openAction = isMixedTypes
+    ? `downloadFile(null,${archived.length})`
+    : `openFile(null,${archived.length})`;
+  inner.innerHTML = `
+    <div class="cs-body">
+      <div class="cs-multi">
+        <div class="cs-multi-count">${archived.length}</div>
+        <div class="cs-multi-label">arkiverade filer valda</div>
+        <div class="cs-multi-types">${desc}</div>
+      </div>
+      <hr class="cs-hr">
+      <button class="cs-open" id="openBtn" onclick="${openAction}">${openLabel}</button>
+      <button class="cs-dl-link" id="dlBtn" onclick="downloadFile(null,${archived.length})">⬇ Ladda ned alla som ZIP</button>
+    </div>`;
+}
+
+// ── OPEN / VIEW ───────────────────────────────────────────────
+function openFile(id, count = 1) {
+  if (viewState === 'loading') return;
+  viewState = 'loading';
+  const btn = document.getElementById('openBtn');
+  const f   = id ? FILES.find(x => x.id === id) : null;
+  const isPdf   = f && f.type === 'pdf';
+  const isVideo = f && f.cat  === 'video';
+  const step2 = isPdf ? 'Avkodar PDF…' : 'Avkodar mediafil…';
+  const step3 = isPdf ? 'Öppnar PDF-visare…' : isVideo ? 'Startar uppspelning…' : 'Öppnar visare…';
+  btn.className = 'cs-open loading';
+  btn.innerHTML = '<div class="spin"></div> Hämtar fil från Azure…';
+  btn.disabled  = true;
+  setTimeout(() => { btn.innerHTML = `<div class="spin"></div> ${step2}`; }, 800);
+  setTimeout(() => { btn.innerHTML = `<div class="spin"></div> ${step3}`; }, 1400);
+  setTimeout(() => {
+    viewState = 'ok';
+    btn.className = 'cs-open ok';
+    btn.innerHTML = '✓ Visare öppnad!';
+    btn.disabled  = false;
+    if (id) viewedIds.add(id);
+    openViewer(id, count);
+    const reopenLabel = f
+      ? (f.cat === 'video' ? '▶ Spela upp igen' : f.type === 'pdf' ? '📄 Visa igen' : '🔍 Öppna igen')
+      : '🔍 Öppna igen';
+    setTimeout(() => {
+      if (viewState === 'ok') { btn.className='cs-open'; btn.innerHTML = reopenLabel; viewState='idle'; }
+      render(); // update viewed badge in list
+    }, 3500);
+  }, 2000);
+}
+
+function prepareDownload(name) {
+  const btn = document.getElementById('openBtn');
+  btn.className = 'cs-open loading';
+  btn.innerHTML = '<div class="spin"></div> Förbereder nedladdning…';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.className = 'cs-open ok';
+    btn.innerHTML = '✓ Nedladdning startad!';
+    downloadFile(name);
+    setTimeout(() => { btn.className='cs-open'; btn.innerHTML='⬇ Ladda ned fil'; btn.disabled=false; }, 3000);
+  }, 1200);
+}
+
+function openViewer(id, count) {
+  const f = id ? FILES.find(x => x.id === id) : null;
+  const isVideo = f && f.cat === 'video';
+  const isPdf   = f && f.type === 'pdf';
+  const tc = f ? (f.thumbColor || '30,52,72') : '30,52,72,100,100,100';
+  const name = f ? f.name : `${count} filer`;
+  const size = f ? f.size : '—';
+  const date = f ? f.archDate : '—';
+  const ico  = f ? (f.icon || '📄') : '🖼️';
+
+  const html = `<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>SP Cold Storage — ${name}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#04222f;color:#eaf3f8;font-family:'DM Sans',Avenir,'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+  .vbar{height:3px;background:linear-gradient(90deg,#02b896,#4fd9c0,#02b896)}
+  .vtop{background:#082e44;padding:12px 24px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #0f3a52}
+  .vlogo{width:26px;height:26px;border-radius:7px;background:rgba(2,184,150,.2);border:1px solid rgba(2,184,150,.5);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .vproduct{font-size:12px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.92)}
+  .vproduct-sub{font-size:10px;color:rgba(255,255,255,.5)}
+  .vfname{font-size:14px;font-weight:600;margin-left:8px;padding-left:8px;border-left:1px solid #0f3a52;color:rgba(255,255,255,.85)}
+  .vcontent{flex:1;display:flex;align-items:center;justify-content:center;padding:32px;position:relative}
+  .vsim-note{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.5);padding:6px 16px;border-radius:20px;font-size:11px;color:rgba(255,255,255,.5);white-space:nowrap;border:1px solid rgba(255,255,255,.1)}
+  ${isPdf ? `
+  .vpdf-frame{width:min(560px,90vw);border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);background:#fff}
+  .vpdf-header{background:linear-gradient(135deg,${tc});padding:40px 32px;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .vpdf-bigicon{font-size:64px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+  .vpdf-fname{font-size:16px;font-weight:700;color:rgba(255,255,255,.95);text-align:center;max-width:400px;word-break:break-word}
+  .vpdf-pages{font-size:12px;color:rgba(255,255,255,.55);margin-top:-4px}
+  .vpdf-body{background:#f5f5f5;padding:24px;display:flex;flex-direction:column;gap:8px}
+  .vpdf-page-sim{height:12px;border-radius:2px;background:#ddd}
+  .vpdf-page-sim:first-child{width:85%}.vpdf-page-sim:nth-child(2){width:100%}.vpdf-page-sim:nth-child(3){width:72%}.vpdf-page-sim:nth-child(4){width:90%}.vpdf-page-sim:nth-child(5){width:60%}
+  ` : isVideo ? `
+  .vplayer{width:min(700px,90vw);aspect-ratio:16/9;border-radius:10px;overflow:hidden;position:relative;background:linear-gradient(135deg,${tc});box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .vplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s}
+  .vplay:hover{background:rgba(0,0,0,.15)}
+  .vplaybtn{width:72px;height:72px;border-radius:50%;background:rgba(0,81,126,.92);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 20px rgba(0,81,126,.55),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s}
+  .vplay:hover .vplaybtn{transform:scale(1.1)}
+  .vcontrols{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.8));display:flex;align-items:center;gap:10px}
+  .vprogress{flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:2px;cursor:pointer}
+  .vprogress-fill{width:0%;height:100%;background:#02b896;border-radius:2px;transition:width .3s}
+  .vtime{font-size:11px;color:rgba(255,255,255,.7)}
+  ` : `
+  .vimg-frame{width:min(680px,90vw);max-height:65vh;border-radius:10px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+  .vimg-sim{width:100%;aspect-ratio:4/3;background:linear-gradient(135deg,${tc});display:flex;align-items:center;justify-content:center;font-size:72px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.4))}
+  .vimg-info{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.75));font-size:12px;color:rgba(255,255,255,.7)}
+  `}
+  .vmeta{display:flex;gap:24px;padding:16px 24px;border-top:1px solid #0f3a52;background:#062839;font-size:12px}
+  .vmeta-item{color:rgba(255,255,255,.55)}
+  .vmeta-item strong{display:block;color:rgba(255,255,255,.88);margin-bottom:2px;font-size:13px}
+  .vactions{display:flex;gap:10px;padding:14px 24px;border-top:1px solid #0f3a52;background:#082e44;align-items:center;justify-content:flex-end}
+  .vbtn{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:all .15s}
+  .vbtn-dl{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.16)}
+  .vbtn-dl:hover{background:rgba(255,255,255,.14)}
+  .vbtn-close{background:linear-gradient(180deg,#0c6ea0 0%,#00517e 100%);color:white}
+  .vbtn-close:hover{background:#013d5f}
+</style>
+</head>
+<body>
+<div class="vbar"></div>
+<div class="vtop">
+  <div class="vlogo">❄</div>
+  <div><div class="vproduct">SP COLD STORAGE</div><div class="vproduct-sub">by Langate · Filvisare</div></div>
+  <div class="vfname">${name}</div>
+</div>
+<div class="vcontent">
+  <div class="vsim-note">Simulerad förhandsvisning — faktisk fil i Azure Blob Cold</div>
+  ${isPdf ? `
+  <div class="vpdf-frame">
+    <div class="vpdf-header">
+      <div class="vpdf-bigicon">📄</div>
+      <div class="vpdf-fname">${name}</div>
+      <div class="vpdf-pages">Sida 1 av 12 &nbsp;·&nbsp; base64-kodad PDF</div>
+    </div>
+    <div class="vpdf-body">
+      <div class="vpdf-page-sim"></div>
+      <div class="vpdf-page-sim"></div>
+      <div class="vpdf-page-sim"></div>
+      <div class="vpdf-page-sim"></div>
+      <div class="vpdf-page-sim"></div>
+    </div>
+  </div>` : isVideo ? `
+  <div class="vplayer">
+    <div class="vplay" onclick="togglePlay(this)">
+      <div class="vplaybtn" id="playbtn">▶</div>
+    </div>
+    <div class="vcontrols">
+      <span class="vtime">0:00</span>
+      <div class="vprogress"><div class="vprogress-fill" id="prog"></div></div>
+      <span class="vtime" id="dur">12:34</span>
+    </div>
+  </div>` : `
+  <div class="vimg-frame">
+    <div class="vimg-sim">${ico}</div>
+    <div class="vimg-info">${name}</div>
+  </div>`}
+</div>
+<div class="vmeta">
+  <div class="vmeta-item"><strong>${name}</strong>Azure Blob Cold · Sweden Central</div>
+  <div class="vmeta-item"><strong>Arkiverat</strong>${date}</div>
+  <div class="vmeta-item"><strong>Storlek</strong>${size}</div>
+  <div class="vmeta-item"><strong>Format</strong>${f ? f.type.toUpperCase() : '—'}</div>
+</div>
+<div class="vactions">
+  <button class="vbtn vbtn-dl" onclick="window.close()">⬇ Ladda ned</button>
+  <button class="vbtn vbtn-close" onclick="window.close()">✕ Stäng visare</button>
+</div>
+${isVideo ? `
+<script>
+let playing = false, pct = 0, timer;
+function togglePlay(el) {
+  playing = !playing;
+  document.getElementById('playbtn').textContent = playing ? '⏸' : '▶';
+  if (playing) { timer = setInterval(()=>{ pct=Math.min(100,pct+0.2); document.getElementById('prog').style.width=pct+'%'; if(pct>=100){clearInterval(timer);playing=false;document.getElementById('playbtn').textContent='▶';pct=0;}},100); }
+  else clearInterval(timer);
+}
+<\/script>` : ''}
+</body>
+</html>`;
+
+  const tab = window.open('', '_blank');
+  if (tab) { tab.document.write(html); tab.document.close(); }
+  const toastMsg = id ? `Visar: ${name}` : (count > 1 ? `Öppnar ${count} filer` : `Öppnar fil`);
+  toast('✅', toastMsg);
+}
+
+function downloadFile(name, count = 1) {
+  toast('⬇', name ? `"${name}" laddas ned` : `${count} filer laddas ned som ZIP`);
+}
+
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  selected.clear(); refresh();
+}
+
+// ── RESTORE FLOW ──────────────────────────────────────────────
+function startRestore(id) {
+  restoreTargetId = id;
+  document.getElementById('restoreModal').classList.add('open');
+}
+
+function cancelRestore() {
+  restoreTargetId = null;
+  document.getElementById('restoreModal').classList.remove('open');
+}
+
+function confirmRestore() {
+  document.getElementById('restoreModal').classList.remove('open');
+  const btn = document.getElementById('restoreBtn');
+  if (!btn) return;
+  btn.className = 'cs-restore loading';
+  btn.innerHTML = '<div class="spin" style="border-color:rgba(0,0,0,.15);border-top-color:#00517e"></div> Ansluter till SharePoint…';
+  btn.disabled = true;
+  setTimeout(() => { btn.innerHTML = '<div class="spin" style="border-color:rgba(0,0,0,.15);border-top-color:#00517e"></div> Kopierar fil…'; }, 1000);
+  setTimeout(() => { btn.innerHTML = '<div class="spin" style="border-color:rgba(0,0,0,.15);border-top-color:#00517e"></div> Tar bort från Blob…'; }, 2000);
+  setTimeout(() => {
+    btn.className = 'cs-restore ok';
+    btn.innerHTML = '✓ Återställd till SharePoint';
+    btn.disabled  = true;
+    const f = FILES.find(x => x.id === restoreTargetId);
+    if (f) { f.archived = false; delete f.archDate; }
+    toast('♻', f ? `"${f.name}" återställd` : 'Fil återställd till SharePoint');
+    restoreTargetId = null;
+    setTimeout(() => { selected.clear(); refresh(); }, 2500);
+  }, 3000);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function toast(icon, msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastText').textContent  = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+document.querySelector('.lib').addEventListener('click', e => {
+  if (!e.target.closest('tr')) { selected.clear(); refresh(); }
+});
+
+document.getElementById('restoreModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('restoreModal')) cancelRestore();
+});
+
+updateSortHeaders();
+render();
+</script>
+</body>
+</html>

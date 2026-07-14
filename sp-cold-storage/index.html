@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="sv">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SP Cold Storage – Arkivera mediafiler till Azure Blob Cold</title>
+	<meta name="description" content="SP Cold Storage — SharePoint-lösning som arkiverar mediafiler till Azure Blob Storage Cold-nivån men behåller nedladdning direkt från SharePoint-UX:et. Teknisk dokumentation och två klickbara mockups.">
+	<meta property="og:type" content="website">
+	<meta property="og:locale" content="sv_SE">
+	<meta property="og:site_name" content="Langate · Demos">
+	<meta property="og:title" content="SP Cold Storage – Arkivera mediafiler till Azure Blob Cold">
+	<meta property="og:description" content="SP Cold Storage — SharePoint-lösning som arkiverar mediafiler till Azure Blob Storage Cold-nivån men behåller nedladdning direkt från SharePoint-UX:et. Teknisk dokumentation och två klickbara mockups.">
+	<meta property="og:url" content="https://peterlangate.github.io/special-rotary-phone/sp-cold-storage/">
+	<meta property="og:image" content="https://peterlangate.github.io/special-rotary-phone/og/sp-cold-storage.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="../tailgate.css?v=20260714-1802">
+</head>
+<body class="is-project">
+	<header class="hero">
+		<div class="hero-inner">
+			<div class="brand-row"><span class="brand-dot"></span>LANGATE · SP COLD STORAGE</div>
+			<h1>SharePoint<br>Cold Storage</h1>
+			<p class="hero-lead">SharePoint-lösning som flyttar tunga mediafiler till Azure Blob Storage Cold-nivån för lägre lagringskostnad — men behåller nedladdning direkt från SharePoint-UX:et via en proxy där lagringsnycklarna aldrig lämnar servermiljön. Automatisk arkivering styrs via Azure Blob Lifecycle Management. Teknisk dokumentation plus två klickbara mockups som visar nedladdnings- och konfigurationsflödet.</p>
+		</div>
+	</header>
+
+	<main>
+		<div class="project-grid">
+			<a class="project-card" href="SPColdStorage.html">
+				<div class="project-thumb">
+					<img src="../thumbs/sp-cold-storage-doc.png?v=20260714-1802" alt="">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
+						<path d="M15 3v4h4"/>
+						<path d="M9 12h6M9 16h6M9 8h3"/>
+					</svg>
+				</div>
+				<div class="project-body">
+					<div class="tag-row">
+						<span class="tag">Teknisk dokumentation</span>
+						<span class="tag">A4</span>
+						<span class="tag">Azure Blob</span>
+					</div>
+					<h2>Teknisk dokumentation</h2>
+					<div class="tagline">Arkitektur, kostnad och driftmodell — kapitel-för-kapitel</div>
+					<p class="desc">Fullständig teknisk genomgång av SP Cold Storage — dataflödet från SharePoint till Azure Blob Cold, proxy-arkitekturen som håller lagringsnycklar på servern, Lifecycle Management-regler för automatisk arkivering, kostnadskalkyl mot Hot-nivån och driftmodell för uppföljning. Klar för PDF-utskrift.</p>
+					<div class="meta-row"><span class="meta-updated" data-file="SPColdStorage.html"></span></div>
+				</div>
+				<div class="project-arrow" aria-hidden="true">&rarr;</div>
+			</a>
+
+			<a class="project-card" href="mockup-01-nedladdning.html">
+				<div class="project-thumb">
+					<img src="../thumbs/sp-cold-storage-mockup-01.png?v=20260714-1802" alt="">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<rect x="3" y="4" width="18" height="16" rx="1.6"/>
+						<path d="M3 9h18"/>
+						<circle cx="6" cy="6.5" r="0.6" fill="currentColor"/>
+						<circle cx="8.2" cy="6.5" r="0.6" fill="currentColor"/>
+						<path d="M12 12v5"/>
+						<path d="M9 15l3 3 3-3"/>
+					</svg>
+				</div>
+				<div class="project-body">
+					<div class="tag-row">
+						<span class="tag tag-mockup">Mockup 1</span>
+						<span class="tag">Nedladdning</span>
+						<span class="tag">SharePoint</span>
+					</div>
+					<h2>Öppna &amp; visa mediafil</h2>
+					<div class="tagline">Slutanvändarflödet — samma UX som vanlig SharePoint-fil</div>
+					<p class="desc">Klickbar prototyp av slutanvändarflödet: användaren klickar på en arkiverad mediafil i SharePoint och lösningen strömmar filen från Azure Blob Cold-nivån via en server-proxy. Fokus på att arkiveringen är osynlig för användaren — samma öppna/förhandsvisnings-UX som en icke-arkiverad fil.</p>
+					<div class="meta-row"><span class="meta-updated" data-file="mockup-01-nedladdning.html"></span></div>
+				</div>
+				<div class="project-arrow" aria-hidden="true">&rarr;</div>
+			</a>
+
+			<a class="project-card" href="mockup-02-arkivering.html">
+				<div class="project-thumb">
+					<img src="../thumbs/sp-cold-storage-mockup-02.png?v=20260714-1802" alt="">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<circle cx="12" cy="12" r="3"/>
+						<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+					</svg>
+				</div>
+				<div class="project-body">
+					<div class="tag-row">
+						<span class="tag tag-mockup">Mockup 2</span>
+						<span class="tag">Arkivering</span>
+						<span class="tag">Lifecycle Management</span>
+					</div>
+					<h2>Konfigurera automatisk mediaarkivering</h2>
+					<div class="tagline">Adminflödet — regler för när filer flyttas till Cold</div>
+					<p class="desc">Klickbar prototyp av administratörsflödet: definiera regler för när mediafiler automatiskt ska flyttas från SharePoint till Azure Blob Cold-nivån — per bibliotek, filstorlek, ålder och senast använda datum. Kopplar direkt mot Azure Blob Lifecycle Management-policyer.</p>
+					<div class="meta-row"><span class="meta-updated" data-file="mockup-02-arkivering.html"></span></div>
+				</div>
+				<div class="project-arrow" aria-hidden="true">&rarr;</div>
+			</a>
+		</div>
+	</main>
+
+	<script src="../tailgate.js?v=20260714-1802"></script>
+</body>
+</html>
