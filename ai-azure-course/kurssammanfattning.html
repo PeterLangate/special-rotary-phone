@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<title>Manage Azure with Claude Code – Kursöversikt (Langate)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --primary:      #00517e;
+    --teal:         #537780;
+    --green:        #02B896;
+    --gold:         #F5A623;
+    --red:          #B55852;
+    --panel:        #ebf2f5;
+    --mint:         #e6faf6;
+    --line:         #DBE4EA;
+    --ink:          #4A4A4A;
+    --muted:        #888888;
+}
+
+body {
+    font-family: 'DM Sans', Avenir, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: #e8edf2;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.page {
+    width: 210mm; height: 297mm;
+    background: #fff; margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    display: flex; flex-direction: column;
+}
+@media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; }
+}
+
+/* ---- Masthead ---- */
+.mast-bar { height: 3mm; background: var(--green); }
+.mast {
+    background: var(--primary); color: #fff;
+    padding: 5mm 14mm 4mm;
+}
+.brand { display: flex; align-items: center; gap: 6px; margin-bottom: 3.5mm; }
+.brand-name { font-size: 13pt; font-weight: 800; letter-spacing: 0.01em; }
+.brand-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.eyebrow {
+    font-size: 8pt; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--green); margin-bottom: 2mm;
+}
+.title { font-size: 23pt; font-weight: 800; line-height: 1.04; }
+.tagline {
+    font-size: 10.6pt; font-weight: 300; line-height: 1.28;
+    color: rgba(255,255,255,0.78); margin-top: 2.6mm; max-width: 168mm;
+}
+
+/* ---- Content ---- */
+.content { padding: 3.5mm 14mm 0; flex: 1; }
+
+h2 {
+    font-size: 11pt; font-weight: 700; color: var(--primary);
+    border-left: 3px solid var(--green); padding-left: 2.6mm;
+    margin: 0 0 2.2mm;
+}
+section { margin-bottom: 2.8mm; }
+p { font-size: 8.9pt; line-height: 1.32; margin-bottom: 1.5mm; }
+p:last-child { margin-bottom: 0; }
+.lead { font-size: 9.5pt; line-height: 1.36; }
+.lead strong { color: var(--primary); font-weight: 700; }
+
+/* ---- Kursplan facts strip ---- */
+.kursplan {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; padding: 3mm 6mm; margin-bottom: 4mm;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4mm 6mm;
+}
+.fact .k {
+    font-size: 6.4pt; font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 0.4mm;
+}
+.fact .v { font-size: 8.7pt; font-weight: 600; color: var(--ink); }
+
+/* ---- Detaljerad information: module cards ---- */
+.det-intro { font-size: 8.7pt; line-height: 1.33; color: var(--ink); margin-bottom: 2mm; }
+.modules { display: grid; grid-template-columns: 1fr 1fr; gap: 2.6mm; }
+.module {
+    background: var(--panel); border-top: 3px solid var(--green);
+    border-radius: 0 0 6px 6px; padding: 2.6mm 4mm 2.6mm;
+    break-inside: avoid;
+}
+.module h3 { font-size: 9.2pt; font-weight: 700; color: var(--primary); margin-bottom: 1.5mm; }
+.module ul { list-style: none; }
+.module li {
+    font-size: 7.9pt; line-height: 1.28; color: var(--ink);
+    padding-left: 4mm; position: relative; margin-bottom: 0.9mm;
+}
+.module li:last-child { margin-bottom: 0; }
+.module li::before {
+    content: ''; position: absolute; left: 0; top: 1.3mm;
+    width: 2mm; height: 1.2mm; border-radius: 1px;
+    background: var(--green);
+}
+
+/* ---- Two-column row (Målgrupp + Efter kursen) ---- */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 2.6mm 0 2.4mm; }
+.outcomes { list-style: none; }
+.outcomes li {
+    font-size: 8.2pt; line-height: 1.28; color: var(--ink);
+    padding-left: 5mm; position: relative; margin-bottom: 1mm;
+}
+.outcomes li:last-child { margin-bottom: 0; }
+.outcomes li::before {
+    content: '✓'; position: absolute; left: 0; top: -0.3mm;
+    color: var(--green); font-weight: 800; font-size: 8.5pt;
+}
+
+/* ---- CTA + footer ---- */
+.cta {
+    background: var(--mint); border-left: 3px solid var(--green);
+    border-radius: 0 5px 5px 0; padding: 2mm 5mm;
+    font-size: 8.8pt; color: var(--primary); font-weight: 600;
+}
+.foot {
+    margin: 2.6mm 14mm 3.5mm; padding-top: 2mm;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 7.3pt;
+}
+.foot .l { color: var(--muted); }
+.foot .r { color: var(--teal); font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="page">
+
+    <div class="mast-bar"></div>
+    <div class="mast">
+        <div class="brand"><span class="brand-name">Langate</span><span class="brand-dot"></span></div>
+        <div class="eyebrow">Kursöversikt</div>
+        <div class="title">Manage Azure with Claude Code</div>
+        <div class="tagline">Ta kommando över hela din Azure-miljö &ndash; från tom dator till full kontroll</div>
+    </div>
+
+    <div class="content">
+
+        <div class="kursplan">
+            <div class="fact"><div class="k">Kurskod</div><div class="v">AZ-CLC-19</div></div>
+            <div class="fact"><div class="k">Pris</div><div class="v">På begäran</div></div>
+            <div class="fact"><div class="k">Längd</div><div class="v">2 dagar</div></div>
+            <div class="fact"><div class="k">Nivå</div><div class="v">Grundläggande–mellan</div></div>
+            <div class="fact"><div class="k">Undervisningsspråk</div><div class="v">Svenska (eng. material)</div></div>
+            <div class="fact"><div class="k">Leveranssätt</div><div class="v">Lärarledd, plats/distans</div></div>
+            <div class="fact"><div class="k">Ort &amp; startdatum</div><div class="v">Hålls på begäran</div></div>
+        </div>
+
+        <section>
+            <h2>Om utbildningen</h2>
+            <p class="lead">Tänk dig att styra din Azure-miljö genom att säga vad du vill ha gjort
+            &ndash; och låta AI utföra arbetet medan du behåller kontrollen. <strong>Det är vad den
+            här kursen lär dig.</strong> Du hanterar en hel Microsoft Azure-prenumeration i dialog
+            med Claude Code i Visual Studio Code, i stället för att klicka dig igenom Azure-portalen
+            (som du ändå öppnar för att se resultatet).</p>
+            <p>Du börjar med en tom dator och slutar med full kontroll: skapa, ändra, granska och ta
+            bort resurser &ndash; snabbare och tryggare än för hand. Claude föreslår varje kommando
+            och du godkänner det innan det körs; läsning går fritt, ändringar granskas och radering
+            bekräftas alltid först. Allt sker med Claude och Microsoft: Azure CLI, Azure PowerShell,
+            Azure MCP Server och Bicep.</p>
+        </section>
+
+        <section>
+            <h2>Detaljerad information</h2>
+            <p class="det-intro">Utbildningen består av korta, fristående moment fördelade på 19
+            avsnitt. Varje praktiskt moment följer inlärningsslingan: sätt ett mål, låt Claude
+            försöka, lär av felet &ndash; och när ett mönster visat sig hålla sparas det som en
+            färdighet.</p>
+            <div class="modules">
+                <div class="module">
+                    <h3>Kom igång och utforska</h3>
+                    <ul>
+                        <li>Installera Claude Code och Azure CLI och logga in på Azure</li>
+                        <li>Säkerhetsmodellen läsa/ändra/ta bort, förankrad i minnesfilen CLAUDE.md
+                            – bekräftelse krävs före radering, även i bypass-läge</li>
+                        <li>Utforska prenumerationen: resursgrupper, vad som körs och vad det kostar</li>
+                    </ul>
+                </div>
+                <div class="module">
+                    <h3>Ändra och driftsätt</h3>
+                    <ul>
+                        <li>Skapa, starta, stoppa, ta bort och ändra storlek på virtuella maskiner</li>
+                        <li>Lagring och databaser, nätverk samt Azure AI-tjänster</li>
+                        <li>Infrastruktur som kod med Bicep (Microsofts eget språk) – Claude skriver
+                            filen, du driftsätter den</li>
+                    </ul>
+                </div>
+                <div class="module">
+                    <h3>Automatisera, övervaka och verifiera</h3>
+                    <ul>
+                        <li>Spara uppgifter som återanvändbara färdigheter (SKILL-filer i Claude Code)</li>
+                        <li>Strukturerade Azure-verktyg via Azure MCP Server i stället för råa kommandon</li>
+                        <li>Kostnad och uppstädning, övervakning och diagnostik (Azure Monitor, Log
+                            Analytics) samt behörigheter (Microsoft Entra ID, RBAC)</li>
+                        <li>Lita på Claude, men kontrollera – för hand, i portalen och med Playwright
+                            för webbgränssnitt, plus en kritisk granskning från en underagent</li>
+                    </ul>
+                </div>
+                <div class="module">
+                    <h3>Publicera och styra applikationer</h3>
+                    <ul>
+                        <li>Webbappar (App Service), containrar (AKS, Container Apps) och serverlöst
+                            (Azure Functions)</li>
+                        <li>Säkerhetsläge med Microsoft Defender for Cloud (Zero Trust-rekommendationer)</li>
+                        <li>Styrning med Azure Policy</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="cols">
+            <section style="margin-bottom:0">
+                <h2>Målgrupp och förkunskaper</h2>
+                <p>Kursen vänder sig till molnutvecklare, IT-tekniker, DevOps-ingenjörer och
+                lösningsarkitekter som vill arbeta snabbare i Azure med AI-stöd. Du bör känna till
+                Azure-portalen och kommandoraden. Ingen erfarenhet av Claude Code krävs; du behöver
+                Visual Studio Code (Windows/Mac) och en Azure-prenumeration.</p>
+            </section>
+            <section style="margin-bottom:0">
+                <h2>Efter kursen</h2>
+                <ul class="outcomes">
+                    <li>hantera Azure-resurser i dialog med Claude Code, tryggt och spårbart</li>
+                    <li>tillämpa modellen läsa/ändra/ta bort med rätt grad av granskning per steg</li>
+                    <li>använda Azure CLI, Azure PowerShell, Azure MCP Server och Bicep</li>
+                    <li>övervaka och felsöka resurser med Azure Monitor och Log Analytics</li>
+                    <li>automatisera återkommande uppgifter och verifiera resultatet (Playwright)</li>
+                    <li>överblicka kostnader, behörigheter och styrning i hela prenumerationen</li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="cta">Anmäl intresse så återkommer vi med datum och upplägg.</div>
+
+    </div>
+
+    <div class="foot">
+        <div class="l">Manage Azure with Claude Code &middot; Kursöversikt</div>
+        <div class="r">Langate &nbsp;&middot;&nbsp; juli 2026</div>
+    </div>
+
+</div>
+</body>
+</html>
