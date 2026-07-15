@@ -69,13 +69,17 @@ class EmailGalleryBuilder {
     private _Cell = (Kind: string, Sev: string, Title: string): string => {
         if (getCoreUtils().kErrorMode) { return ""; }
         try {
-            return "<figure class=\"cell sev-" + Sev + "\">" +
+            // Whole cell is a <button role> that opens the dialog viewer. The nested
+            // iframe has pointer-events:none so it never swallows the click.
+            const KindEsc: string = kEmailHTML.Escape(Kind);
+            const TitleEsc: string = kEmailHTML.Escape(Title);
+            return "<figure class=\"cell sev-" + Sev + "\" tabindex=\"0\" role=\"button\"" +
+                " data-kind=\"" + KindEsc + "\" data-title=\"" + TitleEsc + "\">" +
                 "<figcaption><span class=\"pill\">" + Sev.toUpperCase() + "</span>" +
-                "<code>" + kEmailHTML.Escape(Kind) + "</code></figcaption>" +
-                "<div class=\"title\">" + kEmailHTML.Escape(Title) + "</div>" +
+                "<code>" + KindEsc + "</code></figcaption>" +
+                "<div class=\"title\">" + TitleEsc + "</div>" +
                 "<div class=\"frame\"><iframe loading=\"lazy\" src=\"" + Kind + ".html\"></iframe></div>" +
-                "<div class=\"links\"><a href=\"" + Kind + ".html\">open html</a> &middot; " +
-                "<a href=\"" + Kind + ".txt\">text</a></div></figure>";
+                "</figure>";
         } catch (e) {
             getCoreUtils().kGlobalErrorHandler(e, "EmailGalleryBuilder._Cell");
             return "";
@@ -97,27 +101,83 @@ class EmailGalleryBuilder {
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
         "<title>CTS Sentinel — email gallery (all 30)</title><style>" +
         "body{margin:0;background:#0a141c;color:#e7eef2;font-family:'DM Sans',Segoe UI,Helvetica,Arial,sans-serif;}" +
-        "header{padding:22px 26px;border-bottom:1px solid #1d3340;}" +
-        "h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.02em;}" +
-        "header p{margin:6px 0 0;color:#9fb2bd;font-size:13px;max-width:70ch;}" +
-        ".grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;padding:24px 26px;}" +
-        ".cell{margin:0;background:#0f2333;border:1px solid #1d3340;border-radius:12px;overflow:hidden;}" +
-        "figcaption{display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:12px;color:#9fb2bd;}" +
-        "figcaption code{font-family:'DM Mono',Consolas,monospace;}" +
-        ".pill{font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:9px;color:#fff;}" +
+        "header{padding:18px 24px;border-bottom:1px solid #1d3340;}" +
+        "h1{margin:0;font-size:17px;font-weight:800;letter-spacing:.02em;}" +
+        "header p{margin:6px 0 0;color:#9fb2bd;font-size:12.5px;max-width:80ch;}" +
+        // Compact grid: 30 tiles now fit on a normal desktop viewport without scrolling.
+        ".grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:18px 24px;}" +
+        ".cell{margin:0;background:#0f2333;border:1px solid #1d3340;border-radius:10px;overflow:hidden;" +
+                "cursor:pointer;transition:transform .1s ease-out,border-color .15s;user-select:none;}" +
+        ".cell:hover{transform:translateY(-2px);border-color:#3a6b82;}" +
+        ".cell:focus-visible{outline:2px solid #3a6b82;outline-offset:2px;}" +
+        "figcaption{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:11px;color:#9fb2bd;}" +
+        "figcaption code{font-family:'DM Mono',Consolas,monospace;font-size:11px;}" +
+        ".pill{font-size:9.5px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:8px;color:#fff;}" +
         ".sev-critical .pill{background:#B33F3E;}.sev-high .pill{background:#d98324;}" +
         ".sev-medium .pill{background:#0b6e5c;}.sev-info .pill{background:#3a6b82;}" +
         ".sev-critical{border-color:#5e2b2a;}.sev-high{border-color:#5e451f;}" +
-        ".title{padding:0 12px 10px;font-size:13px;font-weight:700;color:#fff;}" +
-        ".frame{height:300px;overflow:hidden;background:#061520;border-top:1px solid #1d3340;}" +
-        ".frame iframe{width:600px;height:900px;border:0;transform:scale(.5);transform-origin:top left;}" +
-        ".links{padding:9px 12px;font-size:12px;}" +
-        ".links a{color:#8fb6c0;text-decoration:none;}.links a:hover{text-decoration:underline;}" +
+        ".title{padding:0 10px 8px;font-size:12px;font-weight:700;color:#fff;line-height:1.3;}" +
+        ".frame{height:140px;overflow:hidden;background:#061520;border-top:1px solid #1d3340;}" +
+        // Iframe scaled down aggressively and pointer-events:none so clicks pass through to the cell.
+        ".frame iframe{width:700px;height:1000px;border:0;transform:scale(.3);transform-origin:top left;pointer-events:none;}" +
+        // Modal viewer dialog.
+        "dialog{border:0;padding:0;border-radius:12px;background:#0f2333;color:#e7eef2;" +
+                "width:min(760px,96vw);max-height:92vh;overflow:hidden;" +
+                "box-shadow:0 20px 60px rgba(0,0,0,.55);}" +
+        "dialog::backdrop{background:rgba(6,21,32,.72);backdrop-filter:blur(4px);}" +
+        ".dhdr{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #1d3340;" +
+                "background:#0a141c;position:sticky;top:0;z-index:1;}" +
+        ".dhdr .pill{margin-right:2px;}" +
+        ".dhdr .dttl{font-weight:700;font-size:13.5px;color:#fff;flex:1;min-width:0;" +
+                "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}" +
+        ".dhdr code{color:#9fb2bd;font-size:11.5px;font-family:'DM Mono',Consolas,monospace;}" +
+        ".dhdr a,.dhdr button{color:#8fb6c0;text-decoration:none;font-size:12px;padding:5px 10px;" +
+                "border-radius:6px;border:1px solid #1d3340;background:transparent;cursor:pointer;" +
+                "font-family:inherit;line-height:1;}" +
+        ".dhdr a:hover,.dhdr button:hover{background:#1d3340;color:#fff;border-color:#3a6b82;}" +
+        ".dhdr button.dx{font-size:16px;font-weight:700;padding:4px 10px;}" +
+        "dialog iframe{width:100%;height:calc(92vh - 55px);border:0;background:#fff;display:block;}" +
         "</style></head><body><header><h1>CTS Sentinel — notification email gallery</h1>" +
         "<p>All 30 notification types, rendered by the actual code (one superset finding feeds " +
-        "every leaf). Open any one and forward it to a real Outlook / Gmail / Apple Mail account " +
-        "for the cross-client litmus pass. Generated by build-gallery.ts.</p></header>" +
-        "<div class=\"grid\">{{CELLS}}</div></body></html>";
+        "every leaf). Click a tile to open the email in a modal viewer; from there, open it in a " +
+        "new tab or view the plaintext variant to forward to a real Outlook / Gmail / Apple Mail " +
+        "account for the cross-client litmus pass. Generated by build-gallery.ts.</p></header>" +
+        "<div class=\"grid\">{{CELLS}}</div>" +
+        "<dialog id=\"viewer\" aria-labelledby=\"viewer-title\">" +
+        "<div class=\"dhdr\">" +
+        "<span class=\"pill\" data-role=\"pill\"></span>" +
+        "<span class=\"dttl\" id=\"viewer-title\"></span>" +
+        "<code data-role=\"kind\"></code>" +
+        "<a href=\"\" target=\"_blank\" rel=\"noopener\" data-role=\"html-open\">Open in new tab</a>" +
+        "<a href=\"\" target=\"_blank\" rel=\"noopener\" data-role=\"text-open\">Text variant</a>" +
+        "<button type=\"button\" class=\"dx\" data-role=\"close\" aria-label=\"Close\">×</button>" +
+        "</div>" +
+        "<iframe title=\"Sentinel email preview\"></iframe>" +
+        "</dialog>" +
+        "<script>(function(){var d=document.getElementById('viewer');" +
+        "var frame=d.querySelector('iframe');var ttl=d.querySelector('.dttl');" +
+        "var code=d.querySelector('[data-role=\"kind\"]');" +
+        "var pill=d.querySelector('[data-role=\"pill\"]');" +
+        "var htmlA=d.querySelector('[data-role=\"html-open\"]');" +
+        "var textA=d.querySelector('[data-role=\"text-open\"]');" +
+        "var closeBtn=d.querySelector('[data-role=\"close\"]');" +
+        "function sevOf(cell){var m=(cell.className||'').match(/sev-([a-z]+)/);return m?m[1]:'';}" +
+        "function openCell(cell){var k=cell.getAttribute('data-kind');" +
+        "var t=cell.getAttribute('data-title');ttl.textContent=t;code.textContent=k;" +
+        "var s=sevOf(cell);pill.textContent=s.toUpperCase();" +
+        "pill.className='pill sev-'+s+'-pill';pill.style.background=" +
+        "(s==='critical'?'#B33F3E':s==='high'?'#d98324':s==='medium'?'#0b6e5c':'#3a6b82');" +
+        "frame.src=k+'.html';htmlA.href=k+'.html';textA.href=k+'.txt';d.showModal();}" +
+        "function closeIt(){d.close();frame.src='about:blank';}" +
+        "document.querySelectorAll('.cell').forEach(function(cell){" +
+        "cell.addEventListener('click',function(){openCell(cell);});" +
+        "cell.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){" +
+        "e.preventDefault();openCell(cell);}});});" +
+        "closeBtn.addEventListener('click',closeIt);" +
+        "d.addEventListener('click',function(e){" +
+        "if(e.target===d){closeIt();}});" +
+        "d.addEventListener('close',function(){frame.src='about:blank';});})();</script>" +
+        "</body></html>";
 
     public static Fat: any = {
         SourceIp: "185.220.101.47", SourceFlag: "🇳🇱", LandedUpn: "jordan.lee@langate.se",

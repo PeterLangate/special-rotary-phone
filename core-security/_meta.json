@@ -1,17 +1,17 @@
 {
+  "syncedAt": "2026-07-15T12:48:46Z",
   "files": {
-    "index.html": {
-      "updated": "2026-07-15"
-    },
-    "sentinel-emails": {
-      "updated": "2026-06-18"
-    },
     "CoreTenantSecurity.html": {
       "updated": "2026-06-21"
     },
+    "sentinel-emails": {
+      "updated": "2026-07-15"
+    },
     "CtsSentinelEvents.html": {
       "updated": "2026-06-17"
+    },
+    "index.html": {
+      "updated": "2026-07-15"
     }
-  },
-  "syncedAt": "2026-07-15T12:35:40Z"
+  }
 }
