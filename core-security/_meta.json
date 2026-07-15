@@ -1,14 +1,14 @@
 {
+  "syncedAt": "2026-07-15T10:11:40Z",
   "files": {
+    "index.html": {
+      "updated": "2026-06-17"
+    },
     "CoreTenantSecurity.html": {
       "updated": "2026-06-21"
     },
     "CtsSentinelEvents.html": {
       "updated": "2026-06-17"
-    },
-    "index.html": {
-      "updated": "2026-06-17"
     }
-  },
-  "syncedAt": "2026-07-07T15:45:08Z"
+  }
 }

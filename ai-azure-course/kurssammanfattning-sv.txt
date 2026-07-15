@@ -29,7 +29,8 @@ MÅLGRUPP OCH FÖRKUNSKAPER
 Kursen vänder sig till molnutvecklare, IT-tekniker, DevOps-ingenjörer och
 lösningsarkitekter som vill arbeta snabbare i Azure med AI-stöd. Du bör känna
 till Azure-portalen och kommandoraden. Ingen erfarenhet av Claude Code krävs;
-du behöver Visual Studio Code (Windows/Mac) och en Azure-prenumeration.
+du behöver Visual Studio Code (Windows/Mac), en Claude Pro-prenumeration
+(cirka 20 USD/mån) och en Azure-prenumeration.
 
 DETALJERAD INFORMATION
 Utbildningen består av korta, fristående moment fördelade på 19 avsnitt. Varje

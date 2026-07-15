@@ -1,32 +1,32 @@
 {
+  "syncedAt": "2026-07-15T10:11:45Z",
   "files": {
-    "mockups/stages-grid.bundle.js.LICENSE.txt": {
-      "updated": "2026-07-11"
-    },
-    "mose-quote.html": {
-      "updated": "2026-07-07"
+    "mockups/mose-app.html": {
+      "updated": "2026-07-12"
     },
     "mockups/onedrive-explorer-carlosg.html": {
       "updated": "2026-07-11"
     },
+    "mose-quote-sv.html": {
+      "updated": "2026-07-07"
+    },
+    "mose-quote.html": {
+      "updated": "2026-07-07"
+    },
     "mockups/stages-grid.bundle.js": {
       "updated": "2026-07-12"
-    },
-    "mockups/mose-app.html": {
-      "updated": "2026-07-12"
-    },
-    "mockups/onedrive-explorer-maryc.html": {
-      "updated": "2026-07-11"
     },
     "index.html": {
       "updated": "2026-07-13"
     },
-    "mose-quote-sv.html": {
-      "updated": "2026-07-07"
+    "mockups/stages-grid.bundle.js.LICENSE.txt": {
+      "updated": "2026-07-11"
     },
     "mockups/index.html": {
       "updated": "2026-07-12"
+    },
+    "mockups/onedrive-explorer-maryc.html": {
+      "updated": "2026-07-11"
     }
-  },
-  "syncedAt": "2026-07-13T07:00:48Z"
+  }
 }

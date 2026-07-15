@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SP Cold Storage — Teknisk dokumentation</title>
-  <style>
+    <meta charset="UTF-8">
+    <title>SP Cold Storage — Teknisk dokumentation</title>
+    <style>
 /* ============================================================
    SP Cold Storage — Dokumentation
    Langate brand (official palette — see branding-langate)
@@ -424,6 +423,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 9.5pt;
+  line-height: 1.4;   /* reset the body's 1.55 inside tables — reclaims ~3-5mm per multi-line cell */
   margin: 3mm 0;
 }
 
@@ -431,7 +431,7 @@ th {
   background: var(--color-navy);
   color: white;
   font-weight: 600;
-  padding: 2mm 3mm;
+  padding: 1.6mm 3mm;
   text-align: left;
   font-size: 8.5pt;
   letter-spacing: 0.04em;
@@ -440,7 +440,7 @@ th {
 }
 
 td {
-  padding: 2mm 3mm;
+  padding: 1.6mm 3mm;
   border-bottom: 1px solid var(--color-border);
   vertical-align: top;
 }
@@ -463,9 +463,69 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 .toc-dots { flex: 1; border-bottom: 1px dotted #b8c8d8; margin: 0 2mm 1.5mm; }
 .toc-page { color: var(--color-navy); font-size: 9pt; font-weight: 600; }
 
-  </style>
+/* ══════════════════════════════════════════════
+   FIGURES — SVG diagrams + screenshots
+══════════════════════════════════════════════ */
+figure { margin: 5mm 0; break-inside: avoid; }
+
+/* SVG interaction diagrams — scale to the content width, keep aspect ratio. */
+.diagram {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 5mm 5mm 3mm;
+  margin: 5mm 0 2mm;
+  break-inside: avoid;
+}
+.diagram svg { display: block; width: 100%; height: auto; }
+
+/* Screenshots of the live product UI — framed, never wider than the text column,
+   capped in height so a wide library capture never overflows a page. */
+.screenshot {
+  break-inside: avoid;
+  margin: 5mm 0 2mm;
+  text-align: center;
+}
+.screenshot img {
+  max-width: 100%;
+  max-height: 82mm;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(30,52,72,0.12);
+}
+/* A tighter frame for the small panel captures so they don't blow up to full width. */
+.screenshot.panel img { max-width: 62mm; max-height: 74mm; }
+.screenshot.panel-wide img { max-width: 88mm; }
+
+.figure-caption {
+  font-size: 8.5pt;
+  color: var(--color-blue-muted);
+  text-align: center;
+  margin-top: 1mm;
+  font-style: italic;
+}
+.figure-caption strong { color: var(--color-navy); font-style: normal; font-weight: 700; }
+
+/* Side-by-side figure row (a screenshot next to explanatory text / two shots). */
+.fig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; align-items: start; break-inside: avoid; margin: 4mm 0; }
+
+/* SVG diagram helper classes referenced from inline <svg> elements. */
+.dg-box-navy   { fill: #00517e; }
+.dg-box-white  { fill: #ffffff; stroke: #00517e; stroke-width: 1.5; }
+.dg-box-light  { fill: #ebf2f5; stroke: #b8c8d8; stroke-width: 1; }
+.dg-box-green  { fill: #02B896; }
+.dg-t-white    { fill: #ffffff; font-family: 'DM Sans', sans-serif; }
+.dg-t-navy     { fill: #00517e; font-family: 'DM Sans', sans-serif; }
+.dg-t-muted    { fill: #537780; font-family: 'DM Sans', sans-serif; }
+.dg-flow       { stroke: #02B896; stroke-width: 2; fill: none; }
+.dg-flow-navy  { stroke: #00517e; stroke-width: 1.5; fill: none; }
+.dg-lifeline   { stroke: #b8c8d8; stroke-width: 1.2; stroke-dasharray: 3 3; }
+
+    </style>
 </head>
 <body>
+
 <div class="page cover-page">
   <div class="cover-top-bar"></div>
   <div class="cover-body">
@@ -478,10 +538,10 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
     <div class="cover-rule"></div>
     <div class="cover-meta-grid">
       <div class="cover-meta-item">
-        <strong>Version</strong>1.0
+        <strong>Version</strong>1.0.1.0
       </div>
       <div class="cover-meta-item">
-        <strong>Datum</strong>Mars 2026
+        <strong>Datum</strong>Juli 2026
       </div>
       <div class="cover-meta-item">
         <strong>Plattform</strong>SharePoint Online &amp; Azure
@@ -499,109 +559,76 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 
 
 <div class="page">
-  <div class="page-header">
+    <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Innehållsförteckning</div>
+    <div class="ph-right">Innehåll</div>
   </div>
-  <div class="page-content" style="padding-top:0">
-    <h2 style="border:none; font-size:18pt; margin-top:0; margin-bottom:8mm; color:var(--color-navy);">Innehåll</h2>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">1</span>Översikt<div class="toc-dots"></div><span class="toc-page">3</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">1.1</span>Vad är SP Cold Storage?<div class="toc-dots"></div><span class="toc-page">3</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">1.2</span>Varför kall lagring?<div class="toc-dots"></div><span class="toc-page">3</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">1.3</span>Nyckelfunktioner<div class="toc-dots"></div><span class="toc-page">4</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">2</span>Systemarkitektur<div class="toc-dots"></div><span class="toc-page">5</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">2.1</span>Komponentöversikt<div class="toc-dots"></div><span class="toc-page">5</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">2.2</span>Autentiseringsflöde<div class="toc-dots"></div><span class="toc-page">6</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">2.3</span>Nedladdningsflöde<div class="toc-dots"></div><span class="toc-page">6</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">3</span>SharePoint-tillägg<div class="toc-dots"></div><span class="toc-page">7</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">3.1</span>Application Extension<div class="toc-dots"></div><span class="toc-page">7</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">3.2</span>Avatar-gränssnitt<div class="toc-dots"></div><span class="toc-page">7</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">3.3</span>Selektionshantering<div class="toc-dots"></div><span class="toc-page">8</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">4</span>Arkiveringsfunktion<div class="toc-dots"></div><span class="toc-page">9</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">4.1</span>Azure Function — schemalagd arkivering<div class="toc-dots"></div><span class="toc-page">9</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">4.2</span>Azure Blob Storage — Cold tier<div class="toc-dots"></div><span class="toc-page">10</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">4.3</span>SAS-URL och nedladdning<div class="toc-dots"></div><span class="toc-page">10</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">4.5</span>Azure Function — återställning<div class="toc-dots"></div><span class="toc-page">11</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">5</span>Installation och konfiguration<div class="toc-dots"></div><span class="toc-page">12</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">5.1</span>Förutsättningar<div class="toc-dots"></div><span class="toc-page">12</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">5.2</span>Driftsättning av SPFx-tillägg<div class="toc-dots"></div><span class="toc-page">12</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">5.3</span>Konfiguration av Azure-resurser<div class="toc-dots"></div><span class="toc-page">13</span>
-    </div>
-
-    <div class="toc-entry toc-h1">
-      <span class="toc-num">6</span>Felsökning<div class="toc-dots"></div><span class="toc-page">14</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">6.1</span>Vanliga fel och åtgärder<div class="toc-dots"></div><span class="toc-page">14</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">6.2</span>Begränsningar och skalning<div class="toc-dots"></div><span class="toc-page">15</span>
-    </div>
-    <div class="toc-entry toc-h2">
-      <span class="toc-num">6.3</span>Kostnadsuppskattning<div class="toc-dots"></div><span class="toc-page">15</span>
-    </div>
-  </div>
-  <div class="page-footer">
+    <div class="page-content" style="padding-top:0">
+<h2 style="border:none; font-size:18pt; margin-top:0; margin-bottom:8mm; color:var(--color-navy);">Innehåll</h2>
+<a class="toc-entry toc-h1" href="#kap-1"><span class="toc-num">1</span>Översikt<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#sek-1-1"><span class="toc-num">1.1</span>Vad är SP Cold Storage?<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#sek-1-2"><span class="toc-num">1.2</span>Varför kall lagring för mediafiler?<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#sek-1-3"><span class="toc-num">1.3</span>Nyckelfunktioner<div class="toc-dots"></div><span class="toc-page">6</span></a>
+        <a class="toc-entry toc-h2" href="#sek-1-4"><span class="toc-num">1.4</span>Stödda mediaformat<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h1" href="#kap-2"><span class="toc-num">2</span>Systemarkitektur<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#sek-2-1"><span class="toc-num">2.1</span>Komponentöversikt<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#sek-2-2"><span class="toc-num">2.2</span>Visnings- och nedladdningsflöde<div class="toc-dots"></div><span class="toc-page">10</span></a>
+        <a class="toc-entry toc-h2" href="#sek-2-3"><span class="toc-num">2.3</span>Arkiveringsflöde<div class="toc-dots"></div><span class="toc-page">11</span></a>
+        <a class="toc-entry toc-h2" href="#sek-2-4"><span class="toc-num">2.4</span>Säkerhetsmodell &mdash; roll OCH per-objekt<div class="toc-dots"></div><span class="toc-page">12</span></a>
+        <a class="toc-entry toc-h1" href="#kap-3"><span class="toc-num">3</span>SharePoint-tillägg<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-1"><span class="toc-num">3.1</span>Application Extension<div class="toc-dots"></div><span class="toc-page">13</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-2"><span class="toc-num">3.2</span>Avatar-gränssnitt och medievisare<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-3"><span class="toc-num">3.3</span>Visarens uppbyggnad per filtyp<div class="toc-dots"></div><span class="toc-page">14</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-4"><span class="toc-num">3.4</span>Markering i biblioteksvyn<div class="toc-dots"></div><span class="toc-page">15</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-5"><span class="toc-num">3.5</span>Arkiv-ikon på laddning och radbyte vid återställning<div class="toc-dots"></div><span class="toc-page">16</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-6"><span class="toc-num">3.6</span>Panelens lägen<div class="toc-dots"></div><span class="toc-page">17</span></a>
+        <a class="toc-entry toc-h2" href="#sek-3-7"><span class="toc-num">3.7</span>Felhantering i gränssnittet<div class="toc-dots"></div><span class="toc-page">18</span></a>
+        <a class="toc-entry toc-h1" href="#kap-4"><span class="toc-num">4</span>Serverfunktioner<div class="toc-dots"></div><span class="toc-page">19</span></a>
+        </div>
+    <div class="page-footer">
     <div>SP Cold Storage</div>
     <div>Langate</div>
   </div>
 </div>
 
-
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Innehåll</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<a class="toc-entry toc-h2" href="#sek-4-1"><span class="toc-num">4.1</span>Schemalagd arkivering (Timer)<div class="toc-dots"></div><span class="toc-page">19</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-2"><span class="toc-num">4.2</span>Mediavisning (GetMediaForViewer)<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-3"><span class="toc-num">4.3</span>Nedladdning (GetDownloadUrl)<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-4"><span class="toc-num">4.4</span>Azure Blob Storage &mdash; Cold-nivå<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-5"><span class="toc-num">4.5</span>Återställning per fil<div class="toc-dots"></div><span class="toc-page">23</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-6"><span class="toc-num">4.6</span>Massarkivering och massåterställning av omfång<div class="toc-dots"></div><span class="toc-page">24</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-7"><span class="toc-num">4.7</span>Behörighetsbevarande<div class="toc-dots"></div><span class="toc-page">25</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-8"><span class="toc-num">4.8</span>Platshållare och enklicks-återställning<div class="toc-dots"></div><span class="toc-page">26</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-9"><span class="toc-num">4.9</span>Säkerhetsdetaljer<div class="toc-dots"></div><span class="toc-page">27</span></a>
+        <a class="toc-entry toc-h2" href="#sek-4-10"><span class="toc-num">4.10</span>Versionshantering &mdash; en version, en fil<div class="toc-dots"></div><span class="toc-page">27</span></a>
+        <a class="toc-entry toc-h1" href="#kap-5"><span class="toc-num">5</span>Installation och konfiguration<div class="toc-dots"></div><span class="toc-page">28</span></a>
+        <a class="toc-entry toc-h2" href="#sek-5-1"><span class="toc-num">5.1</span>Förutsättningar<div class="toc-dots"></div><span class="toc-page">28</span></a>
+        <a class="toc-entry toc-h2" href="#sek-5-2"><span class="toc-num">5.2</span>De tre lagren och deras deploy<div class="toc-dots"></div><span class="toc-page">28</span></a>
+        <a class="toc-entry toc-h2" href="#sek-5-3"><span class="toc-num">5.3</span>Konfiguration av Azure-resurser<div class="toc-dots"></div><span class="toc-page">30</span></a>
+        <a class="toc-entry toc-h1" href="#kap-6"><span class="toc-num">6</span>Felsökning<div class="toc-dots"></div><span class="toc-page">32</span></a>
+        <a class="toc-entry toc-h2" href="#sek-6-1"><span class="toc-num">6.1</span>Vanliga fel och åtgärder<div class="toc-dots"></div><span class="toc-page">32</span></a>
+        <a class="toc-entry toc-h2" href="#sek-6-1-2"><span class="toc-num">6.1</span>Vanliga fel och åtgärder (forts.)<div class="toc-dots"></div><span class="toc-page">33</span></a>
+        <a class="toc-entry toc-h2" href="#sek-6-2"><span class="toc-num">6.2</span>Begränsningar och skalning<div class="toc-dots"></div><span class="toc-page">34</span></a>
+        <a class="toc-entry toc-h2" href="#sek-6-3"><span class="toc-num">6.3</span>Kostnadsuppskattning<div class="toc-dots"></div><span class="toc-page">35</span></a>
+        </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate</div>
+  </div>
+</div>
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
     <div class="ph-right">Kapitel 1 &mdash; Översikt</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 1</span>Översikt</h1>
+    <h1 id="kap-1"><span class="chapter-num">Kapitel 1</span>Översikt</h1>
     <div class="chapter-intro">
       <p>SP Cold Storage är en helhetslösning från Langate för automatiserad arkivering av
       bilder och videor från SharePoint Online till kostnadseffektiv Azure Blob Storage
@@ -609,7 +636,7 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
       den välbekanta Microsoft 365-miljön.</p>
     </div>
 
-    <h2>1.1 Vad är SP Cold Storage?</h2>
+    <h2 id="sek-1-1">1.1 Vad är SP Cold Storage?</h2>
     <p>Organisationer samlar ofta stora volymer bilder och videor i SharePoint — kampanjmaterial,
     produkt­foton, event­videor och arkivmaterial. Dessa filer tar upp dyr SharePoint-lagring
     men används sällan efter att de är ett år gamla. SP Cold Storage löser detta genom att
@@ -626,7 +653,25 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
       som uppfyller arkiveringskriterierna och kopierar dem till Azure Blob Storage Cold-nivå.</li>
     </ul>
 
-    <h2>1.2 Varför kall lagring för mediafiler?</h2>
+    <figure class="screenshot">
+      <img src="assets/01-library-launcher.png?v=20260715-1211" alt="SP Cold Storage i ett SharePoint-dokumentbibliotek med den flytande snöflinge-launchern nedre högra hörnet">
+    </figure>
+    <div class="figure-caption"><strong>Figur 1.1</strong> &mdash; Tillägget i ett riktigt dokumentbibliotek (langate). Den flytande snöflinge-launchern nere till höger är hela gränssnittet &mdash; inga sidor byggs om.</div>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 4</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 1 &mdash; Översikt</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-1-2">1.2 Varför kall lagring för mediafiler?</h2>
     <p>Bilder och videor är typiskt stora filer som sällan efterfrågas efter att de är ett år gamla.
     Azure Blob Storage Cold-nivå ger omedelbar åtkomst till ett pris som är <strong>fyra gånger
     lägre</strong> än standardlagring, utan den rehydrerings­fördröjning som Archive-nivån innebär.</p>
@@ -683,7 +728,7 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
   </div>
   <div class="page-footer">
     <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 3</div>
+    <div>Langate &nbsp;&middot;&nbsp; 5</div>
   </div>
 </div>
 
@@ -693,7 +738,7 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
     <div class="ph-right">Kapitel 1 &mdash; Översikt</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h2>1.3 Nyckelfunktioner</h2>
+    <h2 id="sek-1-3">1.3 Nyckelfunktioner</h2>
 
     <div class="two-col">
       <div class="feature-card">
@@ -743,7 +788,20 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
       </div>
     </div>
 
-    <h2>1.4 Stödda mediaformat</h2>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 6</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 1 &mdash; Översikt</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-1-4">1.4 Stödda mediaformat</h2>
     <table>
       <thead>
         <tr><th>Kategori</th><th>Format</th><th>Visningsläge</th></tr>
@@ -786,528 +844,195 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
   </div>
   <div class="page-footer">
     <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 4</div>
-  </div>
-</div>
-
-
-<div class="page">
-  <div class="page-header">
-    <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
-  </div>
-  <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 2</span>Systemarkitektur</h1>
-    <div class="chapter-intro">
-      <p>SP Cold Storage bygger på tre samverkande Azure- och Microsoft 365-komponenter.
-      Entra ID (Azure AD) fungerar som central identitetstjänst och knyter ihop
-      SharePoint-tillägget med Azure-servertjänsterna utan att exponera lagringsnycklarna
-      mot klientens webbläsare.</p>
-    </div>
-
-    <h2>2.1 Komponentöversikt</h2>
-
-    <table>
-      <thead>
-        <tr><th>Komponent</th><th>Teknik</th><th>Ansvar</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>SPFx Application Extension</strong></td>
-          <td>SharePoint Framework 1.20+, TypeScript, delade <code>k*</code>-bibliotek (ingen React)</td>
-          <td>Avatar-UI, selektionsdetektering, arkivering/återställning och visning via Azure Function</td>
-        </tr>
-        <tr>
-          <td><strong>Azure Function (HTTP)</strong></td>
-          <td>Azure Functions v4, Node.js / C#</td>
-          <td>Validerar Entra-token, genererar tidsbegränsad SAS-URL för blob</td>
-        </tr>
-        <tr>
-          <td><strong>Azure Function (Timer)</strong></td>
-          <td>Azure Functions v4, Timer Trigger</td>
-          <td>Schemalagd arkivering — hämtar filer från SharePoint och skriver till Blob</td>
-        </tr>
-        <tr>
-          <td><strong>Azure Blob Storage</strong></td>
-          <td>Cold-nivå, LRS eller GRS</td>
-          <td>Långtidslagring av arkiverade filer med metadata</td>
-        </tr>
-        <tr>
-          <td><strong>Entra ID (Azure AD)</strong></td>
-          <td>OAuth 2.0 (SPFx AadTokenProvider)</td>
-          <td>SSO, tokenvalidering, behörighetsstyrning via roller</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>2.2 Autentiseringsflöde</h2>
-    <p>Identiteten flödar från Microsoft 365-inloggningen hela vägen till
-    Azure Blob Storage utan att lagringsnycklarna lämnar servermiljön:</p>
-
-    <ol class="step-list">
-      <li>Användaren är inloggad i SharePoint Online med sitt Microsoft 365-konto (Entra ID).</li>
-      <li>SPFx-tillägget använder SharePoint Frameworks <code>aadTokenProviderFactory</code>
-      för att begära en OAuth-token scoped till Azure Function-appregistreringen.</li>
-      <li>Azure Function tar emot anropet, validerar tokenet mot Entra ID och
-      kontrollerar att användaren har rätt roll (t.ex. <code>ColdStorage.Download</code>).</li>
-      <li>Azure Function använder sin Managed Identity för att kommunicera med
-      Azure Blob Storage — inga lagringsnycklar i konfigurationen.</li>
-      <li>En tidsbegränsad SAS-URL returneras till SPFx-tillägget.</li>
-      <li>Webbläsaren initierar nedladdningen direkt från Azure Blob via SAS-URL:en.</li>
-    </ol>
-
-    <div class="warn-box">
-      <strong>Säkerhetsprincip:</strong> Lagringskontonycklarna ska aldrig skickas
-      till klientens webbläsare. All SAS-generering sker server-side i Azure Function
-      via Managed Identity.
-    </div>
-  </div>
-  <div class="page-footer">
-    <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 5</div>
-  </div>
-</div>
-
-<div class="page">
-  <div class="page-header">
-    <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
-  </div>
-  <div class="page-content" style="padding-top:0">
-    <h2>2.3 Nedladdningsflöde</h2>
-    <p>Diagrammet nedan visar det fullständiga händelseförloppet när en användare
-    laddar ned en arkiverad fil från SharePoint:</p>
-
-    <table style="margin-top:4mm;">
-      <thead>
-        <tr><th style="width:8mm">#</th><th>Steg</th><th>Var det händer</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>Användaren väljer en fil i ett SharePoint-dokumentbibliotek</td><td>Webbläsare</td></tr>
-        <tr><td>2</td><td>SPFx-tillägget identifierar att filen är arkiverad (via metadata-kolumn)</td><td>SharePoint / SPFx</td></tr>
-        <tr><td>3</td><td>Avatar-UI visas med filnamn och nedladdningsknapp</td><td>SPFx Extension</td></tr>
-        <tr><td>4</td><td>Användaren klickar "Ladda ned"</td><td>Webbläsare</td></tr>
-        <tr><td>5</td><td>SPFx begär OAuth-token från Entra ID (SPFx AadTokenProvider, tyst flöde)</td><td>SPFx / Entra ID</td></tr>
-        <tr><td>6</td><td>HTTP-anrop till Azure Function med token och blob-sökväg</td><td>SPFx → Azure</td></tr>
-        <tr><td>7</td><td>Azure Function validerar token och genererar SAS-URL (60 min giltighet)</td><td>Azure Function</td></tr>
-        <tr><td>8</td><td>SAS-URL returneras till SPFx</td><td>Azure → Webbläsare</td></tr>
-        <tr><td>9</td><td>Webbläsaren startar nedladdning direkt från Azure Blob</td><td>Webbläsare → Blob</td></tr>
-      </tbody>
-    </table>
-
-    <h2>2.4 Arkiveringsflöde</h2>
-    <p>Arkiveringen sköts av en separat Azure Function med Timer Trigger som körs
-    enligt ett konfigurerbart schema (standardinställning: dagligen kl. 02:00):</p>
-
-    <ol class="step-list">
-      <li>Timer Trigger aktiverar Azure Function enligt cron-schemat.</li>
-      <li>Funktionen anropar SharePoint REST API med ett applikationscertifikat
-      och hämtar filer som matchar arkiveringskriterierna (ålder, storlek, bibliotek).</li>
-      <li>Varje fil strömmas och skrivs till Azure Blob Storage Cold-nivå under
-      container-strukturen <code>/{år}/{månad}/{siteId}/{filnamn}</code>.</li>
-      <li>Metadata (ursprunglig URL, upphovsman, arkiveringsdatum) sparas som
-      blob-metadata.</li>
-      <li>En ny kolumn <code>ColdStoragePath</code> skrivs till SharePoint-listobjektet
-      som markerar filen som arkiverad och lagrar blob-sökvägen.</li>
-      <li>Den ursprungliga filen i SharePoint kan valfritt tas bort eller behållas
-      som platshållare beroende på konfiguration.</li>
-    </ol>
-
-    <div class="note-box">
-      <strong>Atomicitet:</strong> Om skrivningen till Blob Storage misslyckas
-      uppdateras inte SharePoint-kolumnen. Filen finns kvar i SharePoint och
-      arkiveringen försöker igen vid nästa körning.
-    </div>
-  </div>
-  <div class="page-footer">
-    <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 6</div>
-  </div>
-</div>
-
-
-<div class="page">
-  <div class="page-header">
-    <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
-  </div>
-  <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 3</span>SharePoint-tillägg</h1>
-    <div class="chapter-intro">
-      <p>SPFx Application Extension är den synliga delen av SP Cold Storage. Den monteras
-      globalt i SharePoint-klientorganisationen och reagerar på val av filer i
-      dokumentbibliotek. Primära åtgärder är att <strong>arkivera</strong> filer till kall
-      lagring och att <strong>återställa</strong> dem. För redan arkiverade mediafiler erbjuder
-      tillägget dessutom visning i en inbyggd medievisare och nedladdning.</p>
-    </div>
-
-    <h2>3.1 Application Extension</h2>
-
-    <table>
-      <thead><tr><th>Egenskap</th><th>Värde</th></tr></thead>
-      <tbody>
-        <tr><td>Typ</td><td>Application Customizer (SPFx Extension)</td></tr>
-        <tr><td>Scope</td><td>Klientorganisation (Tenant-wide deployment)</td></tr>
-        <tr><td>Placering</td><td>Ingen fast platshållare — flytande <code>kAvatar</code>-panel (bubbla) längst ned till höger</td></tr>
-        <tr><td>Ramverk</td><td>TypeScript + delade <code>k*</code>-bibliotek (<code>kAvatar</code>, <code>kSPFXAppContext</code>, <code>kSPFXListViewContext</code>, <code>kSPListSelection</code>) — ingen React, ingen MSAL.js</td></tr>
-        <tr><td>SPFx-version</td><td>1.20 eller senare</td></tr>
-        <tr><td>Behörigheter</td><td><code>user_impersonation</code> mot Azure Function-appregistrering (token via SPFx <code>aadTokenProviderFactory</code>)</td></tr>
-      </tbody>
-    </table>
-
-    <h2>3.2 Avatar-gränssnitt och medievisare</h2>
-    <p>När en arkiverad bild eller video väljs i ett dokumentbibliotek visas en kompakt
-    panel med en förhandsgranskning av filen. Panelen har två distinkta åtgärdsknappar:</p>
-
-    <div class="two-col">
-      <div class="feature-card">
-        <h4>Primär: Öppna &amp; visa</h4>
-        <p>Öppnar filen i en ny webbläsarflik som en inbyggd medievisare. Bilder
-        visas som base64-kodade <code>&lt;img&gt;</code>-element. Videor strömmas
-        direkt via SAS-URL i en <code>&lt;video&gt;</code>-spelare.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Sekundär: Ladda ned</h4>
-        <p>Initierar en filnedladdning till användarens enhet via webbläsarens
-        inbyggda nedladdningsmekanism. Är avsiktligt placerad som sekundär
-        åtgärd för att uppmuntra visning framför kopiering.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Förhandsgranskning i panelen</h4>
-        <p>Panelen visar en miniatyrbild (thumbnail) av filen baserat på
-        filtyp och lagrad metadata. Visar även filnamn, storlek, format
-        och arkiveringsdatum.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Döljs automatiskt</h4>
-        <p>Avmarkeras filen eller navigerar användaren bort, döljs panelen
-        med en mjuk animation utan att lämna spår i SharePoint-sidans layout.</p>
-      </div>
-    </div>
-
-    <h2>3.3 Visarens uppbyggnad per filtyp</h2>
-    <table>
-      <thead><tr><th>Filtyp</th><th>Visningsteknik</th><th>Sida öppnas i</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>JPG, PNG, WebP, GIF, BMP, SVG</td>
-          <td>Blob-svar base64-kodas → <code>data:image/…;base64,…</code> bäddas in i <code>&lt;img&gt;</code></td>
-          <td>Ny flik (genererad HTML)</td>
-        </tr>
-        <tr>
-          <td>HEIC, HEIF</td>
-          <td>Konverteras server-side i Azure Function till JPEG innan base64-kodning</td>
-          <td>Ny flik (genererad HTML)</td>
-        </tr>
-        <tr>
-          <td>MP4, MOV, WebM</td>
-          <td>SAS-URL skickas direkt till <code>&lt;video src="sasUrl"&gt;</code> — ingen base64</td>
-          <td>Ny flik (genererad HTML med videospelare)</td>
-        </tr>
-        <tr>
-          <td>PDF</td>
-          <td>Blob-svar base64-kodas → öppnas som <code>data:application/pdf;base64,…</code></td>
-          <td>Ny flik (PDF-visare)</td>
-        </tr>
-        <tr>
-          <td>ZIP, övriga</td>
-          <td>Nedladdning initieras direkt — ingen visare</td>
-          <td>Nedladdning</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="warn-box">
-      <strong>Storleksgräns för base64-bilder:</strong> Base64-kodning ökar
-      filstorleken med ~33&nbsp;%. För bilder &gt;20&nbsp;MB rekommenderas att
-      Azure Function returnerar en SAS-URL i stället för base64-data, och att
-      visaren öppnar <code>&lt;img src="sasUrl"&gt;</code>. Konfigurera tröskeln
-      via inställningen <code>MAX_BASE64_SIZE_MB</code> i Function App.
-    </div>
-  </div>
-  <div class="page-footer">
-    <div>SP Cold Storage</div>
     <div>Langate &nbsp;&middot;&nbsp; 7</div>
   </div>
 </div>
 
+
 <div class="page">
-  <div class="page-header">
+    <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
+    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
   </div>
-  <div class="page-content" style="padding-top:0">
-    <h2>3.4 Selektionshantering</h2>
-    <p>Tillägget lyssnar på SharePoint Frameworks inbyggda selektionshändelser och
-    kontrollerar vilka av de valda filerna som är arkiverade mediafiler:</p>
-
-    <ol class="step-list">
-      <li>På list-/biblioteksvyer armar kontrollern den delade
-      <code>kSPFXListViewContext</code> (en strypt <code>MutationObserver</code>) plus en
-      klickavlyssnare — SharePoint växlar <code>aria-checked</code> <em>efter</em> klicket,
-      så båda signalerna driver uppdateringen.</li>
-      <li>Vid varje selektionsändring läses de markerade objektens id:n
-      (<code>kSPListSelection.GetSelectedItemIds()</code>) eller filnamn (modern Fluent-grid,
-      där id-globalen saknas).</li>
-      <li>När användaren klickar på launchern byggs en typad
-      <code>MediaFileCollection</code> från urvalet via den delade <code>kSPList</code>-läsvägen
-      (<code>$select=ColdStoragePath,FileLeafRef,FileRef,File_x0020_Size,Modified</code>).</li>
-      <li>Varje rads <code>ColdStoragePath</code> avgör om filen är arkiverad; kollektionen
-      filtreras med <code>ArchivedMediaOnly()</code> (och <code>PlaceholdersOnly()</code> för
-      återställningsstubbar).</li>
-      <li>En kontextkänslig <code>ColdStoragePanel</code> byggs och visas i
-      <code>kAvatar</code>-bubblan — filens <code>MediaCategory</code> (härledd från
-      filändelsen) styr visartyp och knappetiketter.</li>
-    </ol>
-
-    <div class="info-box">
-      <strong>Blandat urval:</strong> Om användaren väljer en mix av arkiverade bilder,
-      videor och icke-arkiverade filer visar panelen enbart de arkiverade. Vid flera
-      arkiverade filer visas en rad per fil (antal överst) med individuella åtgärder
-      &mdash; varje fil öppnas i sin egen flik. (Modellen är avsiktligt per fil: inget
-      bildspel och ingen ZIP-paketering.)
+    <div class="page-content" style="padding-top:0">
+<h1 id="kap-2"><span class="chapter-num">Kapitel 2</span>Systemarkitektur</h1>
+    <div class="chapter-intro">
+      <p>SP Cold Storage bygger på tre samverkande tjänstlager &mdash; ett SharePoint-tillägg
+      i webbläsaren, en Azure Functions-app på servern och Azure Blob Storage (Cold-nivå).
+      Entra ID (Azure AD) är den centrala identitetstjänsten som knyter ihop lagren
+      <em>utan</em> att lagringsnycklarna någonsin når klientens webbläsare.</p>
     </div>
+<h2 id="sek-2-1">2.1 Komponentöversikt</h2>
+<figure class="diagram">
+      <svg viewBox="0 0 680 262" role="img" aria-label="Komponentdiagram">
+        <!-- lanes -->
+        <text x="110" y="20" text-anchor="middle" class="dg-t-muted" font-size="11" font-weight="700">WEBBLÄSARE</text>
+        <text x="340" y="20" text-anchor="middle" class="dg-t-muted" font-size="11" font-weight="700">AZURE FUNCTIONS (SERVER)</text>
+        <text x="590" y="20" text-anchor="middle" class="dg-t-muted" font-size="11" font-weight="700">AZURE STORAGE</text>
+        <line x1="225" y1="28" x2="225" y2="212" class="dg-lifeline"/>
+        <line x1="455" y1="28" x2="455" y2="212" class="dg-lifeline"/>
 
-    <h2>3.5 Felhantering i gränssnittet</h2>
-    <p>Fel döljs aldrig — och visas aldrig som en egen felbanner eller toast. Varje verkligt
-    fel dirigeras till den centrala hanteraren (<code>ks.kGlobalErrorHandler</code>), som äger
-    felmodalen, loggen och versionsstämpeln. Gränssnittet självt visar bara FRAMGÅNG,
-    PÅGÅENDE eller INMATNINGSVALIDERING (arbetsytans lag 1).</p>
-    <table>
-      <thead><tr><th>Situation</th><th>Beteende</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>Token-/anropsfel (401/403/404/500)</td>
-          <td>Transporten återställer knappens/flikens UI och dirigerar felet till
-          <code>ks.kGlobalErrorHandler</code> (felmodal) &mdash; inget eget meddelande.</td>
-        </tr>
-        <tr>
-          <td>Inget markerat vid klick</td>
-          <td>Panelen visar arkiveringsalternativ (kontext/validering, inte ett fel).</td>
-        </tr>
-        <tr>
-          <td>Popup blockerad</td>
-          <td>Availability-info via notifiering ("Tillåt popup…") &mdash; ett förväntat,
-          hanterat tillstånd.</td>
-        </tr>
-        <tr>
-          <td>SAS-länk utgången / blob 404 i visaren</td>
-          <td>Media-elementets <code>onerror</code> visar "länken har gått ut — öppna igen
-          från panelen" (förväntat tillstånd för en kortlivad SAS).</td>
-        </tr>
-        <tr>
-          <td>Fil &gt; base64-gräns</td>
-          <td>Öppnas via SAS-URL i stället (automatisk fallback, inget fel).</td>
-        </tr>
-      </tbody>
-    </table>
+        <!-- browser -->
+        <rect x="25" y="40" width="170" height="52" rx="7" class="dg-box-navy"/>
+        <text x="110" y="62" text-anchor="middle" class="dg-t-white" font-size="12" font-weight="700">SPFx Application</text>
+        <text x="110" y="78" text-anchor="middle" class="dg-t-white" font-size="12" font-weight="700">Customizer</text>
+        <rect x="25" y="104" width="170" height="52" rx="7" class="dg-box-white"/>
+        <text x="110" y="126" text-anchor="middle" class="dg-t-navy" font-size="12" font-weight="700">Injicerad bundle</text>
+        <text x="110" y="142" text-anchor="middle" class="dg-t-muted" font-size="10.5">kAvatar-panel (❄)</text>
 
-    <div class="note-box">
-      <strong>Loggar:</strong> Klientfel går via <code>ks.kGlobalErrorHandler</code>
-      (felmodal + logg). Servern loggar dessutom en strukturerad åtkomstrevision
-      (<code>AUDIT fn=… action=… upn=… path=…</code>) per lyckad visning/nedladdning/
-      återställning via <code>context.log</code> (hamnar i Application Insights när
-      Function-appen är kopplad dit).
+        <!-- functions -->
+        <rect x="258" y="40" width="164" height="46" rx="7" class="dg-box-white"/>
+        <text x="340" y="60" text-anchor="middle" class="dg-t-navy" font-size="11.5" font-weight="700">HTTP-funktioner</text>
+        <text x="340" y="76" text-anchor="middle" class="dg-t-muted" font-size="10">visa · ladda ned · återställ · arkivera</text>
+        <rect x="258" y="98" width="164" height="44" rx="7" class="dg-box-white"/>
+        <text x="340" y="118" text-anchor="middle" class="dg-t-navy" font-size="11.5" font-weight="700">Timer-funktion</text>
+        <text x="340" y="133" text-anchor="middle" class="dg-t-muted" font-size="10">schemalagd arkivering</text>
+        <rect x="258" y="154" width="164" height="40" rx="7" class="dg-box-light"/>
+        <text x="340" y="171" text-anchor="middle" class="dg-t-navy" font-size="10.5" font-weight="700">Behörighetsvakter</text>
+        <text x="340" y="185" text-anchor="middle" class="dg-t-muted" font-size="9.5">roll + per-objekt (per anropare)</text>
+
+        <!-- storage -->
+        <rect x="488" y="40" width="168" height="52" rx="7" class="dg-box-navy"/>
+        <text x="572" y="62" text-anchor="middle" class="dg-t-white" font-size="12" font-weight="700">Blob Storage</text>
+        <text x="572" y="78" text-anchor="middle" class="dg-t-white" font-size="11">Cold-nivå + .perms.json</text>
+        <rect x="488" y="104" width="168" height="40" rx="7" class="dg-box-light"/>
+        <text x="572" y="122" text-anchor="middle" class="dg-t-navy" font-size="10.5" font-weight="700">Managed Identity</text>
+        <text x="572" y="136" text-anchor="middle" class="dg-t-muted" font-size="9.5">inga lagringsnycklar</text>
+
+        <!-- entra spanning bar -->
+        <rect x="25" y="216" width="631" height="34" rx="7" class="dg-box-green"/>
+        <text x="340" y="237" text-anchor="middle" class="dg-t-white" font-size="12" font-weight="700">Entra ID (Azure AD) &mdash; SSO, tokenvalidering, approller &amp; per-objekt-behörigheter</text>
+
+        <!-- arrows -->
+        <line x1="195" y1="66" x2="256" y2="63" class="dg-flow" marker-end="url(#ah2)"/>
+        <text x="226" y="52" text-anchor="middle" class="dg-t-muted" font-size="9">HTTPS + token</text>
+        <line x1="422" y1="66" x2="486" y2="66" class="dg-flow" marker-end="url(#ah2)"/>
+        <text x="454" y="55" text-anchor="middle" class="dg-t-muted" font-size="9">MI</text>
+        <line x1="422" y1="118" x2="486" y2="80" class="dg-flow-navy" marker-end="url(#ah2n)"/>
+        <defs>
+          <marker id="ah2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker>
+          <marker id="ah2n" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#00517e"/></marker>
+        </defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 2.1</strong> &mdash; De tre lagren. Tillägget anropar Azure Functions med en Entra-token; funktionerna når Blob via Managed Identity. Lagringsnycklar exponeras aldrig mot webbläsaren.</div>
     </div>
-
-    <h2>3.6 Panelens åtgärder</h2>
-    <p>Panelen är kontextkänslig och anpassar sig efter vad som är markerat. Den byggs
-    med den delade <code>kAvatar</code>-komponenten (flytande knapp med bubbla) &mdash;
-    ingen egen toast-kod. Åtkomsttoken till Azure Function hämtas via SharePoint
-    Frameworks <code>aadTokenProviderFactory</code> (<code>user_impersonation</code>).</p>
-
-    <div class="two-col">
-      <div class="feature-card">
-        <h4>Arkiverad media markerad</h4>
-        <p>En rad per fil med <em>Öppna &amp; visa</em> (primär, bild/PDF/video),
-        <em>Ladda ned</em> och <em>Återställ</em>. Filer utan visare (t.ex. ZIP) får
-        <em>Ladda ned</em> som primär åtgärd &mdash; ingen trasig visare.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Platshållare markerad</h4>
-        <p>För en <code>.coldstorage.txt</code> visas en <em>Återställ</em>-knapp som med
-        ett klick hämtar tillbaka originalfilen (kapitel 4.9).</p>
-      </div>
-      <div class="feature-card">
-        <h4>Inget arkiverat markerat</h4>
-        <p>Panelen erbjuder massarkivering: <em>Arkivera mapp</em>, <em>Arkivera
-        bibliotek</em> eller <em>Arkivera hela webbplatsen</em> (kapitel 4.6).</p>
-      </div>
-      <div class="feature-card">
-        <h4>Kontinuerlig återkoppling</h4>
-        <p>Varje klick bekräftas direkt, och förloppet visas via delade notiser
-        (&quot;Hämtar från Azure&hellip;&quot;, &quot;Klar&quot;). Fel rapporteras
-        alltid via den centrala felhanteraren &mdash; aldrig en egen felruta.</p>
-      </div>
-    </div>
-
-    <div class="note-box">
-      <strong>Markering i modern vy:</strong> tillägget läser markerade rader både via
-      det klassiska urvals-API:t (objekt-ID) och via den moderna Fluent-vyns DOM
-      (filnamn), så åtgärderna fungerar även i moderna bibliotek där ID inte exponeras.
-    </div>
-  </div>
-  <div class="page-footer">
+    <div class="page-footer">
     <div>SP Cold Storage</div>
     <div>Langate &nbsp;&middot;&nbsp; 8</div>
   </div>
 </div>
 
-
 <div class="page">
-  <div class="page-header">
+    <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 4 &mdash; Arkiveringsfunktion</div>
+    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
   </div>
-  <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 4</span>Arkiveringsfunktion</h1>
-    <div class="chapter-intro">
-      <p>Azure Function-laget innehåller tre funktioner: en schemalagd arkiveringsfunktion
-      (Timer Trigger), en HTTP-funktion för mediavisning (base64-svar eller SAS-URL
-      beroende på filtyp och storlek) och en HTTP-funktion för filnedladdning via SAS-URL.</p>
-    </div>
-
-    <h2>4.1 Azure Function — schemalagd arkivering</h2>
-    <p>Timer Trigger-funktionen körs enligt ett konfigurerbart cron-schema och
-    hanterar hela arkiveringsprocessen för mediafiler autonomt.</p>
-
-    <h3>Arkiveringskriterier för mediafiler</h3>
-    <table>
-      <thead><tr><th>Inställning</th><th>Exempel</th><th>Beskrivning</th></tr></thead>
+    <div class="page-content" style="padding-top:0">
+<table>
+      <thead>
+        <tr><th>Komponent</th><th>Teknik</th><th>Ansvar</th></tr>
+      </thead>
       <tbody>
-        <tr><td><code>ARCHIVE_SITE_URL</code></td><td><code>https://org.sharepoint.com/sites/media</code></td><td>Webbplats-URL att söka igenom</td></tr>
-        <tr><td><code>ARCHIVE_LIBRARY</code></td><td><code>Mediabibliotek</code></td><td>Dokumentbibliotekstitel</td></tr>
-        <tr><td><code>ARCHIVE_AGE_DAYS</code></td><td><code>365</code></td><td>Mediafiler äldre än detta arkiveras</td></tr>
-        <tr><td><code>ARCHIVE_MIME_TYPES</code></td><td><code>image/*,video/*,application/pdf</code></td><td>MIME-typer att arkivera (glob-mönster)</td></tr>
-        <tr><td><code>ARCHIVE_SCHEDULE</code></td><td><code>0 0 2 * * *</code></td><td>Cron-uttryck (standard: dagligen 02:00)</td></tr>
-        <tr><td><code>ARCHIVE_DELETE_SOURCE</code></td><td><code>false</code></td><td>Ta bort källfil i SharePoint</td></tr>
-        <tr><td><code>BLOB_CONTAINER</code></td><td><code>sp-media-archive</code></td><td>Namn på blob-container</td></tr>
-        <tr><td><code>MAX_BASE64_SIZE_MB</code></td><td><code>20</code></td><td>Gräns för base64-svar i visningsfunktionen</td></tr>
+        <tr>
+          <td><strong>SPFx Application Customizer</strong></td>
+          <td>SharePoint Framework 1.23, TypeScript, delade <code>k*</code>-bibliotek (ingen React, ingen MSAL)</td>
+          <td>Injicerar bundlen; avatar-UI, selektionsdetektering, arkivering/återställning och visning</td>
+        </tr>
+        <tr>
+          <td><strong>Azure Functions (HTTP)</strong></td>
+          <td>Azure Functions v4, Node.js 22 / TypeScript</td>
+          <td>Validerar Entra-token + per-objekt-behörighet, base64/SAS för visning, återställning, arkivering på begäran</td>
+        </tr>
+        <tr>
+          <td><strong>Azure Functions (Timer)</strong></td>
+          <td>Azure Functions v4, Timer Trigger</td>
+          <td>Schemalagd arkivering med appcertifikat (app-only) &mdash; SharePoint REST → Blob</td>
+        </tr>
+        <tr>
+          <td><strong>Azure Blob Storage</strong></td>
+          <td>Cold-nivå, soft-delete + versionshantering på</td>
+          <td>Långtidslagring av arkiverade filer med metadata + behörighetssnapshot</td>
+        </tr>
+        <tr>
+          <td><strong>Entra ID (Azure AD)</strong></td>
+          <td>OAuth 2.0 (SPFx AadTokenProvider) + appcertifikat</td>
+          <td>SSO, tokenvalidering, approller (View/Download/Restore)</td>
+        </tr>
       </tbody>
     </table>
-
-    <h3>Blob-metadata för mediafiler</h3>
-    <p>Varje arkiverad mediafil lagras med utökad metadata som stöder visarfunktionen:</p>
-    <ul>
-      <li><code>sourceUrl</code> — ursprunglig SharePoint-URL</li>
-      <li><code>contentType</code> — MIME-typ (t.ex. <code>image/jpeg</code>, <code>video/mp4</code>)</li>
-      <li><code>mediaCategory</code> — <code>image</code>, <code>video</code> eller <code>other</code></li>
-      <li><code>originalWidth</code>, <code>originalHeight</code> — bildmått (om tillgängligt)</li>
-      <li><code>durationSeconds</code> — videolängd i sekunder (om tillgängligt)</li>
-      <li><code>archivedBy</code> — UPN för den som utlöste arkiveringen</li>
-      <li><code>archivedDate</code> — ISO 8601-tidsstämpel</li>
-      <li><code>originalSize</code> — filstorlek i bytes</li>
-    </ul>
-  </div>
-  <div class="page-footer">
+    </div>
+    <div class="page-footer">
     <div>SP Cold Storage</div>
     <div>Langate &nbsp;&middot;&nbsp; 9</div>
   </div>
 </div>
-
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 4 &mdash; Arkiveringsfunktion</div>
+    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h2>4.2 Azure Function — mediavisning</h2>
-    <p>HTTP-funktionen <code>GetMediaForViewer</code> hanterar öppna-och-visa-flödet.
-    Den returnerar antingen base64-kodad bilddata eller en SAS-URL beroende på
-    filtyp och storlek, och inkluderar alltid korrekt <code>Content-Type</code>-header
-    och metadata för visarens UI.</p>
+    <h2 id="sek-2-2">2.2 Visnings- och nedladdningsflöde</h2>
+    <p>Identiteten flödar från Microsoft 365-inloggningen hela vägen till Azure Blob
+    Storage utan att lagringsnycklarna lämnar servermiljön. Diagrammet visar det
+    fullständiga händelseförloppet när en användare öppnar eller laddar ned en
+    arkiverad fil:</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 680 320" role="img" aria-label="Sekvensdiagram för visning och nedladdning">
+        <!-- actors -->
+        <g font-size="10.5" font-weight="700">
+          <rect x="20"  y="8" width="120" height="26" rx="5" class="dg-box-navy"/><text x="80"  y="25" text-anchor="middle" class="dg-t-white">Webbläsare</text>
+          <rect x="200" y="8" width="120" height="26" rx="5" class="dg-box-navy"/><text x="260" y="25" text-anchor="middle" class="dg-t-white">Entra ID</text>
+          <rect x="380" y="8" width="140" height="26" rx="5" class="dg-box-navy"/><text x="450" y="25" text-anchor="middle" class="dg-t-white">Azure Function</text>
+          <rect x="560" y="8" width="100" height="26" rx="5" class="dg-box-green"/><text x="610" y="25" text-anchor="middle" class="dg-t-white">Blob (Cold)</text>
+        </g>
+        <line x1="80"  y1="34" x2="80"  y2="308" class="dg-lifeline"/>
+        <line x1="260" y1="34" x2="260" y2="308" class="dg-lifeline"/>
+        <line x1="450" y1="34" x2="450" y2="308" class="dg-lifeline"/>
+        <line x1="610" y1="34" x2="610" y2="308" class="dg-lifeline"/>
+
+        <g font-size="9.5" class="dg-t-navy">
+          <line x1="80"  y1="58"  x2="258" y2="58"  class="dg-flow" marker-end="url(#a3)"/><text x="168" y="52" text-anchor="middle">1. begär token (aadTokenProvider)</text>
+          <line x1="260" y1="82"  x2="82"  y2="82"  class="dg-flow-navy" marker-end="url(#a3n)"/><text x="168" y="76" text-anchor="middle" class="dg-t-muted">2. OAuth-token (roles: View/Download…)</text>
+          <line x1="80"  y1="106" x2="448" y2="106" class="dg-flow" marker-end="url(#a3)"/><text x="250" y="100" text-anchor="middle">3. POST /media/view (token + sökväg)</text>
+          <line x1="450" y1="130" x2="262" y2="130" class="dg-flow-navy" marker-end="url(#a3n)"/><text x="356" y="124" text-anchor="middle" class="dg-t-muted">4. validerar token + roll</text>
+        </g>
+        <!-- per-object gate box -->
+        <rect x="360" y="140" width="180" height="30" rx="5" class="dg-box-light"/>
+        <text x="450" y="159" text-anchor="middle" class="dg-t-navy" font-size="9">5. per-objekt-behörighet (anroparen)</text>
+
+        <g font-size="9.5" class="dg-t-navy">
+          <line x1="450" y1="192" x2="608" y2="192" class="dg-flow" marker-end="url(#a3)"/><text x="529" y="186" text-anchor="middle">6. läs bytes / signera</text>
+          <line x1="610" y1="216" x2="452" y2="216" class="dg-flow-navy" marker-end="url(#a3n)"/><text x="531" y="210" text-anchor="middle" class="dg-t-muted">7. bytes eller SAS</text>
+          <line x1="450" y1="248" x2="82"  y2="248" class="dg-flow-navy" marker-end="url(#a3n)"/><text x="266" y="242" text-anchor="middle" class="dg-t-muted">8. base64 (bild/PDF) ELLER SAS-URL (video/stor)</text>
+          <line x1="80"  y1="286" x2="608" y2="286" class="dg-flow" marker-end="url(#a3)"/><text x="344" y="280" text-anchor="middle">9. video/stor fil: webbläsaren strömmar direkt via SAS</text>
+        </g>
+        <defs>
+          <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker>
+          <marker id="a3n" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#00517e"/></marker>
+        </defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 2.2</strong> &mdash; Visnings-/nedladdningssekvens. Bilder och PDF returneras base64-inbäddade; video och stora filer strömmas via en kortlivad SAS-URL.</div>
 
     <ol class="step-list">
-      <li><strong>Tokenvalidering:</strong> JWT-tokenet valideras mot Entra ID. Anrop
-      utan giltigt token avvisas med HTTP 401.</li>
-      <li><strong>Rollkontroll:</strong> Anspråket <code>ColdStorage.View</code>
-      krävs för visning. Saknas det returneras HTTP 403.</li>
-      <li><strong>Metadata-hämtning:</strong> Blob-metadata läses (contentType,
-      mediaCategory, storlek) för att avgöra svarsformat.</li>
-      <li><strong>Storleksbedömning:</strong>
-        <ul>
-          <li>Bilder ≤ <code>MAX_BASE64_SIZE_MB</code>: blob hämtas och base64-kodas
-          i svaret → <code>{"base64": "...", "contentType": "image/jpeg", "metadata": {...}}</code></li>
-          <li>Bilder &gt; gränsen, samt alla videor: SAS-URL genereras (60 min) →
-          <code>{"sasUrl": "https://...", "contentType": "video/mp4", "metadata": {...}}</code></li>
-        </ul>
-      </li>
-      <li><strong>HEIC-konvertering:</strong> HEIC/HEIF-bilder konverteras server-side
-      till JPEG med Sharp-biblioteket innan base64-kodningen returneras.</li>
+      <li>SPFx-tillägget begär en OAuth-token via <code>aadTokenProviderFactory</code>,
+      scopead mot Azure Function-appregistreringen.</li>
+      <li>Azure Function validerar tokenet mot Entra ID och kontrollerar approllen
+      (t.ex. <code>ColdStorage.View</code>).</li>
+      <li>Utöver rollen kontrolleras <strong>den anropande användarens</strong> faktiska
+      behörighet på källobjektet (se 2.5) &mdash; en roll ensam räcker aldrig.</li>
+      <li>Bilder/PDF base64-kodas och bäddas in i visaren; video och stora filer får en
+      <strong>kortlivad, IP-låst SAS-URL</strong> (standard 15 minuter) och strömmas
+      direkt från Blob.</li>
     </ol>
-
-    <h2>4.3 Azure Function — nedladdning via SAS-URL</h2>
-    <p>HTTP-funktionen <code>GetDownloadUrl</code> genererar en SAS-URL enbart för
-    nedladdning. Denna funktion kräver rollen <code>ColdStorage.Download</code>
-    (vilket är ett superset av <code>ColdStorage.View</code>) och sätter
-    <code>Content-Disposition: attachment</code>-parametern i SAS-token för att
-    webbläsaren ska starta en nedladdning i stället för att visa filen.</p>
-
-    <h2>4.4 Azure Blob Storage — Cold-nivå</h2>
-    <div class="two-col">
-      <div class="feature-card">
-        <h4>Container-struktur</h4>
-        <p>Mediafiler lagras under:<br>
-        <code>{år}/{mån}/{siteId}/{libId}/{filnamn}</code><br>
-        Exempel: <code>2023/01/abc/def/foto.jpg</code></p>
-      </div>
-      <div class="feature-card">
-        <h4>Redundans &amp; region</h4>
-        <p>Lokalt redundant lagring (LRS) som standard. Sweden Central
-        för GDPR-efterlevnad. GRS vid krav på katastrofåterställning.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Lifecycle Management</h4>
-        <p>Konfigurera Azure Blob Lifecycle Management för att automatiskt
-        flytta filer till Archive-nivå om de inte öppnats på 2+ år.</p>
-      </div>
-      <div class="feature-card">
-        <h4>SAS-URL säkerhet</h4>
-        <p>Visnings-SAS: 60 min giltighet, read-only.<br>
-        Nedladdnings-SAS: 60 min, read + <code>attachment</code>.<br>
-        Loggas aldrig i Application Insights.</p>
-      </div>
-    </div>
 
     <div class="warn-box">
-      <strong>Säkerhetsprincip:</strong> Lagringskontonycklarna ska aldrig exponeras
-      mot klientwebbläsaren. All SAS-generering och base64-kodning sker server-side
-      i Azure Function via Managed Identity. SPFx-tillägget tar emot färdiga svar.
-    </div>
-
-    <h2>4.5 Azure Function — återställning från arkiv</h2>
-    <p>HTTP-funktionen <code>RestoreFromArchive</code> kopierar en arkiverad blob tillbaka
-    till ursprungligt SharePoint-dokumentbibliotek och raderar sedan källbloben. Rollen
-    <code>ColdStorage.Download</code> krävs (implicit superset av View).</p>
-
-    <ol class="step-list">
-      <li><strong>Tokenvalidering:</strong> JWT-tokenet valideras mot Entra ID; saknas
-      rätt roll returneras HTTP 403.</li>
-      <li><strong>Blob-hämtning:</strong> Filen hämtas från Azure Blob Cold via
-      Managed Identity och buffras tillfälligt i Function-minnet.</li>
-      <li><strong>SharePoint-uppladdning:</strong> Filen laddas upp till ursprunglig
-      webbplats och bibliotek via SharePoint REST API med den anropandes
-      delegerade token (<code>user_impersonation</code>).</li>
-      <li><strong>Metadata-rensning:</strong> SharePoint-kolumnen
-      <code>ColdStoragePath</code> töms på filen för att markera att den inte
-      längre är arkiverad.</li>
-      <li><strong>Blob-radering:</strong> Källbloben raderas från containern
-      (kräver att <code>ARCHIVE_DELETE_SOURCE=true</code> eller sker alltid
-      vid restore).</li>
-    </ol>
-
-    <div class="info-box">
-      <strong>Konfliktshantering:</strong> Om en fil med samma namn redan
-      finns i SharePoint-biblioteket läggs suffixet <code>_restored</code>
-      till filnamnet automatiskt. Inga data skrivs över utan explicit bekräftelse.
-    </div>
-
-    <div class="note-box">
-      <strong>Begränsning:</strong> Filer som arkiverades med
-      <code>ARCHIVE_DELETE_SOURCE=false</code> finns fortfarande kvar i
-      SharePoint. I så fall kopierar funktionen ändå tillbaka bloben
-      och uppdaterar <code>ColdStoragePath</code>-kolumnen, men radering
-      av dubblett är användarens ansvar.
+      <strong>Säkerhetsprincip:</strong> Lagringskontonycklarna skickas aldrig till
+      klienten. All SAS-generering och base64-kodning sker server-side i Azure Function
+      via Managed Identity.
     </div>
   </div>
   <div class="page-footer">
@@ -1319,51 +1044,56 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 4 &mdash; Arkiveringsfunktion</div>
+    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h2>4.6 Massarkivering av omfång (ArchiveScope)</h2>
-    <p>HTTP-funktionen <code>ArchiveScope</code> arkiverar allt inom ett valt omfång i
-    ett enda anrop &mdash; en <strong>mapp</strong> (inklusive alla undermappar), ett
-    helt <strong>dokumentbibliotek</strong> eller en hel <strong>webbplats</strong>
-    (samtliga dokumentbibliotek). Rollen <code>ColdStorage.Download</code> krävs.
-    Tillägget anropar funktionen från panelens knappar &quot;Arkivera mapp / bibliotek /
-    webbplats&quot;.</p>
+    <h2 id="sek-2-3">2.3 Arkiveringsflöde</h2>
+    <p>Arkiveringen sköts av en Timer-funktion som körs enligt ett konfigurerbart schema
+    (standard: dagligen kl. 02:00) med appidentitet (certifikat). Ordningen är
+    <strong>atomisk</strong>: källan rörs aldrig förrän bloben är säkert lagrad.</p>
 
-    <table>
-      <thead><tr><th>scopeType</th><th>Vad som gås igenom</th></tr></thead>
-      <tbody>
-        <tr><td><code>folder</code></td><td>Angiven mapp och alla undermappar rekursivt.</td></tr>
-        <tr><td><code>library</code></td><td>Bibliotekets rotmapp rekursivt.</td></tr>
-        <tr><td><code>site</code></td><td>Varje dokumentbibliotek på webbplatsen (<code>BaseTemplate eq 101</code>), rekursivt.</td></tr>
-      </tbody>
-    </table>
-
-    <p>Mappvandringen sker via <code>GetFolderByServerRelativeUrl(&hellip;)?$expand=Files,Folders</code>.
-    Systemmappar (<code>Forms</code> och mappar som börjar med <code>_</code>) hoppas
-    över. Funktionen är <strong>idempotent</strong>: en fil vars blob redan finns hoppas
-    över, liksom befintliga <code>*.coldstorage.txt</code>-platshållare. Svaret innehåller
-    en sammanräkning: <code>{ ok, counts: { scanned, archived, skipped, failed } }</code>.
-    Timer-funktionen använder samma pipeline över det konfigurerade biblioteket.</p>
-
-    <h2>4.7 Bevarande av unika behörigheter</h2>
-    <p>Om en fil eller mapp har <strong>unika behörigheter</strong> (bruten
-    behörighetsarv, <code>HasUniqueRoleAssignments = true</code>) fångas dessa innan
-    arkivering och återställs vid restore &mdash; så att åtkomsten blir densamma efteråt.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 680 210" role="img" aria-label="Arkiveringsflöde">
+        <g font-size="10" font-weight="700">
+          <rect x="14"  y="70" width="96"  height="54" rx="7" class="dg-box-navy"/><text x="62"  y="93" text-anchor="middle" class="dg-t-white">Timer</text><text x="62" y="108" text-anchor="middle" class="dg-t-white" font-size="9" font-weight="400">02:00 (cron)</text>
+          <rect x="140" y="70" width="110" height="54" rx="7" class="dg-box-white"/><text x="195" y="90" text-anchor="middle" class="dg-t-navy">SharePoint</text><text x="195" y="105" text-anchor="middle" class="dg-t-muted" font-size="9" font-weight="400">REST (cert) + gå igenom</text>
+          <rect x="280" y="70" width="120" height="54" rx="7" class="dg-box-white"/><text x="340" y="90" text-anchor="middle" class="dg-t-navy">Fånga behörigheter</text><text x="340" y="105" text-anchor="middle" class="dg-t-muted" font-size="9" font-weight="400">+ ladda ned bytes</text>
+          <rect x="430" y="70" width="110" height="54" rx="7" class="dg-box-green"/><text x="485" y="90" text-anchor="middle" class="dg-t-white">Skriv blob</text><text x="485" y="105" text-anchor="middle" class="dg-t-white" font-size="9" font-weight="400">+ .perms.json</text>
+          <rect x="570" y="70" width="96"  height="54" rx="7" class="dg-box-navy"/><text x="618" y="90" text-anchor="middle" class="dg-t-white">Stämpla /</text><text x="618" y="104" text-anchor="middle" class="dg-t-white">platshållare</text>
+        </g>
+        <g>
+          <line x1="110" y1="97" x2="138" y2="97" class="dg-flow" marker-end="url(#a4)"/>
+          <line x1="250" y1="97" x2="278" y2="97" class="dg-flow" marker-end="url(#a4)"/>
+          <line x1="400" y1="97" x2="428" y2="97" class="dg-flow" marker-end="url(#a4)"/>
+          <line x1="540" y1="97" x2="568" y2="97" class="dg-flow" marker-end="url(#a4)"/>
+        </g>
+        <rect x="430" y="150" width="236" height="34" rx="6" class="dg-box-light"/>
+        <text x="548" y="164" text-anchor="middle" class="dg-t-navy" font-size="9.5" font-weight="700">ATOMISKT: källan rörs först EFTER lyckad blob</text>
+        <text x="548" y="177" text-anchor="middle" class="dg-t-muted" font-size="9">misslyckad uppladdning → källan behålls, nytt försök</text>
+        <line x1="485" y1="124" x2="485" y2="148" class="dg-flow-navy" marker-end="url(#a4n)"/>
+        <defs>
+          <marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker>
+          <marker id="a4n" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#00517e"/></marker>
+        </defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 2.3</strong> &mdash; Arkiveringspipelinen (Timer och arkivering på begäran delar samma väg).</div>
 
     <ol class="step-list">
-      <li><strong>Fångst:</strong> rolltilldelningarna läses via
-      <code>roleassignments?$expand=Member,RoleDefinitionBindings</code> och sparas som
-      en följeslagar-blob <code>{sökväg}.perms.json</code> bredvid mediabloben. Den
-      automatiska rollen &quot;Begränsad åtkomst&quot; (<code>1073741825</code>) filtreras bort.</li>
-      <li><strong>Återställning:</strong> vid restore bryts arvet på det återställda
-      objektet (<code>breakroleinheritance</code>) och varje sparad tilldelning läggs
-      tillbaka (<code>addroleassignment(principalid, roledefid)</code>).</li>
+      <li>Timer Trigger aktiverar funktionen enligt cron-schemat (appidentitet, certifikat).</li>
+      <li>SharePoint REST anropas och mappstrukturen gås igenom rekursivt; filer som
+      matchar kriterierna (ålder, MIME-typ) plockas ut.</li>
+      <li>Eventuella <strong>unika behörigheter</strong> fångas (§4.7) och filens bytes hämtas.</li>
+      <li>Bytes skrivs till Blob Cold under <code>{år}/{månad}/{siteId}/{bibliotek}/{fil}</code>,
+      med metadata; en unik-behörighetsfil får även en <code>.perms.json</code>-blob.</li>
+      <li>Först <strong>efter</strong> lyckad blob stämplas källan: kolumnen
+      <code>ColdStoragePath</code> sätts (stämpelläge) eller källan ersätts av en
+      <code>.coldstorage.txt</code>-platshållare och återvinns (raderingsläge).</li>
     </ol>
 
     <div class="note-box">
-      <strong>Obs:</strong> om en fångad användare/grupp inte längre finns vid
-      återställning hoppas den tilldelningen över &mdash; resten återställs ändå.
+      <strong>Atomicitet:</strong> Om skrivningen till Blob misslyckas uppdateras aldrig
+      SharePoint. Filen finns kvar och arkiveringen försöker igen vid nästa körning.
     </div>
   </div>
   <div class="page-footer">
@@ -1375,48 +1105,64 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 4 &mdash; Arkiveringsfunktion</div>
+    <div class="ph-right">Kapitel 2 &mdash; Systemarkitektur</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h2>4.8 Platshållare och enklicks-återställning</h2>
-    <p>När en källfil tas bort vid arkivering lämnas en <strong>platshållare</strong> kvar
-    på samma plats &mdash; en textfil med namnet <code>&lt;Originalnamn&gt;.coldstorage.txt</code>.
-    Den fyller två syften: den talar om för en människa hur filen återställs
-    <em>utan</em> tillägget om det någonsin slutar fungera, och den låter tillägget
-    återställa filen med ett klick.</p>
+    <h2 id="sek-2-4">2.4 Säkerhetsmodell &mdash; roll OCH per-objekt</h2>
+    <p>Varje funktion som visar, återställer eller arkiverar kräver <strong>två</strong>
+    oberoende kontroller. En approll ensam exponerar eller ändrar därför aldrig andra
+    användares innehåll.</p>
 
-    <h3>Innehåll i platshållaren</h3>
-    <ul>
-      <li>Läsbara instruktioner: var bloben finns (container och sökväg), vem som
-      arkiverade och när, samt de manuella stegen för återställning.</li>
-      <li>Ett maskinläsbart block som tillägget tolkar, avgränsat exakt med
-      <code>----SPCS-RESTORE-JSON----</code> och <code>----END----</code>, med fälten
-      <code>coldStoragePath, sourceUrl, originalName, container, archivedDate,
-      hadUniquePermissions</code>.</li>
-    </ul>
-    <p>Platshållarens listobjekt får kolumnen <code>ColdStoragePath</code> ifylld, så att
-    tillägget känner igen den i biblioteksvyn.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 680 250" role="img" aria-label="Säkerhetsmodell">
+        <rect x="20" y="16" width="150" height="46" rx="7" class="dg-box-navy"/>
+        <text x="95" y="36" text-anchor="middle" class="dg-t-white" font-size="11" font-weight="700">Anrop + Entra-token</text>
+        <text x="95" y="52" text-anchor="middle" class="dg-t-white" font-size="9.5">(delegerad, roles-claim)</text>
 
-    <h2>4.9 Azure Function &mdash; återställning från platshållare</h2>
-    <p>HTTP-funktionen <code>RestoreFromPlaceholder</code> tar antingen
-    <code>{ placeholderServerRelativeUrl }</code> (tillägget skickar platshållarens
-    server-relativa URL) eller de redan tolkade fälten <code>{ coldStoragePath }</code>.
-    Rollen <code>ColdStorage.Download</code> krävs.</p>
+        <rect x="210" y="16" width="180" height="46" rx="7" class="dg-box-white"/>
+        <text x="300" y="34" text-anchor="middle" class="dg-t-navy" font-size="11" font-weight="700">Grind 1 — approll</text>
+        <text x="300" y="50" text-anchor="middle" class="dg-t-muted" font-size="9.5">EntraTokenGuard</text>
+        <line x1="170" y1="39" x2="208" y2="39" class="dg-flow" marker-end="url(#a5)"/>
 
-    <ol class="step-list">
-      <li>Läser platshållartexten via <code>kSPRestFilesCore.GetFileText</code> och tolkar
-      JSON-blocket.</li>
-      <li>Kopierar bloben tillbaka till <code>sourceUrl</code> (med suffixet
-      <code>_restored</code> vid namnkonflikt).</li>
-      <li>Återställer eventuella unika behörigheter (§4.7).</li>
-      <li>Tar bort platshållarfilen och sedan bloben (samt <code>.perms.json</code>).</li>
-    </ol>
+        <rect x="430" y="16" width="230" height="46" rx="7" class="dg-box-white"/>
+        <text x="545" y="34" text-anchor="middle" class="dg-t-navy" font-size="11" font-weight="700">Grind 2 — per objekt</text>
+        <text x="545" y="50" text-anchor="middle" class="dg-t-muted" font-size="9.5">GetUserEffectivePermissions (anroparen)</text>
+        <line x1="390" y1="39" x2="428" y2="39" class="dg-flow" marker-end="url(#a5)"/>
 
-    <div class="tip-box">
-      <strong>Enklicks-återställning:</strong> i tillägget räcker det att markera en
-      <code>.coldstorage.txt</code>-fil och klicka <em>Återställ</em> &mdash; hela flödet
-      ovan sker automatiskt.
-    </div>
+        <!-- ladder -->
+        <text x="20" y="92" class="dg-t-navy" font-size="10.5" font-weight="700">Baskravet skalar med hur destruktiv åtgärden är:</text>
+        <g font-size="10">
+          <rect x="20"  y="104" width="150" height="40" rx="6" class="dg-box-light"/><text x="95"  y="122" text-anchor="middle" class="dg-t-navy" font-weight="700">Visa</text><text x="95"  y="136" text-anchor="middle" class="dg-t-muted">ViewListItems</text>
+          <rect x="185" y="104" width="150" height="40" rx="6" class="dg-box-light"/><text x="260" y="122" text-anchor="middle" class="dg-t-navy" font-weight="700">Ladda ned</text><text x="260" y="136" text-anchor="middle" class="dg-t-muted">OpenItems</text>
+          <rect x="350" y="104" width="150" height="40" rx="6" class="dg-box-navy"/><text x="425" y="122" text-anchor="middle" class="dg-t-white" font-weight="700">Återställ (skriv)</text><text x="425" y="136" text-anchor="middle" class="dg-t-white">EditListItems</text>
+          <rect x="515" y="104" width="145" height="40" rx="6" class="dg-box-navy"/><text x="587" y="122" text-anchor="middle" class="dg-t-white" font-weight="700">Arkivera (radera)</text><text x="587" y="136" text-anchor="middle" class="dg-t-white">DeleteListItems</text>
+        </g>
+        <line x1="170" y1="124" x2="184" y2="124" class="dg-flow-navy" marker-end="url(#a5n)"/>
+        <line x1="335" y1="124" x2="349" y2="124" class="dg-flow-navy" marker-end="url(#a5n)"/>
+        <line x1="500" y1="124" x2="514" y2="124" class="dg-flow-navy" marker-end="url(#a5n)"/>
+
+        <rect x="20" y="170" width="640" height="34" rx="6" class="dg-box-green"/>
+        <text x="340" y="191" text-anchor="middle" class="dg-t-white" font-size="10.5" font-weight="700">FAIL CLOSED — går kontrollen inte att utvärdera nekas anropet (HTTP 502). Tom/okänd UPN nekas.</text>
+
+        <text x="340" y="228" text-anchor="middle" class="dg-t-muted" font-size="9.5">Gäster/B2B utvärderas på sin verkliga behörighet · endast en ren app-token (roles-only) litar på rollen.</text>
+        <defs>
+          <marker id="a5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker>
+          <marker id="a5n" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#00517e"/></marker>
+        </defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 2.4</strong> &mdash; Två grindar. Rollen (grind 1) säger <em>vad</em> användaren får göra i produkten; per-objekt-kontrollen (grind 2) bekräftar att just den användaren får göra det med just det objektet.</div>
+
+    <table>
+      <thead><tr><th>Approll</th><th>Ger</th><th>Baskrav per objekt</th></tr></thead>
+      <tbody>
+        <tr><td><code>ColdStorage.View</code></td><td>Visa arkiverad media</td><td><code>ViewListItems</code></td></tr>
+        <tr><td><code>ColdStorage.Download</code></td><td>Ladda ned (superset av View)</td><td><code>OpenItems</code></td></tr>
+        <tr><td><code>ColdStorage.Restore</code></td><td>Återställa &mdash; en <strong>egen</strong> behörighet, INTE implicerad av Download</td><td><code>EditListItems</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:9pt;color:#5f6b73;margin-top:2mm">Arkivering kräver <code>EditListItems</code> (stämpelläge) respektive
+    <code>DeleteListItems</code> (raderingsläge/versionsrensning). Detaljer i kapitel 4.</p>
   </div>
   <div class="page-footer">
     <div>SP Cold Storage</div>
@@ -1428,210 +1174,95 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 5</span>Installation och konfiguration</h1>
+    <h1 id="kap-3"><span class="chapter-num">Kapitel 3</span>SharePoint-tillägg</h1>
     <div class="chapter-intro">
-      <p>Driftsättningen av SP Cold Storage kräver behörigheter i tre system: Microsoft 365
-      (SharePoint och Entra ID), Azure-prenumerationen och den lokala utvecklingsmiljön
-      för SPFx-byggprocessen. Genomför stegen i angiven ordning.</p>
+      <p>SPFx Application Extension är den synliga delen av SP Cold Storage. Den installeras
+      på webbplatsen och reagerar på val av filer i dokumentbibliotek. Primära åtgärder är att
+      <strong>arkivera</strong> filer till kall lagring och att <strong>återställa</strong> dem.
+      För redan arkiverade mediafiler erbjuds dessutom visning i en inbyggd medievisare och
+      nedladdning.</p>
     </div>
 
-    <h2>5.1 Förutsättningar</h2>
-
+    <h2 id="sek-3-1">3.1 Application Extension</h2>
     <table>
-      <thead><tr><th>Krav</th><th>Version / Detalj</th></tr></thead>
+      <thead><tr><th>Egenskap</th><th>Värde</th></tr></thead>
       <tbody>
-        <tr><td>Microsoft 365-licens</td><td>SharePoint Online inkluderat (E1 eller högre)</td></tr>
-        <tr><td>Azure-prenumeration</td><td>Med rättigheterna Owner på resursgruppen</td></tr>
-        <tr><td>Entra ID-behörighet</td><td>Appregistreringsadministratör (Application Administrator)</td></tr>
-        <tr><td>SharePoint-behörighet</td><td>Global administratör eller SharePoint-administratör</td></tr>
-        <tr><td>Node.js</td><td>18 LTS eller 20 LTS</td></tr>
-        <tr><td>SPFx CLI</td><td><code>@microsoft/generator-sharepoint</code> 1.20+</td></tr>
-        <tr><td>Azure CLI</td><td>2.55 eller senare</td></tr>
-        <tr><td>PowerShell</td><td>7.4 + PnP PowerShell 2.x</td></tr>
+        <tr><td>Typ</td><td>Application Customizer (SPFx Extension)</td></tr>
+        <tr><td>Distribution</td><td>Tenant-appkatalog, installerad per webbplats (<code>skipFeatureDeployment:false</code>)</td></tr>
+        <tr><td>Placering</td><td>Ingen fast platshållare — flytande <code>kAvatar</code>-panel (bubbla) längst ned till höger</td></tr>
+        <tr><td>Ramverk</td><td>TypeScript + delade <code>k*</code>-bibliotek (<code>kAvatar</code>, <code>kSPFXAppContext</code>, <code>kSPFXListViewContext</code>, <code>kSPListSelection</code>) — ingen React, ingen MSAL.js</td></tr>
+        <tr><td>SPFx-version</td><td>1.23 (heft-bygge)</td></tr>
+        <tr><td>Behörigheter</td><td><code>user_impersonation</code> mot Azure Function-appregistrering (token via SPFx <code>aadTokenProviderFactory</code>)</td></tr>
       </tbody>
     </table>
+    <p>Den tunna customizern injicerar bundlen (<code>SPColdStorage.js</code>) och anropar
+    <code>window.KDebug.SPCSListView.SPFXBegin(this)</code>. Konfigurationen
+    (<code>functionBaseUrl</code>, <code>apiResourceUri</code>) bakas in i customizerns
+    <code>elements.xml</code> och läses av bundlen.</p>
 
-    <h2>5.2 Driftsättning av SPFx-tillägg</h2>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 13</div>
+  </div>
+</div>
 
-    <ol class="step-list">
-      <li>Klona källkoden: <code>git clone https://github.com/langate/sp-cold-storage</code></li>
-      <li>Installera beroenden i SPFx-projektet: <code>npm install</code></li>
-      <li>Uppdatera <code>config/package-solution.json</code> med klientorganisationens
-      domän och Azure Function-URL:en.</li>
-      <li>Bygg release-paketet: <code>npm run build && npm run bundle -- --ship && npm run package-solution -- --ship</code></li>
-      <li>Ladda upp <code>.sppkg</code>-filen till SharePoint App Catalog och
-      godkänn tenant-wide deployment.</li>
-      <li>Godkänn API-behörigheten <code>user_impersonation</code> mot Azure Function-appregistreringen
-      i SharePoint Admin Center &rarr; API-åtkomst.</li>
-    </ol>
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-3-2">3.2 Avatar-gränssnitt och medievisare</h2>
+    <p>När en arkiverad bild eller video väljs visas en kompakt panel i launcher-bubblan.
+    Panelen är kontextkänslig: en rad per arkiverad fil med en primär <em>Öppna &amp; visa</em>,
+    samt <em>Ladda ned</em> och <em>Återställ</em>.</p>
+
+    <div class="fig-row">
+      <div>
+        <figure class="screenshot panel">
+          <img src="assets/05-panel-media.png?v=20260715-1211" alt="Cold Storage-panelen för en arkiverad bild med knapparna Öppna och visa, Ladda ned samt Återställ">
+        </figure>
+        <div class="figure-caption"><strong>Figur 3.1</strong> &mdash; Panel för arkiverad media: <em>Öppna &amp; visa</em> (primär), <em>Ladda ned</em>, <em>Återställ</em>.</div>
+      </div>
+      <div>
+        <p style="font-size:9.5pt">Panelen byggs med den delade <code>kAvatar</code>-komponenten
+        &mdash; ingen egen toast- eller felruta. Filens <code>MediaCategory</code> (härledd ur
+        filändelsen) styr visartyp och knappetiketter: en video får <em>Spela upp video</em>,
+        en PDF <em>Visa PDF</em>, och en fil utan visare (t.ex. ZIP) får <em>Ladda ned</em> som
+        primär åtgärd &mdash; aldrig en trasig visare.</p>
+        <p style="font-size:9.5pt">Vid flera markerade arkiverade filer visas en rad per fil.
+        Modellen är avsiktligt <strong>per fil</strong>: inget bildspel och ingen ZIP-paketering
+        &mdash; varje fil öppnas i sin egen flik.</p>
+      </div>
+    </div>
+
+    <h2 id="sek-3-3">3.3 Visarens uppbyggnad per filtyp</h2>
+    <table>
+      <thead><tr><th>Filtyp</th><th>Visningsteknik</th><th>Öppnas i</th></tr></thead>
+      <tbody>
+        <tr><td>JPG, PNG, WebP, GIF, BMP, SVG, TIFF</td><td>Blob base64-kodas → <code>data:image/…;base64,…</code> i <code>&lt;img&gt;</code></td><td>Ny flik (genererad HTML)</td></tr>
+        <tr><td>MP4, MOV, WebM, AVI, MKV</td><td>SAS-URL skickas till <code>&lt;video src="sasUrl"&gt;</code> — ingen base64</td><td>Ny flik (videospelare)</td></tr>
+        <tr><td>PDF</td><td>Blob base64-kodas → <code>data:application/pdf;base64,…</code></td><td>Ny flik (PDF-visare)</td></tr>
+        <tr><td>ZIP, övriga</td><td>Nedladdning initieras direkt — ingen visare</td><td>Nedladdning</td></tr>
+      </tbody>
+    </table>
 
     <div class="note-box">
-      <strong>Tenant-wide deployment:</strong> Aktivera "Gör lösningen tillgänglig
-      för alla webbplatser" vid uppladdning. Tillägget aktiveras då automatiskt på
-      alla SharePoint-webbplatser utan manuell installation.
-    </div>
-  </div>
-  <div class="page-footer">
-    <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 11</div>
-  </div>
-</div>
-
-<div class="page">
-  <div class="page-header">
-    <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
-  </div>
-  <div class="page-content" style="padding-top:0">
-    <h2>5.3 Konfiguration av Azure-resurser</h2>
-
-    <h3>Steg 1 — Skapa resursgrupp och lagringskonto</h3>
-    <ol class="step-list">
-      <li>Logga in med Azure CLI: <code>az login</code></li>
-      <li>Skapa resursgrupp: <br><code>az group create --name rg-spcold --location swedencentral</code></li>
-      <li>Skapa lagringskonto (Standard LRS): <br><code>az storage account create --name stgspcold --resource-group rg-spcold --location swedencentral --sku Standard_LRS --kind StorageV2 --access-tier Cold</code></li>
-      <li>Skapa blob-container: <br><code>az storage container create --name sp-archive --account-name stgspcold --auth-mode login</code></li>
-    </ol>
-
-    <h3>Steg 2 — Appregistrering i Entra ID</h3>
-    <ol class="step-list">
-      <li>Skapa appregistrering i Entra ID: <em>Azure Portal &rarr; Entra ID &rarr; Appregistreringar &rarr; Ny registrering</em></li>
-      <li>Lägg till approll: <code>ColdStorage.Download</code> (typen: Application och Användare/Grupp).</li>
-      <li>Notera <strong>Application (client) ID</strong> och <strong>Directory (tenant) ID</strong>.</li>
-      <li>Skapa ett klientcertifikat (för Timer-funktionen) och ladda upp det offentliga certifikatet.</li>
-    </ol>
-
-    <h3>Steg 3 — Driftsätt Azure Function App</h3>
-    <ol class="step-list">
-      <li>Skapa Function App med Node.js 20 runtime i resursgruppen <code>rg-spcold</code>.</li>
-      <li>Aktivera system-tilldelad Managed Identity på Function App.</li>
-      <li>Tilldela rollen <code>Storage Blob Data Contributor</code> till Managed Identity
-      på lagringskontot.</li>
-      <li>Konfigurera miljövariabler (Application Settings) enligt tabellen i avsnitt 4.1.</li>
-      <li>Driftsätt funktionskoden: <code>func azure functionapp publish &lt;FunctionAppName&gt;</code></li>
-    </ol>
-
-    <h3>Steg 4 — Lägg till ColdStoragePath-kolumn i SharePoint</h3>
-    <ol class="step-list">
-      <li>Anslut med PnP PowerShell: <code>Connect-PnPOnline -Url &lt;SiteUrl&gt; -Interactive</code></li>
-      <li>Lägg till kolumnen i biblioteket:<br>
-      <code>Add-PnPField -List "Delade dokument" -DisplayName "ColdStoragePath" -InternalName "ColdStoragePath" -Type Text -AddToDefaultView</code></li>
-      <li>Upprepa för varje dokumentbibliotek som ska arkiveras.</li>
-    </ol>
-
-    <div class="tip-box">
-      <strong>Verifiera driftsättningen:</strong> Kör Timer-funktionen manuellt en gång
-      via Azure Portal och kontrollera Application Insights-loggarna för att bekräfta
-      att arkiveringen fungerar korrekt innan den schemalagda körningen aktiveras.
+      <strong>HEIC/HEIF:</strong> känns igen som bildtyper men de flesta webbläsare kan inte
+      rendera dem direkt. Server-side transkodning till JPEG är förberedd som en tydlig
+      utbyggnadspunkt i visningsfunktionen men är <strong>ännu inte aktiverad</strong> &mdash;
+      planera inte visning av HEIC förrän den seamen är på plats.
     </div>
 
-    <div class="info-box" style="margin-top:5mm">
-      <strong>Support:</strong> Kontakta Langate på
-      <a href="mailto:support@langate.se">support@langate.se</a> för frågor om
-      installation eller konfiguration.
+    <div class="warn-box">
+      <strong>Storleksgräns för base64:</strong> base64-kodning ökar storleken med ~33&nbsp;%.
+      Bilder över tröskeln <code>MAX_BASE64_SIZE_MB</code> (standard 20&nbsp;MB) &mdash; och alla
+      videor &mdash; levereras i stället som en kortlivad SAS-URL som visaren strömmar direkt.
     </div>
-  </div>
-  <div class="page-footer">
-    <div>SP Cold Storage</div>
-    <div>Langate &nbsp;&middot;&nbsp; 12</div>
-  </div>
-</div>
-
-
-<div class="page">
-  <div class="page-header">
-    <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
-  </div>
-  <div class="page-content" style="padding-top:0">
-    <h1><span class="chapter-num">Kapitel 6</span>Felsökning</h1>
-    <div class="chapter-intro">
-      <p>Detta kapitel beskriver de vanligaste felen som kan uppstå i SP Cold Storage,
-      deras orsaker och hur de åtgärdas. Det täcker även kända begränsningar kring
-      skalning och SharePoint-begränsning, samt en enkel formel för
-      kostnadsuppskattning.</p>
-    </div>
-
-    <h2>6.1 Vanliga fel och åtgärder</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Symptom</th>
-          <th>Trolig orsak</th>
-          <th>Åtgärd</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Panelen visas inte när en arkiverad fil väljs</td>
-          <td>SPFx-tillägget är inte aktiverat på webbplatsen, eller
-          <code>ColdStoragePath</code>-kolumnen saknas i biblioteket</td>
-          <td>Verifiera att tillägget är driftsatt tenant-wide i
-          SharePoint Admin Center. Kontrollera att kolumnen finns via
-          PnP PowerShell: <code>Get-PnPField -Identity ColdStoragePath</code></td>
-        </tr>
-        <tr>
-          <td>HTTP 401 — "Inloggningen misslyckades"</td>
-          <td>Åtkomsttokenet (SPFx <code>aadTokenProviderFactory</code>) kunde inte
-          hämtas, vanligen pga. utgången session eller felaktig appregistrering i Entra ID</td>
-          <td>Logga ut och in i Microsoft 365. Verifiera att
-          <code>CLIENT_ID</code> i Function App-inställningarna matchar
-          appregistreringens Application ID.</td>
-        </tr>
-        <tr>
-          <td>HTTP 403 — "Du har inte behörighet"</td>
-          <td>Användaren saknar approllanspråket
-          <code>ColdStorage.View</code></td>
-          <td>Lägg till rollen i Entra ID under
-          <em>Appregistrering → Roller och administratörer → Tilldela</em>.
-          Effekten kräver ny inloggning.</td>
-        </tr>
-        <tr>
-          <td>HTTP 404 — "Filen hittades inte i arkivet"</td>
-          <td>Bloben har raderats manuellt eller fel blob-sökväg är
-          lagrad i <code>ColdStoragePath</code></td>
-          <td>Kontrollera bloben i Azure Storage Explorer. Om sökvägen
-          är felaktig, uppdatera kolumnvärdet manuellt via SharePoint
-          eller PnP PowerShell.</td>
-        </tr>
-        <tr>
-          <td>HEIC-bild visas inte — "Förhandsvisning ej tillgänglig"</td>
-          <td>Sharp-paketet är inte installerat i Function App, eller
-          HEIC-filen är korrupt</td>
-          <td>Verifiera att <code>npm install sharp</code> kördes
-          vid driftsättning och att Function App-planen stöder
-          native npm-moduler (minst P1v3 eller Premium).</td>
-        </tr>
-        <tr>
-          <td>Arkiveringsfunktionen körs men inga filer arkiveras</td>
-          <td>Inga filer uppfyller ålderskravet, MIME-typsfilter
-          matchar inte, eller Graph API-anropet saknar behörighet</td>
-          <td>Sänk <code>ARCHIVE_AGE_DAYS</code> tillfälligt för test.
-          Kontrollera att Managed Identity har
-          <code>Sites.ReadWrite.All</code> i Microsoft Graph.</td>
-        </tr>
-        <tr>
-          <td>Arkiveringen tar timeout (10 min)</td>
-          <td>Biblioteket är för stort för en enda körning — SharePoint
-          throttling aktiveras vid många API-anrop per sekund</td>
-          <td>Aktivera delta-crawl (lagra senaste körningens timestamp
-          och filtrera med <code>$filter=Modified gt {datum}</code>).
-          Lägg in exponentiell backoff vid 429-svar. Se avsnitt 6.2.</td>
-        </tr>
-        <tr>
-          <td>Restore misslyckas — HTTP 500</td>
-          <td>Function App saknar <code>user_impersonation</code>-behörighet
-          mot SharePoint, eller On-Behalf-Of-flödet är felinställt</td>
-          <td>Verifiera OBO-konfigurationen i appregistreringen:
-          <em>API-behörigheter → SharePoint → user_impersonation</em>
-          (delegerad, inte applikation).</td>
-        </tr>
-      </tbody>
-    </table>
   </div>
   <div class="page-footer">
     <div>SP Cold Storage</div>
@@ -1642,81 +1273,753 @@ tr:nth-child(even) td { background: var(--color-bg-subtle); }
 <div class="page">
   <div class="page-header">
     <div class="ph-left">SP Cold Storage</div>
-    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
   </div>
   <div class="page-content" style="padding-top:0">
-    <h2>6.2 Begränsningar och skalning</h2>
+    <h2 id="sek-3-4">3.4 Markering i biblioteksvyn</h2>
+    <p>Tillägget lyssnar på SharePoints selektionshändelser och avgör vilka av de valda
+    filerna som är arkiverade mediafiler:</p>
+    <ol class="step-list">
+      <li>På list-/biblioteksvyer armar kontrollern den delade <code>kSPFXListViewContext</code>
+      (en strypt <code>MutationObserver</code>) plus en klickavlyssnare — SharePoint växlar
+      <code>aria-checked</code> <em>efter</em> klicket, så båda signalerna driver uppdateringen.</li>
+      <li>Vid selektionsändring läses de markerade objektens id:n eller filnamn (modern
+      Fluent-grid, där id-globalen saknas).</li>
+      <li>När launchern klickas byggs en typad <code>MediaFileCollection</code> från urvalet via
+      den delade <code>kSPList</code>-läsvägen; varje rads <code>ColdStoragePath</code> avgör om
+      filen är arkiverad.</li>
+      <li>En kontextkänslig <code>ColdStoragePanel</code> visas i <code>kAvatar</code>-bubblan.</li>
+    </ol>
 
-    <h3>SharePoint-begränsning (throttling)</h3>
-    <p>SharePoint begränsar API-anrop per tidsenhet. Vid arkivering av stora bibliotek
-    (>10 000 filer) bör följande strategier implementeras:</p>
-    <ul>
-      <li><strong>Delta-crawl:</strong> Lagra tidsstämpeln för senaste körningen i
-      Function App Configuration och filtrera anrop med
-      <code>$filter=Modified gt &apos;{timestamp}&apos;</code>. Reducerar API-anrop
-      med &gt;90&nbsp;% på etablerade klientorganisationer.</li>
-      <li><strong>Exponentiell backoff:</strong> Vid HTTP 429 vänta
-      <code>Retry-After</code>-sekunder (finns i svarshuvudet) innan nästa anrop.
-      Implementera med max 5 försök per fil.</li>
-      <li><strong>Batchstorlek:</strong> Processar max 500 filer per körning.
-      Konfigureras via <code>ARCHIVE_BATCH_SIZE</code>. Nästa batch körs vid
-      nästa schemalagda tillfälle.</li>
-    </ul>
-
-    <h3>Storleksgränser</h3>
-    <table>
-      <thead><tr><th>Gräns</th><th>Standardvärde</th><th>Konfiguration</th></tr></thead>
-      <tbody>
-        <tr><td>Max filstorlek för base64-svar</td><td>20 MB</td><td><code>MAX_BASE64_SIZE_MB</code></td></tr>
-        <tr><td>Max körtid per Function-anrop</td><td>10 min (Consumption)</td><td>Uppgradera till Premium för 60 min</td></tr>
-        <tr><td>Max filer per arkiveringsbatch</td><td>500</td><td><code>ARCHIVE_BATCH_SIZE</code></td></tr>
-        <tr><td>SAS-URL giltighetstid</td><td>60 min</td><td>Hårdkodad — ändra i funktionskod</td></tr>
-      </tbody>
-    </table>
-
-    <h2>6.3 Kostnadsuppskattning</h2>
-    <p>Använd följande formel för att beräkna månadsbesparing innan driftsättning:</p>
-
-    <div class="two-col">
-      <div class="feature-card">
-        <h4>Formel: månadsbesparing</h4>
-        <p><code>Besparing = Volym_GB × (SP_kostnad − Cold_kostnad) × SEK/USD</code></p>
-        <p style="margin-top:8px;font-size:12px">Exempel: 100 GB arkiverat material<br>
-        <strong>100 × (0,20 − 0,004) × 11,5 ≈ 225 kr/mån</strong></p>
-      </div>
-      <div class="feature-card">
-        <h4>Referenspriser (USD/GB/mån)</h4>
-        <p>SharePoint Online: ~0,20<br>
-        Azure Cold: ~0,004<br>
-        Azure Archive: ~0,001<br>
-        <span style="font-size:11px;color:#537780">Priser varierar per region och avtal.
-        Verifiera alltid i Azure Pricing Calculator.</span></p>
-      </div>
-      <div class="feature-card">
-        <h4>Transaktionstillägg</h4>
-        <p>Varje visning genererar en GET-transaktion (~0,004 USD/10 000 ops).
-        Vid hög visningsfrekvens (&gt;50 000/mån) kan transaktionskostnaden
-        börja synas — övervaka i Azure Cost Management.</p>
-      </div>
-      <div class="feature-card">
-        <h4>Azure Pricing Calculator</h4>
-        <p>Detaljerade prisberäkningar per region, redundansnivå och
-        transaktionsvolym görs i Microsofts officiella kalkylator:
-        <code>azure.microsoft.com/pricing/calculator</code></p>
-      </div>
-    </div>
-
-    <div class="tip-box">
-      <strong>Tumregel:</strong> För en organisation med 500 GB gamla mediafiler i
-      SharePoint är den typiska besparingen <strong>~1 100 kr/mån</strong>
-      (13 200 kr/år) — med bibehållen omedelbar åtkomst via SP Cold Storage.
-    </div>
   </div>
   <div class="page-footer">
     <div>SP Cold Storage</div>
     <div>Langate &nbsp;&middot;&nbsp; 15</div>
   </div>
 </div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-3-5">3.5 Arkiv-ikon på laddning och radbyte vid återställning</h2>
+    <p>När launchern laddas &mdash; och vid varje vyändring, så den virtualiserade griden inte
+    tappar dekorationen &mdash; skannar <code>SPCSRowDecorator</code> de renderade raderna och
+    injicerar en kompakt <strong>snöflinge-ikon</strong> i namncellen för varje arkiverad rad.
+    Detektionen är <strong>ren DOM, ingen REST</strong> (ingen list-view-threshold-kostnad): en
+    rad är arkiverad när dess <code>ColdStoragePath</code>-cell är ifylld <em>eller</em> filnamnet
+    slutar på <code>.coldstorage.txt</code>.</p>
+
+    <div class="fig-row">
+      <div>
+        <figure class="screenshot panel-wide">
+          <img src="assets/04-archived-library.png?v=20260715-1211" alt="Arkiverad rad i biblioteket med injicerad snöflinge-ikon och ifylld ColdStoragePath-kolumn">
+        </figure>
+        <div class="figure-caption"><strong>Figur 3.2</strong> &mdash; Raden <code>ui-test-image.png</code> bär den injicerade snöflinge-ikonen; <code>ColdStoragePath</code>-kolumnen visar blob-sökvägen.</div>
+      </div>
+      <div>
+        <p style="font-size:9.5pt">Vid <strong>återställning</strong> uppdateras filens rad direkt
+        på plats (<code>MarkRestored</code>): den injicerade ikonen tas bort, ett eventuellt
+        platshållarnamn (<code>.coldstorage.txt</code>) byts mot originalfilens namn, och
+        namnlänken pekas om mot den återställda filen.</p>
+        <p style="font-size:9.5pt">Länken skrivs bara om när namnet faktiskt ändrats (en
+        platshållare → sitt original). En stämpellägesåterställning behåller samma namn och
+        rör därför inte den inbyggda SharePoint-länken &mdash; den injicerade länken ärver
+        radens stil (<code>color:inherit;text-decoration:none</code>) så att den ser ut precis
+        som en vanlig fil.</p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Dekorationsberoende:</strong> stämpelläges-indikering kräver att kolumnen
+      <code>ColdStoragePath</code> finns i den aktuella vyn (provisioneringen lägger till den i
+      standardvyn). Platshållare fångas via filnamnet oavsett vy.
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 16</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-3-6">3.6 Panelens lägen</h2>
+    <p>Panelen anpassar sig efter vad som är markerat.</p>
+    <div class="fig-row">
+      <div>
+        <figure class="screenshot panel">
+          <img src="assets/03-panel-selection.png?v=20260715-1211" alt="Panel med en markerad ej arkiverad fil och knappen Arkivera markerade">
+        </figure>
+        <div class="figure-caption"><strong>Figur 3.3</strong> &mdash; Markerad, ej arkiverad fil: total storlek + <em>Arkivera markerade</em>.</div>
+      </div>
+      <div>
+        <figure class="screenshot panel">
+          <img src="assets/02-panel-scope.png?v=20260715-1211" alt="Panel utan markering med knappar för att arkivera och återställa mapp, bibliotek eller hela webbplatsen">
+        </figure>
+        <div class="figure-caption"><strong>Figur 3.4</strong> &mdash; Inget markerat: massarkivering <em>och</em> massåterställning av mapp/bibliotek/webbplats (kap. 4).</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 17</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 3 &mdash; SharePoint-tillägg</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-3-7">3.7 Felhantering i gränssnittet</h2>
+    <p>Fel döljs aldrig — och visas aldrig som en egen felbanner eller toast. Varje verkligt fel
+    dirigeras till den centrala hanteraren (<code>ks.kGlobalErrorHandler</code>), som äger
+    felmodalen, loggen och versionsstämpeln. Gränssnittet självt visar bara FRAMGÅNG, PÅGÅENDE
+    eller INMATNINGSVALIDERING (arbetsytans lag 1).</p>
+    <table>
+      <thead><tr><th>Situation</th><th>Beteende</th></tr></thead>
+      <tbody>
+        <tr><td>Token-/anropsfel (401/403/404/502)</td><td>Transporten återställer knappens UI och dirigerar felet till <code>ks.kGlobalErrorHandler</code> — inget eget meddelande.</td></tr>
+        <tr><td>Inget markerat vid klick</td><td>Panelen visar arkiverings-/återställningsalternativ (kontext, inte ett fel).</td></tr>
+        <tr><td>Popup blockerad</td><td>Notifiering ("Tillåt popup…") — ett förväntat, hanterat tillstånd.</td></tr>
+        <tr><td>SAS-länk utgången i visaren</td><td>Media-elementets <code>onerror</code> ber användaren öppna igen från panelen (kortlivad SAS).</td></tr>
+        <tr><td>Fil &gt; base64-gräns</td><td>Öppnas via SAS-URL i stället (automatisk fallback, inget fel).</td></tr>
+      </tbody>
+    </table>
+    <div class="note-box">
+      <strong>Loggar:</strong> klientfel går via <code>ks.kGlobalErrorHandler</code>. Servern
+      loggar dessutom en strukturerad åtkomstrevision (<code>AUDIT fn=… action=… upn=… path=…
+      ip=… outcome=…</code>) per lyckad visning/nedladdning/återställning.
+    </div>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 18</div>
+  </div>
+</div>
+
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h1 id="kap-4"><span class="chapter-num">Kapitel 4</span>Serverfunktioner</h1>
+    <div class="chapter-intro">
+      <p>Azure Functions-laget (Node.js&nbsp;22 / TypeScript, Functions v4) innehåller en
+      schemalagd arkiveringsfunktion (Timer) och flera HTTP-funktioner: mediavisning,
+      nedladdning, återställning (per fil och per omfång) samt arkivering på begäran (markerade
+      filer eller ett helt omfång). Alla HTTP-funktioner passerar <strong>både</strong> en
+      approllsgrind och en per-objekt-behörighetskontroll (kap. 2.4).</p>
+    </div>
+
+    <h2 id="sek-4-1">4.1 Schemalagd arkivering (Timer)</h2>
+    <p>Timer-funktionen körs enligt ett konfigurerbart cron-schema och hanterar hela
+    arkiveringen autonomt med appidentitet (certifikat).</p>
+
+    <h3>Konfiguration (Application Settings)</h3>
+    <table>
+      <thead><tr><th>Inställning</th><th>Exempel / standard</th><th>Beskrivning</th></tr></thead>
+      <tbody>
+        <tr><td><code>ARCHIVE_SITE_URL</code></td><td><code>https://org.sharepoint.com/sites/media</code></td><td>Webbplats att söka igenom</td></tr>
+        <tr><td><code>ARCHIVE_LIBRARY</code></td><td><code>Mediabibliotek</code></td><td>Dokumentbibliotekets titel</td></tr>
+        <tr><td><code>ARCHIVE_AGE_DAYS</code></td><td><code>365</code></td><td>Filer äldre än detta arkiveras</td></tr>
+        <tr><td><code>ARCHIVE_MIME_TYPES</code></td><td><code>image/*,video/*,application/pdf</code></td><td>MIME-typer att arkivera (glob)</td></tr>
+        <tr><td><code>ARCHIVE_SCHEDULE</code></td><td><code>0 0 2 * * *</code></td><td>Cron (standard: dagligen 02:00)</td></tr>
+        <tr><td><code>ARCHIVE_DELETE_SOURCE</code></td><td><code>false</code></td><td>Radera källan (platshållare) i stället för att stämpla</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 19</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h3>Konfiguration (forts.)</h3>
+    <table>
+      <thead><tr><th>Inställning</th><th>Exempel / standard</th><th>Beskrivning</th></tr></thead>
+      <tbody>
+        <tr><td><code>ARCHIVE_DELETE_VERSIONS</code></td><td><code>false</code></td><td>Endast stämpelläge: rensa källans versionshistorik efter lyckad blob (best-effort)</td></tr>
+        <tr><td><code>ARCHIVE_MAX_ITEMS_PER_RUN</code></td><td><code>500</code></td><td>Hård gräns på antal kandidater per omfångsmål och körning (0 = ingen gräns; överskott loggas)</td></tr>
+        <tr><td><code>MAX_BASE64_SIZE_MB</code></td><td><code>20</code></td><td>Gräns för base64-svar i visningsfunktionen</td></tr>
+        <tr><td><code>SAS_TTL_MINUTES</code></td><td><code>15</code></td><td>Livslängd för visnings-/nedladdnings-SAS</td></tr>
+        <tr><td><code>SAS_SIGNED_IP</code></td><td><code>true</code></td><td>Lås SAS till anroparens utgående IP (sätt false bakom proxy/CDN)</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 20</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h3>Blob-metadata</h3>
+    <p>Varje arkiverad fil lagras med metadata: <code>sourceUrl</code>, <code>siteUrl</code>,
+    <code>contentType</code>, <code>mediaCategory</code>, <code>archivedBy</code>,
+    <code>archivedDate</code>, <code>originalSize</code> m.fl.</p>
+    <div class="note-box">
+      <strong>Metadatanyckel-casing (Node):</strong> Node gör HTTP-header­namn gemena, så blob-SDK:t
+      returnerar metadatanycklar i gemener. Läslagret (<code>ColdBlobRepository.MetaBag</code>)
+      normaliserar därför kända nycklar tillbaka till kanonisk camelCase &mdash; en gång, utan
+      dubbletter.
+    </div>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 21</div>
+  </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-4-2">4.2 Mediavisning (GetMediaForViewer)</h2>
+    <p>HTTP-funktionen returnerar base64-data eller en SAS-URL beroende på filtyp och storlek.
+    Kräver approllen <code>ColdStorage.View</code> plus <code>ViewListItems</code> per objekt.</p>
+    <ol class="step-list">
+      <li><strong>Tokenvalidering:</strong> JWT valideras mot Entra ID; utan giltig token → 401.</li>
+      <li><strong>Roll + per-objekt:</strong> saknas rollen → 403; saknas behörigheten på objektet
+      → 403 (och 502 om kontrollen inte kan utvärderas — fail closed).</li>
+      <li><strong>Format:</strong> bilder/PDF ≤ <code>MAX_BASE64_SIZE_MB</code> base64-kodas i svaret;
+      bilder över gränsen och alla videor får en <strong>SAS-URL (standard 15 min, IP-låst)</strong>.</li>
+    </ol>
+<h2 id="sek-4-3">4.3 Nedladdning (GetDownloadUrl)</h2>
+    <p>Genererar en SAS enbart för nedladdning. Kräver <code>ColdStorage.Download</code> (superset
+    av View) + <code>OpenItems</code> per objekt, och sätter <code>Content-Disposition:
+    attachment</code>. Filnamnet i headern är <strong>injektionssäkert</strong> (ASCII
+    <code>filename</code> + RFC&nbsp;5987 <code>filename*</code>).</p>
+<h2 id="sek-4-4">4.4 Azure Blob Storage &mdash; Cold-nivå</h2>
+<div class="two-col">
+<div class="feature-card"><h4>Container-struktur</h4><p>Filer lagras under<br><code>{år}/{mån}/{siteId}/{bibliotek}/{fil}</code></p></div>
+<div class="feature-card"><h4>Region &amp; redundans</h4><p>Sweden Central för GDPR. LRS som standard, GRS vid krav på katastrofåterställning.</p></div>
+<div class="feature-card"><h4>SAS-säkerhet</h4><p>Kortlivad (standard 15 min), IP-låst till anroparens utgående IP, read-only. Loggas aldrig.</p></div>
+<div class="feature-card"><h4>Datasäkerhet vid restore</h4><p><strong>Soft-delete + versionshantering</strong> ska vara på: en felaktig restore kan då aldrig förlora den enda kalla kopian.</p></div>
+    </div>
+<div class="warn-box">
+      <strong>Distributionskrav:</strong> aktivera blob soft-delete + versionshantering på
+      containern. Restore hård-raderar bloben först <em>efter</em> att SharePoint-återställningen
+      bekräftats — soft-delete är skyddsnätet. Detta konfigureras på lagringskontot, inte i kod.
+    </div>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 22</div>
+  </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-4-5">4.5 Återställning per fil</h2>
+    <p>Två HTTP-funktioner återställer en enskild fil: <code>RestoreFromArchive</code>
+    (<code>/api/restore</code>, för stämpellägesfiler vars original finns kvar) och
+    <code>RestoreFromPlaceholder</code> (<code>/api/restore-placeholder</code>, för en
+    <code>.coldstorage.txt</code>-platshållare). Båda kräver approllen
+    <strong><code>ColdStorage.Restore</code></strong> &mdash; en egen behörighet som INTE
+    implicerar av Download, eftersom återställning skriver till källbiblioteket &mdash; plus
+    <code>EditListItems</code> per objekt.</p>
+<figure class="diagram">
+      <svg viewBox="0 0 680 150" role="img" aria-label="Återställningsflöde">
+        <g font-size="9.5" font-weight="700">
+          <rect x="10"  y="52" width="104" height="48" rx="7" class="dg-box-navy"/><text x="62"  y="72" text-anchor="middle" class="dg-t-white">Panel</text><text x="62" y="87" text-anchor="middle" class="dg-t-white" font-size="8.5" font-weight="400">Återställ</text>
+          <rect x="140" y="52" width="118" height="48" rx="7" class="dg-box-white"/><text x="199" y="72" text-anchor="middle" class="dg-t-navy">Roll + per-objekt</text><text x="199" y="87" text-anchor="middle" class="dg-t-muted" font-size="8.5" font-weight="400">Restore · EditListItems</text>
+          <rect x="284" y="52" width="112" height="48" rx="7" class="dg-box-green"/><text x="340" y="72" text-anchor="middle" class="dg-t-white">Hämta blob →</text><text x="340" y="87" text-anchor="middle" class="dg-t-white" font-size="8.5" font-weight="400">ladda upp (cert)</text>
+          <rect x="422" y="52" width="120" height="48" rx="7" class="dg-box-white"/><text x="482" y="72" text-anchor="middle" class="dg-t-navy">Återskapa ACL</text><text x="482" y="87" text-anchor="middle" class="dg-t-muted" font-size="8.5" font-weight="400">unik? bryt arv + replay</text>
+          <rect x="568" y="52" width="104" height="48" rx="7" class="dg-box-navy"/><text x="620" y="72" text-anchor="middle" class="dg-t-white">Rensa +</text><text x="620" y="87" text-anchor="middle" class="dg-t-white" font-size="8.5" font-weight="400">radera blob</text>
+        </g>
+        <g>
+          <line x1="114" y1="76" x2="138" y2="76" class="dg-flow" marker-end="url(#a6)"/>
+          <line x1="258" y1="76" x2="282" y2="76" class="dg-flow" marker-end="url(#a6)"/>
+          <line x1="396" y1="76" x2="420" y2="76" class="dg-flow" marker-end="url(#a6)"/>
+          <line x1="542" y1="76" x2="566" y2="76" class="dg-flow" marker-end="url(#a6)"/>
+        </g>
+        <text x="340" y="128" text-anchor="middle" class="dg-t-muted" font-size="9">Blobben raderas FÖRST efter bekräftad SharePoint-återställning · unik-ACL som inte kan brytas → FAIL CLOSED (kall kopia bevaras)</text>
+        <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker></defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 4.1</strong> &mdash; Återställning. Uppladdningen till SharePoint sker med <strong>appcertifikatet</strong> (app-only), inte med anroparens delegerade token — den delegerade token används enbart för behörighetskontrollen.</div>
+<div class="info-box">
+      <strong>Namnkonflikt:</strong> finns redan en fil med samma namn läggs suffixet
+      <code>_restored</code> till automatiskt. <strong>Unika behörigheter</strong> som fångades
+      vid arkivering återskapas (§4.7). Misslyckas arvsbrytningen <em>fail-closar</em>
+      återställningen (den kalla kopian bevaras — filen återställs aldrig tyst med förälderns
+      bredare ACL).
+    </div>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 23</div>
+  </div>
+</div>
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-4-6">4.6 Massarkivering och massåterställning av omfång</h2>
+    <p>Två symmetriska HTTP-funktioner hanterar ett helt omfång i ett anrop &mdash; en
+    <strong>mapp</strong> (inkl. undermappar), ett helt <strong>bibliotek</strong> eller en hel
+    <strong>webbplats</strong>: <code>ArchiveScope</code> (<code>/api/archive-scope</code>) och
+    <code>RestoreScope</code> (<code>/api/restore-scope</code>). Panelens knappar
+    "Arkivera / Återställ mapp / bibliotek / webbplats" anropar dem.</p>
+<figure class="diagram">
+      <svg viewBox="0 0 680 156" role="img" aria-label="Omfångsarkivering och -återställning">
+        <text x="150" y="16" text-anchor="middle" class="dg-t-navy" font-size="10.5" font-weight="700">Lös upp omfång → rotmappar</text>
+        <g font-size="9">
+          <rect x="14"  y="26" width="90" height="34" rx="6" class="dg-box-light"/><text x="59"  y="42" text-anchor="middle" class="dg-t-navy" font-weight="700">folder</text><text x="59" y="54" text-anchor="middle" class="dg-t-muted">1 mapp</text>
+          <rect x="112" y="26" width="90" height="34" rx="6" class="dg-box-light"/><text x="157" y="42" text-anchor="middle" class="dg-t-navy" font-weight="700">library</text><text x="157" y="54" text-anchor="middle" class="dg-t-muted">bibliotekets rot</text>
+          <rect x="210" y="26" width="96" height="34" rx="6" class="dg-box-light"/><text x="258" y="42" text-anchor="middle" class="dg-t-navy" font-weight="700">site</text><text x="258" y="54" text-anchor="middle" class="dg-t-muted">alla bibliotek</text>
+        </g>
+        <rect x="330" y="24" width="150" height="38" rx="7" class="dg-box-white"/><text x="405" y="41" text-anchor="middle" class="dg-t-navy" font-size="9.5" font-weight="700">FolderWalker</text><text x="405" y="54" text-anchor="middle" class="dg-t-muted" font-size="8.5">rekursivt, hoppar systemmappar</text>
+        <rect x="504" y="24" width="168" height="38" rx="7" class="dg-box-green"/><text x="588" y="41" text-anchor="middle" class="dg-t-white" font-size="9.5" font-weight="700">Per objekt, ETT i taget</text><text x="588" y="54" text-anchor="middle" class="dg-t-white" font-size="8.5">arkivera / återställa</text>
+        <line x1="306" y1="43" x2="328" y2="43" class="dg-flow" marker-end="url(#a7)"/>
+        <line x1="480" y1="43" x2="502" y2="43" class="dg-flow" marker-end="url(#a7)"/>
+        <rect x="14" y="86" width="658" height="30" rx="6" class="dg-box-navy"/>
+        <text x="343" y="105" text-anchor="middle" class="dg-t-white" font-size="9.5" font-weight="700">Per-objekt-isolering: varje fil landar arkiverad/hoppad/misslyckad — en dålig fil avbryter aldrig omfånget</text>
+        <text x="343" y="140" text-anchor="middle" class="dg-t-muted" font-size="9">Svar: { ok, counts: { scanned, archived/restored, skipped, failed } } · behörighet: LiveSourceAuthorizer mot den LEVANDE källan</text>
+        <defs><marker id="a7" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#02B896"/></marker></defs>
+      </svg>
+    </figure>
+    <div class="figure-caption"><strong>Figur 4.2</strong> &mdash; Omfångspipeline. Arkivera stämplar/ersätter matchande media; återställ återställer varje <code>.coldstorage.txt</code>-platshållare som ett raderingslägesomfång lämnat.</div>
+<table>
+      <thead><tr><th>Funktion</th><th>Approll</th><th>Per-objekt (levande källa)</th></tr></thead>
+      <tbody>
+        <tr><td><code>ArchiveScope</code> / <code>ArchiveItems</code></td><td><code>ColdStorage.Download</code></td><td><code>EditListItems</code> (stämpel) / <code>DeleteListItems</code> (radering)</td></tr>
+        <tr><td><code>RestoreScope</code></td><td><code>ColdStorage.Restore</code></td><td><code>EditListItems</code> på omfångets behållare</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:9.5pt"><strong>RestoreScope</strong> är den symmetriska inversen av
+    omfångsarkivering: den återställer rekursivt varje platshållare ett raderingslägesomfång
+    lämnat efter sig, en i taget, med samma per-objekt-felisolering som arkiveringen. En
+    stämpellägesfil (kolumn satt, källa kvar) är ingen platshållare → hoppas över av vandringen
+    (återställs per fil via <code>/api/restore</code>).</p>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 24</div>
+  </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-4-7">4.7 Behörighetsbevarande</h2>
+    <p>Filens egen <code>HasUniqueRoleAssignments</code> är omkopplaren. En <strong>unik</strong>-behörighetsfil
+    snapshottar sina rolltilldelningar till <code>&lt;sökväg&gt;.perms.json</code> bredvid mediabloben;
+    vid restore bryts arvet på det återställda objektet och varje tilldelning läggs tillbaka. En
+    <strong>ärvd</strong> fil får ingen snapshot och ärver behållarens <em>aktuella</em> ACL vid restore.
+    Den automatiska rollen "Begränsad åtkomst" filtreras bort. En unik fil nedgraderas aldrig tyst till
+    ärvd (markör <code>hadUniquePermissions</code> → fail closed vid saknad/trasig snapshot).</p>
+<div class="note-box"><strong>Obs:</strong> finns en fångad användare/grupp inte längre vid
+    återställning hoppas den tilldelningen över — resten återställs ändå.</div>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 25</div>
+  </div>
+</div>
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-4-8">4.8 Platshållare och enklicks-återställning</h2>
+    <p>När en källfil tas bort vid arkivering lämnas en <strong>platshållare</strong> kvar &mdash;
+    en textfil <code>&lt;Originalnamn&gt;.coldstorage.txt</code>. Den innehåller läsbara
+    instruktioner (var bloben finns, vem som arkiverade, hur man återställer manuellt) och ett
+    maskinläsbart JSON-block avgränsat med <code>----SPCS-RESTORE-JSON----</code> /
+    <code>----END----</code>. Platshållarens listobjekt får <code>ColdStoragePath</code> ifyllt.</p>
+    <div class="note-box">
+      <strong>Platshållarens ACL matchar filen:</strong> en raderingslägesplatshållare för en
+      <strong>unik</strong>-behörighetsfil låses till samma unika ACL innan källan återvinns
+      (fail closed — tas bort om den inte kan begränsas), så markören (som avslöjar filnamn +
+      kall lagringsplats) är synlig bara för webbplatsadmin + de unika principalerna. En ärvd
+      fils platshållare ärver mappens ACL.
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 26</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 4 &mdash; Serverfunktioner</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-4-9">4.9 Säkerhetsdetaljer</h2>
+    <div class="two-col">
+      <div class="feature-card"><h4>Två auktoriserare</h4><p><code>SourceAuthorizer</code> grindar blob-per-sökväg-endpoints (visa/ladda ned/återställ); <code>LiveSourceAuthorizer</code> grindar arkiv-/omfångs-endpoints mot den <em>levande</em> källan.</p></div>
+      <div class="feature-card"><h4>Fail closed</h4><p>Kan en kontroll inte utvärderas → 502. Tom/oidentifierbar UPN nekas; bara en ren app-token (roles-only) litar på rollen.</p></div>
+      <div class="feature-card"><h4>.perms.json nekas</h4><p><code>SourceAuthorizer</code> vägrar servera en <code>&lt;sökväg&gt;.perms.json</code>-följeslagare — behörighetssnapshotarna kan aldrig laddas ned.</p></div>
+      <div class="feature-card"><h4>Åtkomstrevision</h4><p>Varje lyckad visning/nedladdning/återställning loggar en strukturerad <code>AUDIT</code>-rad (radbrytnings­sanerad) via <code>context.log</code>.</p></div>
+    </div>
+    <div class="warn-box">
+      <strong>Verifieringsförbehåll:</strong> <code>getUserEffectivePermissions</code>-formen bör
+      valideras mot en riktig tenant före produktion (fel form ger 502, aldrig en förbikoppling).
+      Timer-vägen (appidentitet) påverkas inte — den arkiverar direkt, inte via HTTP-auktoriserarna.
+    </div>
+
+    <h2 id="sek-4-10">4.10 Versionshantering &mdash; en version, en fil</h2>
+    <p>SP Cold Storage levereras i tre lager men är EN produkt med EN versionsserie. En enda
+    räknare (<code>SPCSVersionNumber.json</code>) och en enda källfil (<code>src/SPCSShared.ts</code>,
+    som exporterar <code>SPCS_VERSION</code>) driver alla tre lagren &mdash; både webbläsar­bundlen
+    och Azure Functions importerar samma fil. Byggskriptet
+    (<code>SPCS-BumpVersion.ps1</code>) stegar serien; det är inkopplat i bundlens
+    <code>npm run build</code>-prebuild och anropas av funktions- och SPFx-deploy­skripten, så inget
+    lager kan skeppa ett avvikande nummer.</p>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 27</div>
+  </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="kap-5"><span class="chapter-num">Kapitel 5</span>Installation och konfiguration</h1>
+    <div class="chapter-intro">
+      <p>Driftsättningen kräver behörigheter i tre system: Microsoft 365 (SharePoint och Entra ID),
+      Azure-prenumerationen och en lokal byggmiljö för de tre lagren. Genomför stegen i ordning.</p>
+    </div>
+<h2 id="sek-5-1">5.1 Förutsättningar</h2>
+<table>
+      <thead><tr><th>Krav</th><th>Version / detalj</th></tr></thead>
+      <tbody>
+        <tr><td>Microsoft 365-licens</td><td>SharePoint Online (E1 eller högre)</td></tr>
+        <tr><td>Azure-prenumeration</td><td>Owner på resursgruppen</td></tr>
+        <tr><td>Entra ID</td><td>Appregistrerings- eller SharePoint-administratör (för approll-tilldelning + API-access-godkännande)</td></tr>
+        <tr><td>Node.js</td><td>20 LTS eller 22 LTS</td></tr>
+        <tr><td>SPFx-verktyg</td><td>SharePoint Framework 1.23 (heft-baserat bygge)</td></tr>
+        <tr><td>Azure CLI</td><td>2.55 eller senare</td></tr>
+        <tr><td>PowerShell</td><td>7.4 + PnP PowerShell 2.x/3.x</td></tr>
+      </tbody>
+    </table>
+<h2 id="sek-5-2">5.2 De tre lagren och deras deploy</h2>
+    <p>SP Cold Storage skeppar i tre oberoende lager med <strong>en gemensam versionsserie</strong>
+    (kap. 4.10). Varje lager har ett deploy-skript som stegar samma räknare och rapporterar numret:</p>
+<table>
+      <thead><tr><th>Lager</th><th>Bygge/deploy</th><th>Mål</th></tr></thead>
+      <tbody>
+        <tr><td>Bundle (webbläsare)</td><td><code>PS Scripts\SPCS Build and Deploy.ps1</code> (webpack)</td><td>Webbplatsens <code>SiteAssets</code></td></tr>
+        <tr><td>SPFx-customizer</td><td><code>spfx\Deploy.ps1</code> (heft → <code>.sppkg</code>)</td><td>Tenant-appkatalog + install per webbplats</td></tr>
+        <tr><td>Azure Functions</td><td><code>functions\Deploy.ps1</code> (tsc → zip)</td><td>Function App (run-from-package)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 28</div>
+  </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<div class="note-box">
+      <strong>App-katalog:</strong> SPFx-paketet publiceras till <strong>tenant</strong>-appkatalogen
+      och installeras per webbplats (<code>skipFeatureDeployment:false</code>) — aldrig en
+      site-collection-appkatalog. Per-webbplats-installen provisionerar customizerns
+      <code>elements.xml</code>-CustomAction med rätt <code>functionBaseUrl</code>/<code>apiResourceUri</code>.
+    </div>
+    <ol class="step-list">
+      <li>Bygg och publicera SPFx-paketet (<code>spfx\Deploy.ps1</code>) till tenant-appkatalogen och
+      installera det på målwebbplatsen.</li>
+      <li>Ladda upp bundlen till <code>SiteAssets</code> (<code>PS Scripts\SPCS Build and Deploy.ps1</code>).</li>
+      <li>Godkänn API-behörigheten (<code>user_impersonation</code> mot Function-appregistreringen) i
+      <em>SharePoint Admin → Avancerat → API-åtkomst</em>. Detta kräver att
+      <code>webApiPermissionRequests</code> finns i <code>package-solution.json</code> (annars
+      AADSTS65001).</li>
+    </ol>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 29</div>
+  </div>
+</div>
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-5-3">5.3 Konfiguration av Azure-resurser</h2>
+<h3>Steg 1 — Resursgrupp och lagringskonto</h3>
+    <ol class="step-list">
+      <li>Logga in: <code>az login</code></li>
+      <li>Resursgrupp: <code>az group create --name rg-spcold --location swedencentral</code></li>
+      <li>Lagringskonto (Cold-nivå): <br><code>az storage account create --name stgspcold --resource-group rg-spcold --location swedencentral --sku Standard_LRS --kind StorageV2 --access-tier Cold</code></li>
+      <li>Blob-container: <code>az storage container create --name sp-media-archive --account-name stgspcold --auth-mode login</code></li>
+      <li><strong>Aktivera blob soft-delete + versionshantering</strong> på kontot/containern
+      (datasäkerhet vid restore, kap. 4.4) — ett management-plane-läge, inte kod.</li>
+    </ol>
+<h3>Steg 2 — Appregistrering och approller i Entra ID</h3>
+    <ol class="step-list">
+      <li>Skapa (eller återanvänd) en appregistrering med ett <code>api://</code>-identifierarURI och en
+      delegerad scope <code>user_impersonation</code>.</li>
+      <li>Lägg till <strong>tre approller</strong> (allowedMemberTypes: User):
+      <code>ColdStorage.View</code>, <code>ColdStorage.Download</code>, <code>ColdStorage.Restore</code>.
+      Tilldela dem till de användare/grupper som ska få visa, ladda ned respektive återställa.</li>
+      <li>Skapa ett <strong>klientcertifikat</strong> (SharePoint app-only REST kräver certifikat, inte
+      hemlighet) och ge appen <code>Sites.FullControl.All</code> (app-only, admin-consented).</li>
+      <li>Notera <strong>Application (client) ID</strong> och <strong>Directory (tenant) ID</strong>.</li>
+    </ol>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 30</div>
+  </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 5 &mdash; Installation och konfiguration</div>
+  </div>
+    <div class="page-content" style="padding-top:0">
+<h3>Steg 3 — Function App</h3>
+    <ol class="step-list">
+      <li>Skapa en Function App (Linux, Node 22, run-from-package) i <code>rg-spcold</code>.</li>
+      <li>Aktivera system-tilldelad Managed Identity och ge den rollen
+      <code>Storage Blob Data Contributor</code> på lagringskontot.</li>
+      <li>Konfigurera Application Settings enligt tabellen i 4.1 (inkl. <code>TENANT_ID</code>,
+      <code>CLIENT_ID</code>, <code>CERTIFICATE_PEM_BASE64</code>/<code>CERTIFICATE_PATH</code>,
+      <code>ARCHIVE_*</code>, <code>SAS_*</code>). Sätt CORS för SharePoint-domänen.</li>
+      <li>Driftsätt koden: <code>functions\Deploy.ps1</code> (bygger + zippar + <code>config-zip</code>).</li>
+    </ol>
+<h3>Steg 4 — ColdStoragePath-kolumn i SharePoint</h3>
+    <ol class="step-list">
+      <li>Anslut: <code>Connect-PnPOnline -Url &lt;SiteUrl&gt; -Interactive</code></li>
+      <li>Lägg till kolumnen (och i standardvyn så arkiv-ikonen kan visas):<br>
+      <code>Add-PnPField -List "Delade dokument" -DisplayName "ColdStoragePath" -InternalName "ColdStoragePath" -Type Text -AddToDefaultView</code></li>
+      <li>Upprepa för varje bibliotek som ska arkiveras.</li>
+    </ol>
+<div class="tip-box">
+      <strong>Verifiera:</strong> kör Timer-funktionen manuellt en gång (t.ex. med
+      <code>ARCHIVE_AGE_DAYS=0</code> tillfälligt) och kontrollera App Insights-loggarna innan
+      det schemalagda läget aktiveras. Återställ <code>ARCHIVE_AGE_DAYS</code> efteråt.
+    </div>
+<div class="info-box" style="margin-top:5mm">
+      <strong>Support:</strong> kontakta Langate på <a href="mailto:support@langate.se">support@langate.se</a>.
+    </div>
+    </div>
+    <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 31</div>
+  </div>
+</div>
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h1 id="kap-6"><span class="chapter-num">Kapitel 6</span>Felsökning</h1>
+    <div class="chapter-intro">
+      <p>Detta kapitel beskriver de vanligaste felen, deras orsaker och åtgärder, samt kända
+      begränsningar kring skalning och SharePoint-begränsning och en enkel formel för
+      kostnadsuppskattning.</p>
+    </div>
+
+    <h2 id="sek-6-1">6.1 Vanliga fel och åtgärder</h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Trolig orsak</th><th>Åtgärd</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Panelen visas inte när en fil väljs</td>
+          <td>Tillägget är inte installerat på webbplatsen, eller <code>ColdStoragePath</code>-kolumnen saknas</td>
+          <td>Verifiera att appen är installerad (tenant-katalog → <code>Install-PnPApp</code> på webbplatsen). Kontrollera kolumnen: <code>Get-PnPField -Identity ColdStoragePath</code></td>
+        </tr>
+        <tr>
+          <td>HTTP 401 — token saknas/ogiltig</td>
+          <td><code>aadTokenProviderFactory</code> kunde inte hämta token (utgången session eller ej godkänd API-behörighet)</td>
+          <td>Logga ut/in. Verifiera att API-access-begäran (<code>user_impersonation</code>) är <strong>godkänd</strong> i SharePoint Admin → API-åtkomst, och att <code>CLIENT_ID</code> matchar.</td>
+        </tr>
+        <tr>
+          <td>HTTP 403 — visa/ladda ned</td>
+          <td>Saknar approll (<code>ColdStorage.View/Download</code>) ELLER saknar behörighet på objektet</td>
+          <td>Tilldela rollen i Entra ID; kontrollera att användaren har <code>ViewListItems</code>/<code>OpenItems</code> på källan. Kräver ny inloggning.</td>
+        </tr>
+        <tr>
+          <td>HTTP 403 — återställning</td>
+          <td>Saknar den <strong>egna</strong> rollen <code>ColdStorage.Restore</code> (implicerar inte av Download) eller <code>EditListItems</code> på objektet</td>
+          <td>Tilldela <code>ColdStorage.Restore</code> och säkerställ skrivbehörighet i källbiblioteket.</td>
+        </tr>
+        <tr>
+          <td>HTTP 502 — visa/återställ/arkivera</td>
+          <td>Per-objekt-behörigheten kunde inte utvärderas (<code>getUserEffectivePermissions</code> nådde inte objektet). Systemet <strong>fail-closar</strong> hellre än att gissa.</td>
+          <td>Kontrollera att käll-URL:en/listan finns och är nåbar för appidentiteten; validera REST-formen mot tenanten. Aldrig en förbikoppling — bara ett nekat anrop.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 32</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-6-1-2" style="border:none;margin-top:0">6.1 Vanliga fel och åtgärder <span style="font-weight:400;font-size:9pt;color:#888">(forts.)</span></h2>
+    <table>
+      <thead><tr><th>Symptom</th><th>Trolig orsak</th><th>Åtgärd</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>HTTP 404 — filen finns inte i arkivet</td>
+          <td>Bloben raderad manuellt eller fel <code>ColdStoragePath</code></td>
+          <td>Kontrollera bloben i Azure Storage Explorer (soft-delete kan ha en tidigare version). Rätta kolumnvärdet vid behov.</td>
+        </tr>
+        <tr>
+          <td>HEIC-bild visas inte</td>
+          <td>Server-side HEIC→JPEG-transkodning är <strong>ännu inte aktiverad</strong> (förberedd seam i visningsfunktionen)</td>
+          <td>Ladda ned filen och visa lokalt tills seamen aktiveras. Undvik att utlova HEIC-visning för slutanvändare.</td>
+        </tr>
+        <tr>
+          <td>Arkivering körs men inga filer arkiveras</td>
+          <td>Inga filer uppfyller ålderskravet, MIME-filtret matchar inte, eller appidentiteten saknar behörighet</td>
+          <td>Sänk <code>ARCHIVE_AGE_DAYS</code> tillfälligt (kom ihåg att återställa). Kontrollera <code>ARCHIVE_MIME_TYPES</code> och att appcertifikatet har <code>Sites.FullControl.All</code>/skriv.</td>
+        </tr>
+        <tr>
+          <td>Arkivering tar timeout / stort bibliotek</td>
+          <td>SharePoint-begränsning (429) vid många anrop per sekund</td>
+          <td>Kör i omgångar — <code>ARCHIVE_MAX_ITEMS_PER_RUN</code> (standard 500) tar ett block per körning; överskott loggas och tas nästa körning. Se 6.2.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 33</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-6-2">6.2 Begränsningar och skalning</h2>
+    <h3>SharePoint-begränsning (throttling)</h3>
+    <p>SharePoint begränsar API-anrop per tidsenhet. Vid stora bibliotek:</p>
+    <ul>
+      <li><strong>Körning i omgångar:</strong> <code>ARCHIVE_MAX_ITEMS_PER_RUN</code> (standard 500)
+      begränsar antalet kandidater per omfångsmål och körning. Antalet som skjuts upp
+      <strong>loggas</strong> — tystas aldrig — och tas vid nästa schemalagda körning.</li>
+      <li><strong>Exponentiell backoff:</strong> vid HTTP 429, respektera <code>Retry-After</code>
+      innan nästa anrop.</li>
+    </ul>
+
+    <h3>Storleksgränser</h3>
+    <table>
+      <thead><tr><th>Gräns</th><th>Standard</th><th>Konfiguration</th></tr></thead>
+      <tbody>
+        <tr><td>Max filstorlek för base64-svar</td><td>20 MB</td><td><code>MAX_BASE64_SIZE_MB</code></td></tr>
+        <tr><td>Max körtid per Function-anrop</td><td>~10 min</td><td>Planberoende (Premium för längre)</td></tr>
+        <tr><td>Max kandidater per omfångsmål/körning</td><td>500</td><td><code>ARCHIVE_MAX_ITEMS_PER_RUN</code></td></tr>
+        <tr><td>SAS-URL giltighetstid</td><td>15 min (IP-låst)</td><td><code>SAS_TTL_MINUTES</code> / <code>SAS_SIGNED_IP</code></td></tr>
+      </tbody>
+    </table>
+
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 34</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="page-header">
+    <div class="ph-left">SP Cold Storage</div>
+    <div class="ph-right">Kapitel 6 &mdash; Felsökning</div>
+  </div>
+  <div class="page-content" style="padding-top:0">
+    <h2 id="sek-6-3">6.3 Kostnadsuppskattning</h2>
+    <p>Använd följande formel för att beräkna månadsbesparing innan driftsättning:</p>
+    <div class="two-col">
+      <div class="feature-card">
+        <h4>Formel: månadsbesparing</h4>
+        <p><code>Besparing = Volym_GB × (SP_kostnad − Cold_kostnad) × SEK/USD</code></p>
+        <p style="margin-top:8px;font-size:12px">Exempel: 100 GB arkiverat<br>
+        <strong>100 × (0,20 − 0,004) × 11,5 ≈ 225 kr/mån</strong></p>
+      </div>
+      <div class="feature-card">
+        <h4>Referenspriser (USD/GB/mån)</h4>
+        <p>SharePoint Online: ~0,20<br>Azure Cold: ~0,004<br>Azure Archive: ~0,001<br>
+        <span style="font-size:11px;color:#537780">Verifiera alltid i Azure Pricing Calculator.</span></p>
+      </div>
+      <div class="feature-card">
+        <h4>Transaktionstillägg</h4>
+        <p>Varje visning genererar en GET-transaktion. Vid hög visningsfrekvens (&gt;50 000/mån) kan transaktionskostnaden börja synas — övervaka i Azure Cost Management.</p>
+      </div>
+      <div class="feature-card">
+        <h4>Azure Pricing Calculator</h4>
+        <p>Detaljerade beräkningar per region, redundans och transaktionsvolym: <code>azure.microsoft.com/pricing/calculator</code></p>
+      </div>
+    </div>
+    <div class="tip-box">
+      <strong>Tumregel:</strong> för en organisation med 500 GB gamla mediafiler är den typiska
+      besparingen <strong>~1 100 kr/mån</strong> (13 200 kr/år) — med bibehållen omedelbar åtkomst.
+    </div>
+  </div>
+  <div class="page-footer">
+    <div>SP Cold Storage</div>
+    <div>Langate &nbsp;&middot;&nbsp; 35</div>
+  </div>
+</div>
+
 
 </body>
 </html>
