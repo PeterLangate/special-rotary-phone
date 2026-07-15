@@ -1,5 +1,4 @@
 {
-  "syncedAt": "2026-07-15T10:11:39Z",
   "files": {
     "index.html": {
       "updated": "2026-05-01"
@@ -10,5 +9,6 @@
     "dist/dbbuilder.js": {
       "updated": "2026-05-01"
     }
-  }
+  },
+  "syncedAt": "2026-07-15T10:43:57Z"
 }
