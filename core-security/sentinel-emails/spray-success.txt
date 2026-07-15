@@ -1,0 +1,28 @@
+[CRITICAL] A password spray just succeeded
+Identity · Sign-ins
+
+5 accounts were tried and failed from one IP, then jordan.lee@langate.se signed in successfully — all within one hour. That pattern means the attacker guessed a working password.
+
+⚠️ DO THIS NEXT
+Revoke this user's sessions now, then reset the password. If this sign-in wasn't expected, disable the account until reviewed.
+
+DETAILS
+Account landed: jordan.lee@langate.se
+Source IP: 185.220.101.47 🇳🇱
+Failed accounts: 5 in 47 min
+App reached: Office 365 Exchange
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+Client: Other clients (legacy)
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=jordan.lee%40langate.se
+
+RESPOND
+🚫 Not me — revoke sessions: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revoke&cts_user=jordan.lee%40langate.se&cts_k=fixture-dedup
+⛔ Disable account: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=disable&cts_user=jordan.lee%40langate.se&cts_k=fixture-dedup
+✅ It's expected: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=expected&cts_user=jordan.lee%40langate.se&cts_k=fixture-dedup
+📈 User timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=jordan.lee%40langate.se
+
+--
+Finding fixture-dedup · Detector: SpraySuccess
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

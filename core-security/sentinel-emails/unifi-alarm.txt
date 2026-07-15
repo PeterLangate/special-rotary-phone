@@ -1,0 +1,24 @@
+[MEDIUM] Network controller alarm
+Network · Controller
+
+The network controller raised a IDS/IPS signature alarm on UDM-Pro.
+
+⚠️ DO THIS NEXT
+Review the alarm in the controller — correlate it with the identity signals in the dashboard.
+
+DETAILS
+Alarm: IDS/IPS signature
+Device: UDM-Pro
+Source: 192.0.2.5
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx
+
+RESPOND
+Open controller: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=opencontroller
+✅ Acknowledge: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=ack&cts_k=fixture-dedup
+
+--
+Finding fixture-dedup · Detector: UniFi
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

@@ -1,0 +1,19 @@
+[INFO] Your security digest — 18 Jun 2026
+Posture · Digest
+
+Here is what the tenant looked like over 18 Jun 2026. The figures below compare against the rolling 90-day baseline.
+
+DETAILS
+Attempts: 12,788
+Failed: 412
+Risky users: 6
+New incidents: 3
+Legacy-auth sign-ins: 18
+CA gaps: 2
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx
+
+--
+Finding fixture-dedup · Detector: Digest
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

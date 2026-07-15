@@ -1,0 +1,21 @@
+[MEDIUM] Tenant-wide failure surge
+Identity · Sign-ins
+
+Sign-in failures across the tenant jumped to 62% in 47 min, far above the 30-day norm of 8%.
+
+DO THIS NEXT
+A surge usually means a spray campaign or an auth outage — check the top IPs and apps below.
+
+DETAILS
+Current failure rate: 62%
+30-day norm: 8%
+Top IPs: 3 IPs
+Top apps: Exchange
+Window: 47 min
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=bruteforce
+
+--
+Finding fixture-dedup · Detector: DailyAggregate
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

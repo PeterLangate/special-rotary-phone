@@ -1,0 +1,27 @@
+[HIGH] Sign-in from a flagged IP
+Identity · Sign-ins
+
+omar.reyes@langate.se signed in from 198.51.100.7, which is on a threat feed (Tor exit node).
+
+⚠️ DO THIS NEXT
+Revoke this user's sessions and block the IP — a known-bad source plus a successful sign-in is a strong compromise signal.
+
+DETAILS
+User: omar.reyes@langate.se
+Source IP: 198.51.100.7
+Threat feed: Tor exit node
+Location: Dallas, United States 🇺🇸
+App: Azure Portal
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+🚫 Revoke sessions: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revoke&cts_user=omar.reyes%40langate.se
+Block IP: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=blockip&cts_ip=198.51.100.7
+📈 Timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: ThreatIntel
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

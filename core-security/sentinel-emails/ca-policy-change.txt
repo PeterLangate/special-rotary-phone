@@ -1,0 +1,24 @@
+[HIGH] Conditional Access policy changed
+Directory · Conditional Access
+
+Conditional Access policy Require MFA was modified by admin@langate.se.
+
+⚠️ DO THIS NEXT
+CA is your front-line control — confirm this change was intended; a disabled policy can silently drop MFA.
+
+DETAILS
+Policy: Require MFA
+Change: modified
+Actor: admin@langate.se
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit
+
+RESPOND
+Open policy: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=openpolicy
+✅ Acknowledge: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=ack&cts_k=fixture-dedup
+
+--
+Finding fixture-dedup · Detector: DirectoryAudit
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

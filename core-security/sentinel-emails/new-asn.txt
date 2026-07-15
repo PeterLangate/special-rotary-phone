@@ -1,0 +1,24 @@
+[MEDIUM] New ASN / ISP for the tenant
+Network · ASN baseline
+
+First sign-ins from a new network — Example ISP (AS12345), never seen for this tenant before.
+
+⚠️ DO THIS NEXT
+If it's a new office, VPN, or carrier, trust it; otherwise investigate which users it touched.
+
+DETAILS
+ASN: AS12345
+ISP: Example ISP
+First seen: today 09:14
+Users: 2 users
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=globe
+
+RESPOND
+✅ Trust: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=trustasn&cts_k=AS12345
+Investigate: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=globe
+
+--
+Finding fixture-dedup · Detector: AsnBaseline
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

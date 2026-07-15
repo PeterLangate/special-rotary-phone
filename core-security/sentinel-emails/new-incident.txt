@@ -1,0 +1,26 @@
+[HIGH] New Defender incident
+Defender XDR · Incident
+
+Defender raised a new High incident: Multi-stage incident, built from 4 alerts.
+
+⚠️ DO THIS NEXT
+Assign it so it isn't missed, then open it in Defender to triage the alerts and impacted users.
+
+DETAILS
+Incident: Multi-stage incident
+Severity: High
+Alerts: 4
+Impacted users: 3 users
+MITRE: T1078, T1110
+Classification: TruePositive
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=incidents&cts_inc=inc-901
+
+RESPOND
+🙋 Assign to me: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=assign&cts_inc=inc-901
+Open in Defender: https://security.microsoft.com/incidents/inc-901
+
+--
+Finding fixture-dedup · Detector: IncidentMath
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

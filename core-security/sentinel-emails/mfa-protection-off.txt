@@ -1,0 +1,23 @@
+[HIGH] MFA protection turned off
+Directory · Protection
+
+Security defaults was turned off by admin@langate.se, weakening tenant-wide MFA enforcement.
+
+⚠️ DO THIS NEXT
+Re-enable protection unless you have a documented Conditional Access replacement in place.
+
+DETAILS
+Setting: Security defaults
+Actor: admin@langate.se
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit
+
+RESPOND
+Re-enable: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=reenable&cts_k=fixture-dedup
+Open: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit
+
+--
+Finding fixture-dedup · Detector: DirectoryAudit
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

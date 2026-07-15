@@ -1,0 +1,25 @@
+[HIGH] OAuth app consent granted
+Directory · App consent
+
+Contoso Add-in was granted OAuth permissions (Mail.Read) by jane@langate.se.
+
+⚠️ DO THIS NEXT
+Review the scopes — Mail/Files/Directory access to an unknown app is a classic consent-phishing foothold. Revoke if it's unexpected.
+
+DETAILS
+App: Contoso Add-in
+Scopes: Mail.Read
+Consented by: jane@langate.se
+Service principal: sp-1
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit
+
+RESPOND
+🚫 Revoke grant: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revokegrant&cts_sp=sp-1
+Open app: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=openapp&cts_sp=sp-1
+
+--
+Finding fixture-dedup · Detector: DirectoryAudit
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

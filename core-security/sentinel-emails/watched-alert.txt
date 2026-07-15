@@ -1,0 +1,24 @@
+[HIGH] New alert in a watched category
+Defender XDR · Alert
+
+A new High alert in a watched category (Credential access): Suspicious inbox rule.
+
+⚠️ DO THIS NEXT
+This category is on your watchlist — assign it and review the entities in Defender.
+
+DETAILS
+Alert: Suspicious inbox rule
+Category: Credential access
+Severity: High
+Entities: user, mailbox
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=alerts&cts_alert=alert-1
+
+RESPOND
+🙋 Assign to me: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=assign&cts_alert=alert-1
+Open in Defender: https://security.microsoft.com/alerts/alert-1
+
+--
+Finding fixture-dedup · Detector: AlertMath
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

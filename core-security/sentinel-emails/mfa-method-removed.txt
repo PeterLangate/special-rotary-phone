@@ -1,0 +1,24 @@
+[MEDIUM] MFA method removed
+Directory · Auth methods
+
+An MFA method (Authenticator) was removed from omar.reyes@langate.se by admin@langate.se.
+
+DO THIS NEXT
+Removing a method can be a precursor to account takeover — verify with the user and re-require MFA registration if unexpected.
+
+DETAILS
+User: omar.reyes@langate.se
+Method removed: Authenticator
+Actor: admin@langate.se
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+Re-require MFA: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=requiremfa&cts_user=omar.reyes%40langate.se
+📈 User timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: DirectoryAudit
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

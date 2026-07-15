@@ -1,0 +1,24 @@
+[HIGH] Sign-in IP matches a threat feed
+Network · Threat intel
+
+Sign-ins were seen from 198.51.100.7, which matches the Tor exit list threat feed.
+
+⚠️ DO THIS NEXT
+Block the IP and revoke the affected users' sessions — a feed hit plus successful auth is a strong compromise signal.
+
+DETAILS
+Source IP: 198.51.100.7
+Feed: Tor exit list
+Affected users: 2 users
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=globe
+
+RESPOND
+Block IP: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=blockip&cts_ip=198.51.100.7
+🚫 Revoke affected: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revoke&cts_ip=198.51.100.7
+
+--
+Finding fixture-dedup · Detector: ThreatIntel
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

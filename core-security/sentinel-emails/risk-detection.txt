@@ -1,0 +1,26 @@
+[HIGH] Identity-Protection risk detection
+Identity · Identity Protection
+
+A new Identity-Protection detection fired for omar.reyes@langate.se: Leaked credentials.
+
+⚠️ DO THIS NEXT
+Investigate the detection. Confirm-compromised if it's real, or dismiss a verified false positive.
+
+DETAILS
+User: omar.reyes@langate.se
+Detection: Leaked credentials
+IP: 198.51.100.7
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+Detection id: det-99
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+🚩 Confirm compromised: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=confirm&cts_user=omar.reyes%40langate.se
+Dismiss: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=dismiss&cts_user=omar.reyes%40langate.se
+📈 Timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: RiskDetections
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

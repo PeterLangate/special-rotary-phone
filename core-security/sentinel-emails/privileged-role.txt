@@ -1,0 +1,24 @@
+[CRITICAL] Privileged role assigned
+Directory · Roles
+
+mallory@langate.se was added to the privileged role Global Administrator by admin@langate.se.
+
+⚠️ DO THIS NEXT
+Verify this was intended — an unexpected Global Admin grant is a takeover red flag. Remove the assignment if you didn't authorise it.
+
+DETAILS
+Role: Global Administrator
+Principal: mallory@langate.se
+Assigned by: admin@langate.se
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit
+
+RESPOND
+🚫 Remove assignment: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=removerole&cts_user=mallory%40langate.se
+Open PIM: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=openpim
+
+--
+Finding fixture-dedup · Detector: DirectoryAudit
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

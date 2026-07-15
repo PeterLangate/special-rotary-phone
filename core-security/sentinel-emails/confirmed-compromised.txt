@@ -1,0 +1,24 @@
+[CRITICAL] User escalated to confirmed-compromised
+Identity · Identity Protection
+
+omar.reyes@langate.se just flipped from atRisk to confirmed-compromised (admin confirmation).
+
+⚠️ DO THIS NEXT
+Treat this as an active compromise — revoke sessions and disable the account now, then start incident response.
+
+DETAILS
+User: omar.reyes@langate.se
+Prior state: atRisk
+Trigger: admin confirmation
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+🚫 Revoke sessions: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revoke&cts_user=omar.reyes%40langate.se
+⛔ Disable account: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=disable&cts_user=omar.reyes%40langate.se
+📈 Timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: RiskState
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

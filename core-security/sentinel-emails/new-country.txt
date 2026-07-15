@@ -1,0 +1,26 @@
+[MEDIUM] New sign-in country for a user
+Identity · Sign-ins
+
+omar.reyes@langate.se signed in from Brazil — a country not seen in their 90-day baseline.
+
+⚠️ DO THIS NEXT
+If the user is travelling, mark it expected to add it to their baseline; otherwise investigate.
+
+DETAILS
+User: omar.reyes@langate.se
+New country: Brazil 🇧🇷
+Usual countries: Sweden, Germany
+IP: 198.51.100.7
+App: Azure Portal
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+✅ It's expected: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=expected&cts_user=omar.reyes%40langate.se
+📈 Timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: UserBaseline
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

@@ -1,0 +1,25 @@
+[MEDIUM] Anomaly cluster on one sign-in
+Identity · Sign-ins
+
+A sign-in by omar.reyes@langate.se tripped 3 anomaly signals at once: new device, new app, off-hours.
+
+DO THIS NEXT
+Two or more anomalies on one sign-in is worth a look — open the user's timeline to confirm it's them.
+
+DETAILS
+User: omar.reyes@langate.se
+Anomalies: new device, new app, off-hours
+IP: 198.51.100.7
+Location: Dallas, United States 🇺🇸
+When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+📈 User timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+✅ Looks fine: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=expected&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: TimelineMath
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1
