@@ -10,8 +10,10 @@ DETAILS
 User: omar.reyes@langate.se
 Protocol: IMAP4
 App: Azure Portal
+Resource: Office 365 Exchange Online
+Client: BAV2ROPC
 IP: 198.51.100.7
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=legacy

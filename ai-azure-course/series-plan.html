@@ -271,7 +271,7 @@ tr:last-child td { border-bottom: none; }
         <div class="cover-eyebrow">Langate Tips &mdash; video series plan</div>
         <div class="cover-title">Manage Azure with<br>Claude Code</div>
         <div class="cover-subtitle">A plan for a self-contained Tips series on managing a whole
-            Microsoft Azure subscription by chatting with Claude Code &mdash; from nothing
+            Microsoft Azure subscription with AI, using Claude Code &mdash; from nothing
             installed to full control, using Claude and Microsoft only.</div>
     </div>
     <div class="cover-footer">
@@ -285,8 +285,9 @@ tr:last-child td { border-bottom: none; }
     <div class="page-header"><div class="page-header-line"></div></div>
     <div class="page-content" style="padding-top:0">
         <div class="toc-title">Contents</div>
-                        <a class="toc-entry toc-h1" href="#kap-1"><span class="toc-num">1</span>Manage Azure by chatting with Claude Code<div class="toc-dots"></div><span class="toc-page">3</span></a>
-        <a class="toc-entry toc-h2" href="#read-change-delete"><span class="toc-num"></span>Read, change, delete<div class="toc-dots"></div><span class="toc-page">3</span></a>
+                        <a class="toc-entry toc-h1" href="#kap-1"><span class="toc-num">1</span>Manage Azure with AI, using Claude Code<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#from-writing-instructions-to-having-conversations"><span class="toc-num"></span>From writing instructions to having conversations<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#read-change-delete"><span class="toc-num"></span>Read, change, delete<div class="toc-dots"></div><span class="toc-page">4</span></a>
         <a class="toc-entry toc-h2" href="#claude-and-microsoft-only"><span class="toc-num"></span>Claude and Microsoft only<div class="toc-dots"></div><span class="toc-page">4</span></a>
 
         <a class="toc-entry toc-h1" href="#kap-2"><span class="toc-num">2</span>Before you start<div class="toc-dots"></div><span class="toc-page">5</span></a>
@@ -319,10 +320,10 @@ tr:last-child td { border-bottom: none; }
 <div class="page">
     <div class="page-header"><div class="page-header-line"></div></div>
     <div class="page-content" style="padding-top:0">
-<h1 id="kap-1"><span class="chapter-num">Chapter 1</span>Manage Azure by chatting with Claude Code</h1>
+<h1 id="kap-1"><span class="chapter-num">Chapter 1</span>Manage Azure with AI, using Claude Code</h1>
         <div class="chapter-intro">
-            <p>It is possible to manage Microsoft Azure just by chatting with Claude Code in
-            Visual Studio Code &mdash; doing the work by conversation rather than by clicking
+            <p>It is possible to manage Microsoft Azure with AI, using Claude Code in
+            Visual Studio Code &mdash; describing what you want in natural language rather than clicking
             through the Azure portal. We still open the portal often, to see the results of what
             Claude did. This series shows how.</p>
         </div>
@@ -332,11 +333,31 @@ tr:last-child td { border-bottom: none; }
         you check and rein in what it produces &mdash; which is what the read, change and delete
         mindset below is for.</p>
         <p>It starts from nothing installed and builds up to creating, changing, investigating and
-        governing every resource in a subscription by conversation, one short task at a time &mdash;
+        governing every resource in a subscription with AI, one short task at a time &mdash;
         and every change is documented as it is made.</p>
         <p>The presenter works with the Claude Code extension in Visual Studio Code, so every demo stays
         inside one editor. The first episode installs everything and connects to Azure; from
         there, Claude proposes each command and the presenter reads it before it runs.</p>
+<h2 id="from-writing-instructions-to-having-conversations">From writing instructions to having conversations</h2>
+        <p>Until now, managing Azure has meant writing instructions &mdash; an exact command, in
+        exact syntax, that does exactly what you typed and no more. Miss a flag and it fails, and
+        the tool never asks what you meant. Claude Code changes the shape of the work: instead of
+        writing instructions, you have a real conversation. You say what you want in plain words,
+        Claude proposes a command and explains it, you refine or approve, and it carries what you
+        have already said into the next step. When something goes wrong, you talk it through
+        &mdash; Claude reads the error, says what changed, and tries again. It is a genuine
+        back-and-forth, not a one-way script, and it is what lets a beginner manage a whole
+        subscription from the very first episode.</p>
+    </div>
+    <div class="page-footer">
+        <div>Manage Azure with Claude Code</div>
+        <div>Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-header-line"></div></div>
+    <div class="page-content" style="padding-top:0">
 <h2 id="read-change-delete">Read, change, delete</h2>
         <p>The safety mindset runs through every episode. Azure tasks come in three kinds that
         carry different risk:</p>
@@ -351,16 +372,6 @@ tr:last-child td { border-bottom: none; }
 <div class="warn-box"><strong>Always ask before deleting.</strong> A rule in the project
         <code>CLAUDE.md</code> file tells Claude to describe what it will remove and wait for
         approval first.</div>
-    </div>
-    <div class="page-footer">
-        <div>Manage Azure with Claude Code</div>
-        <div>Langate &nbsp;&middot;&nbsp; 3</div>
-    </div>
-</div>
-
-<div class="page">
-    <div class="page-header"><div class="page-header-line"></div></div>
-    <div class="page-content" style="padding-top:0">
 <h2 id="claude-and-microsoft-only">Claude and Microsoft only</h2>
         <p>The whole series stays inside two houses: Anthropic's Claude and Microsoft's own
         command surfaces. Where a task could use an outside tool, the series picks the
@@ -398,7 +409,7 @@ tr:last-child td { border-bottom: none; }
         <p>The first episode installs Claude Code and the Visual Studio Code extension, installs
         the Azure CLI and Azure PowerShell, and signs in to Azure with <code>az login</code>. By
         the end of it the viewer has a working setup and has already read, changed and deleted a
-        resource by chatting &mdash; so the later episodes can go straight to real management.</p>
+        resource with Claude &mdash; so the later episodes can go straight to real management.</p>
 
         <h2 id="keep-the-extension-framing-and-lean-on-claude-md">Keep the extension framing, and lean on CLAUDE.md</h2>
         <p>The demos stay in the Visual Studio Code extension, not the raw terminal, so there is
@@ -458,7 +469,7 @@ tr:last-child td { border-bottom: none; }
         <p>Azure CLI, Azure PowerShell and the Azure MCP Server reach the same subscription in
         different ways. The series shows each of them at least once, so viewers can pick the one
         that suits how they already work. Claude reads an Azure error message and corrects itself
-        on any of the three &mdash; a strong point in favour of chatting over clicking in the
+        on any of the three &mdash; a strong point in favour of an AI-assisted approach over clicking in the
         portal.</p>
 
         <div class="remember-box"><p>The series stays Claude + Microsoft only &mdash; Bicep for
@@ -477,7 +488,7 @@ tr:last-child td { border-bottom: none; }
         <h1 id="kap-4"><span class="chapter-num">Chapter 4</span>The running order</h1>
         <div class="chapter-intro">
             <p>Nineteen episodes in seven groups, starting from nothing installed. Each episode is
-            one short task the presenter shows by chatting with Claude Code, useful on its own.</p>
+            one short task the presenter shows using Claude Code, useful on its own.</p>
         </div>
 
         <div class="group-band"><span class="group-tag">01</span> Getting started</div>
@@ -494,20 +505,20 @@ tr:last-child td { border-bottom: none; }
         <table>
             <tbody>
                 <tr><td class="ep-num">2</td><td><strong>Explore your subscription by asking</strong>
-                &mdash; list resource groups, see what is running, and read costs by conversation.</td></tr>
+                &mdash; list resource groups, see what is running, and read costs on request.</td></tr>
                 <tr><td class="ep-num">3</td><td><strong>Virtual machines</strong> &mdash; create,
                 start, stop, resize and delete a virtual machine to save money.</td></tr>
                 <tr><td class="ep-num">4</td><td><strong>Storage and databases</strong> &mdash; blob
                 containers, Azure SQL and Cosmos DB, connection strings and firewall rules.</td></tr>
                 <tr><td class="ep-num">5</td><td><strong>Azure AI services</strong> &mdash; provision an
                 Azure OpenAI or AI Foundry resource, manage model deployments, keys and quota, and read
-                its spend &mdash; managing an AI service by chatting with one.</td></tr>
+                its spend &mdash; managing an AI service with AI.</td></tr>
                 <tr><td class="ep-num">6</td><td><strong>Networking and troubleshooting</strong>
                 &mdash; virtual networks, and "why can this resource not connect?".</td></tr>
             </tbody>
         </table>
 
-        <div class="group-band"><span class="group-tag">03</span> Where chat beats the portal</div>
+        <div class="group-band"><span class="group-tag">03</span> Where AI beats the portal</div>
         <table>
             <tbody>
                 <tr><td class="ep-num">7</td><td><strong>Cost investigation</strong> &mdash; "what is
@@ -724,8 +735,8 @@ tr:last-child td { border-bottom: none; }
     <div class="page-content" style="padding-top:0">
 <h1 id="kap-7"><span class="chapter-num">Chapter 7</span>Topic coverage</h1>
         <div class="chapter-intro">
-            <p>What the series covers, area by area. Every area is managed the same way &mdash; by
-            chatting with Claude &mdash; and the table below shows where each one is taught.</p>
+            <p>What the series covers, area by area. Every area is managed the same way &mdash; with AI, through
+            Claude &mdash; and the table below shows where each one is taught.</p>
         </div>
 
         <p>The nineteen episodes cover every area a beginner-to-intermediate learner meets:
@@ -816,11 +827,11 @@ tr:last-child td { border-bottom: none; }
 <tr><td><strong>Azure Monitor</strong></td><td>Azure's service for metrics, logs and alerts, used to watch resources and diagnose faults. Logs are searched with <em>Log Analytics</em>.</td></tr>
 <tr><td><strong>Azure Policy</strong></td><td>A governance service that enforces rules across a <em>subscription</em>, such as "every resource must be tagged".</td></tr>
 <tr><td><strong>Azure PowerShell (<code>Az</code>)</strong></td><td>The same Azure operations as the <em>Azure CLI</em>, written as PowerShell commands.</td></tr>
-<tr><td><strong>Azure portal</strong></td><td>Microsoft's web dashboard for Azure. In this series the work is done by chatting with Claude rather than clicking here, but the portal is still used often to see the results of a change.</td></tr>
+<tr><td><strong>Azure portal</strong></td><td>Microsoft's web dashboard for Azure. In this series the work is done with Claude, in natural language, rather than clicking here, but the portal is still used often to see the results of a change.</td></tr>
 <tr><td><strong>Azure SQL</strong></td><td>Azure's managed relational (table-based) database, based on Microsoft SQL Server.</td></tr>
 <tr><td><strong>Bicep</strong></td><td>Microsoft's own, first-party language for <em>infrastructure as code</em>: describe the resources you want in a readable file and Azure builds them.</td></tr>
 <tr><td><strong>Blob storage</strong></td><td>Azure's store for files ("blobs") such as images and backups, kept in containers.</td></tr>
-<tr><td><strong>Claude Code</strong></td><td>Anthropic's AI assistant that runs in your editor. You chat with it in plain words and it proposes and runs commands. The series manages Azure through it.</td></tr>
+<tr><td><strong>Claude Code</strong></td><td>Anthropic's AI assistant that runs in your editor. You describe what you want in plain words and it proposes and runs commands. The series manages Azure through it.</td></tr>
 <tr><td><strong>CLAUDE.md</strong></td><td>A memory file <em>Claude Code</em> reads at the start of every session; it holds project facts and rules, such as "always ask before deleting". It lives in the project folder (shared with the team); a personal file at <code>~/.claude/CLAUDE.md</code> applies to every project, and one file can pull in another with an <code>@path</code> line so several projects share a central file.</td></tr>
 <tr><td><strong>Container Apps (containers, ACR)</strong></td><td>A container bundles an app with everything it needs to run. Azure Container Apps runs them; Azure Container Registry (ACR) stores their images.</td></tr>
 </tbody>

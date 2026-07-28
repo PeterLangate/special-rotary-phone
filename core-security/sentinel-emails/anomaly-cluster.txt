@@ -9,9 +9,11 @@ Two or more anomalies on one sign-in is worth a look — open the user's timelin
 DETAILS
 User: omar.reyes@langate.se
 Anomalies: new device, new app, off-hours
+App: Azure Portal
+Device: 
 IP: 198.51.100.7
 Location: Dallas, United States 🇺🇸
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se

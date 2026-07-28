@@ -290,7 +290,7 @@ h2 .scene-time { float: right; font-size: 8pt; font-weight: 400; color: #8a8a8a;
         <div class="cover-title">Set up and connect<br>to Azure</div>
         <div class="cover-subtitle">The first episode &mdash; install Claude Code and the Azure
             CLI, sign in to Azure, and learn the read, change and delete mindset by managing real
-            resources by chatting with Claude Code.</div>
+            resources with Claude Code.</div>
     </div>
     <div class="cover-footer">
         <div>Langate</div>
@@ -384,15 +384,15 @@ h2 .scene-time { float: right; font-size: 8pt; font-weight: 400; color: #8a8a8a;
             Tips voice. It is what a reader sees under the embedded demo.</p>
         </div>
 
-        <h3 style="font-size:14pt;color:var(--brand-ink);margin-top:2mm;">Manage a whole Azure subscription by chatting</h3>
+        <h3 style="font-size:14pt;color:var(--brand-ink);margin-top:2mm;">Manage a whole Azure subscription with AI</h3>
         <p style="font-style:italic;color:#5a5a5a;margin-top:1mm;">A Manage Azure with Claude Code tutorial by Langate</p>
 
-        <p>It is possible to manage a whole Microsoft Azure subscription just by chatting with
-        Claude Code in Visual Studio Code &mdash; doing the work by conversation rather than
+        <p>It is possible to manage a whole Microsoft Azure subscription with AI, using
+        Claude Code in Visual Studio Code &mdash; describing what you want in natural language rather than
         clicking through the Azure portal, and opening the portal to check the results.</p>
 
         <p>In the demo below, Langate shows how to set up Claude Code, connect to an Azure
-        subscription, and then manage its resources by chatting. The presenter reads the
+        subscription, and then manage its resources with Claude. The presenter reads the
         subscription, makes a safe change, and deletes a test resource &mdash; each with the
         right amount of review.</p>
 
@@ -423,7 +423,7 @@ h2 .scene-time { float: right; font-size: 8pt; font-weight: 400; color: #8a8a8a;
         </div>
 <h2 id="scene-1set-up0-00-1-00"><span class="scene-no">Scene 1</span>Set up<span class="scene-time">0:00 – 1:00</span></h2>
         <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A clean Visual Studio Code window with no folder open; the Extensions view is on screen.</div></div>
-        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In this series we manage a whole Microsoft Azure subscription just by chatting with Claude Code, right here in Visual Studio Code &mdash; doing the work by conversation instead of clicking through the portal, and opening the portal to see the results. We start from nothing installed, so anyone can follow."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"In this series we manage a whole Microsoft Azure subscription with AI, using Claude Code, right here in Visual Studio Code &mdash; describing what we want in plain language instead of clicking through the portal, and opening the portal to see the results. We start from nothing installed, so anyone can follow."</div></div>
         <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">Install the Claude Code extension; the Claude Code panel appears on the right, with a terminal docked below.</div></div>
         <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"First the tool. I add the Claude Code extension to Visual Studio Code &mdash; that is the panel on the right, with a terminal underneath. Everything in the series happens in this one window."</div></div>
         <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"And one habit runs through all of it. I set Claude a goal, let it try, and when it slips I let it read the error and fix it. When a way of working proves out, we save it as a skill so Claude repeats it next time. You will see all of that in this first episode."</div></div>
@@ -465,7 +465,7 @@ az resource list --output table</div></div></div>
         <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"There are a few groups already here &mdash; a web app group and a couple of others. Claude ran two read-only commands and put the answer in plain tables. No approval needed &mdash; reading never changes anything."</div></div>
         <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Can you boil that down to one line per group?</div></div></div>
         <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Reads the groups and resources and writes a short summary, one line per group.</div></div>
-        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That is where chatting beats the portal. I asked a question in plain English and got exactly the view I wanted &mdash; no clicking through blades to build it."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"That is where AI beats the portal. I asked a question in plain English and got exactly the view I wanted &mdash; no clicking through blades to build it."</div></div>
     </div>
     <div class="page-footer">
         <div>Episode 1 &mdash; Set up and connect to Azure</div>
@@ -573,7 +573,7 @@ az group list --output table</div></div></div>
         <div class="beat"><div class="beat-k k-prompt">Prompt</div><div class="beat-v"><div class="codeblock prompt">Save the way we just worked as a skill — call it managing-azure-safely — so you'll do it the same way next time, without me repeating the rules.</div></div></div>
         <div class="beat"><div class="beat-k k-claude">Claude</div><div class="beat-v">Proposes a new skill file. The presenter reads it on screen.<div class="codeblock file"><span class="lbl">skills / managing-azure-safely / SKILL.md</span>---
 name: managing-azure-safely
-description: Manage Azure by chatting - set a goal, propose the
+description: Manage Azure with AI - set a goal, propose the
   az command, wait for review, recover from errors, confirm deletes.
 ---
 
@@ -599,7 +599,7 @@ description: Manage Azure by chatting - set a goal, propose the
     <div class="page-header"><div class="page-header-line"></div></div>
     <div class="page-content" style="padding-top:0">
         <h2 id="scene-9close-and-next-episode9-30-10-00"><span class="scene-no">Scene 9</span>Close and next episode<span class="scene-time">9:30 – 10:00</span></h2>
-        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So that is the whole loop, all by chatting. We read the subscription, made a change after reading the command, let Claude recover from an error, deleted a resource behind a guardrail we wrote into CLAUDE.md, and saved the working pattern as a skill. That is how we will manage everything else in Azure from here."</div></div>
+        <div class="beat"><div class="beat-k k-say">Say</div><div class="beat-v narration">"So that is the whole loop, all in natural language. We read the subscription, made a change after reading the command, let Claude recover from an error, deleted a resource behind a guardrail we wrote into CLAUDE.md, and saved the working pattern as a skill. That is how we will manage everything else in Azure from here."</div></div>
         <div class="beat"><div class="beat-k k-screen">On screen</div><div class="beat-v">A short recap card summarising the loop.</div></div>
         <div class="two-col">
             <div class="feature-card">

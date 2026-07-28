@@ -10,7 +10,7 @@ DETAILS
 User: omar.reyes@langate.se
 Detection: Leaked credentials
 IP: 198.51.100.7
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 Detection id: det-99
 
 Open in CTS Dashboard:

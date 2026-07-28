@@ -12,7 +12,7 @@ New country: Brazil 🇧🇷
 Usual countries: Sweden, Germany
 IP: 198.51.100.7
 App: Azure Portal
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se

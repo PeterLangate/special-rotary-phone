@@ -10,7 +10,7 @@ DETAILS
 Role: Global Administrator
 Principal: mallory@langate.se
 Assigned by: admin@langate.se
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=audit

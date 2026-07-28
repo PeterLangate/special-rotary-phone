@@ -1,26 +1,26 @@
 {
   "files": {
-    "series-plan.html": {
-      "updated": "2026-07-15"
-    },
-    "series-deck.pptx": {
+    "kurssammanfattning-sv.txt": {
       "updated": "2026-07-15"
     },
     "episode-01.html": {
-      "updated": "2026-07-14"
-    },
-    "kurssammanfattning.html": {
-      "updated": "2026-07-15"
-    },
-    "kurssammanfattning-sv.txt": {
-      "updated": "2026-07-15"
+      "updated": "2026-07-17"
     },
     "index.html": {
       "updated": "2026-07-15"
     },
+    "series-plan.html": {
+      "updated": "2026-07-17"
+    },
     "episode-02.html": {
-      "updated": "2026-07-14"
+      "updated": "2026-07-17"
+    },
+    "kurssammanfattning.html": {
+      "updated": "2026-07-15"
+    },
+    "series-deck.pptx": {
+      "updated": "2026-07-17"
     }
   },
-  "syncedAt": "2026-07-15T10:44:00Z"
+  "syncedAt": "2026-07-28T08:43:47Z"
 }

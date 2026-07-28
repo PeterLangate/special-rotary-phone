@@ -9,7 +9,7 @@ Check the Function status and the Power Automate flow — if Sentinel is down, n
 DETAILS
 Condition: Missed run
 Detail: no poll in 20 min
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx

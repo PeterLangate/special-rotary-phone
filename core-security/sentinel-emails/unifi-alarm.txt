@@ -10,7 +10,7 @@ DETAILS
 Alarm: IDS/IPS signature
 Device: UDM-Pro
 Source: 192.0.2.5
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 
 Open in CTS Dashboard:
 https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx

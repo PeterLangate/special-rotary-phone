@@ -3,12 +3,12 @@
     "index.html": {
       "updated": "2026-05-01"
     },
-    "dist/dbbuilder.js.LICENSE.txt": {
+    "dist/dbbuilder.js": {
       "updated": "2026-05-01"
     },
-    "dist/dbbuilder.js": {
+    "dist/dbbuilder.js.LICENSE.txt": {
       "updated": "2026-05-01"
     }
   },
-  "syncedAt": "2026-07-15T10:43:57Z"
+  "syncedAt": "2026-07-28T08:43:42Z"
 }

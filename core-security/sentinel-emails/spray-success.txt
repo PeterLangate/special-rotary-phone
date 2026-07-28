@@ -11,7 +11,7 @@ Account landed: jordan.lee@langate.se
 Source IP: 185.220.101.47 🇳🇱
 Failed accounts: 5 in 47 min
 App reached: Office 365 Exchange
-When: 18 Jun 2026, 11:14 CEST · 09:14 UTC
+When: Torsdag 2026-06-18 11:14
 Client: Other clients (legacy)
 
 Open in CTS Dashboard:
