@@ -562,8 +562,8 @@ table.tight td, table.tight th { padding: 1.8mm 2.5mm; }
 
         <h2>Two deliberate limits on the elevated scopes</h2>
         <ul>
-            <li><strong>Email moves attachments only.</strong> The message stays in the mailbox; only the attachment is relocated into the secure area. Mailbox search is treated as a personal-data matter and is gated accordingly.</li>
-            <li><strong>An elevated run must name its people.</strong> When OneDrive or Email is switched on, MOSE requires the specific users to be named — there is no tenant-wide sweep of everyone's personal storage from the dashboard.</li>
+            <li><strong>Email is never moved — it is labelled where it stands.</strong> The message stays in the mailbox and keeps its attachments; what changes is that the message and every attachment that can carry a classification now do. An attachment of a type Microsoft&nbsp;365 cannot label (a photo, a text file, an archive) is left untouched and reported as such, never quietly passed over. Mailbox search is treated as a personal-data matter and is gated accordingly.</li>
+            <li><strong>A photo becomes a record, never a loose image.</strong> A picture moved out of OneDrive does not arrive in the secure area as a picture: it arrives as a PDF record carrying the image, its capture date, its location and who owned it. A raw photo cannot hold a classification, so moving one as-is would put ungoverned content in the governed library.</li>
         </ul>
     </div>
     <div class="page-footer">
@@ -786,7 +786,7 @@ table.tight td, table.tight th { padding: 1.8mm 2.5mm; }
             <tbody>
                 <tr><td><code>GET /api/health</code></td><td>Is the engine alive and fully configured? Returns no secrets.</td></tr>
                 <tr><td><code>POST /api/labels</code></td><td>Reads your tenant's own sensitivity labels so the dashboard can offer them by name. Read-only.</td></tr>
-                <tr><td><code>POST /api/discovery</code></td><td>Runs a saved search under the <strong>read-only</strong> identity. Discovery only — it is architecturally unable to move anything.</td></tr>
+                <tr><td><code>POST /api/discovery</code></td><td>Runs a saved search under the discovery identity. Discovery only — that identity holds <strong>no Graph write permission</strong>, and every move, label and delete goes through Graph, so it is unable to move anything.</td></tr>
                 <tr><td><code>POST /api/provision</code></td><td>Creates a stage's site and library and sets its default label.</td></tr>
                 <tr><td><code>POST /api/move</code></td><td>The move. Copy, verify, label, delete, audit — every gate enforced server-side.</td></tr>
                 <tr><td><code>POST /api/approve</code></td><td>The second half of the two-person rule: a <em>different</em> operator releases a dual-control move.</td></tr>
@@ -1004,9 +1004,9 @@ table.tight td, table.tight th { padding: 1.8mm 2.5mm; }
             <thead><tr><th style="width:34mm">Identity</th><th>Purpose</th><th style="width:62mm">Permissions granted</th></tr></thead>
             <tbody>
                 <tr>
-                    <td><strong>Discovery</strong><br><span class="badge badge-green">read only</span></td>
-                    <td>Searches for candidate content and reads hold state. Cannot move, delete or create anything — by construction, not by policy.</td>
-                    <td>Graph <code>Files.Read.All</code>, <code>Mail.Read</code>; SharePoint <code>Sites.Read.All</code>; plus a read-only Purview role for hold state.</td>
+                    <td><strong>Discovery</strong><br><span class="badge badge-green">cannot move</span></td>
+                    <td>Searches for candidate content and reads hold state, then records what it found in MOSE's own list. <strong>It cannot move, label or delete anything</strong> — every one of those actions goes through Microsoft Graph, and this identity holds no Graph write permission at all. That is enforced by construction, not by policy, and our installer's test suite fails the build if a Graph write permission is ever added to it.</td>
+                    <td>Graph <code>Files.Read.All</code>, <code>Mail.Read</code> (both read-only); SharePoint <code>Sites.Read.All</code> and <code>Sites.FullControl.All</code> — the latter is what lets it save its own findings list, and it is a tenant-wide SharePoint permission; plus a read-only Purview role for hold state. Ask us if you would prefer this narrowed to <code>Sites.Selected</code> on the MOSE admin site alone.</td>
                 </tr>
                 <tr>
                     <td><strong>Move engine</strong><br><span class="badge badge-gold">write</span></td>
@@ -1098,7 +1098,7 @@ table.tight td, table.tight th { padding: 1.8mm 2.5mm; }
         <div class="two-col">
             <div class="feature-card">
                 <h3>A person approves every move</h3>
-                <p>MOSE discovers and suggests; a person selects and confirms against a summary of exactly what changes. Moves touching OneDrive or mailboxes, or above an agreed size, additionally require a <strong>second operator</strong> to approve under their own sign-in.</p>
+                <p>MOSE discovers and suggests; a person selects and confirms against a summary of exactly what changes. Anything touching OneDrive or mailboxes, or above an agreed size, additionally requires a <strong>second operator</strong> to approve under their own sign-in. Where an organisation genuinely has only one MOSE operator, that person approves their own parked run in a separate, deliberate step — and the record says <em>self-approved</em>, never that two people agreed.</p>
             </div>
             <div class="feature-card">
                 <h3>Copy, verify, then delete</h3>
