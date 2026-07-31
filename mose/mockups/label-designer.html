@@ -256,6 +256,9 @@
     color:#fff;background:var(--ff-primary)}
   .q-head h3{font-size:16.5px;font-weight:700;padding-top:1px}
   .q-body{margin-left:35px}
+  /* A question that has to say WHEN it is being asked before the options make sense. Only Q3
+     needs one — if a second question needs one, the question is probably wrong. */
+  .q-lead{font-size:13px;line-height:1.5;color:var(--ff-muted);margin:-4px 0 12px;max-width:62ch}
   @media (max-width:620px){.q-body{margin-left:0}}
 
   /* Illustrated option cards — the picture carries the meaning, the caption confirms it */
@@ -354,6 +357,9 @@
      so an uncapped SVG scales its text to ~2x and shouts over the panel it is supposed to
      support. One cap, applied to all three of them. */
   #offDiagram,#scopeDiagram{max-width:340px}
+  /* The escape diagram is taller than it is wide-ish and carries 8pt text, so it gets more
+     room than the timeline strips — below ~360px its route captions stop being legible. */
+  #escDiagram{max-width:400px;margin:0 0 14px}
 
   /* ---------- Sub-levels (label groups) ----------
      A parent that has sub-levels can never be applied to content — Microsoft's rule, and
@@ -397,6 +403,13 @@
   .rt.on{background:var(--ff-green-50);border-color:var(--ff-green-300);color:var(--ff-green-600)}
   .rt.fixed{background:#eef4f8;border-color:rgba(0,81,126,.16);color:var(--ff-primary);cursor:default}
   .rt[disabled]{opacity:.55;cursor:not-allowed}
+  /* A switch that is ON and contradicts what the sensitivity label just declared. It stays
+     green-and-on — it IS granted, and pretending otherwise would be a lie — but carries the
+     label's objection. This is the only place in the tool where a per-grant control shows a
+     label-level fact, and Copilot is the only fact that works that way. */
+  .rt.fights{border-color:var(--ff-red-700);box-shadow:0 0 0 1px var(--ff-red-700) inset}
+  .fightmark{display:inline-grid;place-items:center;width:14px;height:14px;margin-left:1px;
+    border-radius:50%;background:var(--ff-red-700);color:#fff;font-size:9.5px;font-weight:800;line-height:1}
   /* The icon is the same one the rights matrix draws for that row, so a switch and its
      consequence read as one thing. Off is outline-only; on fills the pill. */
   .rt .ic{width:14px;height:14px;opacity:.85}
@@ -901,10 +914,51 @@
               <div class="conseq calm" id="cqScope">&nbsp;</div>
             </section>
 
-            <!-- Q3 — audience + grants -->
-            <section class="q ff-panel" id="qAud">
-              <div class="q-head"><span class="q-num">3</span><h3><span data-lng="LD_Q3">Who should be able to open these files?</span><button class="info-btn" type="button" data-info="q3" data-lng-aria="LD_ARIAQ3" aria-label="About this question">i</button></h3></div>
+            <!-- Q3/Q4 — encryption, then audience + grants -->
+            <!-- Q3 — encryption. Asked BEFORE the audience, because every answer to the audience
+                 question is inert without it: IsProtected() requires encrypt, and renderPublish()
+                 emits no rights row at all while it is off. Naming groups and rights first, and
+                 only then discovering they produce nothing, is the defect this order removes. -->
+            <section class="q ff-panel" id="qEnc">
+              <div class="q-head"><span class="q-num">3</span><h3><span data-lng="LD_Q3">Should this sensitivity label encrypt the file itself?</span><button class="info-btn" type="button" data-info="q3" data-lng-aria="LD_ARIAQ3" aria-label="About this question">i</button></h3></div>
               <div class="q-body">
+                <p class="q-lead" data-lng="LD_Q3LEAD">Encryption is what makes a copy stop opening after you remove someone. Without it, the copies already on a laptop stay readable for ever.</p>
+                <div class="opts two" id="encOpts">
+                  <button class="opt" type="button" data-enc="1">
+                    <svg class="il" viewBox="0 0 96 46" aria-hidden="true"><use href="#il-locked"/></svg>
+                    <span class="txt"><strong data-lng="LD_ENCYES">Yes — encrypt the file itself</strong></span>
+                  </button>
+                  <button class="opt" type="button" data-enc="0">
+                    <svg class="il" viewBox="0 0 96 46" aria-hidden="true"><use href="#il-open"/></svg>
+                    <span class="txt"><strong data-lng="LD_ENCNO">No — the library permission is enough</strong></span>
+                  </button>
+                </div>
+                <!-- Copilot is a LABEL-level intent with no Purview field behind it: blocking it
+                     means every grant omitting Copy. Stating it once here, next to encryption
+                     (which it depends on), is the only place a reader can say what they want
+                     about the FILE rather than about one group at a time. -->
+                <div class="segrow" id="cpRow" style="margin-top:14px" hidden>
+                  <span class="label"><span data-lng="LD_CPLABEL">Copilot</span>
+                    <button class="info-btn" type="button" data-info="copilot" data-lng-aria="LD_ARIACOPILOT" aria-label="About Copilot and encrypted content">i</button></span>
+                  <div class="seg" id="cpSeg" role="group" data-lng-aria="LD_ARIACPSEG" aria-label="Whether Copilot may use this content">
+                    <button class="seg-btn" type="button" data-cp="allow" data-lng="LD_CPALLOW">May use the content</button>
+                    <button class="seg-btn" type="button" data-cp="block" data-lng="LD_CPBLOCK">Must not use the content</button>
+                  </div>
+                </div>
+              </div>
+              <div class="conseq" id="cqEnc">&nbsp;</div>
+              <div class="conseq" id="cqCopilot" hidden>&nbsp;</div>
+            </section>
+
+            <!-- Q4 — audience. Shown only once Q3 says encrypt: with no encryption there is no
+                 "who", only whoever happens to be holding the file. "Anyone, inside or outside"
+                 is therefore not an option here — it IS the No answer to Q3, carried in the data
+                 as audience "public" so every derived text keeps working unchanged. -->
+            <section class="q ff-panel" id="qAud">
+              <div class="q-head"><span class="q-num">4</span><h3><span data-lng="LD_Q4">If a copy leaves SharePoint, who should still be able to open it?</span><button class="info-btn" type="button" data-info="q4" data-lng-aria="LD_ARIAQ4" aria-label="About this question">i</button></h3></div>
+              <div class="q-body">
+                <p class="q-lead" data-lng="LD_Q4LEAD">Inside SharePoint the library permission decides this. Your answer here is what is left on a copy it no longer reaches — starting with the laptop OneDrive syncs to.</p>
+                <svg class="diagram" id="escDiagram" viewBox="0 0 300 156" role="img" data-lng-aria="LD_ARIAESCDIAG" aria-label="Where a copy goes, and what still decides"></svg>
                 <div class="opts" id="audOpts">
                   <button class="opt" type="button" data-aud="public">
                     <svg class="il" viewBox="0 0 64 40" aria-hidden="true"><use href="#il-public"/></svg>
@@ -947,24 +1001,6 @@
               </div>
               <div class="conseq" id="cqAud">&nbsp;</div>
               <div class="conseq" id="cqRights" hidden>&nbsp;</div>
-            </section>
-
-            <!-- Q4 — revocation -->
-            <section class="q ff-panel" id="qEnc">
-              <div class="q-head"><span class="q-num">4</span><h3><span data-lng="LD_Q4">After you remove someone, must their existing copies stop opening?</span><button class="info-btn" type="button" data-info="q4" data-lng-aria="LD_ARIAQ4" aria-label="About this question">i</button></h3></div>
-              <div class="q-body">
-                <div class="opts two" id="encOpts">
-                  <button class="opt" type="button" data-enc="1">
-                    <svg class="il" viewBox="0 0 96 46" aria-hidden="true"><use href="#il-locked"/></svg>
-                    <span class="txt"><strong data-lng="LD_ENCYES">Yes — lock the file itself</strong></span>
-                  </button>
-                  <button class="opt" type="button" data-enc="0">
-                    <svg class="il" viewBox="0 0 96 46" aria-hidden="true"><use href="#il-open"/></svg>
-                    <span class="txt"><strong data-lng="LD_ENCNO">No — the library permission is enough</strong></span>
-                  </button>
-                </div>
-              </div>
-              <div class="conseq" id="cqEnc">&nbsp;</div>
             </section>
 
             <!-- Q5 — offline + access expiry -->
@@ -1410,8 +1446,31 @@ const PH_CHROME = {
   LD_SCOPEMEETINGS:    {en:"Meetings and calendar invitations", sv:"Möten och kalenderinbjudningar"},
   LD_SCOPESITES:       {en:"Groups, teams and sites", sv:"Grupper, team och webbplatser"},
 
-  LD_Q3:               {en:"Who should be able to open these files?",
-                        sv:"Vilka ska kunna öppna de här filerna?"},
+  /* Q3 as of 2026-07-31. Encryption used to be question FOUR, phrased purely by its
+     consequence ("must their existing copies stop opening?") with the word never appearing.
+     Both were wrong. It is the primary choice — every audience answer is inert without it —
+     so it is asked first, and it is named, because an administrator who has read anything at
+     all about sensitivity labels is looking for that word. The consequence framing that made
+     the old wording good is kept, moved down into LD_Q3LEAD. */
+  LD_Q3:               {en:"Should this sensitivity label encrypt the file itself?",
+                        sv:"Ska den här säkerhetsetiketten kryptera själva filen?"},
+  LD_Q3LEAD:           {en:"Encryption is what makes a copy stop opening after you remove someone. Without it, the copies already on a laptop stay readable for ever.",
+                        sv:"Kryptering är det som gör att en kopia slutar gå att öppna när ni tar bort någon. Utan den förblir kopiorna som redan finns på en dator läsbara för alltid."},
+
+  /* Reframed 2026-07-31. "Who should be able to open these files?" is answered by everybody
+     with the project team — which is the SharePoint answer, not the sensitivity label's.
+     The label's rights only ever decide anything once a copy has left the service, so the
+     question now names that moment. See LD_Q4LEAD and escapeSvg(). */
+  /* "If", not "Once": "once" concedes the leak as a given, and the design goal is that a copy
+     should not leave at all. The conditional keeps the question hypothetical — you are naming
+     the fallback, not accepting the escape. Raised by the product owner 2026-07-31. */
+  LD_Q4:               {en:"If a copy leaves SharePoint, who should still be able to open it?",
+                        sv:"Om en kopia lämnar SharePoint — vilka ska fortfarande kunna öppna den?"},
+  /* Held under the 170-char always-on budget on purpose: the diagram carries the four routes
+     and the (i) popover carries the OneDrive argument in full. This line has one job — say
+     WHEN the question is being asked, because that is what the old wording left out. */
+  LD_Q4LEAD:           {en:"Inside SharePoint the library permission decides this. Your answer here is what is left on a copy it no longer reaches — starting with the laptop OneDrive syncs to.",
+                        sv:"Inuti SharePoint avgör bibliotekets behörighet det här. Ert svar här är det som återstår på en kopia den inte längre når — med början i datorn OneDrive synkar till."},
   LD_AUDPUBLIC:        {en:"Anyone, inside or outside", sv:"Vem som helst, internt eller externt"},
   LD_AUDEVERYONE:      {en:"Everyone who works here", sv:"Alla som arbetar här"},
   LD_AUDGROUP:         {en:"Named groups", sv:"Namngivna grupper"},
@@ -1422,9 +1481,10 @@ const PH_CHROME = {
   LD_UALABEL:          {en:"What the author may choose", sv:"Vad författaren får välja"},
   LD_UACHOOSE:         {en:"Pick people and rights", sv:"Välj personer och rättigheter"},
 
-  LD_Q4:               {en:"After you remove someone, must their existing copies stop opening?",
-                        sv:"När ni tar bort någon — måste kopiorna hen redan har sluta gå att öppna?"},
-  LD_ENCYES:           {en:"Yes — lock the file itself", sv:"Ja — lås själva filen"},
+  LD_CPLABEL:          {en:"Copilot", sv:"Copilot"},
+  LD_CPALLOW:          {en:"May use the content", sv:"Får använda innehållet"},
+  LD_CPBLOCK:          {en:"Must not use the content", sv:"Får inte använda innehållet"},
+  LD_ENCYES:           {en:"Yes — encrypt the file itself", sv:"Ja — kryptera själva filen"},
   LD_ENCNO:            {en:"No — the library permission is enough",
                         sv:"Nej — behörigheten i biblioteket räcker"},
 
@@ -1557,6 +1617,12 @@ const PH_ARIA = {
   LD_ARIAUA:         {en:"About author-assigned protection", sv:"Om skydd som författaren tilldelar"},
   LD_ARIAUASEG:      {en:"Author-assigned protection", sv:"Skydd som författaren tilldelar"},
   LD_ARIAOFFSEG:     {en:"Offline access period", sv:"Period för offlineåtkomst"},
+  LD_ARIAESCDIAG:    {en:"Where a copy goes, and what still decides",
+                      sv:"Vart en kopia tar vägen, och vad som fortfarande avgör"},
+  LD_ARIACOPILOT:    {en:"About Copilot and encrypted content",
+                      sv:"Om Copilot och krypterat innehåll"},
+  LD_ARIACPSEG:      {en:"Whether Copilot may use this content",
+                      sv:"Om Copilot får använda det här innehållet"},
   LD_ARIAOFFDIAG:    {en:"Blind spot after removing someone", sv:"Blind fläck efter att någon tagits bort"},
   LD_ARIAEXPIRY:     {en:"About access expiry", sv:"Om att åtkomsten upphör"},
   LD_ARIAEXPSEG:     {en:"When access expires", sv:"När åtkomsten upphör"},
@@ -1629,11 +1695,15 @@ const PH_INFO = {
   LD_INFOQ2: {
     en:"<p>Purview has <strong>four separate scopes</strong>, not one: Files and other data assets, Emails, Meetings, and Groups &amp; sites. Each is ticked on its own, and the set you tick decides which settings the portal will even show you.</p><p><strong>Meetings cannot stand alone</strong> — it needs Files and Emails as well, because a meeting is an invitation (an email) with attachments (files).</p><p>Encryption and marking are <em>item</em> settings: a sensitivity label scoped only to groups and sites has neither.</p><p class=\"pv\">In Purview: Scope (ContentType) &middot; file &middot; email &middot; teamwork &middot; site, unifiedgroup</p>",
     sv:"<p>Purview har <strong>fyra separata omfattningar</strong>, inte en: filer och andra datatillgångar, e-post, möten, samt grupper &amp; webbplatser. Var och en kryssas i för sig, och uppsättningen ni kryssar i avgör vilka inställningar portalen över huvud taget visar.</p><p><strong>Möten kan inte stå ensamt</strong> — det kräver även filer och e-post, eftersom ett möte är en inbjudan (ett e-postmeddelande) med bilagor (filer).</p><p>Kryptering och märkning är inställningar på <em>objekt</em>: en säkerhetsetikett som bara omfattar grupper och webbplatser har varken eller.</p><p class=\"pv\">I Purview: Scope (ContentType) &middot; file &middot; email &middot; teamwork &middot; site, unifiedgroup</p>"},
-  LD_INFOQ3: {
-    en:"<p><strong>This is the decision everything else follows from.</strong> It sets who the rights are granted to — and therefore whether removing a person from a group can ever take a document back.</p>"
+  /* Renumbered 2026-07-31 with the questions themselves: this is the popover behind question
+     FOUR now, and question three (encryption) decides whether any of it binds. */
+  LD_INFOQ4: {
+    en:"<p><strong>Only binding if question three said encrypt.</strong> It sets who the rights are granted to — and therefore whether removing a person from a group can ever take a document back.</p>"
+      + "<p><strong>&ldquo;But in OneDrive it is already protected.&rdquo;</strong> Only while it stays there — and staying there is the one thing OneDrive is built not to do. Its whole job is to put a copy in a folder on every device the person signs into. That synced copy is not an exotic leak; it is the product working.</p>"
+      + "<p>Microsoft: when users download or access these files, the sensitivity label and its encryption settings <strong>&ldquo;are enforced and remain with the file, wherever it's stored&rdquo;</strong>. So on that laptop, your answer here is the only thing still deciding.</p>"
       + "<dl>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-public\"/></svg>Anyone, inside or outside</dt>"
-      + "<dd>No restriction at all. The sensitivity label classifies and marks; it never locks. For material you have published or would happily publish.</dd>"
+      + "<dd>No restriction at all, and none intended. The sensitivity label classifies and marks; it never locks. For material you have published or would happily publish — choosing it turns encryption off.</dd>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-everyone\"/></svg>Everyone who works here</dt>"
       + "<dd>Rights go to the whole organisation. Ordinary internal work — but understand that <strong>no removal ever takes a document back</strong>, because there is no group to empty.</dd>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-group\"/></svg>Named groups</dt>"
@@ -1644,10 +1714,12 @@ const PH_INFO = {
       + "<dd>The author picks recipients document by document. Microsoft excludes this from default library labelling and from co-authoring, so <strong>MOSE cannot use it for a stage library</strong>.</dd>"
       + "</dl>"
       + "<p class=\"pv\">In Purview: Encryption &rarr; Assign permissions now &rarr; Add users or groups</p>",
-    sv:"<p><strong>Det här är beslutet allt annat följer av.</strong> Det avgör vilka rättigheterna tilldelas — och därmed om det någonsin går att ta tillbaka ett dokument genom att ta bort en person ur en grupp.</p>"
+    sv:"<p><strong>Bindande bara om fråga tre sa kryptera.</strong> Den avgör vilka rättigheterna tilldelas — och därmed om det någonsin går att ta tillbaka ett dokument genom att ta bort en person ur en grupp.</p>"
+      + "<p><strong>”Men i OneDrive är den ju redan skyddad.”</strong> Bara så länge den ligger kvar där — och att ligga kvar är det enda OneDrive är byggt för att inte göra. Hela dess uppgift är att lägga en kopia i en mapp på varje enhet personen loggar in på. Den synkade kopian är ingen exotisk läcka; det är produkten som fungerar.</p>"
+      + "<p>Microsoft: när användare laddar ner eller öppnar filerna <strong>tillämpas säkerhetsetiketten och dess krypteringsinställningar och följer med filen, var den än lagras</strong>. På den bärbara datorn är alltså ert svar här det enda som fortfarande avgör.</p>"
       + "<dl>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-public\"/></svg>Vem som helst, internt eller externt</dt>"
-      + "<dd>Ingen begränsning alls. Säkerhetsetiketten klassar och märker; den låser aldrig. För material ni publicerat eller gärna skulle publicera.</dd>"
+      + "<dd>Ingen begränsning alls, och ingen avsedd. Säkerhetsetiketten klassar och märker; den låser aldrig. För material ni publicerat eller gärna skulle publicera — att välja det stänger av krypteringen.</dd>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-everyone\"/></svg>Alla som arbetar här</dt>"
       + "<dd>Rättigheterna går till hela organisationen. Vanligt internt arbete — men var på det klara med att <strong>ingen borttagning någonsin tar tillbaka ett dokument</strong>, eftersom det inte finns någon grupp att tömma.</dd>"
       + "<dt><svg class=\"ic wide\"><use href=\"#il-group\"/></svg>Namngivna grupper</dt>"
@@ -1658,6 +1730,31 @@ const PH_INFO = {
       + "<dd>Författaren väljer mottagare dokument för dokument. Microsoft utesluter detta från standardmärkning av bibliotek och från samredigering, så <strong>MOSE kan inte använda det för ett stegbibliotek</strong>.</dd>"
       + "</dl>"
       + "<p class=\"pv\">I Purview: Encryption &rarr; Assign permissions now &rarr; Add users or groups</p>"},
+  LD_INFOCOPILOT: {
+    en:"<p><strong>There is no Copilot setting in Microsoft Purview.</strong> This switch is a statement of intent that this tool compiles down into the grants — because Purview gives you nowhere to say it.</p>"
+      + "<p>Microsoft's rule: <em>&ldquo;When the sensitivity label applies encryption, users must have the <strong>EXTRACT</strong> usage right, as well as VIEW, for the AI apps to return the data.&rdquo;</em> EXTRACT is the right shown here as <strong>Copy text out</strong>.</p>"
+      + "<p>So Copilot is blocked when, and only when:</p>"
+      + "<p class=\"pv\">encryption is on &nbsp;AND&nbsp; no grant carries Copy</p>"
+      + "<p>Two consequences worth understanding before you choose:</p>"
+      + "<dl>"
+      + "<dt>It is a property of the file, enforced per group</dt>"
+      + "<dd>Purview evaluates the rights of <em>the person Copilot is acting for</em>. So &ldquo;Copilot must not read this&rdquo; is only true while <strong>every single grant</strong> omits Copy. Adding one Editor group next quarter switches it back on, with no error and no warning anywhere in the portal.</dd>"
+      + "<dt>You cannot block Copilot without also blocking copy and paste</dt>"
+      + "<dd>The same right does both. People in those groups will not be able to paste from the document into anything else. For a genuinely restricted sensitivity label that is usually the point — but decide it deliberately.</dd>"
+      + "</dl>"
+      + "<p>Blocking Copilot does <strong>not</strong> keep the file inside SharePoint. That is a different mechanism entirely — see <em>What is not decided here</em> on the review screen.</p>",
+    sv:"<p><strong>Det finns ingen Copilot-inställning i Microsoft Purview.</strong> Den här väljaren är en avsiktsförklaring som verktyget översätter till tilldelningarna — eftersom Purview inte ger er någonstans att uttrycka den.</p>"
+      + "<p>Microsofts regel: <em>”När säkerhetsetiketten tillämpar kryptering måste användare ha användningsrättigheten <strong>EXTRACT</strong>, utöver VIEW, för att AI-apparna ska returnera data.”</em> EXTRACT är den rättighet som här heter <strong>Kopiera ut text</strong>.</p>"
+      + "<p>Copilot är alltså blockerad när, och endast när:</p>"
+      + "<p class=\"pv\">kryptering är på &nbsp;OCH&nbsp; ingen tilldelning bär Kopiera</p>"
+      + "<p>Två följder värda att förstå innan ni väljer:</p>"
+      + "<dl>"
+      + "<dt>Det är en egenskap hos filen, men tillämpas per grupp</dt>"
+      + "<dd>Purview utvärderar rättigheterna för <em>den person Copilot arbetar åt</em>. ”Copilot får inte läsa det här” är alltså sant bara så länge <strong>varje enskild tilldelning</strong> utelämnar Kopiera. Lägger ni till en Redigerare-grupp nästa kvartal slås det på igen, utan fel och utan varning någonstans i portalen.</dd>"
+      + "<dt>Ni kan inte blockera Copilot utan att också blockera kopiera och klistra in</dt>"
+      + "<dd>Samma rättighet gör bådadera. Personer i de grupperna kommer inte att kunna klistra in ur dokumentet i något annat. För en verkligt begränsad säkerhetsetikett är det oftast själva poängen — men besluta det medvetet.</dd>"
+      + "</dl>"
+      + "<p>Att blockera Copilot håller <strong>inte</strong> filen kvar inuti SharePoint. Det är en helt annan mekanism — se <em>Vad som inte avgörs här</em> på granskningsskärmen.</p>"},
   LD_INFOGRANTS: {
     en:"<p>Purview lets you <strong>repeat</strong> this step, and a real taxonomy usually needs to: one team edits, another reads, a third is not on the list at all. Each group must be an <strong>email-enabled</strong> security group or a Microsoft 365 group — a SharePoint group cannot be used, because Microsoft's rights service never sees it.</p>"
       + "<p><strong>Tick what people may do; the permission level names itself.</strong></p>"
@@ -1704,9 +1801,30 @@ const PH_INFO = {
   LD_INFOUA: {
     en:"<p>On the author-assigned path Purview offers two ready-made protections, and <strong>both are email-only</strong>.</p><p><strong>Do Not Forward</strong> lets recipients read and reply, never forward, print or copy. <strong>Encrypt-Only</strong> allows everything except removing the protection.</p><p>Neither does anything for a document library, and author-assigned permissions are excluded from default library labelling entirely.</p>",
     sv:"<p>På vägen där författaren tilldelar erbjuder Purview två färdiga skydd, och <strong>båda gäller enbart e-post</strong>.</p><p><strong>Do Not Forward</strong> låter mottagarna läsa och svara, aldrig vidarebefordra, skriva ut eller kopiera. <strong>Encrypt-Only</strong> tillåter allt utom att ta bort skyddet.</p><p>Ingendera gör någonting för ett dokumentbibliotek, och behörigheter som författaren tilldelar är helt uteslutna från standardmärkning av bibliotek.</p>"},
-  LD_INFOQ4: {
-    en:"<p><strong>Lock the file itself</strong> puts a licence inside the document, so it checks who you are every time it is opened — on a laptop, on a USB stick, in someone else's mailbox. <strong>The library permission is enough</strong> classifies and marks it, and leaves the bytes readable.</p><p>Removing a SharePoint permission stops somebody downloading anything <em>new</em>. It does nothing to the files already sitting on their laptop.</p><p><strong>Measured, not theoretical:</strong> after a genuine revocation a synced laptop kept every file readable for the whole eight hours we watched it, then showed an error banner and still removed nothing.</p><p class=\"pv\">In Purview: Encryption On/Off &middot; Assign permissions now (cloud key) &middot; User access expires = Never</p>",
-    sv:"<p><strong>Lås själva filen</strong> lägger en licens inuti dokumentet, så att det kontrollerar vem ni är varje gång det öppnas — på en bärbar dator, på ett USB-minne, i någon annans postlåda. <strong>Behörigheten i biblioteket räcker</strong> klassar och märker det, och lämnar innehållet läsbart.</p><p>Att ta bort en SharePoint-behörighet hindrar någon från att ladda ned något <em>nytt</em>. Det gör ingenting åt filerna som redan ligger på deras dator.</p><p><strong>Uppmätt, inte teoretiskt:</strong> efter en verklig återkallning fortsatte en synkad dator att kunna läsa varenda fil under alla åtta timmar vi bevakade den, visade sedan en felbanner och tog fortfarande inte bort någonting.</p><p class=\"pv\">I Purview: Encryption On/Off &middot; Assign permissions now (cloud key) &middot; User access expires = Never</p>"},
+  /* Renumbered 2026-07-31: encryption became question THREE. Carries the "Anyone, inside or
+     outside" explanation that used to sit in the audience popover, because that option left the
+     audience list — answering No here IS that answer, and is stored as audience "public". */
+  LD_INFOQ3: {
+    en:"<p><strong>This is the decision everything else follows from.</strong> Encryption is the only setting a sensitivity label has that keeps working once a copy is somewhere you do not control.</p>"
+      + "<dl>"
+      + "<dt><svg class=\"ic wide\"><use href=\"#il-locked\"/></svg>Yes — encrypt the file itself</dt>"
+      + "<dd>Puts a licence inside the document, so it checks who you are every time it is opened — on a laptop, on a USB stick, in someone else's mailbox. Question 4 then asks who those people are.</dd>"
+      + "<dt><svg class=\"ic wide\"><use href=\"#il-open\"/></svg>No — the library permission is enough</dt>"
+      + "<dd>The sensitivity label classifies and marks; it never locks, and <strong>anyone holding a copy can read it</strong>. Right for material you have published or would happily publish — and it is a perfectly respectable answer, as long as it is deliberate.</dd>"
+      + "</dl>"
+      + "<p>Removing a SharePoint permission stops somebody downloading anything <em>new</em>. It does nothing to the files already sitting on their laptop.</p>"
+      + "<p><strong>Measured, not theoretical:</strong> after a genuine revocation a synced laptop kept every file readable for the whole eight hours we watched it — 480 samples, no change — then showed an error banner and still removed nothing.</p>"
+      + "<p class=\"pv\">In Purview: Encryption On/Off &middot; Assign permissions now (cloud key)</p>",
+    sv:"<p><strong>Det här är beslutet allt annat följer av.</strong> Kryptering är den enda inställning en säkerhetsetikett har som fortsätter fungera när en kopia väl ligger någonstans ni inte styr över.</p>"
+      + "<dl>"
+      + "<dt><svg class=\"ic wide\"><use href=\"#il-locked\"/></svg>Ja — kryptera själva filen</dt>"
+      + "<dd>Lägger en licens inuti dokumentet, så att det kontrollerar vem ni är varje gång det öppnas — på en bärbar dator, på ett USB-minne, i någon annans postlåda. Fråga 4 frågar sedan vilka de personerna är.</dd>"
+      + "<dt><svg class=\"ic wide\"><use href=\"#il-open\"/></svg>Nej — behörigheten i biblioteket räcker</dt>"
+      + "<dd>Säkerhetsetiketten klassar och märker; den låser aldrig, och <strong>vem som helst som har en kopia kan läsa den</strong>. Rätt för material ni publicerat eller gärna skulle publicera — och det är ett fullt respektabelt svar, så länge det är medvetet.</dd>"
+      + "</dl>"
+      + "<p>Att ta bort en SharePoint-behörighet hindrar någon från att ladda ned något <em>nytt</em>. Det gör ingenting åt filerna som redan ligger på deras dator.</p>"
+      + "<p><strong>Uppmätt, inte teoretiskt:</strong> efter en verklig återkallning fortsatte en synkad dator att kunna läsa varenda fil under alla åtta timmar vi bevakade den — 480 mätpunkter, ingen förändring — visade sedan en felbanner och tog fortfarande inte bort någonting.</p>"
+      + "<p class=\"pv\">I Purview: Encryption On/Off &middot; Assign permissions now (cloud key)</p>"},
   LD_INFOQ5: {
     en:"<p>Two different clocks. <strong>Offline access</strong> is how long a licence keeps working without checking in — the window in which a removal has not reached somebody yet. <strong>Expiry</strong> is the day the grant dies for everybody at once.</p><p>Microsoft recommends 7 days offline for sensitive business data, and Never for the most sensitive. The tenant default is 30.</p><p class=\"pv\">In Purview: Allow offline access (EncryptionOfflineAccessDays) &middot; User access to content expires</p>",
     sv:"<p>Två olika klockor. <strong>Offlineåtkomst</strong> är hur länge en licens fortsätter fungera utan att checka in — fönstret där en borttagning ännu inte nått fram till någon. <strong>Upphörande</strong> är dagen då tilldelningen dör för alla på en gång.</p><p>Microsoft rekommenderar 7 dagar offline för känsliga verksamhetsdata, och Aldrig för det allra känsligaste. Standard i organisationen är 30.</p><p class=\"pv\">I Purview: Allow offline access (EncryptionOfflineAccessDays) &middot; User access to content expires</p>"},
@@ -1892,6 +2010,31 @@ const PH_VERDICT = {
                       sv:"Låsta rutor bär sin egen nyckel. Övriga förlitar sig på behörigheter."},
   LD_DGNOTHINGLOCKED:{en:"Nothing here is locked — permissions are the only control.",
                       sv:"Ingenting här är låst — behörigheter är enda kontrollen."},
+
+  /* The escape diagram under Q3. Four ways a copy leaves the service, converging on ONE
+     answer — the one being picked in Q3. Sync is drawn first and called out, because it is
+     the only one of the four that happens without anybody deciding to do anything: Microsoft
+     documents the label and its encryption as enforced and remaining "with the file, wherever
+     it's stored", and the sync client's whole job is to put it somewhere else.
+     Every string here sits in a 300-unit viewBox with no wrapping — keep them SHORT. */
+  LD_DGESCIN:        {en:"IN SHAREPOINT — THE LIBRARY DECIDES", sv:"I SHAREPOINT — BIBLIOTEKET AVGÖR"},
+  /* Two lines per tile, because one line of Swedish does not fit a 66-unit tile — the first
+     attempt at one line overflowed the viewBox on three of the four and the sweep caught it. */
+  LD_DGESCSYNCA:     {en:"Synced to",   sv:"Synkad till"},
+  LD_DGESCSYNCB:     {en:"a laptop",    sv:"en dator"},
+  LD_DGESCMAILA:     {en:"Sent as an",  sv:"Som bilaga"},
+  LD_DGESCMAILB:     {en:"attachment",  sv:"i e-post"},
+  LD_DGESCSTICKA:    {en:"Copied to",   sv:"Kopierad"},
+  LD_DGESCSTICKB:    {en:"a USB stick", sv:"till USB"},
+  LD_DGESCOUTA:      {en:"Forwarded",   sv:"Skickad ut"},
+  LD_DGESCOUTB:      {en:"outside",     sv:"ur företaget"},
+  LD_DGESCSTOPPED:   {en:"The library permission has stopped in all four:",
+                      sv:"Bibliotekets behörighet har upphört i alla fyra:"},
+  LD_DGESCANYONE:    {en:"Anyone holding the copy", sv:"Vem som helst som har kopian"},
+  LD_DGESCNOBODY:    {en:"Nobody — no group named yet", sv:"Ingen — ingen grupp angiven än"},
+  LD_DGESCGROUPN:    {en:"{0} named groups", sv:"{0} namngivna grupper"},
+  LD_DGESCHEADING:   {en:"A heading is never applied to a file, so no copy of it can leave.",
+                      sv:"En rubrik tillämpas aldrig på en fil, så ingen kopia av den kan lämna."},
   LD_DGSCFILES:      {en:"Files", sv:"Filer"},
   LD_DGSCEMAILS:     {en:"Emails", sv:"E-post"},
   LD_DGSCMEETINGS:   {en:"Meetings", sv:"Möten"},
@@ -1965,6 +2108,18 @@ const PH_VERDICT = {
                 sv:"Copilot kommer inte att se innehållet för vissa personer"},
   LD_CKCOPILOTB:{en:"Copilot can only return content from an encrypted item to somebody who holds the <strong>Copy</strong> right — Viewer and Restricted Editor do not have it. Affected: {0}. There is no error and no setting that mentions Copilot; the content simply is not there.",
                 sv:"Copilot kan bara returnera innehåll ur ett krypterat objekt till någon som har rättigheten <strong>Kopiera</strong> — Läsare och Begränsad redigerare har den inte. Berörda: {0}. Det finns inget felmeddelande och ingen inställning som nämner Copilot; innehållet finns helt enkelt inte där."},
+  LD_CKCPLEAKT:{en:"Copilot can still read a sensitivity label that says it must not",
+                sv:"Copilot kan fortfarande läsa en säkerhetsetikett som säger att den inte får"},
+  LD_CKCPLEAKB:{en:"Blocking Copilot means <strong>every</strong> grant omitting the <strong>Copy</strong> right — there is no Copilot setting in Purview, so one grant that keeps Copy undoes the whole intent. Affected: {0}. Move those groups to Viewer or Restricted Editor, or change the sensitivity label's answer.",
+                sv:"Att blockera Copilot innebär att <strong>varje</strong> tilldelning måste utelämna rättigheten <strong>Kopiera</strong> — det finns ingen Copilot-inställning i Purview, så en enda tilldelning som behåller Kopiera upphäver hela avsikten. Berörda: {0}. Flytta grupperna till Läsare eller Begränsad redigerare, eller ändra säkerhetsetikettens svar."},
+  LD_CKCPUNARMEDT:{en:"Copilot is asked to stay out of a sensitivity label that does not lock the file",
+                sv:"Copilot ombeds hålla sig borta från en säkerhetsetikett som inte låser filen"},
+  LD_CKCPUNARMEDB:{en:"The <strong>Copy</strong> right only exists on an encrypted item, so on {0} there is nothing to withhold and Copilot reads the content normally. Turn encryption on, or accept that Copilot will use it.",
+                sv:"Rättigheten <strong>Kopiera</strong> finns bara på ett krypterat objekt, så på {0} finns ingenting att undanhålla och Copilot läser innehållet som vanligt. Slå på kryptering, eller acceptera att Copilot kommer att använda det."},
+  LD_CKCPHOLDST:{en:"Copilot is genuinely blocked where you asked for it",
+                sv:"Copilot är verkligen blockerad där ni bad om det"},
+  LD_CKCPHOLDSB:{en:"No grant on {0} carries the <strong>Copy</strong> right, which is the only mechanism that blocks Copilot. Re-check this whenever a group is added: one grant at Editor or Owner silently turns it back on, and nothing in Purview will say so.",
+                sv:"Ingen tilldelning på {0} bär rättigheten <strong>Kopiera</strong>, vilket är den enda mekanism som blockerar Copilot. Kontrollera det här varje gång en grupp läggs till: en enda tilldelning som Redigerare eller Ägare slår tyst på det igen, och ingenting i Purview kommer att säga det."},
   LD_CKDYNNOENCT:{en:"A dynamic watermark needs encryption", sv:"En dynamisk vattenstämpel kräver kryptering"},
   LD_CKDYNNOENCB:{en:"{0} asks for a dynamic watermark without locking the file. The reader's name is stamped by the rights service at the moment it issues a licence — with no licence there is nothing to stamp.",
                 sv:"{0} begär en dynamisk vattenstämpel utan att låsa filen. Läsarens namn stämplas av rättighetstjänsten i det ögonblick den utfärdar en licens — utan licens finns ingenting att stämpla."},
@@ -2153,8 +2308,8 @@ const PH_VERDICT = {
                 sv:"<p>Det här är vad MOSE behöver: stegbiblioteket bär säkerhetsetiketten, så allt som kommer dit klassas utan att någon behöver komma ihåg det.</p>"},
   LD_CQAUDPUBT:{en:"Nothing stops this spreading — and nothing should.",
                 sv:"Ingenting hindrar att det här sprids — och ingenting borde göra det."},
-  LD_CQAUDPUBB:{en:"<p>Do not lock it. A locked file that everyone is allowed to read only creates support calls, and it costs you compatibility for nothing.</p>",
-                sv:"<p>Lås den inte. En låst fil som alla ändå får läsa skapar bara supportärenden, och den kostar er kompatibilitet utan att ge något.</p>"},
+  LD_CQAUDPUBB:{en:"<p>Do not encrypt it. A locked file that everyone is allowed to read only creates support calls, and it costs you compatibility for nothing.</p>",
+                sv:"<p>Kryptera den inte. En låst fil som alla ändå får läsa skapar bara supportärenden, och den kostar er kompatibilitet utan att ge något.</p>"},
   LD_CQAUDEVERYENCT:{en:"<b>This combination protects nobody.</b>", sv:"<b>Den här kombinationen skyddar ingen.</b>"},
   LD_CQAUDEVERYT:{en:"No way to take a document back.", sv:"Inget sätt att ta tillbaka ett dokument."},
   LD_CQAUDEVERYENCB:{en:"<p>The rights go to <strong>everyone in the organisation</strong>, so when you remove someone from the team they still pass the check and keep opening the file.</p><p>Encryption here costs you compatibility and buys you nothing. Point it at a named group instead — or turn encryption off and stop paying for it.</p>",
@@ -2177,6 +2332,10 @@ const PH_VERDICT = {
                 sv:"En tilldelning når alla — det är hela säkerhetsetikettens tak."},
   LD_CQAUDCEILB:{en:"<p><strong>{0}</strong> cannot be emptied, so no removal takes a document back.</p><p>The narrower groups beside it still control what people may <em>do</em>, but not whether they may open it. Point every grant at a group you can actually remove somebody from.</p>",
                 sv:"<p><strong>{0}</strong> kan inte tömmas, så ingen borttagning tar tillbaka ett dokument.</p><p>De snävare grupperna bredvid styr fortfarande vad människor får <em>göra</em>, men inte om de får öppna den. Rikta varje tilldelning mot en grupp ni faktiskt kan ta bort någon ur.</p>"},
+  LD_CQAUDNOENCT:{en:"An intention, not a rule — nothing enforces this.",
+                sv:"En avsikt, inte en regel — ingenting upprätthåller den."},
+  LD_CQAUDNOENCB:{en:"<p>Question three says this sensitivity label does not encrypt, so these rights are never written into the file and never checked. Inside SharePoint the library permission decides; on a copy that has left, <strong>anyone holding it can open it</strong>.</p><p>Turn encryption on to make this answer binding — or answer <em>Anyone, inside or outside</em> and mean it.</p>",
+                sv:"<p>Fråga tre säger att den här säkerhetsetiketten inte krypterar, så rättigheterna skrivs aldrig in i filen och kontrolleras aldrig. Inuti SharePoint avgör bibliotekets behörighet; på en kopia som lämnat kan <strong>vem som helst som har den öppna den</strong>.</p><p>Slå på krypteringen för att göra svaret bindande — eller svara <em>Vem som helst, internt eller externt</em> och mena det.</p>"},
   LD_CQAUDMANYT:{en:"{0} groups, each with its own rights.", sv:"{0} grupper, var och en med egna rättigheter."},
   LD_CQAUDMANYB:{en:"<p>{0}.</p><p>Access is taken back by removing the person from the group. Nothing else does it — not a SharePoint permission, not deleting the file from their PC.</p><p>Whoever manages those groups now controls this sensitivity label. Make sure that is a deliberate choice.</p>",
                 sv:"<p>{0}.</p><p>Åtkomsten tas tillbaka genom att personen tas bort ur gruppen. Ingenting annat gör det — inte en SharePoint-behörighet, inte att radera filen från deras dator.</p><p>Den som förvaltar de grupperna styr nu den här säkerhetsetiketten. Se till att det är ett medvetet val.</p>"},
@@ -2192,6 +2351,23 @@ const PH_VERDICT = {
                 sv:"Alla som nämns här kan kopiera, skriva ut och använda Copilot."},
   LD_CQRIGHTSOKB:{en:"<p>Editor and Owner both include the <strong>Copy</strong> right, which is what Copilot needs and what a person needs to paste anything into another document.</p><p>If this sensitivity label exists to stop material leaving, Viewer or Restricted Editor is the honest choice — and it will quietly remove the content from Copilot too.</p>",
                 sv:"<p>Redigerare och Ägare innehåller båda rättigheten <strong>Kopiera</strong>, som är vad Copilot behöver och vad en person behöver för att klistra in något i ett annat dokument.</p><p>Om säkerhetsetiketten finns för att hindra material från att lämna er är Läsare eller Begränsad redigerare det ärliga valet — och det tar tyst bort innehållet från Copilot också.</p>"},
+  /* Rendered under Q4 and ONLY when the intent is "must not use the content" — when the intent
+     is "may use", the per-grant line under Q3 already says everything and two lines about the
+     same fact is worse than one. Each of the three states answers the same question: did the
+     grants deliver what the sensitivity label just said it wanted? */
+  LD_CQCPBLOCKEDT:{en:"Copilot cannot use this content.",
+                sv:"Copilot kan inte använda det här innehållet."},
+  LD_CQCPBLOCKEDB:{en:"<p>No grant on this sensitivity label carries the <strong>Copy</strong> right, and Copilot can only return content from an encrypted item to somebody who holds it. That is the whole mechanism — <strong>there is no Copilot setting in Purview</strong>.</p><p>Which is also why it is fragile: <strong>add one group at Editor or Owner and Copilot is reading this again</strong>, silently. This tool will tell you. The Purview portal will not.</p>",
+                sv:"<p>Ingen tilldelning på den här säkerhetsetiketten bär rättigheten <strong>Kopiera</strong>, och Copilot kan bara returnera innehåll ur ett krypterat objekt till någon som har den. Det är hela mekanismen — <strong>det finns ingen Copilot-inställning i Purview</strong>.</p><p>Vilket också är varför den är skör: <strong>lägg till en enda grupp som Redigerare eller Ägare så läser Copilot det här igen</strong>, tyst. Det här verktyget säger till. Purview-portalen gör det inte.</p>"},
+  LD_CQCPLEAKT:{en:"<b>Copilot can still read this</b> — {0} hold Copy.",
+                sv:"<b>Copilot kan fortfarande läsa det här</b> — {0} har Kopiera."},
+  LD_CQCPLEAKB:{en:"<p>You said Copilot must not use this content, but blocking it means <strong>every</strong> grant omitting the <strong>Copy</strong> right — it is the only mechanism there is, and one grant is enough to undo it.</p><p>Move those groups to <strong>Viewer</strong> or <strong>Restricted Editor</strong>, or say Copilot may use the content and mean it. Note what you are giving up: without Copy nobody in that group can paste from the document either.</p>",
+                sv:"<p>Ni sa att Copilot inte får använda innehållet, men att blockera det innebär att <strong>varje</strong> tilldelning måste utelämna rättigheten <strong>Kopiera</strong> — det är den enda mekanism som finns, och en enda tilldelning räcker för att upphäva den.</p><p>Flytta grupperna till <strong>Läsare</strong> eller <strong>Begränsad redigerare</strong>, eller säg att Copilot får använda innehållet och mena det. Observera vad ni ger upp: utan Kopiera kan ingen i gruppen klistra in ur dokumentet heller.</p>"},
+  LD_CQCPUNARMEDT:{en:"<b>Nothing is stopping Copilot</b> — this sensitivity label does not lock the file.",
+                sv:"<b>Ingenting hindrar Copilot</b> — den här säkerhetsetiketten låser inte filen."},
+  LD_CQCPUNARMEDB:{en:"<p>The <strong>Copy</strong> right only exists on an encrypted item. On an unencrypted one there is nothing to withhold, so Copilot reads the content normally however this is set.</p><p>Answer <strong>Yes — encrypt the file itself</strong> above, or accept that Copilot will use this content.</p>",
+                sv:"<p>Rättigheten <strong>Kopiera</strong> finns bara på ett krypterat objekt. På ett okrypterat finns ingenting att undanhålla, så Copilot läser innehållet som vanligt oavsett hur det här är satt.</p><p>Svara <strong>Ja — kryptera själva filen</strong> ovan, eller acceptera att Copilot kommer att använda innehållet.</p>"},
+
   LD_CQENCPUBT:{en:"Not applicable — this sensitivity label is for material anyone may read.",
                 sv:"Ej tillämpligt — säkerhetsetiketten är till för material vem som helst får läsa."},
   LD_CQENCPUBB:{en:"<p>Encryption on a public sensitivity label is all cost and no benefit.</p>",
@@ -2417,6 +2593,8 @@ const PH_SEED = {
   LD_CAPEXPORT:      {en:"Save a copy elsewhere", sv:"Spara en kopia någon annanstans"},
   LD_CAPFORWARD:     {en:"Forward by email", sv:"Vidarebefordra med e-post"},
   LD_CAPRIGHTS:      {en:"Change who may open it", sv:"Ändra vem som får öppna den"},
+  LD_CAPFIGHTSCP:    {en:"This grant lets Copilot read the content, which the sensitivity label says it must not.",
+                      sv:"Den här tilldelningen låter Copilot läsa innehållet, vilket säkerhetsetiketten säger att den inte får."},
 
   LD_ACTOPEN:        {en:"Open", sv:"Öppna"},
   LD_ACTEDIT:        {en:"Edit", sv:"Redigera"},
@@ -2521,6 +2699,13 @@ const PH_SEED = {
   LD_NH6T: {en:"Investigation and eDiscovery", sv:"Utredning och eDiscovery"},
   LD_NH6B: {en:"Worth knowing now, because it surprises people later: an investigator opens a protected file through the tenant's super-user path, not by being added to your group. That path exists whether you plan for it or not — decide who holds it.",
             sv:"Värt att veta nu, eftersom det överraskar folk senare: en utredare öppnar en skyddad fil via organisationens superanvändarväg, inte genom att läggas till i er grupp. Den vägen finns vare sig ni planerar för den eller inte — bestäm vem som har den."},
+  /* Added 2026-07-31, because it is the question people ask straight after the Copilot one and
+     the answer is genuinely surprising: an item sensitivity label CANNOT express it, and the
+     mechanism that can is mutually exclusive with the one this tool configures. */
+  LD_NH8T: {en:"Keeping every copy inside SharePoint",
+            sv:"Att hålla varje kopia kvar inuti SharePoint"},
+  LD_NH8B: {en:"A sensitivity label cannot do this. Its rights travel <em>with</em> the file — Microsoft's words are that they are enforced and remain with it &ldquo;wherever it's stored&rdquo; — so there is no way to say &ldquo;readable here, not there&rdquo;. What can: a sensitivity label scoped to <strong>groups &amp; sites</strong> set to <strong>limited, web-only access</strong>, which blocks download and sync but needs a matching Conditional Access policy or it silently does nothing, and only applies to <em>unmanaged</em> devices. Or the older <strong>library IRM</strong>, which protects on download — but IRM applies only to files that are <em>not</em> encrypted by a sensitivity label, so choosing encryption here turns it off.",
+            sv:"En säkerhetsetikett kan inte det. Dess rättigheter följer <em>med</em> filen — Microsofts formulering är att de tillämpas och följer med den ”var den än lagras” — så det går inte att säga ”läsbar här, men inte där”. Det som kan: en säkerhetsetikett med omfattningen <strong>grupper &amp; webbplatser</strong> satt till <strong>begränsad åtkomst, endast webb</strong>, vilket blockerar nedladdning och synkning men kräver en matchande princip för villkorlig åtkomst, annars gör den tyst ingenting — och bara på <em>ohanterade</em> enheter. Eller äldre <strong>IRM på biblioteket</strong>, som skyddar vid nedladdning — men IRM gäller bara filer som <em>inte</em> är krypterade av en säkerhetsetikett, så att välja kryptering här stänger av den."},
   LD_NH7T: {en:"Key management", sv:"Nyckelhantering"},
   LD_NH7B: {en:"Bring-your-own-key and Double Key Encryption. Both pinned <strong>Off</strong> in this design. DKE in particular is excluded from default library labelling entirely, which is the mechanism MOSE depends on.",
             sv:"Egen nyckel (BYOK) och Double Key Encryption. Båda låsta till <strong>Av</strong> i den här utformningen. Särskilt DKE är helt uteslutet från standardmärkning av bibliotek, vilket är just den mekanism MOSE bygger på."}
@@ -2781,6 +2966,12 @@ function mk(o){
     scope:{files:def(S.files,true), emails:def(S.emails,true), meetings:def(S.meetings,false), sites:def(S.sites,true)},
     audience:o.audience, grants:def(o.grants, []), userAssign:def(o.userAssign,"choose"),
     encrypt:def(o.encrypt,false), offline:def(o.offline,7),
+    /* Copilot is an INTENT, not a Purview field — there is no setting anywhere that mentions
+       it. Blocking it means every grant omitting EXTRACT, so the intent is held here at label
+       level and the grants are checked against it. Defaults to "allow" because that is what
+       Purview does when Copy is granted, and a design written before this field existed had
+       whatever its grants happened to say. */
+    copilot:def(o.copilot,"allow"),
     /* days/date used to be hard-coded here, which was invisible until designs became
        saveable: a reopened file would silently come back as 90 days. Defaulted
        parameters, so every existing caller is unchanged. */
@@ -2799,6 +2990,10 @@ function buildPresets(){
     tip:LNG.LD_LVLPUBLICTIP, desc:LNG.LD_LVLPUBLICDESC,
     examples:[LNG.LD_EGPRICELIST, LNG.LD_EGBROCHURE, LNG.LD_EGJOBAD],
     audience:"public", scope:{sites:false}, marking:{text:LNG.LD_LVLPUBLIC}};
+  /* audience "everyone" with no encryption is NOT the same as "public": RevokeState() reads the
+     first as "you meant to restrict this and have no lock" (a warning) and the second as
+     "deliberately open" (calm). The grant below is hidden until encryption is on, and is what
+     the customer gets back if they turn it on. */
   const L_INTERNAL = {key:"int", name:LNG.LD_LVLINTERNAL, colour:"green",
     tip:LNG.LD_LVLINTERNALTIP, desc:LNG.LD_LVLINTERNALDESC,
     examples:[LNG.LD_EGMEETINGNOTES, LNG.LD_EGPROCESSGUIDE, LNG.LD_EGFLOORPLAN],
@@ -2933,7 +3128,7 @@ function rebuildSampleData(){
     {t:LNG.LD_NH1T, b:LNG.LD_NH1B}, {t:LNG.LD_NH2T, b:LNG.LD_NH2B},
     {t:LNG.LD_NH3T, b:LNG.LD_NH3B}, {t:LNG.LD_NH4T, b:LNG.LD_NH4B},
     {t:LNG.LD_NH5T, b:LNG.LD_NH5B}, {t:LNG.LD_NH6T, b:LNG.LD_NH6B},
-    {t:LNG.LD_NH7T, b:LNG.LD_NH7B}
+    {t:LNG.LD_NH7T, b:LNG.LD_NH7B}, {t:LNG.LD_NH8T, b:LNG.LD_NH8B}
   ];
   DOCS = [
     {id:"d1",  name:LNG.LD_DOC1,  ext:".pdf"},
@@ -2967,6 +3162,7 @@ function buildInfo(){
     "page-design":LNG.LD_INFOPAGEDESIGN, "cap":LNG.LD_INFOCAP, "ladder":LNG.LD_INFOLADDER,
     "q1":LNG.LD_INFOQ1, "tip":LNG.LD_INFOTIP, "desc":LNG.LD_INFODESC, "q2":LNG.LD_INFOQ2,
     "q3":LNG.LD_INFOQ3, "grants":LNG.LD_INFOGRANTS, "ua":LNG.LD_INFOUA, "q4":LNG.LD_INFOQ4,
+    "copilot":LNG.LD_INFOCOPILOT,
     "q5":LNG.LD_INFOQ5, "expiry":LNG.LD_INFOEXPIRY, "q6":LNG.LD_INFOQ6,
     "marklimits":LNG.LD_INFOMARKLIMITS, "dynwm":LNG.LD_INFODYNWM, "rights":LNG.LD_INFORIGHTS,
     "page-publish":LNG.LD_INFOPAGEPUBLISH, "p1":LNG.LD_INFOP1, "p2":LNG.LD_INFOP2,
@@ -3061,6 +3257,7 @@ class SecurityLevel {
     this.grants = raw.grants.map(function(G){ return new Grant(G); });
     this.userAssign = raw.userAssign;
     this.encrypt = raw.encrypt;
+    this.copilot = def(raw.copilot, "allow");
     this.offline = raw.offline;
     this.expiry = {mode:raw.expiry.mode, days:raw.expiry.days, date:raw.expiry.date};
     this.marking = {header:raw.marking.header, footer:raw.marking.footer, water:raw.marking.water,
@@ -3080,7 +3277,8 @@ class SecurityLevel {
       key: this.Key, parent: this.ParentKey, name: this.name, colour: this.colour,
       tip: this.useWhen, desc: this.description, examples: this.examples.slice(),
       audience: this.audience, grants: this.grants.map(function(G){ return G.ToRaw(); }),
-      userAssign: this.userAssign, encrypt: this.encrypt, offline: this.offline,
+      userAssign: this.userAssign, encrypt: this.encrypt, copilot: this.copilot,
+      offline: this.offline,
       expiryMode: this.expiry.mode, expiryDays: this.expiry.days, expiryDate: this.expiry.date,
       scope: { files: this.scope.files, emails: this.scope.emails,
                meetings: this.scope.meetings, sites: this.scope.sites },
@@ -3113,6 +3311,8 @@ class SecurityLevel {
   /** Meetings cannot stand alone — Purview requires files and emails alongside it. */
   MeetingsInvalid(){ return this.scope.meetings && !(this.scope.files && this.scope.emails); }
 
+  /** Both clauses do work: encryption can be off with any audience, and "public" forces it off.
+      The two handlers keep them in step from either direction. */
   IsProtected(){
     return this.encrypt === true && this.audience !== "public"
         && this.AppliesToItems() && this.Appliable();
@@ -3139,6 +3339,43 @@ class SecurityLevel {
   CopilotBlind(){
     if (!this.IsProtected()) { return []; }
     return this.grants.filter(function(G){ return !G.Has("EXTRACT"); });
+  }
+
+  /** The grants that CAN still feed Copilot — the inverse of CopilotBlind(). Named separately
+      because when the intent is "block", these are the leak, not the norm. */
+  CopilotSighted(){
+    if (!this.IsProtected()) { return []; }
+    return this.grants.filter(function(G){ return G.Has("EXTRACT"); });
+  }
+
+  BlocksCopilot(){ return this.copilot === "block"; }
+
+  /** Intent versus reality, as one word. This is the whole point of holding `copilot` at label
+      level: "Copilot must not read this file" is a statement about the FILE, but Purview only
+      lets you express it as a conjunction over every grant —
+
+          blocked  ⟺  ∀ grants: EXTRACT ∉ rights
+
+      — with no field anywhere that mentions Copilot. So the intent is stated once, and this
+      method reports whether the grants actually deliver it. Without encryption there is nothing
+      to enforce EXTRACT against, so the intent cannot be honoured at all.
+
+        "open"     nothing is encrypted — the question does not arise
+        "unarmed"  intent is to block, but the sensitivity label does not encrypt
+        "leaking"  intent is to block, and at least one grant still carries Copy
+        "blocked"  intent is to block, and no grant carries Copy — it holds
+        "partial"  intent is to allow, but some grants lack Copy (the original warning)
+        "allowed"  intent is to allow, and every grant carries Copy */
+  CopilotState(){
+    if (!this.Appliable() || !this.AppliesToItems()){ return "open"; }
+    if (this.BlocksCopilot()){
+      if (!this.IsProtected())            { return "unarmed"; }
+      if (this.CopilotSighted().length)   { return "leaking"; }
+      return "blocked";
+    }
+    if (!this.IsProtected())              { return "open"; }
+    if (this.CopilotBlind().length)       { return "partial"; }
+    return "allowed";
   }
 
   AudienceText(){
@@ -3329,6 +3566,14 @@ class SecurityLevel {
         }
         if (this.grants.length === 0){ Rows.push(["Permissions", "(none set — nobody can open it)"]); }
       }
+      /* NOT a Purview field. Written into the settings sheet as a derived line so the person
+         configuring the portal knows the permission levels above are load-bearing for a reason
+         they will not find documented anywhere — there is no Copilot setting to look for. */
+      if (this.BlocksCopilot()){
+        Rows.push(["(derived) Copilot", this.CopilotState() === "blocked"
+          ? "Blocked — no grant carries EXTRACT. Not a setting; keep it true when adding groups."
+          : "REQUESTED BLOCKED BUT NOT ACHIEVED — see the review findings."]);
+      }
       Rows.push(["User access to content expires", "Never", true]);
       if (this.expiry.mode !== "never"){
         Rows.push(["  ↑ you chose", this.ExpiryText() + " — MOSE needs Never"]);
@@ -3378,7 +3623,12 @@ class LadderReview {
     const DynNoEnc   = Live.filter(L => L.marking.dynamic && !L.IsProtected());
     const Container  = Live.filter(L => L.scope.sites);
     const OverMark   = Live.filter(L => L.marking.text.length > L.MarkLimit());
-    const NoCopilot  = Encrypting.filter(L => L.CopilotBlind().length > 0);
+    /* Copilot, split by what the sensitivity label SAID it wanted. Losing Copilot by accident
+       and losing it on purpose look identical in the data and are opposite findings. */
+    const NoCopilot  = Encrypting.filter(L => !L.BlocksCopilot() && L.CopilotBlind().length > 0);
+    const CpLeaking  = Live.filter(L => L.CopilotState() === "leaking");
+    const CpUnarmed  = Live.filter(L => L.CopilotState() === "unarmed");
+    const CpHolding  = Live.filter(L => L.CopilotState() === "blocked");
 
     if (BadMeeting.length){
       Out.push({s:"bad", t:LNG.LD_CKMEETT,
@@ -3418,6 +3668,24 @@ class LadderReview {
         Names.push(L.name + " (" + L.CopilotBlind().map(G => G.ShortWho()).join(", ") + ")");
       }
       Out.push({s:"warn", t:LNG.LD_CKCOPILOTT, b:LNG.Format(LNG.LD_CKCOPILOTB, Names.join("; "))});
+    }
+    /* A sensitivity label that asked to be invisible to Copilot and is not. Reported as BAD:
+       unlike the warning above, this one is a stated requirement that the design does not meet,
+       and nothing in Purview will ever tell them. */
+    if (CpLeaking.length){
+      const Leaks = [];
+      for (const L of CpLeaking){
+        Leaks.push(L.name + " (" + L.CopilotSighted().map(G => G.ShortWho()).join(", ") + ")");
+      }
+      Out.push({s:"bad", t:LNG.LD_CKCPLEAKT, b:LNG.Format(LNG.LD_CKCPLEAKB, Leaks.join("; "))});
+    }
+    if (CpUnarmed.length){
+      Out.push({s:"bad", t:LNG.LD_CKCPUNARMEDT,
+        b:LNG.Format(LNG.LD_CKCPUNARMEDB, CpUnarmed.map(L=>L.name).join(", "))});
+    }
+    if (CpHolding.length){
+      Out.push({s:"ok", t:LNG.LD_CKCPHOLDST,
+        b:LNG.Format(LNG.LD_CKCPHOLDSB, CpHolding.map(L=>L.name).join(", "))});
     }
     if (DynNoEnc.length){
       Out.push({s:"bad", t:LNG.LD_CKDYNNOENCT,
@@ -4405,6 +4673,99 @@ function typeSvg(L){
   return H;
 }
 
+/** The one-line form of the Q4 answer, sized for a 300-unit band. Group names come from
+    ShortWho() — the short form that already exists for the 62px matrix column — and past two
+    groups even that overflows, so it degrades to a count rather than to a clipped list. */
+function escapeAudienceShort(L){
+  /* Encryption first, and not just for "public": an UNENCRYPTED sensitivity label aimed at
+     "everyone who works here" used to draw that as the answer on an escaped copy, which is
+     false — with no lock on the bytes the copy opens for whoever is holding it, outsiders
+     included. Only reachable since Q4 stopped being hidden without encryption. */
+  if (!L.IsProtected())              { return LNG.LD_DGESCANYONE; }
+  if (L.audience === "everyone")      { return LNG.LD_AUDTEVERYONE; }
+  if (L.audience === "authenticated") { return LNG.LD_AUDTAUTH; }
+  if (L.audience === "perfile")       { return LNG.LD_AUDTPERFILE; }
+  if (L.grants.length === 0)          { return LNG.LD_DGESCNOBODY; }
+  if (L.grants.length > 2)            { return LNG.Format(LNG.LD_DGESCGROUPN, L.grants.length); }
+  return L.grants.map(function(G){ return G.ShortWho(); }).join(" · ");
+}
+
+/** How wide the remaining answer is, as a colour. Not a good/bad axis — "everyone who works
+    here" is a real boundary that keeps every external copy shut, it just cannot be emptied. */
+function escapeTone(L){
+  if (!L.IsProtected())                                     { return {ink:"#973c37", fill:"#fbeeed"}; }
+  if (L.audience === "authenticated")                       { return {ink:"#8a5a00", fill:"#fff2d4"}; }
+  if (L.audience === "everyone")                            { return {ink:"#00517e", fill:"#eef4f8"}; }
+  if (L.audience === "group" && L.grants.length === 0)      { return {ink:"#973c37", fill:"#fbeeed"}; }
+  return {ink:"#017a64", fill:"#e6faf6"};
+}
+
+/** Q4's illustration: four ways a copy leaves the service, converging on ONE answer.
+    The convergence is the entire point. Everybody answers "who should be able to open these
+    files?" with the project team — which is the SharePoint answer — because the question does
+    not say WHEN it is asked. Drawn, the four arrows meeting one band say it without prose:
+    the library permission has already stopped in all four, and the only thing still deciding
+    is the choice being made directly above the picture. */
+function escapeSvg(L){
+  if (!L.Appliable()){
+    return '<g ' + SVG_NS_TEXT + '>'
+      + '<rect x="6" y="34" width="288" height="44" rx="8" fill="#eef4f8"/>'
+      + '<text x="150" y="61" text-anchor="middle" font-size="10.5" fill="#4f6b7c">'
+      + esc(LNG.LD_DGESCHEADING) + '</text></g>';
+  }
+  const Tone = escapeTone(L);
+  /* Four 66-wide tiles on a 300 grid, matching typeSvg's spacing. Sync leads because it is
+     the one that needs no human decision at all. */
+  const Routes = [
+    {a:LNG.LD_DGESCSYNCA,  b:LNG.LD_DGESCSYNCB,
+     d:'<rect x="8" y="6" width="26" height="17" rx="2"/><path d="M4 26h34M8 23h26"/>'},
+    {a:LNG.LD_DGESCMAILA,  b:LNG.LD_DGESCMAILB,
+     d:'<rect x="8" y="8" width="27" height="18" rx="2"/><path d="M8 10l13.5 9L35 10"/>'},
+    {a:LNG.LD_DGESCSTICKA, b:LNG.LD_DGESCSTICKB,
+     d:'<rect x="13" y="10" width="17" height="18" rx="2.5"/><path d="M18 10V5h7v5"/><path d="M17 17h9M17 21h9"/>'},
+    {a:LNG.LD_DGESCOUTA,   b:LNG.LD_DGESCOUTB,
+     d:'<circle cx="21.5" cy="17" r="10"/><path d="M11.5 17h20M21.5 7c3.4 3.9 3.4 16.1 0 20M21.5 7c-3.4 3.9-3.4 16.1 0 20"/>'}
+  ];
+
+  /* The service band, greyed: it is the thing that is about to stop applying. */
+  let H = '<rect x="6" y="4" width="288" height="21" rx="6" fill="#eef4f8" stroke="#cddbe4"/>'
+    + '<g ' + SVG_NS_TEXT + '><text x="150" y="18.5" text-anchor="middle" font-size="9"'
+    + ' font-weight="700" letter-spacing=".06em" fill="#7d94a2">' + esc(LNG.LD_DGESCIN) + '</text></g>';
+
+  for (let i = 0; i < Routes.length; i++){
+    const R = Routes[i];
+    const X = 6 + i * 74;
+    const Cx = X + 33;
+    /* Sync is the only route nobody chooses, so it is the only one drawn as a live path
+       rather than a dotted one — the reader's objection is "but it is in OneDrive". */
+    const Lead = i === 0 ? ' stroke="#c8963e" stroke-width="1.6"' : ' stroke="#cddbe4" stroke-width="1.3" stroke-dasharray="3 3"';
+    H += '<path d="M150 25 L150 32 L' + Cx + ' 32 L' + Cx + ' 40" fill="none"' + Lead + '/>'
+      +  '<g transform="translate(' + X + ',40)">'
+      +  '<rect x="0" y="0" width="66" height="52" rx="6" fill="' + (i === 0 ? "#fffaf0" : "rgba(255,255,255,.55)")
+      +  '" stroke="' + (i === 0 ? "#e0bd85" : "#cddbe4") + '"/>'
+      +  '<g transform="translate(11,2)" fill="none" stroke="' + (i === 0 ? "#a8794a" : "#7d94a2")
+      +  '" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + R.d + '</g>'
+      +  '<g ' + SVG_NS_TEXT + ' font-size="8" font-weight="700" text-anchor="middle" fill="'
+      +  (i === 0 ? "#a8794a" : "#4f6b7c") + '">'
+      +  '<text x="33" y="42">' + esc(R.a) + '</text>'
+      +  '<text x="33" y="50">' + esc(R.b) + '</text>'
+      +  '</g></g>';
+    /* And back in, to the single answer all four share. */
+    H += '<path d="M' + Cx + ' 92 L' + Cx + ' 99" fill="none" stroke="' + Tone.ink
+      +  '" stroke-width="1.3" opacity=".5"/>';
+  }
+
+  H += '<path d="M39 99 L261 99 M150 99 L150 106" fill="none" stroke="' + Tone.ink
+    + '" stroke-width="1.3" opacity=".5"/>'
+    + '<rect x="6" y="106" width="288" height="46" rx="7" fill="' + Tone.fill + '" stroke="' + Tone.ink + '"/>'
+    + '<g ' + SVG_NS_TEXT + '>'
+    + '<text x="150" y="122" text-anchor="middle" font-size="9" fill="#973c37">'
+    + esc(LNG.LD_DGESCSTOPPED) + '</text>'
+    + anchoredText(150, 141, esc(escapeAudienceShort(L)), 12.5, "700", Tone.ink)
+    + '</g>';
+  return H;
+}
+
 /** The four Purview scopes as four tiles. Lit means the level can be used there; a dashed
     grey tile means the portal will not even show you those settings. */
 function scopeSvg(L){
@@ -4621,8 +4982,12 @@ function renderEditor(){
   const Head = L.IsHeading();
   const Items = L.AppliesToItems();
   show("qScope", !Head);
+  /* Q3 before Q4. Q4 stays visible unencrypted, because the SHAPE of the answer is still a
+     real statement — "deliberately public" and "meant to be restricted, but isn't" are the two
+     facts RevokeState() tells apart, and only the second is a defect. What must not be offered
+     without encryption is the GRANT editor below it: those rows emit no PowerShell at all. */
+  show("qEnc", !Head && Items);
   show("qAud", !Head && Items);
-  show("qEnc", !Head && Items && L.audience !== "public");
   show("qOffline", !Head && L.IsProtected());
   show("qMark", !Head && Items);
 
@@ -4634,19 +4999,29 @@ function renderEditor(){
   for (const B of document.querySelectorAll("#audOpts .opt")){
     B.classList.toggle("on", B.getAttribute("data-aud") === L.audience);
   }
-  $("grantWrap").hidden = !(L.audience === "group" || L.audience === "everyone" || L.audience === "authenticated");
-  $("grantAdd").hidden = (L.audience !== "group");
-  $("uaWrap").hidden = (L.audience !== "perfile");
+  /* Gated on encrypt as well as on the shape: renderPublish() emits a rights row only when
+     encryption is on, so a grant list offered without it is work the customer does and the
+     handover script then silently drops. Naming three groups and getting nothing was the
+     defect that moved encryption ahead of this question. */
+  const CanGrant = L.encrypt;
+  $("grantWrap").hidden = !(CanGrant && (L.audience === "group" || L.audience === "everyone" || L.audience === "authenticated"));
+  $("grantAdd").hidden = !(CanGrant && L.audience === "group");
+  $("uaWrap").hidden = !(CanGrant && L.audience === "perfile");
   for (const B of document.querySelectorAll("#uaSeg .seg-btn")){
     B.classList.toggle("on", B.getAttribute("data-ua") === L.userAssign);
   }
   renderGrants();
 
-  const EncDisabled = (L.audience === "public");
   for (const B of document.querySelectorAll("#encOpts .opt")){
-    B.classList.toggle("on", !EncDisabled && (B.getAttribute("data-enc") === (L.encrypt ? "1" : "0")));
-    B.disabled = EncDisabled;
-    B.style.opacity = EncDisabled ? ".45" : "";
+    B.classList.toggle("on", B.getAttribute("data-enc") === (L.encrypt ? "1" : "0"));
+  }
+  /* The Copilot intent is only answerable where an item can carry rights at all: a heading is
+     never applied, and a sensitivity label scoped only to groups & sites has no encryption.
+     It IS offered on an unencrypted one that is not public, because "must not use the content"
+     there is exactly the unarmed state cqCopilot exists to report. */
+  $("cpRow").hidden = !(L.Appliable() && L.AppliesToItems() && L.audience !== "public");
+  for (const B of document.querySelectorAll("#cpSeg .seg-btn")){
+    B.classList.toggle("on", B.getAttribute("data-cp") === L.copilot);
   }
   for (const B of document.querySelectorAll("#offSeg .seg-btn")){
     B.classList.toggle("on", Number(B.getAttribute("data-off")) === L.offline);
@@ -4724,9 +5099,16 @@ function renderGrants(){
     H += '<div class="grights" data-i="' + i + '">'
       +  '<span class="rt fixed"><svg class="ic"><use href="#' + CAP_OPEN.icon + '"/></svg>' + esc(CAP_OPEN.t) + '</span>';
     for (const Cap of CAPS){
-      H += '<button type="button" class="rt' + (G.HasCap(Cap) ? " on" : "") + '" data-cap="' + Cap.k
-        +  '" data-i="' + i + '" aria-pressed="' + (G.HasCap(Cap) ? "true" : "false") + '">'
-        +  '<svg class="ic" aria-hidden="true"><use href="#' + Cap.icon + '"/></svg>' + esc(Cap.t) + "</button>";
+      /* The one switch that is also a LABEL-level statement. When the sensitivity label has said
+         Copilot must not read this, a Copy still switched on here is the thing undoing it — so
+         it is marked on the switch itself, not only in the consequence line twelve rows down.
+         This is the join the whole Copilot question needed: one fact, shown in both places. */
+      const Fights = L.BlocksCopilot() && Cap.k === "copy" && G.HasCap(Cap);
+      H += '<button type="button" class="rt' + (G.HasCap(Cap) ? " on" : "") + (Fights ? " fights" : "")
+        +  '" data-cap="' + Cap.k + '" data-i="' + i + '" aria-pressed="' + (G.HasCap(Cap) ? "true" : "false") + '"'
+        +  (Fights ? ' title="' + esc(LNG.LD_CAPFIGHTSCP) + '"' : "") + ">"
+        +  '<svg class="ic" aria-hidden="true"><use href="#' + Cap.icon + '"/></svg>' + esc(Cap.t)
+        +  (Fights ? '<span class="fightmark" aria-hidden="true">!</span>' : "") + "</button>";
     }
     H += "</div></div>";
   }
@@ -4779,7 +5161,7 @@ function renderConsequences(){
     setConseq($("cqScope"), "scope", "calm", LNG.LD_CQSCBOTHT, LNG.LD_CQSCBOTHB);
   }
 
-  /* Q3 — audience */
+  /* Q4 — audience */
   if (L.audience === "public"){
     setConseq($("cqAud"), "aud", "calm", LNG.LD_CQAUDPUBT, LNG.LD_CQAUDPUBB);
   } else if (L.audience === "everyone"){
@@ -4790,6 +5172,12 @@ function renderConsequences(){
     setConseq($("cqAud"), "aud", L.encrypt ? "warn" : "", LNG.LD_CQAUDAUTHT, LNG.LD_CQAUDAUTHB);
   } else if (L.audience === "perfile"){
     setConseq($("cqAud"), "aud", "bad", LNG.LD_CQAUDPERFILET, LNG.LD_CQAUDPERFILEB);
+  } else if (!L.encrypt){
+    /* The named-group lines below all describe rights — who holds what, who can be removed.
+       None of that is written or checked while encryption is off, so reporting "2 groups, each
+       with its own rights" beside an unencrypted sensitivity label states a rule that does not
+       exist. The everyone/authenticated/per-file branches above already vary by encryption. */
+    setConseq($("cqAud"), "aud", "warn", LNG.LD_CQAUDNOENCT, LNG.LD_CQAUDNOENCB);
   } else if (L.grants.length === 0){
     setConseq($("cqAud"), "aud", "bad", LNG.LD_CQAUDNOGRPT, LNG.LD_CQAUDNOGRPB);
   } else {
@@ -4807,14 +5195,19 @@ function renderConsequences(){
     }
   }
 
-  /* Q3b — what the chosen permission levels actually cost (Copilot is the invisible one) */
+  /* Q4b — what the chosen permission levels actually cost (Copilot is the invisible one).
+     Suppressed entirely when the sensitivity label has DECLARED that Copilot must not read it:
+     "Copilot will not see this content for X" is a warning about an accident, and here it is
+     the stated goal. The verdict then belongs on the Q3 line that owns the intent. */
   const Blind = L.CopilotBlind();
   $("cqRights").hidden = !(L.IsProtected() && L.audience !== "perfile" && L.grants.length > 0);
   if (!$("cqRights").hidden){
-    if (Blind.length){
+    if (Blind.length && !L.BlocksCopilot()){
       setConseq($("cqRights"), "rights", "warn",
         LNG.Format(LNG.LD_CQRIGHTSBLINDT, esc(Blind.map(function(G){ return G.ShortWho(); }).join(", "))),
         LNG.LD_CQRIGHTSBLINDB);
+    } else if (Blind.length){
+      $("cqRights").hidden = true;
     } else {
       setConseq($("cqRights"), "rights", "", LNG.LD_CQRIGHTSOKT, LNG.LD_CQRIGHTSOKB);
     }
@@ -4827,6 +5220,23 @@ function renderConsequences(){
     setConseq($("cqEnc"), "enc", "", LNG.LD_CQENCONT, LNG.LD_CQENCONB);
   } else {
     setConseq($("cqEnc"), "enc", "warn", LNG.LD_CQENCOFFT, LNG.LD_CQENCOFFB);
+  }
+
+  /* Q3b — did the grants deliver the Copilot intent? Only ever shown when the intent is to
+     BLOCK: saying "may use the content" needs no verdict, because the Q4 line already reports
+     per grant what Copy costs and buys. */
+  const CpState = L.CopilotState();
+  $("cqCopilot").hidden = !L.BlocksCopilot() || !L.Appliable() || !L.AppliesToItems();
+  if (!$("cqCopilot").hidden){
+    if (CpState === "unarmed"){
+      setConseq($("cqCopilot"), "copilot", "bad", LNG.LD_CQCPUNARMEDT, LNG.LD_CQCPUNARMEDB);
+    } else if (CpState === "leaking"){
+      setConseq($("cqCopilot"), "copilot", "bad",
+        LNG.Format(LNG.LD_CQCPLEAKT, esc(L.CopilotSighted().map(function(G){ return G.ShortWho(); }).join(", "))),
+        LNG.LD_CQCPLEAKB);
+    } else {
+      setConseq($("cqCopilot"), "copilot", "", LNG.LD_CQCPBLOCKEDT, LNG.LD_CQCPBLOCKEDB);
+    }
   }
 
   /* Q4 — offline */
@@ -4894,6 +5304,7 @@ function renderPreview(){
       + "</span><span>" + esc(SAMPLE_UPN) + "</span>";
   }
 
+  $("escDiagram").innerHTML = escapeSvg(L);
   $("scopeDiagram").innerHTML = scopeSvg(L);
   $("rightsDiagram").innerHTML = rightsSvg(L);
   $("tlDiagram").innerHTML = revocationSvg(L);
@@ -5387,10 +5798,33 @@ $("uaSeg").addEventListener("click", function(e){
   renderEditor(); renderSort(); renderReview();
 });
 
+/** Turning encryption ON over "anyone, inside or outside" is the one contradiction the two
+    questions can produce: encrypting a sensitivity label whose whole point is that anybody may
+    read it. Resolved the same way the audience handler resolves the mirror case, by moving the
+    shape rather than by refusing the click. Encryption OFF leaves the audience alone — it is
+    still a real statement, and it is what tells "deliberately public" apart from "meant to be
+    restricted, and isn't". */
 $("encOpts").addEventListener("click", function(e){
   const B = e.target.closest(".opt");
-  if (!B || B.disabled) { return; }
-  current().encrypt = (B.getAttribute("data-enc") === "1");
+  if (!B) { return; }
+  const L = current();
+  const Want = (B.getAttribute("data-enc") === "1");
+  if (Want === L.encrypt) { return; }
+  L.encrypt = Want;
+  if (Want && L.audience === "public"){
+    L.audience = "group";
+    if (L.grants.length === 0){ L.grants = [new Grant(gr("grp-commercial@contoso.com", "editor"))]; }
+  }
+  renderEditor(); renderLadder(); renderSort(); renderReview();
+});
+
+/* Deliberately does NOT rewrite the grants. Silently stripping Copy from a group the customer
+   chose would hide the trade-off the switch exists to expose — that blocking Copilot also stops
+   those people pasting from the document. State the intent, show the conflict, let them decide. */
+$("cpSeg").addEventListener("click", function(e){
+  const B = e.target.closest(".seg-btn");
+  if (!B) { return; }
+  current().copilot = B.getAttribute("data-cp");
   renderEditor(); renderLadder(); renderSort(); renderReview();
 });
 
