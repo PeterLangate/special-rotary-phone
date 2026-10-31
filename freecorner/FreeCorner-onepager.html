@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FreeCorner — onepager</title>
+<meta name="author" content="Kalmstrom Enterprise Solutions AB" />
+<meta name="description" content="FreeCorner one-page summary for executive forwarding" />
+<meta name="date" content="2026-04-27" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --cs-primary:        #2b338f;
+    --cs-action:         #0157ff;
+    --cs-sky:            #87d5ff;
+    --cs-cream:          #faf8f3;
+    --cs-sand:           #ece9e0;
+    --cs-stripe:         #f5f5f5;
+    --cs-text:           #4a4a46;
+    --cs-text-muted:     #565151;
+    --cs-text-soft:      #8b8675;
+    --cs-border:         #c4c4c4;
+    --cs-border-light:   #ece9e0;
+    --cs-success:        #0a7a3f;
+    --cs-success-bg:     #e3f3ea;
+    --cs-warning:        #c08200;
+    --cs-warning-bg:     #fff6dd;
+    --cs-info-bg:        #e3ecff;
+    --cs-white:          #ffffff;
+}
+
+body {
+    font-family: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.55;
+    color: var(--cs-text);
+    background: #e8e8ea;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: var(--cs-white);
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+@media print {
+    body { background: var(--cs-white); }
+    .page { margin: 0; box-shadow: none; }
+}
+
+.page-header {
+    background: var(--cs-primary);
+    color: var(--cs-white);
+    padding: 6mm 14mm;
+    border-left: 4mm solid var(--cs-action);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.page-header .brand {
+    font-size: 11pt; font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.page-header .brand-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--cs-action);
+    margin-left: 4px; vertical-align: middle;
+}
+.page-header .meta {
+    font-size: 8.5pt; color: rgba(255,255,255,0.7);
+    letter-spacing: 0.06em; text-transform: uppercase;
+}
+
+.page-content { padding: 8mm 14mm; }
+
+h1 {
+    font-size: 24pt; font-weight: 700;
+    color: var(--cs-primary);
+    line-height: 1.1;
+    margin-bottom: 2mm;
+}
+h1 .h1-small {
+    display: block;
+    font-size: 9pt; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--cs-action);
+    margin-bottom: 2mm;
+}
+h2 {
+    font-size: 13pt; font-weight: 600;
+    color: var(--cs-primary);
+    margin: 7mm 0 2.5mm;
+    display: flex; align-items: center; gap: 2mm;
+}
+h2::before {
+    content: ''; display: inline-block;
+    width: 3px; height: 12pt;
+    background: var(--cs-action);
+    border-radius: 2px;
+}
+
+p { margin-bottom: 3mm; }
+
+.intro {
+    background: var(--cs-sand);
+    border-left: 4px solid var(--cs-primary);
+    padding: 4mm 6mm; margin: 0 0 6mm;
+    border-radius: 0 4px 4px 0;
+    font-size: 11pt;
+}
+.intro strong { color: var(--cs-primary); }
+
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; margin: 3mm 0; }
+.feature-card {
+    background: var(--cs-stripe);
+    border-left: 3px solid var(--cs-action);
+    border-radius: 0 4px 4px 0;
+    padding: 3mm 4mm;
+}
+.feature-card h4 {
+    font-size: 10.5pt; font-weight: 700;
+    color: var(--cs-primary);
+    margin-bottom: 1.5mm;
+}
+.feature-card p { margin: 0; font-size: 9.5pt; color: var(--cs-text); }
+
+table {
+    width: 100%; border-collapse: collapse;
+    margin: 3mm 0; font-size: 10pt;
+    background: var(--cs-white);
+}
+th {
+    background: var(--cs-primary); color: var(--cs-white);
+    text-align: left; padding: 2mm 3mm;
+    font-weight: 600; font-size: 9pt;
+    text-transform: uppercase; letter-spacing: 0.04em;
+}
+td {
+    padding: 2.5mm 3mm;
+    border-bottom: 1px solid var(--cs-border-light);
+    color: var(--cs-text);
+}
+tr:nth-child(even) td { background: var(--cs-stripe); }
+
+ol { margin: 3mm 0 3mm 6mm; padding-left: 5mm; }
+ol li { margin-bottom: 1.5mm; }
+
+.tip-box {
+    background: var(--cs-info-bg);
+    border-left: 3px solid var(--cs-action);
+    padding: 4mm 6mm;
+    margin: 6mm 0 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+}
+.tip-box strong { color: var(--cs-primary); }
+
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 4mm 14mm 4mm 18mm;
+    border-top: 1px solid var(--cs-border-light);
+    background: var(--cs-cream);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 8.5pt; color: var(--cs-text-soft);
+}
+.page-footer .right { color: var(--cs-primary); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="page">
+    <div class="page-header">
+        <div class="brand">Cornerstone<span class="brand-dot"></span></div>
+        <div class="meta">FreeCorner &middot; onepager &middot; 2026-04-27</div>
+    </div>
+
+    <div class="page-content">
+        <h1>
+            <span class="h1-small">Sammanfattning för ledning</span>
+            FreeCorner — en sida
+        </h1>
+
+        <div class="intro">
+            <strong>Problem:</strong> Cornerstones medarbetare ansöker om ledighet via mail
+            eller chatt. Chefen godkänner men medarbetaren glömmer ofta att själv mata in
+            det i Kleer. Resultat: vanlig lön betalas ut, semester räknas inte av, HR rättar
+            i efterhand.
+        </div>
+
+        <h2>Lösning</h2>
+        <p>Ett ansöknings&shy;skikt i SharePoint som tar bort det manuella inmatnings&shy;steget.
+        Medarbetaren ansöker, chefen godkänner via mail-länk, FreeCorner skriver dagarna
+        rakt in i Kleer. Inget byte av plattform &mdash; allt sker i SharePoint där alla
+        redan jobbar.</p>
+
+        <div class="three-col">
+            <div class="feature-card">
+                <h4>Fyra varianter</h4>
+                <p>Formulär (A) med Kleer-synk &middot; formulär utan synk (B) som pilot &middot;
+                AI-chatt (C) &middot; AI-chatt med full Kleer (D). Stacka uppåt när ni är redo.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Inget nytt att lära</h4>
+                <p>SharePoint-webpart i samma site som ni redan har. Ingen extra inloggning,
+                ingen ny app. Mail till chefen är hela attest&shy;processen.</p>
+            </div>
+            <div class="feature-card">
+                <h4>Synligt revisions&shy;spår</h4>
+                <p>SharePoint-listan har varje post med vem, när, godkännare, beslut,
+                Kleer-synkstatus. HR ser direkt om något har failat mot Kleer.</p>
+            </div>
+        </div>
+
+        <h2>Tre tal</h2>
+        <table>
+            <tr>
+                <th style="width: 50%">&nbsp;</th>
+                <th style="width: 25%">Idag</th>
+                <th style="width: 25%">Med FreeCorner</th>
+            </tr>
+            <tr>
+                <td>Manuella ledighetspost-rättningar per månad</td>
+                <td>Flera per månad</td>
+                <td>Nära noll</td>
+            </tr>
+            <tr>
+                <td>Steg från godkänt till Kleer-bokfört</td>
+                <td>2 (chef OK + medarbetare matar in)</td>
+                <td>0 (auto-synk efter chefs OK)</td>
+            </tr>
+            <tr>
+                <td>Tid från idé till driftsatt MVP (Variant B)</td>
+                <td>&mdash;</td>
+                <td>2&ndash;6 veckor</td>
+            </tr>
+        </table>
+
+        <h2>Vad ni behöver göra för att komma igång</h2>
+        <ol>
+            <li>Säga ja till mock:upen som demonstrerades.</li>
+            <li>Begära API-nyckel och testbolag från Kleer (lead time ca 1&ndash;2 veckor &mdash;
+            börja idag).</li>
+            <li>Tenant-admin i Cornerstones Entra ger Function App
+            <strong>User.Read.All</strong>-samtycke.</li>
+            <li>Kalmstrom levererar Variant B i Fas 1&ndash;2 (~4 veckor), aktiverar Kleer-synk
+            i Fas 3 (~2 veckor till). AI-laget (Variant C/D) som option efter att grunden är i drift.</li>
+        </ol>
+
+        <div class="tip-box">
+            <strong>Nästa steg:</strong> beslut i ledningen, sedan offert per fas. Den fullständiga
+            systembeskrivningen (FreeCorner.html) innehåller IT-, säkerhets- och GDPR-bilagor
+            för dem som vill se hur det är byggt.
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <div>Kalmstrom Enterprise Solutions AB &middot; för Cornerstone Sweden</div>
+        <div class="right">FreeCorner &mdash; onepager</div>
+    </div>
+</div>
+
+</body>
+</html>

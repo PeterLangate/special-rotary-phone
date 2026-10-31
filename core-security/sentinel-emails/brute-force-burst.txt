@@ -1,0 +1,25 @@
+[MEDIUM] Brute-force burst from one IP
+Identity · Sign-ins
+
+undefined failed sign-ins came from 185.220.101.47 in 47 min — a brute-force burst.
+
+⚠️ DO THIS NEXT
+If that volume is unusual for the IP, block it in Conditional Access and watch the targeted accounts.
+
+DETAILS
+Source IP: 185.220.101.47 🇳🇱
+Failures: undefined
+Window: 47 min
+Targets: 5 accounts
+Location: Amsterdam, NL
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=bruteforce
+
+RESPOND
+Block IP: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=blockip&cts_ip=185.220.101.47
+Open cluster: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=bruteforce
+
+--
+Finding fixture-dedup · Detector: RiskGroup
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

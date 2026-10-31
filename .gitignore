@@ -1,0 +1,5 @@
+# Cache/state files we do not want on GitHub Pages
+*.tmp
+*.bak
+Thumbs.db
+desktop.ini

@@ -1,0 +1,27 @@
+[HIGH] Impossible travel detected
+Identity · Sign-ins
+
+omar.reyes@langate.se signed in from Stockholm then Tokyo — 8190 km apart in 30 min (implied 16380 km/h), faster than any flight.
+
+⚠️ DO THIS NEXT
+If the user isn't on a VPN, revoke their sessions and confirm the second location with them.
+
+DETAILS
+User: omar.reyes@langate.se
+Route: Stockholm 🇸🇪 → Tokyo 🇯🇵
+Distance: 8190 km in 30 min
+Implied speed: 16380 km/h
+To IP: 203.0.113.9
+Device: Windows 11
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+🚫 Not me — revoke sessions: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=revoke&cts_user=omar.reyes%40langate.se
+✅ It's expected: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=expected&cts_user=omar.reyes%40langate.se
+📈 User timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: GlobeMath
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

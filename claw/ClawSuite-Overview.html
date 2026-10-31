@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Claw Suite Overview</title>
+    <style>
+/* PointClaw user manual — kalmstrom.com brand */
+:root {
+    --brand-navy: #154363;
+    --brand-blue: #095495;
+    --brand-soft-blue: #a2bfd6;
+    --brand-text: #454545;
+    --brand-red: #FF0000;
+    --brand-green: #4F8035;
+    --brand-bg-subtle: #F9F9F9;
+    --brand-border: #CCCCCC;
+}
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Verdana', 'Segoe UI', 'Calibri', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.65;
+    color: var(--brand-text);
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+.page-content { padding: 22mm 28mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control */
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col              { break-inside: avoid; }
+table                 { break-inside: avoid; }
+.screenshot           { break-inside: avoid; }
+img                   { break-inside: avoid; }
+
+/* Cover page */
+.cover-page {
+    background: var(--brand-navy);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 297mm;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-accent-bar {
+    height: 8px;
+    background: linear-gradient(90deg, var(--brand-blue), var(--brand-soft-blue));
+}
+.cover-logo-wrap {
+    padding: 18mm 28mm 0;
+    display: flex;
+    justify-content: flex-start;
+}
+.cover-logo-wrap img {
+    height: 22mm;
+    width: auto;
+    background: white;
+    padding: 4mm 6mm;
+    border-radius: 3px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 12mm 28mm 24mm;
+}
+.cover-eyebrow {
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand-soft-blue);
+    margin-bottom: 8mm;
+}
+.cover-title {
+    font-size: 40pt;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+}
+.cover-subtitle {
+    font-size: 15pt;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 6mm;
+    max-width: 140mm;
+}
+.cover-lead {
+    font-size: 11pt;
+    line-height: 1.7;
+    margin-top: 14mm;
+    max-width: 140mm;
+    opacity: 0.88;
+}
+.cover-footer {
+    padding: 8mm 28mm;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.75);
+}
+.cover-footer .brand {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: white;
+}
+
+/* Page header */
+.page-header {
+    padding: 8mm 28mm 4mm;
+    margin-bottom: 8mm;
+    border-bottom: 2px solid var(--brand-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8pt;
+    color: var(--brand-blue);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.page-header .page-left {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+}
+.page-header .page-left::before {
+    content: '';
+    display: inline-block;
+    width: 22mm;
+    height: 5mm;
+    background: url({{LOGO_DATA_URI}}) left center/contain no-repeat;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Page footer */
+.page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 5mm 28mm;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #888;
+}
+.page-footer .brand-mark {
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+
+/* Typography */
+h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 6mm;
+    letter-spacing: -0.01em;
+}
+h1 .chapter-num {
+    display: block;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--brand-blue);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 3mm;
+}
+h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-top: 9mm;
+    margin-bottom: 3mm;
+    border-bottom: 1px solid #dde4ec;
+    padding-bottom: 1.5mm;
+}
+h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: var(--brand-text);
+    margin-top: 5mm;
+    margin-bottom: 2mm;
+}
+h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 1.5mm;
+}
+p  { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: var(--brand-blue); text-decoration: none; }
+a:hover { color: var(--brand-red); }
+
+strong { color: var(--brand-navy); }
+
+/* Chapter intro banner */
+.chapter-intro {
+    background: #eef4fa;
+    border-left: 4px solid var(--brand-blue);
+    padding: 4mm 6mm;
+    margin-bottom: 7mm;
+    border-radius: 0 4px 4px 0;
+}
+.chapter-intro p { margin: 0; font-size: 10.5pt; }
+
+/* Callout boxes */
+.note-box {
+    background: #fff8e1;
+    border-left: 3px solid #f9a825;
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.tip-box {
+    background: #eef6ea;
+    border-left: 3px solid var(--brand-green);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.info-box {
+    background: #eef4fa;
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+.warn-box {
+    background: #fce4ec;
+    border-left: 3px solid var(--brand-red);
+    padding: 3mm 5mm;
+    margin: 4mm 0;
+    font-size: 10pt;
+}
+
+/* Step list */
+.step-list {
+    counter-reset: step-counter;
+    list-style: none;
+    padding-left: 0;
+    margin: 3mm 0;
+}
+/* The counter is POSITIONED, never a flex sibling of the text. display:flex on the li makes every
+   inline child of a step its own flex item, so "Drag <strong>A</strong> into <strong>B</strong>"
+   renders as columns with the spaces dropped. Flex inside ::before is fine - it centres the digit. */
+.step-list li {
+    counter-increment: step-counter;
+    position: relative;
+    margin-bottom: 3mm;
+    padding-left: 10mm;
+}
+.step-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0.5mm;
+    background: var(--brand-blue);
+    color: white;
+    font-size: 8pt;
+    font-weight: 700;
+    min-width: 6mm;
+    height: 6mm;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Two-column cards */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6mm;
+    margin: 4mm 0;
+}
+.three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 5mm;
+    margin: 4mm 0;
+}
+.feature-card {
+    background: var(--brand-bg-subtle);
+    border: 1px solid #e3e8ee;
+    border-top: 3px solid var(--brand-blue);
+    border-radius: 4px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 {
+    color: var(--brand-navy);
+    margin-bottom: 2mm;
+    font-size: 10pt;
+}
+.feature-card p {
+    margin: 0;
+    font-size: 9.5pt;
+    line-height: 1.55;
+}
+
+/* Tables */
+table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4mm 0;
+    font-size: 9.5pt;
+}
+table.data th {
+    background: var(--brand-navy);
+    color: white;
+    text-align: left;
+    padding: 2.5mm 3mm;
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: 0.03em;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+table.data td {
+    padding: 2mm 3mm;
+    border-bottom: 1px solid #e3e8ee;
+    vertical-align: top;
+}
+table.data tr:nth-child(even) td {
+    background: var(--brand-bg-subtle);
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 0.5mm 2mm;
+    border-radius: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.badge-blue    { background: #e6f0f9; color: var(--brand-blue); }
+.badge-green   { background: #e8f5e9; color: var(--brand-green); }
+.badge-orange  { background: #fff3e0; color: #e65100; }
+.badge-red     { background: #fce4ec; color: #c62828; }
+
+/* Severity cells used in the audit report tables */
+table.data td.sev-error { color: #c62828; }
+table.data td.sev-warn  { color: #e65100; }
+table.data td.sev-info  { color: var(--brand-blue); }
+
+/* Inline SVG illustrations */
+figure.illo {
+    margin: 5mm auto 6mm auto;
+    text-align: center;
+    max-width: 140mm;
+    break-inside: avoid;
+}
+figure.illo svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+figure.illo figcaption {
+    font-size: 9pt;
+    color: var(--brand-text);
+    font-style: italic;
+    margin-top: 2mm;
+    line-height: 1.4;
+}
+
+/* Code / keyboard */
+code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    background: var(--brand-bg-subtle);
+    padding: 0.3mm 1.5mm;
+    border-radius: 2px;
+    color: var(--brand-navy);
+}
+kbd {
+    font-family: 'Segoe UI', 'Verdana', sans-serif;
+    font-size: 9pt;
+    background: #fff;
+    border: 1px solid var(--brand-border);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0.3mm 2mm;
+    color: var(--brand-text);
+}
+
+/* TOC */
+.toc-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin-bottom: 10mm;
+    border-bottom: 2px solid var(--brand-blue);
+    padding-bottom: 3mm;
+}
+.toc-entry {
+    display: flex;
+    align-items: baseline;
+    padding: 1.5mm 0;
+}
+.toc-entry.toc-h1 {
+    font-weight: 700;
+    margin-top: 3mm;
+    color: var(--brand-navy);
+    font-size: 11pt;
+}
+.toc-entry.toc-h2 {
+    padding-left: 6mm;
+    font-size: 10pt;
+    color: var(--brand-text);
+    font-weight: 400;
+}
+.toc-num {
+    min-width: 14mm;
+    flex-shrink: 0;
+    color: var(--brand-blue);
+    font-weight: 700;
+}
+.toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--brand-border);
+    margin: 0 2mm 1.5mm;
+}
+.toc-page {
+    color: var(--brand-blue);
+    font-size: 9.5pt;
+    font-weight: 700;
+}
+.toc-entry a {
+    color: inherit;
+}
+
+/* Quote / testimonial */
+.quote {
+    border-left: 3px solid var(--brand-blue);
+    padding: 3mm 6mm;
+    margin: 5mm 0;
+    font-style: italic;
+    color: var(--brand-text);
+    background: var(--brand-bg-subtle);
+}
+
+    </style>
+</head>
+<body>
+
+<!-- Cover page -->
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-logo-wrap">
+        <img src="{{LOGO_DATA_URI}}" alt="kalmstrom.com Business Solutions">
+    </div>
+    <div class="cover-body">
+        <div class="cover-eyebrow">kalmstrom.com Business Solutions</div>
+        <div class="cover-title">The Claw Suite</div>
+        <div class="cover-subtitle">AI assistants that live inside your Microsoft Office apps.</div>
+        <div class="cover-lead">
+            The Claw Suite is six sibling add-ins for Microsoft Office &mdash; PointClaw, ExClaw, WorClaw, OutClaw, VisClaw and ProjClaw. Each one opens a chat panel next to your file and lets you drive it in plain English, backed by Anthropic Claude or Google Gemini. They share a codebase, a philosophy and a tool-building pattern &mdash; but each is tuned to the quirks of its host.
+        </div>
+    </div>
+    <div class="cover-footer">
+        <div><span class="brand">kalmstrom.com</span> &nbsp;&middot;&nbsp; Business Solutions</div>
+        <div>Suite Overview &middot; Edition 1</div>
+    </div>
+</div>
+
+
+<!-- Placeholder: auto-generated by build-chapters.py with --auto-toc -->
+<div class="page">
+    <div class="page-header">
+        <div>The Claw Suite</div>
+        <div>Contents</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Contents</div>
+                <div class="toc-entry toc-h1"><span class="toc-num">1</span>What the Claw Suite is<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.1</span>The products<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.2</span>What they have in common<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.3</span>Tool surface at a glance<div class="toc-dots"></div><span class="toc-page">3</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">1.4</span>Who the suite is for<div class="toc-dots"></div><span class="toc-page">3</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">2</span>Shared architecture<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.1</span>The seven-piece skeleton<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.2</span>The shared libraries under Admin/<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.3</span>The chat pane is one WPF control<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.4</span>The tool pattern<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.5</span>The backend is pluggable<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.6</span>Self-test harnesses<div class="toc-dots"></div><span class="toc-page">4</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">2.7</span>The deploy story<div class="toc-dots"></div><span class="toc-page">4</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">3</span>The products<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.1</span>PointClaw &mdash; for PowerPoint<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.2</span>ExClaw &mdash; for Excel<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.3</span>WorClaw &mdash; for Word<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.4</span>OutClaw &mdash; for Outlook<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.5</span>VisClaw &mdash; for Visio<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.6</span>ProjClaw &mdash; for Project<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.7</span>How they work together<div class="toc-dots"></div><span class="toc-page">5</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">3.8</span>Ribbon footprint<div class="toc-dots"></div><span class="toc-page">5</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">4</span>How the Claw Suite compares<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.1</span>Versus Anthropic's Claude add-ins<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.2</span>Versus community Model Context Protocol (MCP) servers<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.3</span>Versus Microsoft Copilot and Agent 365<div class="toc-dots"></div><span class="toc-page">6</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">4.4</span>Where each option wins<div class="toc-dots"></div><span class="toc-page">6</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">5</span>Roadmap<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.1</span>Near-term priorities<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.2</span>Medium-term: the shared infrastructure tier<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.3</span>Long-term: enterprise governance integration<div class="toc-dots"></div><span class="toc-page">7</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">5.4</span>How to influence the roadmap<div class="toc-dots"></div><span class="toc-page">7</span></div>
+
+        <div class="toc-entry toc-h1"><span class="toc-num">6</span>Installing the suite<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.1</span>What you need on the target machine<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.2</span>What the installer does<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.3</span>Step-by-step install<div class="toc-dots"></div><span class="toc-page">8</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.4</span>Trust prompt on first load<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.5</span>Updating to a newer version<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.6</span>Uninstalling<div class="toc-dots"></div><span class="toc-page">9</span></div>
+        <div class="toc-entry toc-h2"><span class="toc-num">6.7</span>Troubleshooting<div class="toc-dots"></div><span class="toc-page">9</span></div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; Contents</div>
+    </div>
+</div>
+
+
+<!-- Chapter 1 — What the Claw Suite is -->
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch1"><span class="chapter-num">Chapter 1</span>What the Claw Suite is</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is six Microsoft Office add-ins from kalmstrom.com Business Solutions. They share a codebase and a philosophy: let you drive your file in plain English, backed by a modern language model, without leaving the app you already have open.</p>
+        </div>
+<h2>1.1 The products</h2>
+<table class="data">
+            <thead>
+                <tr><th>Product</th><th>Host</th><th>What it drives</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>PointClaw</strong></td><td>PowerPoint</td><td>Slides, shapes, animations, media, themes, speaker notes, deck audits.</td></tr>
+                <tr><td><strong>ExClaw</strong></td><td>Excel</td><td>Ranges, formulas, tables, pivot tables, charts, formatting, imports and exports.</td></tr>
+                <tr><td><strong>WorClaw</strong></td><td>Word</td><td>Paragraphs, styles, headings, tables, TOC, revisions, mail merge, content controls.</td></tr>
+                <tr><td><strong>OutClaw</strong></td><td>Outlook</td><td>Mail, calendar, contacts, rules, search, archive &mdash; driven through Outlook Redemption.</td></tr>
+                <tr><td><strong>VisClaw</strong></td><td>Visio</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection graphs, layout automation.</td></tr>
+                <tr><td><strong>ProjClaw</strong></td><td>Project</td><td>Tasks, resources, assignments, dependencies, baselines, earned value, critical path, calendars.</td></tr>
+            </tbody>
+        </table>
+
+        <p>Each one ships independently. You install only the Claws you need, and each adds a button to its host's ribbon that opens a chat panel.</p>
+<h2>1.2 What they have in common</h2>
+<div class="two-col">
+<div class="feature-card">
+                <h4>Real edits, not suggestions</h4>
+                <p>Every Claw drives the live object model of its host. Changes appear in your document as they happen and can be undone with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.</p>
+            </div>
+<div class="feature-card">
+                <h4>Plain language, specialist tools</h4>
+                <p>You do not learn command syntax. The AI picks the right purpose-built tool &mdash; the suite ships more than six hundred of them.</p>
+            </div>
+<div class="feature-card">
+                <h4>Bring your own API key</h4>
+                <p>Anthropic Claude for conversation; Google Gemini for image and video generation (PointClaw only). Keys are stored locally with Windows DPAPI.</p>
+            </div>
+<div class="feature-card">
+                <h4>One shared code spine</h4>
+                <p>A single chat pane, a single settings window, a single tool-dispatch plumbing layer. A fix in the shared code lands in all six add-ins on the next build.</p>
+            </div>
+        </div>
+<h2>1.3 Tool surface at a glance</h2>
+        <p>The six Claws expose more than six hundred purpose-built tools between them. Exact counts change with every release; current approximate figures:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 1 &mdash; Introduction</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>Product</th><th>Approximate tool count</th><th>Flagship capabilities</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>WorClaw</td><td>115+</td><td>Full styles, headings, TOC, cross-references, captions, revisions, mail merge, content controls, building blocks.</td></tr>
+                <tr><td>OutClaw</td><td>113+</td><td>Redemption-backed mail, calendar, rules, search, archive, attachment handling, Outlook Object Model Guard bypass.</td></tr>
+                <tr><td>ProjClaw</td><td>113+</td><td>Tasks, dependencies, indent/outdent, resources, assignments, baselines, variance, earned value, critical path, calendars, levelling, multi-project.</td></tr>
+                <tr><td>PointClaw</td><td>107+</td><td>AI image &amp; video generation, triggered animations, motion paths, SmartArt, deck audits, PDF / video export, template inspection.</td></tr>
+                <tr><td>VisClaw</td><td>102+</td><td>Pages, shapes, connectors, stencils, ShapeSheet cells, connection-graph walking, layers, masters, layout automation, PNG / PDF export.</td></tr>
+                <tr><td>ExClaw</td><td>101+</td><td>Ranges, formulas, tables, pivots, charts, conditional formats, sort / filter, named ranges, template inspection, macro execution.</td></tr>
+            </tbody>
+        </table>
+<div class="tip-box">
+            <strong>Why so many?</strong> Because generic "let the AI guess with HTML" approaches miss the quirks of each host. A purpose-built tool for, say, <em>add_trigger_animation</em> or <em>update_chart_data</em> is far more reliable than asking an LLM to script the COM call itself.
+        </div>
+<h2>1.4 Who the suite is for</h2>
+        <ul>
+            <li><strong>Knowledge workers</strong> who live inside Office and want an assistant that actually works on their files, not just beside them.</li>
+            <li><strong>Consultants and analysts</strong> producing decks, reports, spreadsheets and client emails under time pressure.</li>
+            <li><strong>Teachers, trainers, and presenters</strong> who iterate on the same material often.</li>
+            <li><strong>Power users</strong> who want reliable COM-level operations without writing VBA.</li>
+        </ul>
+<div class="info-box">
+            <strong>Not a Microsoft product.</strong> The Claw Suite is not built on or licensed from Microsoft. It uses only publicly documented Office object models and Outlook Redemption for Outlook-specific depth. You pay Anthropic and (optionally) Google directly for the API calls.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch2"><span class="chapter-num">Chapter 2</span>Shared architecture</h1>
+
+        <div class="chapter-intro">
+            <p>All six Claws are VSTO desktop add-ins written in C#, targeting .NET Framework 4.7.2 and AnyCPU. They are not independent products sharing a marketing name &mdash; they are one codebase with six host-specific front ends.</p>
+        </div>
+<h2>2.1 The seven-piece skeleton</h2>
+        <p>Each Claw follows the same seven-piece layout. If you can read one, you can read any of them:</p>
+<table class="data">
+            <thead>
+                <tr><th>Piece</th><th>Lives in</th><th>Responsibility</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>ThisAddIn.cs</strong></td><td>Each Claw</td><td>VSTO entry point; registers the pane per host-window.</td></tr>
+                <tr><td><strong>Ribbon.cs + Ribbon.xml</strong></td><td>Each Claw</td><td>Ribbon button(s) that toggle the chat pane.</td></tr>
+                <tr><td><strong>Api/{Host}Context.cs</strong></td><td>Each Claw</td><td>Typed accessors for the active Presentation / Document / Workbook / Inspector.</td></tr>
+                <tr><td><strong>Api/{Host}AgentToolBase.cs</strong></td><td>Each Claw</td><td>Base class for tools; UI-thread marshalling, error surfacing.</td></tr>
+                <tr><td><strong>Api/{Host}ToolDispatcher.cs</strong></td><td>Each Claw</td><td>Registers every tool, routes tool calls, injects context.</td></tr>
+                <tr><td><strong>Api/{Host}SystemPromptBuilder.cs</strong></td><td>Each Claw</td><td>Host-specific system prompt describing the environment.</td></tr>
+                <tr><td><strong>UI/ChatHostBindings.cs</strong></td><td>Each Claw</td><td>Per-host glue: history storage, context block builder, settings window.</td></tr>
+            </tbody>
+        </table>
+<h2>2.2 The shared libraries under Admin/</h2>
+        <p>Everything that is not host-specific lives in <code>X:\Source\Admin\</code> and is <em>linked</em> (not copied) into each Claw's csproj. A fix in shared code lands in every add-in on the next build.</p>
+<table class="data">
+            <thead>
+                <tr><th>Library</th><th>What it contributes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>kSharedCSharp</code></td><td>Core error-handling primitives (<code>kS.kErrorMode</code>, <code>kS.kGlobalErrorHandler</code>), null-safety helpers, DPAPI key store.</td></tr>
+                <tr><td><code>kSharedCSharpUI</code></td><td>The chat pane (<em>ChatPane.xaml</em>), the settings window, WPF theming, the markdown renderer, the choice prompter. Host-agnostic &mdash; parameterised through <code>IChatHostBindings</code>.</td></tr>
+                <tr><td><code>kSharedCSharpAgent</code></td><td>The LLM plumbing: <code>ClaudeClient</code>, <code>GeminiChatClient</code>, <code>OpenAIChatClient</code>, tool-dispatch interfaces, self-test engine, JSON helpers, COM reflection helpers, the shared <code>TemporaryComDocumentScope</code> and <code>BuiltInPropertyHelper</code>.</td></tr>
+                <tr><td><code>Redemption</code></td><td>Outlook Redemption binaries and loader (used by OutClaw only).</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>The reuse-first rule.</strong> When a fix is needed in shared code, it is fixed <em>in shared code</em>. Project-local workarounds are never an acceptable answer. Every fix benefits all six Claws.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>2.3 The chat pane is one WPF control</h2>
+        <p>Every Claw renders the same <code>ChatPane.xaml</code> control from <code>kSharedCSharpUI</code>. The per-host glue is thin &mdash; a couple of dozen lines implementing <code>IChatHostBindings</code> &mdash; but the chat loop, streaming renderer, usage stats, settings access, markdown rendering and choice prompting are all in the shared library.</p>
+
+        <p>What the chat pane cares about from its host:</p>
+        <ul>
+            <li>How to store chat history (<code>CustomXMLParts</code> for PointClaw / ExClaw / WorClaw; JSON on disk for OutClaw, because Outlook items do not have custom XML parts).</li>
+            <li>How to build a <em>context block</em> (the current state of the document, stapled to the system prompt on every turn).</li>
+            <li>Which tool dispatcher to use.</li>
+            <li>Which system prompt to issue.</li>
+        </ul>
+<h2>2.4 The tool pattern</h2>
+        <p>Every tool is a C# class inheriting from the Claw's host-specific <code>*AgentToolBase</code>. It declares four things:</p>
+
+        <ol>
+            <li><strong>Name</strong> &mdash; the tool identifier the LLM uses (e.g. <code>add_slide</code>, <code>create_table</code>).</li>
+            <li><strong>Description</strong> &mdash; a one-to-three sentence description the LLM reads to decide when to call.</li>
+            <li><strong>InputSchema</strong> &mdash; a JSON Schema fragment describing the parameters.</li>
+            <li><strong>Execute</strong> &mdash; the work. Typically a <em>Reader</em> or <em>Runner</em> inner class that the base class marshals to the UI thread.</li>
+        </ol>
+
+        <p>Optionally the tool implements <code>IToolSelfTest.BuildTestCases()</code> to supply headless self-test cases. Those run through the shared <code>ToolSelfTestEngine</code> with a standard driver script per host (see section&nbsp;2.6).</p>
+<h2>2.5 The backend is pluggable</h2>
+        <p>Conversation runs through <code>IAgentClient</code>. Three implementations ship today:</p>
+<table class="data">
+            <thead>
+                <tr><th>Backend</th><th>Endpoint</th><th>Tool calls</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>ClaudeClient</code></td><td>Anthropic Messages API</td><td><em>tool_use</em> + prompt caching</td></tr>
+                <tr><td><code>GeminiChatClient</code></td><td><code>streamGenerateContent?alt=sse</code></td><td><em>functionCall</em></td></tr>
+                <tr><td><code>OpenAIChatClient</code></td><td>Chat Completions</td><td><em>tool_calls</em></td></tr>
+            </tbody>
+        </table>
+
+        <p>Image and video generation (PointClaw only) go through a separate <code>GeminiClient</code> that wraps Imagen and Veo. <code>AgentClientFactory.Create</code> picks the right backend from the persisted user setting; users switch between them from the <em>Chat Backend</em> dropdown in Settings.</p>
+<h2>2.6 Self-test harnesses</h2>
+        <p>Every Claw ships a headless self-test runner under <code>Tests/</code>:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 2 &mdash; Shared architecture</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>Claw</th><th>Runner</th><th>Environment prefix</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>PointClaw</td><td><code>Run-SelfTest.ps1</code></td><td><code>POINTCLAW_*</code></td></tr>
+                <tr><td>OutClaw</td><td><code>Run-SelfTest-OutClaw.ps1</code></td><td><code>OUTCLAW_*</code></td></tr>
+                <tr><td>ExClaw</td><td><code>Run-SelfTest-ExClaw.ps1</code></td><td><code>EXCLAW_*</code></td></tr>
+                <tr><td>WorClaw</td><td><code>Run-SelfTest-WorClaw.ps1</code></td><td><code>WORCLAW_*</code></td></tr>
+                <tr><td>VisClaw</td><td><code>Run-SelfTest-VisClaw.ps1</code></td><td><code>VISCLAW_*</code></td></tr>
+                <tr><td>ProjClaw</td><td><code>Run-SelfTest-ProjClaw.ps1</code></td><td><code>PROJCLAW_*</code></td></tr>
+            </tbody>
+        </table>
+
+        <p>Each runner kills stale Office processes, sets the auto-selftest environment variable, launches the host via COM, tails the log for the <em>SELFTEST DONE</em> sentinel, and exits with a status code.</p>
+<h2>2.7 The deploy story</h2>
+        <ul>
+            <li><strong>Development:</strong> F5 in Visual Studio. VSTO launches the host with the add-in registered under <code>HKCU\Software\Microsoft\Office\&lt;App&gt;\Addins\</code>.</li>
+            <li><strong>Release:</strong> ClickOnce publish from Visual Studio, signed with <code>_TemporaryKey.pfx</code> (until a real code-signing cert is wired up).</li>
+            <li><strong>All six Claws share PointClaw's <code>packages/</code> folder</strong> &mdash; NuGet versions are bumped in one place and the others inherit.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch3"><span class="chapter-num">Chapter 3</span>The products</h1>
+
+        <div class="chapter-intro">
+            <p>Each Claw has its own detailed user manual. This chapter is the one-page summary of each &mdash; what they feel like to use, what they are especially good at, and where their individual manuals go next.</p>
+        </div>
+<h2>3.1 PointClaw &mdash; for PowerPoint</h2>
+        <p>PointClaw is the original, and the one with the deepest "generative" surface. It generates images with Google Imagen and short video clips with Google Veo and drops them straight onto the slide. It drives the full animation stack: triggered animations, motion paths, chart-series animation, slide transitions. It runs a built-in deck audit that scores slides against a house design opinion and fixes what it finds.</p>
+        <ul>
+            <li>Create and open presentations; start from a template; save and export PDF / video.</li>
+            <li>Every shape type: text boxes, tables, SmartArt, charts, pictures, word art, action buttons, countdown timers, YouTube embeds.</li>
+            <li>Full theme control: colours, fonts, effects, slide masters, handout and notes masters.</li>
+            <li>Accessibility checks; screen capture; live slide thumbnails for visual feedback.</li>
+        </ul>
+        <p><em>See the PointClaw User Manual for details.</em></p>
+<h2>3.2 ExClaw &mdash; for Excel</h2>
+        <p>ExClaw treats structured objects &mdash; tables, pivot tables, named ranges &mdash; as first-class citizens. They are easier for the AI to reason about than bare A1:F500 addresses, and ExClaw leans on them heavily.</p>
+        <ul>
+            <li>Read and write values, formulas, and array formulas; fill series; import / export CSV.</li>
+            <li>Create and manage tables, named ranges, pivot tables, and pivot calculated fields.</li>
+            <li>Insert and modify charts, shapes, pictures, hyperlinks.</li>
+            <li>Conditional formats, data validation, sort and filter, freeze panes, protection.</li>
+            <li>Run existing macros; switch calculation mode; refresh data connections.</li>
+            <li>Template inspection: silently open an <code>.xltx</code> to report its sheet inventory, named ranges and tables before you commit to using it.</li>
+        </ul>
+        <p><em>See the ExClaw User Manual for details.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.3 WorClaw &mdash; for Word</h2>
+        <p>WorClaw is the most structurally aware Claw. It works with paragraphs, headings, styles, sections, bookmarks, cross-references, fields, footnotes, and content controls &mdash; the scaffolding of real documents, not just strings of text.</p>
+        <ul>
+            <li>Read paragraphs, headings, selection; find by text, style, or field.</li>
+            <li>Full style lifecycle: create, modify, list, apply, find-by-style.</li>
+            <li>TOC, table of figures, cross-references, captions, indexes, footnotes, endnotes.</li>
+            <li>Track changes, revisions, comments, compare documents.</li>
+            <li>Mail merge (simple and multi-file), content controls, building blocks, templates.</li>
+            <li>Headers, footers, page setup, section starts, columns, page numbering.</li>
+            <li>Font analysis across an entire document; template file inspection.</li>
+        </ul>
+        <p><em>See the WorClaw User Manual for details.</em></p>
+<h2>3.4 OutClaw &mdash; for Outlook</h2>
+        <p>OutClaw is the odd one out. Outlook's security model aggressively blocks normal COM access to mail items &mdash; the "Outlook Object Model Guard" fires a user prompt every time an add-in tries to read the body of a message or send mail. OutClaw sidesteps this entirely by using <strong>Outlook Redemption</strong>: RDO / Safe*Item objects that bypass the guard, run on secondary threads, and expose raw MAPI properties.</p>
+        <ul>
+            <li>Mail: read, send, reply, forward, archive, categorise, flag, move, delete.</li>
+            <li>Calendar: create, update, list meetings and appointments; free/busy lookup.</li>
+            <li>Contacts: create, update, list, search.</li>
+            <li>Rules: create, modify, enable/disable; search and summarise.</li>
+            <li>Attachments: inspect, save, add, remove.</li>
+            <li>Folders: enumerate, move items, count messages.</li>
+            <li>Search across all mailboxes and stores.</li>
+        </ul>
+<div class="info-box">
+            <strong>A per-user session is required.</strong> Outlook enforces a singleton model per Windows profile &mdash; a foreign-session Outlook will block OutClaw's driver. See the OutClaw manual for specifics.
+        </div>
+        <p><em>See the OutClaw User Manual for details.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.5 VisClaw &mdash; for Visio</h2>
+        <p>VisClaw is the diagram-and-shape Claw. Visio's object model is deep but idiosyncratic: shapes are backed by stencil masters, every shape has a ShapeSheet of raw cells, connectors carry endpoint references back to the shapes they connect, and pages form a small network of their own. VisClaw exposes that surface rather than hiding it, then gives the AI enough layout primitives to do the boring work.</p>
+        <ul>
+            <li><strong>Pages.</strong> Add, delete, rename, list, set size, set orientation, fit-to-shapes.</li>
+            <li><strong>Shapes.</strong> Add, delete, duplicate, copy to another page, group, ungroup, rotate, z-order, align, distribute.</li>
+            <li><strong>Formatting.</strong> Fill colour, line colour, line weight, line arrows, line pattern.</li>
+            <li><strong>Text on shapes.</strong> Set text, font, size, colour, style, alignment.</li>
+            <li><strong>ShapeSheet access.</strong> Get / set individual ShapeSheet cells for the cases a high-level API cannot express.</li>
+            <li><strong>Shape data properties.</strong> List and set the name/value pairs Visio calls "shape data".</li>
+            <li><strong>Masters and stencils.</strong> List masters, open a stencil, drop a named master onto a page.</li>
+            <li><strong>Finding.</strong> Search by master, by text; fetch full shape detail; list all shapes on a page.</li>
+            <li><strong>Connectors and connection graphs.</strong> Add a connector, enumerate endpoints, list all connections on a page, walk the graph from any shape, fetch a shape's neighbours.</li>
+            <li><strong>Export and save.</strong> Page PNG, whole-document PDF, save.</li>
+            <li><strong>Undo scopes.</strong> Begin / end an undo scope so the AI can treat a multi-step edit as a single undo step.</li>
+        </ul>
+        <p><em>See the VisClaw User Manual for details. Chapter 7 of that manual covers advanced operations &mdash; themes &amp; quick styles, masters authoring, containers and callouts, hyperlinks, data graphics refresh, layers, and drawing primitives &mdash; that don't fit the day-to-day chapters.</em></p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.6 ProjClaw &mdash; for Project</h2>
+        <p>ProjClaw is the only Claw whose primary data is a schedule rather than a document. Tasks, resources, assignments, dependencies, calendars, baselines, and earned value are all first-class objects. ProjClaw does not try to replace Project's own scheduling engine &mdash; it drives it through the native COM object model.</p>
+        <ul>
+            <li><strong>Tasks &mdash; full lifecycle.</strong> Add (single + bulk), delete, list, find by name, get detail, set any field, indent / outdent, move through the hierarchy tree.</li>
+            <li><strong>Dependencies.</strong> Add, remove, chain-link, fetch predecessors / successors, get slack, identify the critical path.</li>
+            <li><strong>Task properties.</strong> Milestone, task type, notes, priority, constraint, deadline.</li>
+            <li><strong>Progress tracking.</strong> Set percent complete, actual start, actual finish, actual work.</li>
+            <li><strong>Resources.</strong> Add, delete, list, set fields, set max units, set cost rate, set type, level resources, find over-allocated ones.</li>
+            <li><strong>Assignments.</strong> Assign, bulk assign, remove; set units or work; list per task.</li>
+            <li><strong>Calendars.</strong> List, set working / non-working time, set the project calendar.</li>
+            <li><strong>Baselines and variance.</strong> Save a baseline, compare to baseline, get variance, get earned value.</li>
+            <li><strong>Costs.</strong> Per-task cost, fixed cost, project cost.</li>
+            <li><strong>Status reporting.</strong> Set the status date, generate a status report.</li>
+            <li><strong>Views, filters, custom fields.</strong> Switch views, apply filters, read / write custom field values.</li>
+            <li><strong>Export.</strong> PDF and Excel.</li>
+            <li><strong>Undo scopes.</strong> Same pattern as VisClaw &mdash; wrap multi-step edits in a single undo step.</li>
+        </ul>
+        <p><em>See the ProjClaw User Manual for details. Chapter 7 of that manual covers advanced operations &mdash; multi-project consolidation, template authoring, calendar creation, scheduling mode, manual / auto recalculation, WBS renumbering, and built-in reports &mdash; beyond the day-to-day chapters.</em></p>
+<h2>3.7 How they work together</h2>
+        <p>Each Claw is a separate add-in, so they install and run independently. But they are built to play nicely:</p>
+        <ul>
+            <li><strong>Consistent chat experience.</strong> The chat panel looks and feels identical across all six hosts. Once you know how to drive one Claw, you know how to drive the others.</li>
+            <li><strong>Shared settings window.</strong> Same API key fields, same model picker, same backend dropdown. Same partials in the user manuals.</li>
+            <li><strong>One API key, many uses.</strong> An Anthropic key works across all six Claws. You do not pay per-add-in.</li>
+            <li><strong>Cross-host workflows are manual for now.</strong> ExClaw does not talk to WorClaw today. If you want to flow data between hosts, Windows clipboard or saved intermediate files are the current bridge.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 3 &mdash; The products</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>3.8 Ribbon footprint</h2>
+        <p>Each Claw adds a minimal ribbon footprint:</p>
+        <ul>
+            <li><strong>PointClaw / ExClaw / WorClaw / VisClaw / ProjClaw:</strong> one toggle button on the Home ribbon that opens or closes the chat pane.</li>
+            <li><strong>OutClaw:</strong> eight buttons &mdash; mail, calendar, contacts, rules, search, archive, attachments, settings &mdash; each opens the chat pane pre-scoped to that task.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch4"><span class="chapter-num">Chapter 4</span>How the Claw Suite compares</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is not the only way to get an AI into Office. Three categories of alternative exist today &mdash; Microsoft's own Copilot and partner add-ins, Anthropic's Claude add-ins, and the open-source Model Context Protocol (MCP) servers that expose Office operations to external AI clients. Each trades something off; knowing where they differ helps you pick the right tool for each job.</p>
+        </div>
+<h2>4.1 Versus Anthropic's Claude add-ins</h2>
+        <p>Anthropic publishes its own <strong>Claude for PowerPoint / Excel / Word</strong> add-ins through Microsoft AppSource. They also put Claude inside Office, but the underlying technology is very different.</p>
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Claude for Office (Anthropic)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Add-in type</td><td>VSTO desktop add-in &mdash; runs inside the Office process via COM</td><td>Office Add-in (Office.js) &mdash; runs in a sandboxed web view</td></tr>
+                <tr><td>Reach into Office</td><td>Full native object model: triggered animations, motion paths, SmartArt, pivot tables, content controls, mail merge, Redemption-level Outlook access, deck audits, PDF / video export</td><td>Limited to what Office.js exposes &mdash; mainly generating, rewriting and summarising content</td></tr>
+                <tr><td>Specialist tools</td><td>650+ purpose-built tools across six hosts</td><td>Primarily conversational assistance on top of document text</td></tr>
+                <tr><td>Media generation</td><td>Google Imagen (images) and Veo (short video), inserted in place &mdash; PointClaw</td><td>Not supported in the add-in</td></tr>
+                <tr><td>Authentication</td><td>Your own Anthropic API key, stored locally with DPAPI (pay-as-you-go)</td><td>Your Claude subscription</td></tr>
+                <tr><td>Platforms</td><td>Windows desktop Office only</td><td>Windows, Mac, Office for the web</td></tr>
+                <tr><td>Cost model</td><td>Per-token API usage on your own key &mdash; no subscription</td><td>Included in a Claude subscription</td></tr>
+            </tbody>
+        </table>
+<div class="tip-box">
+            <strong>Rule of thumb.</strong> Claude for Office is broader and runs everywhere, but stays on the surface. The Claw Suite trades cross-platform reach for depth &mdash; it can drive internals that a web-sandboxed add-in cannot touch.
+        </div>
+<h2>4.2 Versus community Model Context Protocol (MCP) servers</h2>
+        <p>There is a growing ecosystem of open-source MCP servers that expose Office operations to external AI clients &mdash; the <code>python-pptx</code>-backed <em>Office-PowerPoint-MCP-Server</em>, <code>openpyxl</code>-based Excel servers, <code>python-docx</code>-based Word servers, and so on. They are a different shape:</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Community MCP servers</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>What they edit</td><td>The <em>live presentation / workbook / document</em> you have on screen</td><td>A <em>file on disk</em> &mdash; you see the result when you reopen it</td></tr>
+                <tr><td>Where they run</td><td>Inside the Office process via COM</td><td>Standalone Python server; uses a file-format library</td></tr>
+                <tr><td>Reach</td><td>Everything COM exposes &mdash; animations, live selection, deck audits, Outlook Redemption, macros, calc mode, track changes</td><td>Whatever the underlying file-format library supports &mdash; typically a subset</td></tr>
+                <tr><td>Tool surface (per host)</td><td>100&ndash;115</td><td>Typically 30&ndash;50</td></tr>
+                <tr><td>Best for</td><td>Interactive, iterative work on a file you are looking at</td><td>Scripted, pipeline-style authoring &mdash; "generate ten reports overnight"</td></tr>
+            </tbody>
+        </table>
+
+        <p>The Claw Suite covers every capability the most fully featured PowerPoint MCP server exposes, plus around seventy more tools that only an in-process add-in can reach. See each Claw's own manual for the per-host parity breakdown.</p>
+<h2>4.3 Versus Microsoft Copilot and Agent 365</h2>
+        <p>Microsoft's own strategy is different from anything described above. It has two distinct layers worth understanding.</p>
+<h3>Microsoft 365 Copilot</h3>
+        <p>Copilot is Microsoft's consumer-facing agent. It lives inside every Microsoft 365 app, works against your tenant's data, and is subject to your tenant's compliance boundaries. For most enterprise users this is the obvious starting point. Its reach is broad but shallow: like Claude for Office, it operates through the Office.js-era APIs and cannot touch features that require COM-level control.</p>
+<h3>Microsoft Agent 365</h3>
+        <p>Agent 365, announced in November 2025 and generally available from May 2026, is a very different thing. It is <strong>not an agent</strong> &mdash; it is the <em>control plane</em> for agents running in a Microsoft 365 tenant. Its job is to govern, identify, and observe the agents that Copilot, partners, and in-house developers bring into the organisation.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th></th><th>Claw Suite</th><th>Microsoft Agent 365</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Category</td><td>Working agents &mdash; the thing that does the work</td><td>Governance / control plane &mdash; the thing that supervises other agents</td></tr>
+                <tr><td>Layer</td><td>Application</td><td>Infrastructure</td></tr>
+                <tr><td>Audience</td><td>Individual Office users, small teams</td><td>Enterprise IT governing agent fleets</td></tr>
+                <tr><td>Identity</td><td>Windows user + DPAPI-encrypted personal API keys</td><td>Microsoft Entra agent ID; risk-based conditional access</td></tr>
+                <tr><td>Licensing</td><td>Free; bring-your-own API key</td><td>Bundled into Microsoft 365 E7 (premium tier)</td></tr>
+                <tr><td>AI model</td><td>Anthropic Claude / Google Gemini</td><td>Governs any registered agent, including Copilot + MCP + custom</td></tr>
+                <tr><td>Data boundary</td><td>Content sent to Anthropic / Google</td><td>Agents kept within the M365 tenant with policy enforcement</td></tr>
+                <tr><td>Tool surface</td><td>650+ specialist Office tools</td><td>Near zero &mdash; it is plumbing, not application</td></tr>
+            </tbody>
+        </table>
+<div class="info-box">
+            <strong>They are complementary, not competitive.</strong> Agent 365 is designed to bring agents under management &mdash; it will identify the Claws as "shadow agents" in a tenant that has it enabled. From Microsoft's point of view that is a feature, not a bug: you deploy Agent 365 precisely because you want to see (and optionally limit) what agents are doing.
+        </div>
+<h3>What this means for the Claw Suite</h3>
+        <ol>
+            <li><strong>For individual and small-team users today, the model does not change.</strong> Agent 365 is an M365 E7 SKU aimed at large enterprises. A consultant, teacher or analyst using the Claws is not its audience.</li>
+            <li><strong>For future enterprise adoption, integration will matter.</strong> A Claw add-in that registers itself as an Entra agent, emits telemetry via the Observability SDK, and respects tenant policy would be a governable agent in an Agent-365-enabled tenant. Without that, it is a shadow agent that IT may block. See Chapter 5 for the roadmap.</li>
+            <li><strong>Capability still matters.</strong> Microsoft's bet is that <em>governance</em> will dominate the enterprise buying decision. The Claw Suite's bet is that <em>capability</em> &mdash; a tool surface north of six hundred &mdash; dominates the individual-user decision. Both can be correct simultaneously at different market tiers.</li>
+        </ol>
+<h2>4.4 Where each option wins</h2>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 4 &mdash; How it compares</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<table class="data">
+            <thead>
+                <tr><th>If you want&hellip;</th><th>Pick&hellip;</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Deep COM-level control inside one or more Office apps on your Windows desktop</td><td>The Claw Suite</td></tr>
+                <tr><td>AI in Office across Mac / web / Windows</td><td>Claude for Office (Anthropic)</td></tr>
+                <tr><td>Tenant-wide assistant for everyone on M365</td><td>Microsoft 365 Copilot</td></tr>
+                <tr><td>Scripted / batch generation of Office files from a pipeline</td><td>A community MCP server</td></tr>
+                <tr><td>Visibility and policy control over all agents in an enterprise</td><td>Microsoft Agent 365 (plus any of the above)</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 5 &mdash; Roadmap</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch5"><span class="chapter-num">Chapter 5</span>Roadmap</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite is a living codebase. New tools land often; occasionally an architectural piece gets promoted into shared infrastructure. This chapter sketches the current direction &mdash; what is on the near-term radar, and what the Agent 365 landscape implies for longer-term positioning.</p>
+        </div>
+<h2>5.1 Near-term priorities</h2>
+        <ul>
+            <li><strong>Runtime verification.</strong> Many new tools are shipped in waves, compile-verified but not yet self-tested against live Office. Running the per-host <code>Run-SelfTest*.ps1</code> harnesses regularly catches COM signature surprises the C# compiler cannot.</li>
+            <li><strong>Consistency sweep.</strong> The style rules (use <code>ToolArgs.RequireX</code> for required inputs, <code>ToolTestCase.ErrorPathCall</code> for empty-input guards, action-verb descriptions) are applied to every new tool, and older tools are being retrofitted as they are touched.</li>
+            <li><strong>Per-Claw manuals.</strong> All six Claws ship full user manuals built from the shared chapter template; duplicated boilerplate (install steps, key-entry steps, button-missing note, chat pane anatomy, tool-call loop diagram) lives in <code>Documentation\Human\_shared\partials\</code> and is rendered into each manual at build time.</li>
+        </ul>
+<h2>5.2 Medium-term: the shared infrastructure tier</h2>
+        <p>The suite's reuse-first rule keeps pulling per-Claw code into the shared libraries. Current shared helpers worth knowing about:</p>
+<table class="data">
+            <thead>
+                <tr><th>Shared helper</th><th>What it abstracts</th><th>Used by</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>TemporaryComDocumentScope</code></td><td>Open-inspect-close pattern for external files (templates, read-only opens)</td><td>Every Claw</td></tr>
+                <tr><td><code>BuiltInPropertyHelper</code></td><td>Late-bound read/write of <code>BuiltInDocumentProperties</code> and <code>CustomDocumentProperties</code></td><td>PointClaw, WorClaw (and eligible for ExClaw if needed)</td></tr>
+                <tr><td><code>ChatPane</code> + <code>SettingsPanel</code></td><td>The entire chat and settings UI</td><td>Every Claw</td></tr>
+                <tr><td><code>IChatHostBindings</code></td><td>The contract between the chat pane and each host</td><td>Every Claw</td></tr>
+                <tr><td><code>AgentClientFactory</code></td><td>Backend selection across Claude, Gemini, OpenAI</td><td>Every Claw</td></tr>
+            </tbody>
+        </table>
+
+        <p>More will follow as duplication appears. The rule is simple: <em>fix in shared, never in a project-local workaround</em>.</p>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 5 &mdash; Roadmap</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+<h2>5.3 Long-term: enterprise governance integration</h2>
+        <p>The emergence of Microsoft Agent 365 (see Chapter&nbsp;4) changes the enterprise conversation. An agent that wants to run inside a regulated, Agent-365-managed tenant needs three things:</p>
+
+        <ol>
+            <li><strong>An Entra agent ID</strong> &mdash; registration with Microsoft Entra so IT can see the agent exists, scope its access, and apply conditional access policies.</li>
+            <li><strong>Observability SDK integration</strong> &mdash; emit telemetry so the tenant's Agent 365 dashboards can track what each agent is doing.</li>
+            <li><strong>Policy-compatible identity and key management</strong> &mdash; move away from DPAPI-stored personal keys toward Entra-managed secrets or a centrally-approved key rotation scheme.</li>
+        </ol>
+
+        <p>None of that is free. It changes the deployment shape from "install a VSTO add-in, paste your API key" to "onboard an agent into your tenant, wait for IT sign-off, accept the policies." The Claw Suite's current audience &mdash; individuals, small teams, and consultants &mdash; does not pay for that complexity; it is still better for them to pay Anthropic directly.</p>
+
+        <p>But if a large enterprise ever wants to deploy the Claws under Agent 365 governance, the work above is the path. It is a deliberate deferral, not an accidental gap.</p>
+<div class="info-box">
+            <strong>Two audiences, two products?</strong> It is possible the right answer is to keep today's Claws as the consumer / SMB offering and fork an "Enterprise Edition" that accepts the Agent 365 constraints in exchange for being deployable at scale. Both bets can be right simultaneously: capability dominates the individual-user decision; governance dominates the enterprise-IT decision.
+        </div>
+<h2>5.4 How to influence the roadmap</h2>
+        <ul>
+            <li><strong>Send a feature request.</strong> Each per-Claw manual lists the support contact. The roadmap is driven by real user requests, not speculative planning.</li>
+            <li><strong>Log evidence.</strong> When a tool misbehaves, set logging to Verbose (Settings &rarr; Logging) and send the <code>%APPDATA%\&lt;Claw&gt;\&lt;claw&gt;.log</code> excerpt with your API key redacted. Runtime evidence is worth more than a symptom description.</li>
+            <li><strong>Tell kalmstrom.com which hosts matter to you.</strong> If your workflow is Excel-first, the roadmap should reflect that.</li>
+        </ul>
+    </div>
+    <div class="page-footer">
+        <div class="brand-mark">kalmstrom.com</div>
+        <div>Claw Suite &middot; 0</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 6 &mdash; Installing the suite</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <h1 id="ch6"><span class="chapter-num">Chapter 6</span>Installing the suite</h1>
+
+        <div class="chapter-intro">
+            <p>The Claw Suite ships as a single Windows Installer package, <code>ClawSuite.msi</code>, which bundles all six VSTO add-ins. The installer detects which Microsoft Office applications are present on the target machine and only installs the matching add-ins. Whatever you do not have, the installer silently skips.</p>
+        </div>
+
+        <h2>6.1 What you need on the target machine</h2>
+        <ul>
+            <li><strong>Windows 10 22H2</strong> or <strong>Windows 11</strong> (any edition). Windows Server 2019/2022 also work.</li>
+            <li><strong>.NET Framework 4.7.2 or later</strong> &mdash; ships with all supported Windows versions.</li>
+            <li><strong>Microsoft Office 2016 or later</strong>, with at least one of: PowerPoint, Outlook, Excel, Word, Visio, Microsoft Project. Office 2016+ ships with the Visual Studio 2010 Tools for Office Runtime that the Claws need.</li>
+            <li><strong>WebView2 Evergreen Runtime</strong> for the chat pane. Windows 11 22H2 and later ship this preinstalled. On older boxes you may need to install it from Microsoft.</li>
+            <li><strong>Administrator rights</strong> on the machine for the install (the installer is per-machine, not per-user).</li>
+        </ul>
+
+        <h2>6.2 What the installer does</h2>
+        <p>For every detected Office host, the installer:</p>
+        <ol>
+            <li>Copies the add-in's files to <code>C:\Program Files\ClawSuite\&lt;Claw&gt;\</code> (one folder per Claw).</li>
+            <li>Writes the VSTO registration keys to <code>HKLM\Software\Microsoft\Office\&lt;App&gt;\Addins\kalmstrom.&lt;Claw&gt;</code> with <code>LoadBehavior = 3</code> (load on Office startup).</li>
+            <li>Mirrors those keys to <code>HKLM\Software\Wow6432Node\Microsoft\Office\...</code> so the add-in loads under both 32-bit and 64-bit Office.</li>
+        </ol>
+        <p>Hosts that are not installed on the machine are not registered and consume no disk space.</p>
+
+        <h2>6.3 Step-by-step install</h2>
+        <ol>
+            <li>Download <code>ClawSuite.msi</code> from the kalmstrom.com download page.</li>
+            <li>Close any open Office applications. The installer can run with Office open, but the new ribbon tab will not appear in those windows until you restart them.</li>
+            <li>Double-click <code>ClawSuite.msi</code>. If Windows SmartScreen pops a <em>"Windows protected your PC"</em> warning, click <strong>More info</strong> &rarr; <strong>Run anyway</strong>. The kalmstrom.com signing certificate may not yet be familiar to SmartScreen.
+                <div class="figure-placeholder" style="border:1px dashed #999; padding:1em; margin:0.5em 0; color:#666; font-size:0.85em">[Screenshot: SmartScreen <em>"Windows protected your PC"</em> dialog with the <strong>More info</strong> link circled]</div></li>
+            <li>Click <strong>Yes</strong> on the User Account Control prompt.
+                <div class="figure-placeholder" style="border:1px dashed #999; padding:1em; margin:0.5em 0; color:#666; font-size:0.85em">[Screenshot: UAC prompt showing publisher <em>kalmstrom.com Business Solutions</em> and the <strong>Yes</strong> button]</div></li>
+            <li>The installer wizard opens. Click <strong>Next</strong> on the welcome page, then accept the licence.</li>
+            <li>On the <strong>Custom Setup</strong> page you will see one feature per detected Office host. Use the dropdown next to any feature to opt out of that Claw if you do not want it installed. Hosts you do not have are not shown at all.
+                <div class="figure-placeholder" style="border:1px dashed #999; padding:1em; margin:0.5em 0; color:#666; font-size:0.85em">[Screenshot: Custom Setup page with the six Claws listed and one feature's dropdown expanded]</div></li>
+            <li>Confirm the install location (default: <code>C:\Program Files\ClawSuite\</code>) and click <strong>Install</strong>.</li>
+            <li>When the installer finishes, click <strong>Finish</strong>. No reboot is required.</li>
+            <li>Open one of the Office applications you installed support for. The Claw's ribbon tab should appear within a few seconds. Click the tab and use the <strong>Toggle pane</strong> button to open the chat pane.</li>
+        </ol>
+
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div class="page-left">The Claw Suite</div>
+        <div>Chapter 6 &mdash; Installing the suite (continued)</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+
+        <h2>6.4 Trust prompt on first load</h2>
+        <p>The first time an Office host loads a Claw, the Office Trust Center may prompt you to confirm the publisher. Choose <strong>Trust the publisher</strong> so that subsequent loads are silent. If the publisher certificate is not yet trusted on your machine, the add-in will not load and Office will list it under <strong>File &rarr; Options &rarr; Add-ins &rarr; Disabled Items</strong>. In that case, contact kalmstrom.com support &mdash; the installer needs to be re-issued with a corporately trusted certificate.</p>
+        <div class="figure-placeholder" style="border:1px dashed #999; padding:1em; margin:0.5em 0; color:#666; font-size:0.85em">[Screenshot: Office <strong>File &rarr; Options &rarr; Add-ins &rarr; Disabled Items</strong> dialog showing a Claw listed with its <strong>Re-enable</strong> button]</div>
+
+        <h2>6.5 Updating to a newer version</h2>
+        <p>Newer versions of <code>ClawSuite.msi</code> upgrade an older install in place. Just double-click the new MSI &mdash; you do not need to uninstall first. Settings, API keys, favourite prompts and conversation history are preserved (they live under <code>%APPDATA%\</code>, not in the install folder).</p>
+
+        <h2>6.6 Uninstalling</h2>
+        <ol>
+            <li>Open <strong>Settings &rarr; Apps &rarr; Installed apps</strong>.</li>
+            <li>Find <strong>Claw Suite for Microsoft Office</strong> and click the three-dot menu &rarr; <strong>Uninstall</strong>.</li>
+            <li>Confirm. The installer removes all files and registry keys for every installed Claw.</li>
+        </ol>
+        <p>Your settings and conversation history under <code>%APPDATA%\&lt;ClawName&gt;\</code> are <strong>not</strong> removed by uninstall. Delete those folders manually if you want a clean slate.</p>
+
+        <h2>6.7 Troubleshooting</h2>
+        <table class="data">
+            <thead>
+                <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Installer aborts with <em>"requires Visual Studio 2010 Tools for Office Runtime"</em>.</td><td>Office 2013 or older, or Office is missing its VSTO runtime.</td><td>Upgrade Office to 2016 or later, or install the VSTO 2010 runtime from Microsoft.</td></tr>
+                <tr><td>Installer succeeds but no Claw ribbon tab appears.</td><td>Office Trust Center disabled the add-in because of an untrusted certificate.</td><td>Check <strong>File &rarr; Options &rarr; Add-ins &rarr; Disabled Items</strong>. Re-enable, restart Office. If it disables itself again, contact support.</td></tr>
+                <tr><td>Chat pane shows a blank white area.</td><td>WebView2 runtime is missing.</td><td>Install the Microsoft Edge WebView2 Evergreen Runtime from Microsoft.</td></tr>
+                <tr><td>SmartScreen blocks the MSI even after <em>Run anyway</em>.</td><td>Group Policy on a managed machine.</td><td>Ask your IT department to allowlist the kalmstrom.com publisher.</td></tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+</body>
+</html>

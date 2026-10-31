@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP Cold Storage — Konfigurera automatisk mediaarkivering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Langate Glass — product UI tokens (see branding-langate-glass) */
+  --lg-navy:       #00517e;   /* primary blue: chrome, headings, structure */
+  --lg-navy-lt:    #013d5f;   /* darker blue: hover / pressed */
+  --lg-coral:      #02b896;   /* SIGNATURE green accent: rings, stripes, dots, fills */
+  --lg-coral-dk:   #017a64;   /* accessible green: green text + white-on-green surfaces */
+  --lg-blue-muted: #537780;   /* Langate teal: secondary text, hover borders */
+  --green:         #02b896;
+  --green-600:     #017a64;
+  --green-50:      #e6faf6;
+
+  --lg-bg:         #eaf3f2;   /* soft glass-tint fallback */
+  --white:         #ffffff;
+  --border:        rgba(0,81,126,.16);
+  --border-lt:     rgba(0,81,126,.09);
+  --text:          #00517e;   /* headings ink-strong */
+  --text-mid:      #1d3a4b;   /* body ink */
+  --text-muted:    #4f6b7c;   /* secondary (AA on light glass) */
+  --success:       #017a64;
+  --success-lt:    #e6faf6;
+  --warn:          #8a5a00;
+  --warn-bg:       #fff8e6;
+  --warn-border:   #ffe0a3;
+  --step-done:     #017a64;
+  --step-active:   var(--green);
+  --step-todo:     #b3cbd8;
+
+  /* Glass surfaces + aurora backdrop */
+  --glass:         rgba(255,255,255,.66);
+  --glass-strong:  rgba(255,255,255,.82);
+  --glass-blur:    saturate(155%) blur(20px);
+  --glass-blur-lg: saturate(170%) blur(28px);
+  --glass-hi:      inset 0 1px 0 rgba(255,255,255,.75);
+  --glass-ring:    rgba(255,255,255,.6);
+  --elev-1:        0 1px 2px rgba(2,38,58,.05), 0 8px 22px rgba(2,38,58,.07);
+  --elev-2:        0 2px 8px rgba(2,38,58,.10), 0 22px 60px rgba(2,38,58,.18);
+  --glow-green:    0 0 0 3px rgba(2,184,150,.22);
+  --aurora:
+    radial-gradient(118% 120% at 0% 0%, rgba(2,184,150,.22), transparent 46%),
+    radial-gradient(120% 120% at 100% 2%, rgba(13,62,190,.16), transparent 52%),
+    radial-gradient(100% 100% at 100% 100%, rgba(0,81,126,.12), transparent 60%),
+    linear-gradient(157deg, #e9f4f8 0%, #dde9f0 48%, #e8f6f2 100%);
+  --font: 'DM Sans', Avenir, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text-mid);
+  background: var(--lg-bg);
+  background: var(--aurora);
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(180deg, #013d5f 0%, var(--lg-navy) 100%);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  flex-shrink: 0;
+  gap: 16px;
+  border-bottom: 3px solid var(--green);   /* Langate signature accent stripe */
+  box-shadow: var(--elev-1);
+  position: relative; z-index: 10;
+}
+.header-logo {
+  display: flex; align-items: center; gap: 9px;
+}
+.header-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(2,184,150,.16);
+  border: 1px solid rgba(2,184,150,.5);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.header-icon svg { width:15px; height:15px; fill:var(--green); }
+.header-brand { color:white; font-weight:700; font-size:14px; letter-spacing:.03em; }
+.header-divider { width:1px; height:18px; background:rgba(255,255,255,.18); }
+.header-page { color:rgba(255,255,255,.65); font-size:13px; }
+.header-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.header-avatar { width:30px; height:30px; border-radius:50%; background:var(--green-600); color:white; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.header-user { color:rgba(255,255,255,.65); font-size:12px; }
+
+/* ── MAIN LAYOUT ── */
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr 290px;
+  gap: 0;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 20px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── STEP SIDEBAR ── */
+.steps-panel {
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-ring);
+  border-radius: 17px;
+  box-shadow: var(--glass-hi), var(--elev-1);
+  padding: 20px 0;
+  position: sticky;
+  top: 20px;
+}
+
+.steps-title {
+  padding: 0 20px 14px;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+  border-bottom: 1px solid var(--border-lt);
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.step-item:hover:not(.active) { background: rgba(255,255,255,.5); }
+.step-item.active { background: rgba(2,184,150,.10); }
+.step-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 3px; border-radius: 2px;
+  background: var(--lg-coral);
+}
+
+.step-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+  transition: background .2s, border-color .2s;
+}
+.step-num.todo   { border: 2px solid var(--step-todo); color: var(--text-muted); background: rgba(255,255,255,.55); }
+.step-num.active { border: 2px solid var(--green); color: var(--green-600); background: var(--green-50); box-shadow: var(--glow-green); }
+.step-num.done   { background: var(--step-done); color: white; border: 2px solid var(--step-done); font-size: 13px; }
+
+.step-label .step-name  { font-size: 13px; font-weight: 600; color: var(--text); }
+.step-label .step-desc  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.step-item.active .step-name { color: var(--green-600); }
+
+.steps-connector { width: 2px; height: 12px; background: var(--border-lt); margin: 0 0 0 32px; }
+
+/* ── CONTENT CARD ── */
+.card {
+  background: var(--glass-strong);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  backdrop-filter: var(--glass-blur-lg);
+  border: 1px solid var(--glass-ring);
+  border-radius: 17px;
+  box-shadow: var(--glass-hi), var(--elev-2);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border-lt);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.card-head-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--green-50); border: 1px solid rgba(2,184,150,.4);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 18px;
+}
+.card-title   { font-size: 17px; font-weight: 700; color: var(--lg-navy); }
+.card-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.card-body { padding: 24px; }
+
+.card-foot {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-lt);
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px; background: rgba(255,255,255,.4);
+}
+
+/* Step content */
+.step-content { display: none; }
+.step-content.active { display: block; }
+
+/* ── SCOPE CARDS ── */
+.scope-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.scope-card {
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  position: relative;
+}
+.scope-card:hover { border-color: var(--lg-blue-muted); }
+.scope-card.picked {
+  border-color: var(--green);
+  background: var(--green-50);
+  box-shadow: var(--glow-green);
+}
+.scope-card.picked::after {
+  content: '✓';
+  position: absolute; top: 10px; right: 12px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--green-600); color: white;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.scope-icon { font-size: 26px; margin-bottom: 8px; }
+.scope-name { font-size: 13px; font-weight: 700; color: var(--lg-navy); }
+.scope-desc { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; line-height: 1.45; }
+
+.scope-detail {
+  display: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-lt);
+  animation: fadeIn .2s ease;
+}
+.scope-card.picked .scope-detail { display: block; }
+
+.scope-detail input, .scope-detail textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 7px 10px;
+  font-size: 12px; font-family: inherit;
+  color: var(--text);
+  transition: border-color .15s;
+}
+.scope-detail input:focus, .scope-detail textarea:focus {
+  outline: none; border-color: var(--lg-coral);
+}
+.scope-detail textarea { height: 64px; resize: vertical; }
+.scope-detail label { font-size: 11px; color: var(--text-muted); font-weight: 600; display:block; margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em; }
+
+.site-list { list-style:none; }
+.site-list li {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; font-size: 12px;
+}
+.site-list li input { accent-color: var(--lg-coral); }
+
+/* ── CRITERIA ── */
+.criteria-row { margin-bottom: 20px; }
+.crit-label { font-size: 12px; font-weight: 700; color: var(--text-mid); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.crit-desc  { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+
+/* Range slider */
+.range-wrap { position: relative; }
+.range-track {
+  -webkit-appearance: none;
+  width: 100%; height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--lg-coral) 0%, var(--lg-coral) var(--pct, 50%), var(--border) var(--pct, 50%), var(--border) 100%);
+  outline: none; cursor: pointer;
+}
+.range-track::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%; background: white;
+  border: 2.5px solid var(--green);
+  box-shadow: 0 1px 6px rgba(2,184,150,.4);
+  cursor: pointer; transition: transform .15s;
+}
+.range-track::-webkit-slider-thumb:hover { transform: scale(1.18); }
+.range-track::-moz-range-thumb {
+  width:20px; height:20px; border-radius:50%; background:white;
+  border:2.5px solid var(--lg-coral); cursor:pointer;
+}
+.range-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--text-muted); margin-top: 6px;
+}
+.range-val {
+  font-size: 22px; font-weight: 800; color: var(--green-600);
+  line-height: 1; margin-bottom: 10px;
+}
+.range-val span { font-size: 13px; font-weight: 400; color: var(--text-muted); }
+
+/* File type pills */
+.pill-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.type-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: white; cursor: pointer;
+  font-size: 12.5px; font-weight: 600;
+  transition: all .15s;
+}
+.type-pill:hover { border-color: var(--lg-blue-muted); }
+.type-pill.on { border-color: var(--green); background: var(--green-50); color: var(--green-600); }
+.type-pill .pill-dot { width:10px; height:10px; border-radius:2px; }
+
+/* ── SCHEDULE ── */
+.freq-row { display: flex; gap: 8px; margin-bottom: 20px; }
+.freq-btn {
+  flex: 1; padding: 10px; border-radius: 7px;
+  border: 1.5px solid var(--border); background: white;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  text-align: center; transition: all .15s;
+  font-family: inherit; color: var(--text-mid);
+}
+.freq-btn:hover { border-color: var(--lg-blue-muted); }
+.freq-btn.on { border-color: var(--green); background: var(--green-50); color: var(--green-600); }
+
+.time-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.time-label { font-size: 12px; font-weight: 700; color: var(--text-mid); text-transform: uppercase; letter-spacing: .06em; min-width: 80px; }
+.time-select {
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 7px 12px; font-size: 13px; font-family: inherit;
+  color: var(--text); background: white; cursor: pointer;
+}
+.time-select:focus { outline: none; border-color: var(--lg-coral); }
+
+.day-pills { display: flex; gap: 6px; }
+.day-pill {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: white;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s; font-family: inherit; color: var(--text-mid);
+}
+.day-pill.on { background: var(--green-600); color: white; border-color: var(--green-600); }
+
+.toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.toggle-label { font-size: 13px; color: var(--text); }
+.toggle { position:relative; width:40px; height:22px; cursor:pointer; }
+.toggle input { display:none; }
+.toggle-track {
+  position:absolute; inset:0; background:var(--border); border-radius:11px;
+  transition: background .2s;
+}
+.toggle input:checked + .toggle-track { background: var(--lg-coral); }
+.toggle-thumb {
+  position:absolute; width:16px; height:16px;
+  background:white; border-radius:50%; top:3px; left:3px;
+  transition: left .2s; box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle input:checked ~ .toggle-thumb { left:21px; }
+
+/* ── REVIEW ── */
+.review-table { width:100%; border-collapse:collapse; font-size:13px; }
+.review-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-lt); }
+.review-table td:first-child { color:var(--text-muted); font-weight:600; width:40%; }
+.review-table td:last-child { font-weight:600; color:var(--lg-navy); }
+.review-table tr:last-child td { border-bottom: none; }
+
+.review-warn {
+  background: var(--warn-bg); border: 1px solid var(--warn-border);
+  border-radius: 6px; padding: 10px 14px;
+  font-size: 12px; color: var(--warn);
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+
+/* ── IMPACT PANEL ── */
+.impact {
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-ring);
+  border-radius: 17px;
+  box-shadow: var(--glass-hi), var(--elev-1);
+  overflow: hidden;
+  position: sticky;
+  top: 20px;
+}
+.impact-head {
+  background: var(--lg-navy);
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 9px;
+}
+.impact-head-icon { font-size: 16px; }
+.impact-head-title { color: white; font-size: 13px; font-weight: 700; }
+.impact-head-sub   { color: rgba(255,255,255,.72); font-size: 11px; margin-top:1px; }
+.impact-accent { height: 2px; background: var(--lg-coral); }
+
+.impact-body { padding: 16px; }
+
+.impact-stat {
+  background: rgba(255,255,255,.5);
+  border: 1px solid var(--border-lt);
+  border-radius: 13px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+}
+.impact-stat-icon { font-size: 22px; flex-shrink: 0; }
+.impact-stat-val { font-size: 20px; font-weight: 800; color: var(--lg-navy); line-height:1; }
+.impact-stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.impact-savings {
+  background: var(--green-50); border: 1px solid rgba(2,184,150,.35);
+  border-radius: 13px; padding: 12px 14px;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 12px;
+}
+.impact-savings-icon { font-size: 22px; }
+.impact-savings-val { font-size: 20px; font-weight: 800; color: var(--success); line-height:1; }
+.impact-savings-lbl { font-size: 11px; color: var(--green-600); margin-top: 2px; }
+
+.impact-next {
+  font-size: 11.5px; color: var(--text-muted); text-align: center; margin-bottom: 14px;
+  padding: 8px; background: rgba(255,255,255,.5); border: 1px solid var(--border-lt); border-radius: 9px;
+}
+.impact-next strong { color: var(--text); display:block; margin-bottom:1px; }
+
+.sim-btn {
+  width: 100%; padding: 9px 14px;
+  background: rgba(255,255,255,.6); color: var(--green-600);
+  border: 1.5px solid var(--green); border-radius: 13px;
+  font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.sim-btn:hover { background: var(--green-50); box-shadow: var(--glow-green); }
+
+.sim-results {
+  margin-top: 12px;
+  border-top: 1px solid var(--border-lt);
+  padding-top: 10px;
+  display: none;
+  animation: fadeIn .3s ease;
+}
+.sim-results.show { display: block; }
+.sim-file {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-lt);
+  font-size: 11.5px; color: var(--text-muted);
+}
+.sim-file:last-child { border: none; }
+.sim-ficon { width:18px; height:18px; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; color:white; flex-shrink:0; }
+.sim-results-label { font-size:11px; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+
+/* ── SITE COUNT BADGE ── */
+.site-count-badge { display:inline-flex; align-items:center; background:var(--green-600); color:white; border-radius:10px; padding:1px 8px; font-size:11px; font-weight:700; margin-left:6px; vertical-align:middle; }
+
+/* ── FOLDER EXCLUSION ── */
+.excl-input-row { display:flex; gap:8px; margin:8px 0; }
+.excl-input { flex:1; border:1px solid var(--border); border-radius:5px; padding:7px 10px; font-size:13px; font-family:inherit; color:var(--text); }
+.excl-input:focus { outline:none; border-color:var(--lg-blue-muted); box-shadow:0 0 0 2px rgba(107,138,170,.15); }
+.excl-add-btn { padding:7px 14px; border-radius:5px; border:none; background:var(--lg-navy); color:white; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:background .15s; white-space:nowrap; }
+.excl-add-btn:hover { background:var(--lg-navy-lt); }
+.excl-chips { display:flex; flex-wrap:wrap; gap:6px; min-height:0; }
+.excl-chip { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:14px; background:#ebf2f5; color:var(--lg-navy); border:1px solid rgba(0,81,126,.2); font-size:12px; font-weight:600; }
+.excl-chip button { background:none; border:none; cursor:pointer; color:inherit; font-size:14px; line-height:1; padding:0; opacity:.6; }
+.excl-chip button:hover { opacity:1; }
+
+/* ── NOTIFICATION EMAIL ── */
+.notif-email-row { display:flex; align-items:center; gap:10px; margin-top:8px; padding-left:52px; flex-wrap:wrap; }
+.notif-email-input { border:1px solid var(--border); border-radius:5px; padding:7px 10px; font-size:13px; font-family:inherit; color:var(--text); width:240px; }
+.notif-email-input:focus { outline:none; border-color:var(--lg-blue-muted); box-shadow:0 0 0 2px rgba(107,138,170,.15); }
+.notif-email-hint { font-size:12px; color:var(--text-muted); }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 9px 20px; border-radius: 6px;
+  font-size: 13px; font-weight: 700; font-family: inherit;
+  cursor: pointer; transition: all .15s;
+  border: none; display: flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: linear-gradient(180deg, #0c6ea0 0%, var(--lg-navy) 100%); color: white; box-shadow: var(--elev-1); }
+.btn-primary:hover { background: var(--lg-navy-lt); box-shadow: 0 4px 14px rgba(0,81,126,.35); }
+.btn-secondary { background: white; color: var(--text-mid); border: 1.5px solid var(--border); }
+.btn-secondary:hover { border-color: var(--lg-blue-muted); }
+.btn-success { background: var(--success); color: white; cursor: default; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.35); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.mockup-pill {
+  display: inline-block; background: var(--green-600); color: white;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px; margin-left: auto;
+  pointer-events: none;
+}
+
+/* section label */
+.sect-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+
+hr.divider { border: none; border-top: 1px solid var(--border-lt); margin: 20px 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  /* Collapse the 220px / 1fr / 290px grid so steps and impact stack under the
+     card instead of overflowing on a narrow viewport. */
+  .layout { grid-template-columns: 1fr; gap: 16px; }
+  .steps-panel, .impact { position: static; }
+  body { background-attachment: scroll; }
+}
+@media (max-width: 720px) {
+  /* Phone touch targets ≥ 44px. */
+  .btn, .freq-btn, .type-pill, .sim-btn, .excl-add-btn { min-height: 44px; }
+  .day-pill { width: 40px; height: 40px; }
+  .layout { padding: 16px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24"><path d="M20 13h-4.18l2.77-2.77-1.41-1.41L13 13.18V9h-2v4.18l-4.18-4.18-1.41 1.41L8.18 13H4v2h4.18L5.41 17.77l1.41 1.41L11 15v4.2l.7.7.7-.7V15l4.18 4.18 1.41-1.41L14.82 15H20v-2z"/></svg>
+    </div>
+    <span class="header-brand">SP Cold Storage</span>
+    <div class="header-divider"></div>
+    <span class="header-page">Konfigurera automatisk arkivering</span>
+  </div>
+  <div class="header-right">
+    <span class="mockup-pill">Interaktiv Mockup</span>
+    <span class="header-user">admin@langate.se</span>
+    <div class="header-avatar">AL</div>
+  </div>
+</div>
+
+<!-- Main 3-col layout -->
+<div class="layout">
+
+  <!-- Step sidebar -->
+  <div class="steps-panel">
+    <div class="steps-title">Konfigurationssteg</div>
+    <div class="step-item active" onclick="goTo(1)" id="si1">
+      <div class="step-num active" id="sn1">1</div>
+      <div class="step-label">
+        <div class="step-name">Omfång</div>
+        <div class="step-desc">Välj webbplatser</div>
+      </div>
+    </div>
+    <div class="steps-connector"></div>
+    <div class="step-item" onclick="goTo(2)" id="si2">
+      <div class="step-num todo" id="sn2">2</div>
+      <div class="step-label">
+        <div class="step-name">Kriterier</div>
+        <div class="step-desc">Ålder och filtyper</div>
+      </div>
+    </div>
+    <div class="steps-connector"></div>
+    <div class="step-item" onclick="goTo(3)" id="si3">
+      <div class="step-num todo" id="sn3">3</div>
+      <div class="step-label">
+        <div class="step-name">Schema</div>
+        <div class="step-desc">Körningsfrekvens</div>
+      </div>
+    </div>
+    <div class="steps-connector"></div>
+    <div class="step-item" onclick="goTo(4)" id="si4">
+      <div class="step-num todo" id="sn4">4</div>
+      <div class="step-label">
+        <div class="step-name">Aktivera</div>
+        <div class="step-desc">Granska och spara</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content card -->
+  <div class="card">
+
+    <!-- STEP 1: Omfång -->
+    <div id="step1" class="step-content active">
+      <div class="card-head">
+        <div class="card-head-icon">🏢</div>
+        <div>
+          <div class="card-title">Välj omfång</div>
+          <div class="card-subtitle">Vilka SharePoint-webbplatser ska inkluderas i mediaarkiveringen?</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="scope-grid">
+          <div class="scope-card picked" id="sc-one" onclick="pickScope('one')">
+            <div class="scope-icon">🏠</div>
+            <div class="scope-name">En webbplats</div>
+            <div class="scope-desc">Arkivera dokument från en specifik SharePoint-webbplats</div>
+            <div class="scope-detail">
+              <label>Webbplats-URL</label>
+              <input type="text" placeholder="https://langate.sharepoint.com/sites/…" value="https://langate.sharepoint.com/sites/arkiv" id="singleUrl">
+            </div>
+          </div>
+          <div class="scope-card" id="sc-list" onclick="pickScope('list')">
+            <div class="scope-icon">📋</div>
+            <div class="scope-name">Valda webbplatser <span class="site-count-badge" id="siteCountBadge">3 valda</span></div>
+            <div class="scope-desc">Välj specifika webbplatser ur klientorganisationens katalog</div>
+            <div class="scope-detail">
+              <label>Inkludera</label>
+              <ul class="site-list">
+                <li><input type="checkbox" checked onchange="updateSiteCount()"> Dokumentarkiv</li>
+                <li><input type="checkbox" checked onchange="updateSiteCount()"> Personalavdelningen</li>
+                <li><input type="checkbox" onchange="updateSiteCount()"> Projektportalen</li>
+                <li><input type="checkbox" onchange="updateSiteCount()"> Ekonomi &amp; Finans</li>
+                <li><input type="checkbox" checked onchange="updateSiteCount()"> Leverantörsportal</li>
+              </ul>
+            </div>
+          </div>
+          <div class="scope-card" id="sc-all" onclick="pickScope('all')">
+            <div class="scope-icon">🌐</div>
+            <div class="scope-name">Hela klientorganisationen</div>
+            <div class="scope-desc">Alla webbplatser i Microsoft 365-klientorganisationen</div>
+            <div class="scope-detail">
+              <div class="review-warn" style="margin:0">⚠️ Gäller alla 48 webbplatser i Langate-klientorganisationen. Kontrollera kriterierna noggrant.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-foot">
+        <button class="btn btn-primary" onclick="goTo(2)">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Kriterier -->
+    <div id="step2" class="step-content">
+      <div class="card-head">
+        <div class="card-head-icon">🎯</div>
+        <div>
+          <div class="card-title">Arkiveringskriterier</div>
+          <div class="card-subtitle">Vilka mediafiler (bilder och videor) ska arkiveras, och när?</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="criteria-row">
+          <div class="crit-label">Filålder</div>
+          <div class="crit-desc">Arkivera filer som inte har ändrats på minst:</div>
+          <div class="range-val"><span id="ageVal">365</span> <span>dagar &nbsp;≈&nbsp; <span id="ageYears">1 år</span></span></div>
+          <div class="range-wrap">
+            <input type="range" class="range-track" id="ageRange" min="30" max="1825" value="365" step="30"
+                   oninput="updateAge(this)">
+            <div class="range-labels"><span>30 dagar</span><span>6 mån</span><span>1 år</span><span>2 år</span><span>5 år</span></div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="criteria-row">
+          <div class="crit-label">Filtyper att arkivera</div>
+          <div class="pill-grid">
+            <div class="type-pill on" onclick="toggleType(this,'mp4')" data-type="mp4">
+              <div class="pill-dot" style="background:#0f2027"></div>MP4
+            </div>
+            <div class="type-pill on" onclick="toggleType(this,'mov')" data-type="mov">
+              <div class="pill-dot" style="background:#134e5e"></div>MOV / AVI
+            </div>
+            <div class="type-pill on" onclick="toggleType(this,'webm')" data-type="webm">
+              <div class="pill-dot" style="background:#1a6b5a"></div>WebM
+            </div>
+            <div class="type-pill on" onclick="toggleType(this,'jpg')" data-type="jpg">
+              <div class="pill-dot" style="background:#667eea"></div>JPG / JPEG
+            </div>
+            <div class="type-pill on" onclick="toggleType(this,'png')" data-type="png">
+              <div class="pill-dot" style="background:#f093fb"></div>PNG / WebP
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'heic')" data-type="heic">
+              <div class="pill-dot" style="background:#4facfe"></div>HEIC (iPhone)
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'pdf')" data-type="pdf">
+              <div class="pill-dot" style="background:#c0392b"></div>PDF
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'docx')" data-type="docx">
+              <div class="pill-dot" style="background:#1e5fb3"></div>Word (DOCX)
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'xlsx')" data-type="xlsx">
+              <div class="pill-dot" style="background:#1d7a46"></div>Excel (XLSX)
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'svg')" data-type="svg">
+              <div class="pill-dot" style="background:#e8730c"></div>SVG
+            </div>
+            <div class="type-pill" onclick="toggleType(this,'zip')" data-type="zip">
+              <div class="pill-dot" style="background:#8e44ad"></div>ZIP (mediafiler)
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="criteria-row">
+          <div class="crit-label">Minsta filstorlek</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <input type="number" id="minSize" value="100" min="1" style="width:90px;border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-size:13px;font-family:inherit;" oninput="updateImpact()">
+            <select class="time-select" id="sizeUnit" onchange="updateImpact()">
+              <option>KB</option>
+              <option selected>KB</option>
+            </select>
+            <span style="font-size:13px;color:var(--text-muted)">Filer mindre än detta arkiveras inte</span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="criteria-row">
+          <div class="crit-label">Exkludera mappar</div>
+          <div class="crit-desc">Filer i dessa mappar arkiveras aldrig, oavsett övriga kriterier</div>
+          <div class="excl-input-row">
+            <input type="text" id="exclInput" class="excl-input" placeholder="/Mallar, /Utkast, /Pågående…" onkeydown="if(event.key==='Enter') addExclusion()">
+            <button class="excl-add-btn" onclick="addExclusion()">+ Lägg till</button>
+          </div>
+          <div class="excl-chips" id="exclChips">
+            <div class="excl-chip">/Mallar <button onclick="removeExclusion(this)">×</button></div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" checked onchange="updateImpact()">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span class="toggle-label">Ta bort källfil i SharePoint efter arkivering</span>
+        </div>
+
+      </div>
+      <div class="card-foot">
+        <button class="btn btn-secondary" onclick="goTo(1)">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Nästa →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Schema -->
+    <div id="step3" class="step-content">
+      <div class="card-head">
+        <div class="card-head-icon">🕐</div>
+        <div>
+          <div class="card-title">Körningsschema</div>
+          <div class="card-subtitle">Hur ofta ska arkiveringen köras?</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="sect-label">Frekvens</div>
+        <div class="freq-row">
+          <button class="freq-btn on" id="fq-daily"   onclick="setFreq('daily')">📅 Dagligen</button>
+          <button class="freq-btn"    id="fq-weekly"  onclick="setFreq('weekly')">📆 Veckovis</button>
+          <button class="freq-btn"    id="fq-monthly" onclick="setFreq('monthly')">🗓 Månadsvis</button>
+        </div>
+
+        <div id="weekdays-row" style="display:none;margin-bottom:20px">
+          <div class="sect-label" style="margin-bottom:8px">Veckodagar</div>
+          <div class="day-pills">
+            <button class="day-pill" onclick="toggleDay(this)">Mån</button>
+            <button class="day-pill" onclick="toggleDay(this)">Tis</button>
+            <button class="day-pill on" onclick="toggleDay(this)">Ons</button>
+            <button class="day-pill" onclick="toggleDay(this)">Tor</button>
+            <button class="day-pill" onclick="toggleDay(this)">Fre</button>
+          </div>
+        </div>
+
+        <div class="time-row">
+          <span class="time-label">Starttid</span>
+          <select class="time-select" id="runTime" onchange="updateImpact()">
+            <option>00:00</option><option>01:00</option><option selected>02:00</option>
+            <option>03:00</option><option>04:00</option><option>05:00</option>
+          </select>
+          <span style="font-size:13px;color:var(--text-muted)">CET (Stockholm)</span>
+        </div>
+
+        <hr class="divider">
+
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" id="runNow" onchange="updateImpact()">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span class="toggle-label">Kör arkivering direkt vid aktivering (utöver schema)</span>
+        </div>
+
+        <div class="toggle-row">
+          <label class="toggle">
+            <input type="checkbox" checked id="notifToggle" onchange="toggleNotifEmail(this)">
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <span class="toggle-label">Skicka e-postrapport efter varje körning</span>
+        </div>
+        <div class="notif-email-row" id="notifEmailRow">
+          <input type="email" id="notifEmail" class="notif-email-input" value="arkiv@langate.se" placeholder="din@email.se">
+          <span class="notif-email-hint">Rapport skickas med arkiveringsstatistik</span>
+        </div>
+
+      </div>
+      <div class="card-foot">
+        <button class="btn btn-secondary" onclick="goTo(2)">← Tillbaka</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Granska →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Aktivera -->
+    <div id="step4" class="step-content">
+      <div class="card-head">
+        <div class="card-head-icon">🚀</div>
+        <div>
+          <div class="card-title">Granska och aktivera</div>
+          <div class="card-subtitle">Kontrollera inställningarna innan du aktiverar arkiveringen</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="review-table" id="reviewTable"></table>
+        <hr class="divider">
+        <div class="review-warn">
+          ⚠️ Aktivering startar schemalagd arkivering. Filer som matchar kriterierna kommer att kopieras till Azure Blob Storage (Cold) och markeras i SharePoint.
+        </div>
+      </div>
+      <div class="card-foot">
+        <button class="btn btn-secondary" onclick="goTo(3)">← Tillbaka</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="save()">✓ Aktivera arkivering</button>
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- Impact panel -->
+  <div class="impact">
+    <div class="impact-head">
+      <div class="impact-head-icon">📊</div>
+      <div>
+        <div class="impact-head-title">Uppskattad påverkan</div>
+        <div class="impact-head-sub">Uppdateras i realtid</div>
+      </div>
+    </div>
+    <div class="impact-accent"></div>
+    <div class="impact-body">
+
+      <div class="impact-stat">
+        <div class="impact-stat-icon">📁</div>
+        <div>
+          <div class="impact-stat-val" id="impFiles">1&nbsp;247</div>
+          <div class="impact-stat-lbl">mediafiler att arkivera</div>
+        </div>
+      </div>
+
+      <div class="impact-stat">
+        <div class="impact-stat-icon">💾</div>
+        <div>
+          <div class="impact-stat-val" id="impSize">48,3 GB</div>
+          <div class="impact-stat-lbl">total datavolym</div>
+        </div>
+      </div>
+
+      <div class="impact-savings">
+        <div class="impact-savings-icon">💰</div>
+        <div>
+          <div class="impact-savings-val" id="impSavings">~750 kr/mån</div>
+          <div class="impact-savings-lbl">besparing: <span id="impSpCost">764</span> → <span id="impColdCost">14</span> kr/mån</div>
+        </div>
+      </div>
+
+      <div class="impact-next" id="impNext">
+        <strong>Nästa körning</strong>
+        Imorgon kl. 02:00 (CET)
+      </div>
+
+      <button class="sim-btn" id="simBtn" onclick="simulate()">
+        ▶ Simulera arkivering
+      </button>
+
+      <div class="sim-results" id="simResults">
+        <div class="sim-results-label">Exempelfiler</div>
+        <div class="sim-file"><div class="sim-ficon" style="background:linear-gradient(135deg,#0f2027,#2c5364)">🎬</div>Produktfilm_Sommar_2022.mp4</div>
+        <div class="sim-file"><div class="sim-ficon" style="background:linear-gradient(135deg,#134e5e,#71b280)">🎬</div>Konferensvideo_Q3_2022.mov</div>
+        <div class="sim-file"><div class="sim-ficon" style="background:linear-gradient(135deg,#1a1a2e,#0f3460)">🎬</div>Sommarmöte_highlights.mp4</div>
+        <div class="sim-file"><div class="sim-ficon" style="background:linear-gradient(135deg,#667eea,#764ba2)">🖼</div>Brandkampanj_hero.png</div>
+        <div class="sim-file"><div class="sim-ficon" style="background:linear-gradient(135deg,#c0392b,#7b241c)">📄</div>Årsredovisning_2022.pdf</div>
+        <div style="font-size:11px;color:var(--text-muted);padding-top:6px;text-align:center">…och <span id="simMore">1 242</span> filer till</div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+let currentStep = 1;
+let scope = 'one';
+let ageDays = 365;
+let freq = 'daily';
+let activeTypes = new Set(['mp4','mov','webm','jpg','png']);
+
+const SCOPE_LABELS = { one:'En webbplats', list:'Valda webbplatser', all:'Hela klientorganisationen' };
+const FREQ_LABELS  = { daily:'Dagligen', weekly:'Veckovis', monthly:'Månadsvis' };
+
+// Base numbers for impact calculation
+const BASE_FILES = 1247;
+const BASE_GB    = 48.3;
+
+function goTo(step) {
+  if (step > currentStep + 1) return; // can't jump ahead
+  // mark past steps done
+  for (let i = 1; i < step; i++) markDone(i);
+  // mark current
+  markActive(step);
+  // mark future as todo
+  for (let i = step + 1; i <= 4; i++) markTodo(i);
+
+  document.getElementById(`step${currentStep}`).classList.remove('active');
+  currentStep = step;
+  document.getElementById(`step${step}`).classList.add('active');
+
+  if (step === 4) buildReview();
+}
+
+function markDone(i) {
+  const si = document.getElementById(`si${i}`); si.classList.remove('active');
+  const sn = document.getElementById(`sn${i}`); sn.className = 'step-num done'; sn.textContent = '✓';
+}
+function markActive(i) {
+  const si = document.getElementById(`si${i}`); si.classList.add('active');
+  const sn = document.getElementById(`sn${i}`); sn.className = 'step-num active'; sn.textContent = i;
+}
+function markTodo(i) {
+  const si = document.getElementById(`si${i}`); si.classList.remove('active');
+  const sn = document.getElementById(`sn${i}`); sn.className = 'step-num todo'; sn.textContent = i;
+}
+
+function pickScope(s) {
+  scope = s;
+  ['one','list','all'].forEach(k => {
+    const el = document.getElementById(`sc-${k}`);
+    el.classList.toggle('picked', k === s);
+  });
+  updateImpact();
+}
+
+function updateAge(el) {
+  ageDays = parseInt(el.value);
+  document.getElementById('ageVal').textContent = ageDays;
+  const years = (ageDays / 365).toFixed(1);
+  document.getElementById('ageYears').textContent = years === '1.0' ? '1 år' : `${years} år`;
+  // update slider gradient
+  const pct = ((ageDays - 30) / (1825 - 30) * 100).toFixed(1);
+  el.style.setProperty('--pct', pct + '%');
+  updateImpact();
+}
+
+function toggleType(el, type) {
+  el.classList.toggle('on');
+  activeTypes.has(type) ? activeTypes.delete(type) : activeTypes.add(type);
+  updateImpact();
+}
+
+function setFreq(f) {
+  freq = f;
+  ['daily','weekly','monthly'].forEach(k => {
+    document.getElementById(`fq-${k}`).classList.toggle('on', k === f);
+  });
+  document.getElementById('weekdays-row').style.display = f === 'weekly' ? 'block' : 'none';
+  updateImpact();
+}
+
+function toggleDay(el) { el.classList.toggle('on'); }
+
+function updateSiteCount() {
+  const checked = document.querySelectorAll('#sc-list .site-list input[type=checkbox]:checked').length;
+  const badge = document.getElementById('siteCountBadge');
+  badge.textContent = `${checked} vald${checked === 1 ? '' : 'a'}`;
+  badge.style.display = checked > 0 ? 'inline-flex' : 'none';
+}
+
+function addExclusion() {
+  const input = document.getElementById('exclInput');
+  const val = input.value.trim();
+  if (!val) return;
+  const path = val.startsWith('/') ? val : '/' + val;
+  const chip = document.createElement('div');
+  chip.className = 'excl-chip';
+  chip.innerHTML = `${path} <button onclick="removeExclusion(this)">×</button>`;
+  document.getElementById('exclChips').appendChild(chip);
+  input.value = '';
+  input.focus();
+}
+
+function removeExclusion(btn) {
+  btn.parentElement.remove();
+}
+
+function toggleNotifEmail(el) {
+  document.getElementById('notifEmailRow').style.display = el.checked ? 'flex' : 'none';
+}
+
+function nextRunLabel(timeStr) {
+  const [hh, mm] = timeStr.split(':');
+  const now  = new Date();
+  const next = new Date(now);
+  const WEEKDAYS = ['sön','mån','tis','ons','tor','fre','lör'];
+  const MONTHS   = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+  if (freq === 'daily') {
+    next.setDate(now.getDate() + 1);
+  } else if (freq === 'weekly') {
+    const targetDay = 3; // Wednesday
+    const daysAway  = (targetDay - now.getDay() + 7) % 7 || 7;
+    next.setDate(now.getDate() + daysAway);
+  } else {
+    next.setMonth(now.getMonth() + 1, 1);
+  }
+  next.setHours(parseInt(hh), parseInt(mm), 0, 0);
+  const dayName = WEEKDAYS[next.getDay()];
+  const dateStr = `${dayName} ${next.getDate()} ${MONTHS[next.getMonth()]}`;
+  return `${dateStr} kl. ${timeStr}`;
+}
+
+function updateImpact() {
+  const scopeFactor = scope === 'one' ? 0.06 : scope === 'list' ? 0.32 : 1.0;
+  const ageFactor   = Math.max(0.05, (1825 - ageDays) / (1825 - 30));
+  const typeFactor  = activeTypes.size / 11;
+  const volume      = scopeFactor * ageFactor * (0.5 + typeFactor * 0.5);
+
+  const files       = Math.round(BASE_FILES * volume);
+  const gb          = parseFloat((BASE_GB * volume).toFixed(1));
+  const sekPerUsd   = 11.5;
+  const spMonthly   = Math.round(gb * 0.20 * sekPerUsd);
+  const coldMonthly = Math.round(gb * 0.004 * sekPerUsd);
+  const savings     = spMonthly - coldMonthly;
+
+  animateNum('impFiles', files.toLocaleString('sv'));
+  document.getElementById('impSize').textContent    = `${gb} GB`;
+  document.getElementById('impSavings').textContent = `~${savings.toLocaleString('sv')} kr/mån`;
+  document.getElementById('impSpCost').textContent  = spMonthly.toLocaleString('sv');
+  document.getElementById('impColdCost').textContent = coldMonthly.toLocaleString('sv');
+  document.getElementById('simMore').textContent    = Math.max(0, files - 5).toLocaleString('sv');
+
+  const t = document.getElementById('runTime')?.value || '02:00';
+  document.getElementById('impNext').innerHTML =
+    `<strong>Nästa körning</strong>${nextRunLabel(t)} (CET)`;
+
+  document.getElementById('simResults').classList.remove('show');
+  document.getElementById('simBtn').innerHTML = '▶ Simulera arkivering';
+  document.getElementById('simBtn').disabled  = false;
+}
+
+function animateNum(id, val) {
+  const el = document.getElementById(id);
+  el.style.transform = 'scale(1.08)';
+  el.style.transition = 'transform .15s';
+  el.textContent = val;
+  setTimeout(() => el.style.transform = '', 150);
+}
+
+function simulate() {
+  const btn = document.getElementById('simBtn');
+  btn.innerHTML = '<div class="spin"></div> Simulerar…';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = '✓ Simulering klar';
+    document.getElementById('simResults').classList.add('show');
+  }, 1600);
+}
+
+function buildReview() {
+  const url      = document.getElementById('singleUrl')?.value || '—';
+  const time     = document.getElementById('runTime')?.value || '02:00';
+  const onTypes  = [...activeTypes].join(', ').toUpperCase() || '—';
+  const notifOn  = document.getElementById('notifToggle')?.checked;
+  const email    = document.getElementById('notifEmail')?.value || '—';
+  const excls    = [...document.querySelectorAll('#exclChips .excl-chip')]
+    .map(c => c.childNodes[0].textContent.trim()).join(', ') || '—';
+  const siteCount= document.querySelectorAll('#sc-list .site-list input:checked').length;
+
+  const rows = [
+    ['Omfång',       SCOPE_LABELS[scope]],
+    ['Webbplats',    scope === 'one' ? url : (scope === 'list' ? `${siteCount} valda webbplatser` : '48 webbplatser')],
+    ['Filålder',     `Äldre än ${ageDays} dagar`],
+    ['Filtyper',     onTypes],
+    ['Exkluderade mappar', excls],
+    ['Lagringstjänst', 'Azure Blob Storage — Cold'],
+    ['Region',       'Sweden Central'],
+    ['Frekvens',     FREQ_LABELS[freq]],
+    ['Körtid',       `${time} CET`],
+    ['Radera källa', document.querySelector('#step2 .toggle input')?.checked ? 'Ja' : 'Nej'],
+    ['E-postrapport', notifOn ? email : 'Inaktiverad'],
+  ];
+
+  document.getElementById('reviewTable').innerHTML = rows.map(([k, v]) =>
+    `<tr><td>${k}</td><td>${v}</td></tr>`
+  ).join('');
+}
+
+function save() {
+  const btn = document.getElementById('saveBtn');
+  btn.innerHTML = '<div class="spin"></div> Sparar…';
+  btn.className = 'btn btn-primary loading';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = '✓ Arkivering aktiverad!';
+    btn.className = 'btn btn-success';
+  }, 1800);
+}
+
+// Init range gradient
+const rangeEl = document.getElementById('ageRange');
+rangeEl.style.setProperty('--pct', '18.7%');
+
+updateSiteCount();
+updateImpact();
+</script>
+</body>
+</html>

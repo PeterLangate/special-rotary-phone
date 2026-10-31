@@ -1,0 +1,18 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ExClaw">
+  <rect width="256" height="256" rx="48" fill="#10793F"/>
+  <rect x="44" y="48" width="168" height="160" rx="10" fill="#FFFFFF"/>
+  <rect x="44" y="48" width="168" height="26" fill="#10793F"/>
+  <rect x="44" y="74" width="30" height="134" fill="#D7F0E1"/>
+  <g stroke="#9ED2B0" stroke-width="1.6">
+    <line x1="74" y1="108" x2="212" y2="108"/>
+    <line x1="74" y1="140" x2="212" y2="140"/>
+    <line x1="74" y1="172" x2="212" y2="172"/>
+    <line x1="120" y1="74" x2="120" y2="208"/>
+    <line x1="166" y1="74" x2="166" y2="208"/>
+  </g>
+  <rect x="120" y="108" width="46" height="32" fill="#FFD23F" opacity="0.7"/>
+  <g transform="translate(198 198)">
+    <path d="M 0 -32 L 8 -8 L 32 0 L 8 8 L 0 32 L -8 8 L -32 0 L -8 -8 Z" fill="#FFD23F" stroke="#1F3A5F" stroke-width="1.2"/>
+    <path d="M 0 -14 L 3 -3 L 14 0 L 3 3 L 0 14 L -3 3 L -14 0 L -3 -3 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

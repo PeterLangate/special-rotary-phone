@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" font-family="'DM Sans',sans-serif">
+  <defs>
+    <marker id="a2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#746355"/></marker>
+    <marker id="a2r" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="#746355"/></marker>
+  </defs>
+  <!-- Title -->
+  <text x="340" y="24" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">SYSTEMARKITEKTUR</text>
+  <line x1="140" y1="34" x2="540" y2="34" stroke="#E5E5E5"/>
+
+  <!-- Browser layer -->
+  <rect x="10" y="50" width="660" height="100" rx="8" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="24" y="70" fill="#999" font-size="10" font-weight="700" letter-spacing="0.05em" style="text-transform:uppercase">WEBBLÄSARE (SPFX)</text>
+  <rect x="24" y="80" width="145" height="56" rx="6" fill="#1F1E20"/>
+  <text x="97" y="108" text-anchor="middle" fill="white" font-size="11" font-weight="600">ProjectList</text>
+  <text x="97" y="124" text-anchor="middle" fill="#746355" font-size="9">Hubb</text>
+  <rect x="183" y="80" width="145" height="56" rx="6" fill="#1F1E20"/>
+  <text x="256" y="108" text-anchor="middle" fill="white" font-size="11" font-weight="600">InstallationList</text>
+  <text x="256" y="124" text-anchor="middle" fill="#746355" font-size="9">Projekt</text>
+  <rect x="342" y="80" width="145" height="56" rx="6" fill="#1F1E20"/>
+  <text x="415" y="108" text-anchor="middle" fill="white" font-size="11" font-weight="600">ChecklistView</text>
+  <text x="415" y="124" text-anchor="middle" fill="#746355" font-size="9">Projekt</text>
+  <rect x="501" y="80" width="155" height="56" rx="6" fill="#1F1E20"/>
+  <text x="579" y="108" text-anchor="middle" fill="white" font-size="11" font-weight="600">ChecklistView</text>
+  <text x="579" y="124" text-anchor="middle" fill="#746355" font-size="9">Wizard-UI</text>
+
+  <!-- SharePoint layer -->
+  <rect x="10" y="175" width="430" height="90" rx="8" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="24" y="195" fill="#999" font-size="10" font-weight="700" letter-spacing="0.05em" style="text-transform:uppercase">SHAREPOINT ONLINE</text>
+  <rect x="24" y="205" width="95" height="46" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="72" y="226" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Projektkatalog</text>
+  <text x="72" y="240" text-anchor="middle" fill="#999" font-size="9">Hubb</text>
+  <rect x="129" y="205" width="95" height="46" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="177" y="226" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Installations</text>
+  <text x="177" y="240" text-anchor="middle" fill="#999" font-size="9">Undersajt</text>
+  <rect x="234" y="205" width="95" height="46" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="282" y="226" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Checklistor</text>
+  <text x="282" y="240" text-anchor="middle" fill="#999" font-size="9">Undersajt</text>
+  <rect x="339" y="205" width="90" height="46" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="384" y="226" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Checks</text>
+  <text x="384" y="240" text-anchor="middle" fill="#999" font-size="9">Undersajt</text>
+
+  <!-- Azure layer -->
+  <rect x="10" y="290" width="430" height="90" rx="8" fill="#E8F5EE" stroke="#2D8653" stroke-dasharray="4,3"/>
+  <text x="24" y="310" fill="#2D8653" font-size="10" font-weight="700" letter-spacing="0.05em" style="text-transform:uppercase">AZURE FUNCTIONS</text>
+  <rect x="24" y="320" width="130" height="46" rx="6" fill="white" stroke="#2D8653"/>
+  <text x="89" y="341" text-anchor="middle" fill="#2D8653" font-size="10" font-weight="600">Provisioning</text>
+  <text x="89" y="355" text-anchor="middle" fill="#999" font-size="9">PnP Template</text>
+  <rect x="164" y="320" width="130" height="46" rx="6" fill="white" stroke="#2D8653"/>
+  <text x="229" y="341" text-anchor="middle" fill="#2D8653" font-size="10" font-weight="600">FortnoxSync</text>
+  <text x="229" y="355" text-anchor="middle" fill="#999" font-size="9">var 30:e min</text>
+  <rect x="304" y="320" width="130" height="46" rx="6" fill="white" stroke="#2D8653"/>
+  <text x="369" y="341" text-anchor="middle" fill="#2D8653" font-size="10" font-weight="600">ExcelImport</text>
+  <text x="369" y="355" text-anchor="middle" fill="#999" font-size="9">Azure OpenAI</text>
+
+  <!-- External services -->
+  <rect x="480" y="175" width="190" height="80" rx="8" fill="#FFF8E6" stroke="#C07800" stroke-dasharray="4,3"/>
+  <text x="575" y="200" text-anchor="middle" fill="#C07800" font-size="10" font-weight="700" style="text-transform:uppercase">FORTNOX API</text>
+  <text x="575" y="218" text-anchor="middle" fill="#C07800" font-size="10">/3/invoices</text>
+  <text x="575" y="234" text-anchor="middle" fill="#C07800" font-size="10">Fakturering</text>
+
+  <rect x="480" y="290" width="190" height="80" rx="8" fill="#F8F4EC" stroke="#746355" stroke-dasharray="4,3"/>
+  <text x="575" y="315" text-anchor="middle" fill="#746355" font-size="10" font-weight="700" style="text-transform:uppercase">AZURE OPENAI</text>
+  <text x="575" y="333" text-anchor="middle" fill="#746355" font-size="10">Kolumnmappning</text>
+  <text x="575" y="349" text-anchor="middle" fill="#746355" font-size="10">Normalisering</text>
+
+  <!-- Arrows -->
+  <line x1="340" y1="150" x2="340" y2="173" stroke="#746355" stroke-width="1.5" marker-end="url(#a2)"/>
+  <line x1="225" y1="265" x2="225" y2="288" stroke="#746355" stroke-width="1.5" marker-end="url(#a2)" marker-start="url(#a2r)"/>
+  <line x1="440" y1="220" x2="478" y2="220" stroke="#C07800" stroke-width="1.5" marker-end="url(#a2)" marker-start="url(#a2r)"/>
+  <line x1="434" y1="343" x2="478" y2="335" stroke="#746355" stroke-width="1.5" marker-end="url(#a2)"/>
+</svg>

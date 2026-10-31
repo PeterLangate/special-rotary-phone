@@ -1,0 +1,11 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PointClaw">
+  <rect width="256" height="256" rx="48" fill="#C13B1B"/>
+  <rect x="48" y="60" width="160" height="112" rx="10" fill="#FFFFFF"/>
+  <rect x="64" y="76" width="88" height="12" rx="3" fill="#C13B1B"/>
+  <circle cx="82" cy="128" r="18" fill="#F5B24E"/>
+  <rect x="108" y="112" width="84" height="44" rx="6" fill="#7AB87A" opacity="0.9"/>
+  <g transform="translate(198 198)">
+    <path d="M 0 -32 L 8 -8 L 32 0 L 8 8 L 0 32 L -8 8 L -32 0 L -8 -8 Z" fill="#FFD23F" stroke="#1F3A5F" stroke-width="1.2"/>
+    <path d="M 0 -14 L 3 -3 L 14 0 L 3 3 L 0 14 L -3 3 L -14 0 L -3 -3 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

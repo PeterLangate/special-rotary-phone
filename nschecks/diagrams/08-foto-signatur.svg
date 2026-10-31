@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 220" font-family="'DM Sans',sans-serif">
+  <defs>
+    <marker id="a8" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#746355"/></marker>
+  </defs>
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">FOTO- OCH SIGNATURFLÖDE</text>
+  <line x1="140" y1="30" x2="540" y2="30" stroke="#E5E5E5"/>
+
+  <!-- Photo flow -->
+  <text x="20" y="55" fill="#999" font-size="10" font-weight="700" style="text-transform:uppercase">FOTOFLÖDE</text>
+  <rect x="10" y="65" width="90" height="50" rx="6" fill="#1F1E20"/>
+  <text x="55" y="88" text-anchor="middle" fill="white" font-size="10" font-weight="600">Kamera</text>
+  <text x="55" y="102" text-anchor="middle" fill="#746355" font-size="9">📷</text>
+  <line x1="100" y1="90" x2="118" y2="90" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="120" y="65" width="100" height="50" rx="6" fill="#1F1E20"/>
+  <text x="170" y="88" text-anchor="middle" fill="white" font-size="10" font-weight="600">Geotagging</text>
+  <text x="170" y="102" text-anchor="middle" fill="#2D8653" font-size="9">📍 GPS auto</text>
+  <line x1="220" y1="90" x2="238" y2="90" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="240" y="65" width="90" height="50" rx="6" fill="#1F1E20"/>
+  <text x="285" y="88" text-anchor="middle" fill="white" font-size="10" font-weight="600">QR-skann</text>
+  <text x="285" y="102" text-anchor="middle" fill="#746355" font-size="9">MAC-adress</text>
+  <line x1="330" y1="90" x2="348" y2="90" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="350" y="65" width="100" height="50" rx="6" fill="#1F1E20"/>
+  <text x="400" y="88" text-anchor="middle" fill="white" font-size="10" font-weight="600">Annotering</text>
+  <text x="400" y="102" text-anchor="middle" fill="#746355" font-size="9">Nativ editor ✏️</text>
+  <line x1="450" y1="90" x2="468" y2="90" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="470" y="65" width="110" height="50" rx="6" fill="#2D8653"/>
+  <text x="525" y="88" text-anchor="middle" fill="white" font-size="10" font-weight="600">Upload</text>
+  <text x="525" y="102" text-anchor="middle" fill="#E8F5EE" font-size="9">Doc Library</text>
+
+  <rect x="590" y="65" width="80" height="50" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="630" y="85" text-anchor="middle" fill="#4A494B" font-size="9" font-weight="600">Filnamn:</text>
+  <text x="630" y="102" text-anchor="middle" fill="#746355" font-size="8">[id]_[obj]_[nr].jpg</text>
+
+  <!-- Signature flow -->
+  <text x="20" y="145" fill="#999" font-size="10" font-weight="700" style="text-transform:uppercase">SIGNATURFLÖDE</text>
+  <rect x="10" y="155" width="110" height="50" rx="6" fill="#1F1E20"/>
+  <text x="65" y="178" text-anchor="middle" fill="white" font-size="10" font-weight="600">SignaturePad</text>
+  <text x="65" y="192" text-anchor="middle" fill="#746355" font-size="9">Canvas ✏️</text>
+  <line x1="120" y1="180" x2="138" y2="180" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="140" y="155" width="100" height="50" rx="6" fill="#1F1E20"/>
+  <text x="190" y="178" text-anchor="middle" fill="white" font-size="10" font-weight="600">SVG-export</text>
+  <text x="190" y="192" text-anchor="middle" fill="#746355" font-size="9">Vektorformat</text>
+  <line x1="240" y1="180" x2="258" y2="180" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="260" y="155" width="100" height="50" rx="6" fill="#1F1E20"/>
+  <text x="310" y="178" text-anchor="middle" fill="white" font-size="10" font-weight="600">Lås signatur</text>
+  <text x="310" y="192" text-anchor="middle" fill="#2D8653" font-size="9">🔒 Ej redigerbar</text>
+  <line x1="360" y1="180" x2="378" y2="180" stroke="#746355" stroke-width="1.5" marker-end="url(#a8)"/>
+
+  <rect x="380" y="155" width="130" height="50" rx="6" fill="#2D8653"/>
+  <text x="445" y="175" text-anchor="middle" fill="white" font-size="10" font-weight="600">Metadata sparas</text>
+  <text x="445" y="192" text-anchor="middle" fill="#E8F5EE" font-size="9">Namn + Tidstämpel + SVG</text>
+</svg>

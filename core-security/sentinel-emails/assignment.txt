@@ -1,0 +1,20 @@
+[INFO] Incident triage update
+Defender XDR · Triage
+
+Incident Multi-stage incident was assigned to peter@langate.se.
+
+DETAILS
+Incident: Multi-stage incident
+Assignee: peter@langate.se
+Age: 3 days
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=incidents&cts_inc=inc-901
+
+RESPOND
+🙋 Take it: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=assign&cts_inc=inc-901
+Open in Defender: https://security.microsoft.com/incidents/inc-901
+
+--
+Finding fixture-dedup · Detector: TriageGuide
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

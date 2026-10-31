@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Work order" focusable="false">
+  <title>Work order / Körorder</title>
+  <path d="M8.4 4.5H6.6A1.6 1.6 0 0 0 5 6.1V19a1.6 1.6 0 0 0 1.6 1.6h10.8A1.6 1.6 0 0 0 19 19V6.1a1.6 1.6 0 0 0-1.6-1.6h-1.8"/>
+  <rect x="8.6" y="3" width="6.8" height="3.2" rx=".8"/>
+  <path d="M8.4 10.6h7.2M8.4 13.6h7.2M8.4 16.6h4.4"/>
+</svg>

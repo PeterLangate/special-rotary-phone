@@ -1,0 +1,25 @@
+[MEDIUM] Repeated MFA failures
+Identity · Sign-ins
+
+omar.reyes@langate.se hit undefined MFA failures in 47 min — possible MFA-fatigue prompting.
+
+DO THIS NEXT
+If the user didn't trigger these, reset their MFA methods and confirm no prompt was approved by mistake.
+
+DETAILS
+User: omar.reyes@langate.se
+MFA failures: undefined
+Window: 47 min
+Method: Microsoft Authenticator
+IP: 198.51.100.7
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_user=omar.reyes%40langate.se
+
+RESPOND
+Reset MFA: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=resetmfa&cts_user=omar.reyes%40langate.se
+📈 Timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: SignInAuthDetail
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 240" font-family="'DM Sans',sans-serif">
+  <defs>
+    <marker id="a7" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#746355"/></marker>
+  </defs>
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">AI-DRIVEN EXCEL-IMPORTFLÖDE</text>
+  <line x1="120" y1="30" x2="560" y2="30" stroke="#E5E5E5"/>
+
+  <!-- Step 1: Upload -->
+  <rect x="10" y="50" width="120" height="70" rx="6" fill="#1F1E20"/>
+  <text x="70" y="76" text-anchor="middle" fill="white" font-size="11" font-weight="600">Ladda upp</text>
+  <text x="70" y="92" text-anchor="middle" fill="#746355" font-size="10">.xlsx</text>
+  <text x="70" y="106" text-anchor="middle" fill="#746355" font-size="9">rubriker + 5 rader</text>
+  <line x1="130" y1="85" x2="148" y2="85" stroke="#746355" stroke-width="1.5" marker-end="url(#a7)"/>
+
+  <!-- Step 2: Azure OpenAI -->
+  <rect x="150" y="45" width="140" height="80" rx="6" fill="#F8F4EC" stroke="#746355"/>
+  <text x="220" y="70" text-anchor="middle" fill="#746355" font-size="11" font-weight="700">Azure OpenAI</text>
+  <text x="220" y="88" text-anchor="middle" fill="#746355" font-size="9">Analyserar kolumner</text>
+  <text x="220" y="102" text-anchor="middle" fill="#746355" font-size="9">Föreslår normalisering</text>
+  <text x="220" y="116" text-anchor="middle" fill="#746355" font-size="9">Ställer frågor</text>
+  <line x1="290" y1="85" x2="308" y2="85" stroke="#746355" stroke-width="1.5" marker-end="url(#a7)"/>
+
+  <!-- Step 3: JSON response -->
+  <rect x="310" y="45" width="130" height="80" rx="6" fill="white" stroke="#E5E5E5"/>
+  <text x="375" y="66" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="700">JSON-svar</text>
+  <text x="375" y="82" text-anchor="middle" fill="#2D8653" font-size="9">✓ mappings[]</text>
+  <text x="375" y="96" text-anchor="middle" fill="#C07800" font-size="9">⚡ suggestions[]</text>
+  <text x="375" y="110" text-anchor="middle" fill="#746355" font-size="9">? questions[]</text>
+  <line x1="440" y1="85" x2="458" y2="85" stroke="#746355" stroke-width="1.5" marker-end="url(#a7)"/>
+
+  <!-- Step 4: User review -->
+  <rect x="460" y="50" width="100" height="70" rx="6" fill="#1F1E20"/>
+  <text x="510" y="76" text-anchor="middle" fill="white" font-size="11" font-weight="600">Granska</text>
+  <text x="510" y="92" text-anchor="middle" fill="#746355" font-size="10">Godkänn mappning</text>
+  <text x="510" y="106" text-anchor="middle" fill="#746355" font-size="9">Besvara frågor</text>
+  <line x1="560" y1="85" x2="578" y2="85" stroke="#746355" stroke-width="1.5" marker-end="url(#a7)"/>
+
+  <!-- Step 5: Import -->
+  <rect x="580" y="50" width="90" height="70" rx="6" fill="#2D8653"/>
+  <text x="625" y="76" text-anchor="middle" fill="white" font-size="11" font-weight="600">Import</text>
+  <text x="625" y="92" text-anchor="middle" fill="#E8F5EE" font-size="10">PnP batch</text>
+  <text x="625" y="106" text-anchor="middle" fill="#E8F5EE" font-size="9">100/batch</text>
+
+  <!-- Examples below -->
+  <rect x="10" y="150" width="320" height="76" rx="6" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="24" y="170" fill="#999" font-size="9" font-weight="700" style="text-transform:uppercase">EXEMPEL PÅ AI-FÖRSLAG</text>
+  <text x="24" y="188" fill="#4A494B" font-size="10">+46 på telefonnummer utan landskod</text>
+  <text x="24" y="204" fill="#4A494B" font-size="10">"289 33 Knislinge" → PostalCode + City</text>
+  <text x="24" y="220" fill="#4A494B" font-size="10">"Villa" / "Hus" → Permanentboende</text>
+
+  <rect x="350" y="150" width="320" height="76" rx="6" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="364" y="170" fill="#999" font-size="9" font-weight="700" style="text-transform:uppercase">EXEMPEL PÅ AI-FRÅGOR</text>
+  <text x="364" y="188" fill="#4A494B" font-size="10">"Kolumn 'Typ' har A/B/C — vad betyder de?"</text>
+  <text x="364" y="204" fill="#4A494B" font-size="10">"'Namn' — kund eller installation?"</text>
+  <text x="364" y="220" fill="#4A494B" font-size="10">"12 rader saknar adress — importera ändå?"</text>
+</svg>

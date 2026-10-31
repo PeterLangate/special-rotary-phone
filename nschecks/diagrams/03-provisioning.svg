@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 180" font-family="'DM Sans',sans-serif">
+  <defs>
+    <marker id="a3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#2D8653"/></marker>
+  </defs>
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">PROVISIONERING AV PROJEKTSAJT</text>
+  <line x1="120" y1="30" x2="560" y2="30" stroke="#E5E5E5"/>
+
+  <!-- Step 1 -->
+  <circle cx="50" cy="90" r="22" fill="#1F1E20"/>
+  <text x="50" y="95" text-anchor="middle" fill="white" font-size="14" font-weight="700">1</text>
+  <text x="50" y="130" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Projektledare</text>
+  <text x="50" y="143" text-anchor="middle" fill="#999" font-size="9">klickar "Nytt projekt"</text>
+  <line x1="72" y1="90" x2="103" y2="90" stroke="#2D8653" stroke-width="1.5" marker-end="url(#a3)"/>
+
+  <!-- Step 2 -->
+  <circle cx="130" cy="90" r="22" fill="#2D8653"/>
+  <text x="130" y="95" text-anchor="middle" fill="white" font-size="14" font-weight="700">2</text>
+  <text x="130" y="130" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Azure Function</text>
+  <text x="130" y="143" text-anchor="middle" fill="#999" font-size="9">triggas</text>
+  <line x1="152" y1="90" x2="183" y2="90" stroke="#2D8653" stroke-width="1.5" marker-end="url(#a3)"/>
+
+  <!-- Step 3 -->
+  <circle cx="210" cy="90" r="22" fill="#2D8653"/>
+  <text x="210" y="95" text-anchor="middle" fill="white" font-size="14" font-weight="700">3</text>
+  <text x="210" y="130" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">PnP Template</text>
+  <text x="210" y="143" text-anchor="middle" fill="#999" font-size="9">appliceras</text>
+  <line x1="232" y1="90" x2="263" y2="90" stroke="#2D8653" stroke-width="1.5" marker-end="url(#a3)"/>
+
+  <!-- Step 4 -->
+  <circle cx="290" cy="90" r="22" fill="#2D8653"/>
+  <text x="290" y="95" text-anchor="middle" fill="white" font-size="14" font-weight="700">4</text>
+  <text x="290" y="130" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Undersajt</text>
+  <text x="290" y="143" text-anchor="middle" fill="#999" font-size="9">skapas med listor</text>
+  <line x1="312" y1="90" x2="343" y2="90" stroke="#2D8653" stroke-width="1.5" marker-end="url(#a3)"/>
+
+  <!-- Step 5 -->
+  <circle cx="370" cy="90" r="22" fill="#2D8653"/>
+  <text x="370" y="95" text-anchor="middle" fill="white" font-size="14" font-weight="700">5</text>
+  <text x="370" y="130" text-anchor="middle" fill="#4A494B" font-size="10" font-weight="600">Behörigheter</text>
+  <text x="370" y="143" text-anchor="middle" fill="#999" font-size="9">sätts per grupp</text>
+  <line x1="392" y1="90" x2="423" y2="90" stroke="#2D8653" stroke-width="1.5" marker-end="url(#a3)"/>
+
+  <!-- Result -->
+  <rect x="430" y="64" width="240" height="52" rx="8" fill="#E8F5EE" stroke="#2D8653"/>
+  <text x="550" y="86" text-anchor="middle" fill="#2D8653" font-size="11" font-weight="700">PROJEKT REDO</text>
+  <text x="550" y="102" text-anchor="middle" fill="#2D8653" font-size="10">Listor + Dokumentbibliotek + Mallar</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 230" font-family="'DM Sans',sans-serif">
+  <text x="340" y="20" text-anchor="middle" fill="#4A494B" font-size="14" font-weight="700" letter-spacing="0.1em" style="text-transform:uppercase">ROLLER &amp; BEHÖRIGHETER</text>
+  <line x1="140" y1="30" x2="540" y2="30" stroke="#E5E5E5"/>
+
+  <!-- Hub level -->
+  <rect x="10" y="48" width="660" height="60" rx="8" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="24" y="66" fill="#999" font-size="9" font-weight="700" letter-spacing="0.05em" style="text-transform:uppercase">HUBBNIVÅ</text>
+  <rect x="24" y="74" width="130" height="26" rx="4" fill="#1F1E20"/>
+  <text x="89" y="91" text-anchor="middle" fill="white" font-size="10" font-weight="600">Administratör</text>
+  <text x="180" y="91" fill="#4A494B" font-size="10">Mallar, användare, systemkonfiguration, projektkatalog</text>
+
+  <!-- Project level -->
+  <rect x="10" y="118" width="660" height="100" rx="8" fill="#F7F6F5" stroke="#E5E5E5"/>
+  <text x="24" y="136" fill="#999" font-size="9" font-weight="700" letter-spacing="0.05em" style="text-transform:uppercase">PROJEKTNIVÅ (UNDERSAJT — ISOLERAD)</text>
+
+  <rect x="24" y="144" width="150" height="64" rx="6" fill="white" stroke="#E5E5E5"/>
+  <rect x="32" y="152" width="134" height="22" rx="3" fill="#1F1E20"/>
+  <text x="99" y="167" text-anchor="middle" fill="white" font-size="10" font-weight="600">Projektledare</text>
+  <text x="99" y="186" text-anchor="middle" fill="#4A494B" font-size="9">Skapa installationer</text>
+  <text x="99" y="198" text-anchor="middle" fill="#4A494B" font-size="9">Anpassa checklistor, PDF</text>
+
+  <rect x="184" y="144" width="150" height="64" rx="6" fill="white" stroke="#E5E5E5"/>
+  <rect x="192" y="152" width="134" height="22" rx="3" fill="#2D8653"/>
+  <text x="259" y="167" text-anchor="middle" fill="white" font-size="10" font-weight="600">Fältarbetare</text>
+  <text x="259" y="186" text-anchor="middle" fill="#4A494B" font-size="9">Bocka av, fota, signera</text>
+  <text x="259" y="198" text-anchor="middle" fill="#4A494B" font-size="9">Ser bara sina projekt</text>
+
+  <rect x="344" y="144" width="150" height="64" rx="6" fill="white" stroke="#E5E5E5"/>
+  <rect x="352" y="152" width="134" height="22" rx="3" fill="#746355"/>
+  <text x="419" y="167" text-anchor="middle" fill="white" font-size="10" font-weight="600">Inspektör</text>
+  <text x="419" y="186" text-anchor="middle" fill="#4A494B" font-size="9">Läsbehörighet</text>
+  <text x="419" y="198" text-anchor="middle" fill="#4A494B" font-size="9">Signera besiktning</text>
+
+  <rect x="504" y="144" width="158" height="64" rx="6" fill="white" stroke="#E5E5E5"/>
+  <rect x="512" y="152" width="142" height="22" rx="3" fill="#C07800"/>
+  <text x="583" y="167" text-anchor="middle" fill="white" font-size="10" font-weight="600">Underentreprenör</text>
+  <text x="583" y="186" text-anchor="middle" fill="#4A494B" font-size="9">Signera utförande</text>
+  <text x="583" y="198" text-anchor="middle" fill="#4A494B" font-size="9">Begränsat till uppgift</text>
+
+  <!-- GDPR note -->
+  <rect x="280" y="48" width="390" height="26" rx="4" fill="#FBEEED" stroke="#B55852" stroke-dasharray="3,2"/>
+  <text x="475" y="65" text-anchor="middle" fill="#B55852" font-size="9" font-weight="600">🔒 GDPR: Isolerade behörigheter per undersajt — rollbaserad åtkomst</text>
+</svg>

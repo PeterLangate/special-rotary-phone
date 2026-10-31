@@ -1,0 +1,17 @@
+<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WorClaw">
+  <rect width="256" height="256" rx="48" fill="#1B5EBE"/>
+  <rect x="56" y="40" width="144" height="176" rx="8" fill="#FFFFFF"/>
+  <path d="M 180 40 L 200 60 L 180 60 Z" fill="#C4D6EE"/>
+  <rect x="72" y="66" width="96" height="14" rx="2" fill="#1B5EBE"/>
+  <rect x="72" y="96" width="112" height="6" rx="2" fill="#B8C9DD"/>
+  <rect x="72" y="110" width="104" height="6" rx="2" fill="#B8C9DD"/>
+  <rect x="72" y="124" width="112" height="6" rx="2" fill="#B8C9DD"/>
+  <rect x="72" y="146" width="72" height="10" rx="2" fill="#1B5EBE"/>
+  <rect x="72" y="168" width="108" height="6" rx="2" fill="#B8C9DD"/>
+  <rect x="72" y="182" width="112" height="6" rx="2" fill="#B8C9DD"/>
+  <rect x="72" y="196" width="64" height="6" rx="2" fill="#B8C9DD"/>
+  <g transform="translate(202 204)">
+    <path d="M 0 -32 L 8 -8 L 32 0 L 8 8 L 0 32 L -8 8 L -32 0 L -8 -8 Z" fill="#FFD23F" stroke="#1F3A5F" stroke-width="1.2"/>
+    <path d="M 0 -14 L 3 -3 L 14 0 L 3 3 L 0 14 L -3 3 L -14 0 L -3 -3 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FreeCorner (AI-chatt) — Cornerstone mockup</title>
+<meta name="description" content="Conversational UI variant — SPAI-baserad chatt som fyller i ansökan åt användaren" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="mockup-base.css?v=20260731-1316" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+}
+.ai-badge {
+    background: linear-gradient(135deg, var(--cs-action), var(--cs-sky));
+    color: var(--cs-white); font-weight: 700; font-size: 10.5px;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+}
+.webpart-title {
+    font-size: 17px; font-weight: 700;
+    color: var(--cs-primary);
+}
+.webpart-title-sub {
+    font-size: 12px; color: var(--cs-text-soft);
+    margin-top: 2px;
+}
+
+/* Chat window */
+.chat-window {
+    display: flex; flex-direction: column;
+    height: 560px;
+    background: var(--cs-cream);
+}
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 22px 28px;
+    display: flex; flex-direction: column;
+    gap: 14px;
+}
+.msg-row {
+    display: flex; flex-direction: column;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.msg-row.visible { opacity: 1; transform: translateY(0); }
+.msg-row.user-row { align-items: flex-end; }
+.msg-row.ai-row   { align-items: flex-start; }
+.msg-row.tool-row { align-items: flex-start; }
+
+.bubble {
+    max-width: 88%;
+    padding: 11px 15px;
+    font-size: 14px; line-height: 1.55;
+}
+.bubble-user {
+    background: var(--cs-primary); color: var(--cs-white);
+    border-radius: 18px 18px 4px 18px;
+    font-weight: 500;
+}
+.bubble-ai {
+    background: var(--cs-white);
+    border: 1px solid rgba(1, 87, 255, 0.22);
+    border-radius: 4px 18px 18px 18px;
+    color: var(--cs-text);
+    box-shadow: 0 1px 3px rgba(27,54,63,0.04);
+}
+.bubble-ai strong { color: var(--cs-primary); font-weight: 600; }
+.bubble-ai code {
+    background: var(--cs-stripe); padding: 1px 5px;
+    border-radius: 3px; font-size: 12.5px;
+    font-family: 'Cascadia Code', Consolas, monospace;
+}
+.bubble-tool {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--cs-sand);
+    border: 1px solid var(--cs-border-light);
+    border-radius: 12px;
+    padding: 7px 12px;
+    font-size: 12px; font-style: italic;
+    color: var(--cs-text-muted);
+}
+.tool-spinner {
+    width: 13px; height: 13px;
+    border: 2px solid var(--cs-border-light);
+    border-top-color: var(--cs-action);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.tool-done .tool-spinner {
+    border: none; background: transparent;
+    animation: none; color: var(--cs-success);
+    font-style: normal; font-size: 14px;
+}
+.tool-done .tool-spinner::after { content: '✓'; }
+
+.bubble-ai .summary-card {
+    margin-top: 10px;
+    border: 1px solid var(--cs-border-light);
+    border-left: 3px solid var(--cs-action);
+    background: var(--cs-stripe);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+.bubble-ai .summary-card .row {
+    display: flex; justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dashed var(--cs-border-light);
+}
+.bubble-ai .summary-card .row:last-child { border-bottom: none; }
+.bubble-ai .summary-card .row .label { color: var(--cs-text-muted); }
+.bubble-ai .summary-card .row .value { font-weight: 600; color: var(--cs-text); }
+
+.quick-replies {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 10px;
+}
+.quick-reply {
+    background: var(--cs-white); color: var(--cs-action);
+    border: 1.5px solid var(--cs-action);
+    border-radius: 18px;
+    padding: 5px 14px;
+    font-size: 12.5px; font-weight: 600;
+    cursor: pointer;
+    transition: all 120ms ease;
+}
+.quick-reply:hover { background: var(--cs-info-bg); }
+
+.chat-input-row {
+    border-top: 1px solid var(--cs-border-light);
+    padding: 14px 22px;
+    background: var(--cs-white);
+    display: flex; gap: 10px; align-items: center;
+}
+.chat-input {
+    flex: 1;
+    font-family: inherit; font-size: 14px;
+    color: var(--cs-text);
+    border: 1.5px solid var(--cs-border);
+    border-radius: 22px;
+    padding: 9px 18px;
+    outline: none;
+    background: var(--cs-white);
+}
+.chat-input:focus { border-color: var(--cs-action); }
+.chat-send {
+    background: var(--cs-action); color: var(--cs-white);
+    border: none; border-radius: 50%;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: background 120ms ease;
+}
+.chat-send:hover { background: var(--cs-action-hover); }
+.chat-send:disabled { background: var(--cs-border); cursor: not-allowed; }
+.chat-send svg { width: 16px; height: 16px; fill: var(--cs-white); }
+.chat-hint {
+    text-align: center;
+    font-size: 11px; color: var(--cs-text-soft);
+    padding: 6px 0 10px;
+    background: var(--cs-white);
+    border-top: 1px solid var(--cs-border-light);
+}
+.chat-hint strong { color: var(--cs-text-muted); }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+    <span class="demo-banner-label">Demo-läge</span>
+    <span class="demo-banner-text">
+        <span class="variant-badge">Variant C</span>
+        <strong>AI-chatt-variant.</strong> Samma backend, men användaren pratar med en assistent i
+        stället för att fylla i ett formulär. Baserat på
+        <a class="variant-link" href="#">SPAI-projektet</a>.
+        Jämför med
+        <a class="variant-link" href="freecorner-mockup.html">primär (formulär) →</a>
+        eller
+        <a class="variant-link" href="freecorner-mockup-no-kleer.html">utan Kleer-synk →</a>
+    </span>
+</div>
+
+<div class="sp-suite-bar">
+    <div class="sp-waffle">
+        <svg viewBox="0 0 24 24"><path d="M4 4h5v5H4zm0 7h5v5H4zm0 7h5v5H4zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5zm7-14h5v5h-5zm0 7h5v5h-5zm0 7h5v5h-5z"/></svg>
+    </div>
+    <span class="sp-suite-title">SharePoint</span>
+    <div class="sp-suite-search">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+        Sök i denna webbplats
+    </div>
+    <div class="sp-suite-right"><div class="sp-suite-avatar">AK</div></div>
+</div>
+
+<div class="sp-site-header">
+    <div class="sp-site-icon">C<span style="color: var(--cs-action)">.</span></div>
+    <div class="sp-site-meta">
+        <h1>Cornerstone HR</h1>
+        <div class="sp-site-sub">Grupp &middot; Privat &middot; 87 medlemmar</div>
+    </div>
+</div>
+
+<div class="sp-body">
+    <nav class="sp-leftnav">
+        <div class="sp-leftnav-heading">HR-appar</div>
+        <div class="sp-nav-item active"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg> Ledighet (chatt)</div>
+        <div class="sp-nav-item">Tidrapport</div>
+        <div class="sp-nav-item">Resekostnader</div>
+        <div class="sp-nav-item">Kurskatalog</div>
+    </nav>
+
+    <main class="sp-content">
+        <h1 class="sp-page-title">Ledighetsassistent</h1>
+
+        <div class="webpart">
+            <div class="webpart-stripe"></div>
+            <div class="webpart-header">
+                <span class="ai-badge">AI · SPAI</span>
+                <div>
+                    <div class="webpart-title">Ledighetsassistent</div>
+                    <div class="webpart-title-sub">Conversational UI &middot; samma tool-calls mot SharePoint och Kleer som formulär-varianten</div>
+                </div>
+            </div>
+
+            <div class="chat-window">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Skriv ett meddelande..." />
+                    <button class="chat-send" id="chat-send" aria-label="Skicka">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+                <div class="chat-hint">
+                    <strong>Tips:</strong> du kan skriva naturligt &mdash; "Jag vill vara ledig v.24 och 25 betald semester" fungerar lika bra som "2026-06-08 till 2026-06-19, betald".
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 18px; font-size: 11.5px; color: var(--cs-text-soft); text-align: center;">
+            Variant C &middot; AI-chatt (SPAI) &middot; Mockup
+        </p>
+    </main>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var messages = document.getElementById('chat-messages');
+    var input = document.getElementById('chat-input');
+    var sendBtn = document.getElementById('chat-send');
+
+    var script = [
+        { type: 'ai', text: 'Hej <strong>Anna</strong>! Jag är din ledighetsassistent. När vill du vara ledig?', quick: ['Nästa vecka', 'Hela juli', 'Några dagar i maj'] },
+        { type: 'user', text: 'Från 6 juli till 31 juli' },
+        { type: 'tool', text: 'Beräknar arbetsdagar och helger...' },
+        { type: 'tool-done', text: 'Arbetsdagar beräknade (20 st)' },
+        { type: 'tool', text: 'Läser semestersaldo från lönesystemet...' },
+        { type: 'tool-done', text: 'Saldo hämtat (17 + 3 sparade)' },
+        { type: 'ai', text: 'Toppen! Låt mig sammanfatta:', summary: [
+            { label: 'Period', value: '2026-07-06 → 2026-07-31' },
+            { label: 'Arbetsdagar', value: '20 (helger avräknade)' },
+            { label: 'Typ', value: 'Antar betald semester' },
+            { label: 'Saldo innan', value: '17 + 3 sparade = 20 dagar' },
+            { label: 'Saldo efter', value: '0 dagar kvar' }
+        ], quickText: 'Ska jag skicka den till Per Lundqvist för godkännande?', quick: ['Ja, skicka', 'Ändra typ', 'Byt datum'] },
+        { type: 'user', text: 'Ja, skicka' },
+        { type: 'tool', text: 'Slår upp chef i Entra ID (/me/manager)...' },
+        { type: 'tool-done', text: 'Chef hittad: Per Lundqvist' },
+        { type: 'tool', text: 'Signerar godkännande-token (HMAC, TTL 14 dagar)...' },
+        { type: 'tool-done', text: 'Token genererad' },
+        { type: 'tool', text: 'Skapar post i SharePoint-listan Ledighetsansökningar...' },
+        { type: 'tool-done', text: 'Post skapad (ID 247)' },
+        { type: 'tool', text: 'Skickar mail till per.lundqvist@cornerstone.se...' },
+        { type: 'tool-done', text: 'Mail skickat' },
+        { type: 'ai', text: '<strong>Klart!</strong> Ansökan är skickad till Per. Jag pingar dig här i chatten när han godkänner eller avslår &mdash; ingenting du behöver bevaka. När ansökan är godkänd synkar jag den automatiskt till Kleer så att semesterdagarna bokas av på nästa lönekörning. <br><br>Något mer du vill ansöka om?', quick: ['Nej tack', 'Visa mina tidigare ansökningar', 'Avbryt senaste'] }
+    ];
+
+    var step = 0;
+
+    function appendMessage(msg) {
+        var row = document.createElement('div');
+        row.className = 'msg-row ' + (msg.type === 'user' ? 'user-row' : msg.type === 'ai' ? 'ai-row' : 'tool-row');
+
+        if (msg.type === 'tool' || msg.type === 'tool-done') {
+            var tool = document.createElement('div');
+            tool.className = 'bubble-tool' + (msg.type === 'tool-done' ? ' tool-done' : '');
+            tool.innerHTML = '<span class="tool-spinner"></span><span>' + msg.text + '</span>';
+            row.appendChild(tool);
+        } else {
+            var bubble = document.createElement('div');
+            bubble.className = 'bubble ' + (msg.type === 'user' ? 'bubble-user' : 'bubble-ai');
+            bubble.innerHTML = msg.text;
+
+            if (msg.summary) {
+                var card = document.createElement('div');
+                card.className = 'summary-card';
+                msg.summary.forEach(function (s) {
+                    var r = document.createElement('div');
+                    r.className = 'row';
+                    r.innerHTML = '<span class="label">' + s.label + '</span><span class="value">' + s.value + '</span>';
+                    card.appendChild(r);
+                });
+                bubble.appendChild(card);
+            }
+            if (msg.quickText) {
+                var p = document.createElement('p');
+                p.style.marginTop = '10px';
+                p.innerHTML = msg.quickText;
+                bubble.appendChild(p);
+            }
+            if (msg.quick) {
+                var qr = document.createElement('div');
+                qr.className = 'quick-replies';
+                msg.quick.forEach(function (text) {
+                    var btn = document.createElement('button');
+                    btn.className = 'quick-reply';
+                    btn.textContent = text;
+                    btn.addEventListener('click', function () { handleUserInput(text); });
+                    qr.appendChild(btn);
+                });
+                bubble.appendChild(qr);
+            }
+            row.appendChild(bubble);
+        }
+        messages.appendChild(row);
+        requestAnimationFrame(function () { row.classList.add('visible'); });
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function playNext() {
+        if (step >= script.length) return;
+        var next = script[step];
+        if (next.type === 'user') return;
+        appendMessage(next);
+        step++;
+
+        var delay = 600;
+        if (next.type === 'tool') delay = 500;
+        else if (next.type === 'tool-done') delay = 350;
+        else if (next.type === 'ai') delay = 900;
+
+        if (step < script.length && script[step].type !== 'user') {
+            setTimeout(playNext, delay);
+        }
+    }
+
+    function handleUserInput(text) {
+        if (step >= script.length) return;
+        appendMessage({ type: 'user', text: text });
+        step++;
+        while (step < script.length && script[step].type === 'user') { step++; }
+        setTimeout(playNext, 500);
+    }
+
+    sendBtn.addEventListener('click', function () {
+        var v = input.value.trim();
+        if (v.length === 0) return;
+        input.value = '';
+        handleUserInput(v);
+    });
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); sendBtn.click(); }
+    });
+
+    setTimeout(playNext, 400);
+})();
+</script>
+</body>
+</html>

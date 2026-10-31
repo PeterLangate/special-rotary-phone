@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>CTS Sentinel — Monitored Events & Notifications</title>
+    <meta name="author" content="Langate">
+    <meta name="description" content="CTS Sentinel — the events the Core Tenant Security Azure Function companion monitors and sends notifications about. Severity model, notification routing, and the full event catalog by Graph source.">
+    <meta name="date" content="2026-06-17">
+    <meta name="generator" content="build-sentinel-events.py">
+    <style>
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --primary:        #00517e;
+    --primary-teal:   #537780;
+    --primary-navy:   #0b3ebe;
+    --accent-green:   #02B896;
+    --accent-gold:    #F5A623;
+    --accent-red:     #B55852;
+    --accent-red-h:   #B33F3E;
+    --bg:             #ffffff;
+    --bg-subtle:      #ebf2f5;
+    --bg-grey:        #EAEAEC;
+    --bg-beige:       #F1EEEA;
+    --text:           #4A4A4A;
+    --text-muted:     #888888;
+    --text-light:     #A0A0A0;
+    --border:         #DBE4EA;
+    --border-light:   #E0E0E0;
+    --success:        #02B896;
+    --success-bg:     #e6faf6;
+    --warning:        #c07800;
+    --warning-bg:     #fff8e6;
+    --error:          #B55852;
+    --error-bg:       #fbeeed;
+    --info:           #00517e;
+    --info-bg:        #ebf2f5;
+}
+
+body {
+    font-family: 'DM Sans', Avenir, Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: var(--text);
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    margin: 8mm auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+h1, h2, h3            { break-after: avoid; }
+p, li, tr             { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box  { break-inside: avoid; }
+.feature-card         { break-inside: avoid; }
+.two-col              { break-inside: avoid; }
+table                 { break-inside: avoid; }
+
+/* ---------- Cover ---------- */
+.page-cover {
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+.cover-top-bar { background: var(--accent-green); height: 3mm; }
+.cover-body {
+    background: var(--primary);
+    flex: 1;
+    padding: 16mm 14mm 12mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+}
+.cover-logo-area {
+    display: flex;
+    align-items: center;
+    gap: 4mm;
+}
+.cover-logo-text {
+    color: white;
+    font-size: 14pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+.cover-logo-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent-green);
+}
+.cover-tagline {
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-green);
+    margin-bottom: 6mm;
+}
+.cover-title {
+    font-size: 34pt;
+    font-weight: 800;
+    line-height: 1.1;
+    color: white;
+}
+.cover-subtitle {
+    font-size: 16pt;
+    font-weight: 300;
+    color: rgba(255,255,255,0.6);
+    margin-top: 4mm;
+}
+.cover-divider {
+    width: 14mm;
+    height: 3px;
+    background: var(--accent-green);
+    margin: 6mm 0;
+}
+.cover-meta {
+    font-size: 9pt;
+    color: rgba(255,255,255,0.55);
+}
+
+/* ---------- Minimalist page header/footer ---------- */
+.page-content { padding: 0 18mm 20mm 18mm; }
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9mm 18mm 0;
+    font-size: 7.5pt;
+    margin-bottom: 8mm;
+}
+.header-left  { color: var(--text-muted); font-weight: 500; }
+.header-right { color: var(--text-light); font-weight: 500; }
+
+.page-footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 5mm 18mm;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 7.5pt;
+}
+.footer-left  { color: var(--text-muted); }
+.footer-right { color: var(--primary); font-weight: 700; }
+
+/* ---------- Typography ---------- */
+h1 {
+    font-size: 19pt;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 3mm;
+}
+h1 .chapter-num {
+    display: block;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent-green);
+    margin-bottom: 2mm;
+}
+.chapter-rule {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--bg-subtle) 100%);
+    margin: 3mm 0 7mm;
+}
+h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 7mm 0 2.5mm;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+}
+h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 12pt;
+    background: var(--accent-green);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+h3 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 5mm 0 2mm;
+}
+p { margin-bottom: 3mm; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a { color: var(--primary-teal); text-decoration: none; }
+code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 9.5pt;
+    background: var(--bg-subtle);
+    padding: 0.5mm 1.5mm;
+    border-radius: 2px;
+    color: var(--primary);
+}
+
+/* ---------- Callouts ---------- */
+.note-box { background: var(--warning-bg); border-left: 3px solid var(--accent-gold); padding: 3mm 5mm; margin: 4mm 0; font-size: 10pt; }
+.tip-box  { background: var(--success-bg); border-left: 3px solid var(--accent-green); padding: 3mm 5mm; margin: 4mm 0; font-size: 10pt; }
+.info-box { background: var(--info-bg);    border-left: 3px solid var(--primary-teal); padding: 3mm 5mm; margin: 4mm 0; font-size: 10pt; }
+.warn-box { background: var(--error-bg);   border-left: 3px solid var(--accent-red);   padding: 3mm 5mm; margin: 4mm 0; font-size: 10pt; }
+
+/* ---------- Badges ---------- */
+.badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 800;
+    padding: 0.5mm 2mm;
+    border-radius: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.badge-green  { background: #e6faf6; color: #017a64; }
+.badge-orange { background: #fff8e6; color: #c07800; }
+.badge-red    { background: #fbeeed; color: #B55852; }
+.badge-blue   { background: #ebf2f5; color: #00517e; }
+.badge-teal   { background: #e6f4f3; color: #537780; }
+.badge-gray   { background: #EAEAEC; color: #888888; }
+
+/* ---------- TOC ---------- */
+.toc-title {
+    font-size: 18pt;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 8mm;
+}
+.toc-entry { display: flex; align-items: baseline; padding: 1.5mm 0; }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; color: var(--primary); }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.5pt; color: var(--text); }
+.toc-num  { min-width: 10mm; flex-shrink: 0; color: var(--accent-green); font-weight: 700; font-size: 9pt; }
+.toc-dots { flex: 1; border-bottom: 1px dotted var(--border-light); margin: 0 2mm 1.5mm; }
+.toc-page { color: var(--primary-teal); font-size: 9pt; min-width: 6mm; text-align: right; }
+.toc-entry a { color: inherit; text-decoration: none; }
+
+/* ---------- Feature cards ---------- */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin: 4mm 0; }
+.feature-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4mm 5mm;
+}
+.feature-card h4 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2mm;
+}
+.feature-card p {
+    font-size: 9.5pt;
+    margin: 0;
+}
+
+/* ---------- Table ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+    line-height: 1.4;
+    margin: 3mm 0 5mm;
+}
+th {
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+    text-align: left;
+    padding: 2.5mm 3mm;
+    font-size: 9.5pt;
+}
+td {
+    padding: 2.5mm 3mm;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+tr:nth-child(even) td { background: var(--bg-subtle); }
+
+/* ---------- Chapter intro ---------- */
+.chapter-intro {
+    background: var(--bg-subtle);
+    border-left: 4px solid var(--accent-green);
+    padding: 4mm 6mm;
+    margin-bottom: 6mm;
+    border-radius: 0 4px 4px 0;
+}
+.chapter-intro p { margin: 0; font-size: 10.5pt; }
+
+/* ---------- Figures: screenshots & diagrams ---------- */
+figure {
+    margin: 5mm 0;
+    break-inside: avoid;
+}
+.screenshot, .diagram {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    background: #0c1b27;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+.diagram {
+    background: var(--bg);
+    padding: 4mm 3mm;
+}
+figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+/* A screenshot of one of the dark dashboard dialogs — narrower, centred */
+.shot-narrow { max-width: 105mm; margin-left: auto; margin-right: auto; }
+/* A tall narrow dialog capture — constrain by height so it fits a page */
+.shot-tall { max-width: 92mm; margin-left: auto; margin-right: auto; }
+figure svg { display: block; width: 100%; height: auto; }
+figcaption {
+    font-size: 8.5pt;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 2mm;
+    line-height: 1.4;
+}
+figcaption .fig-label {
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+}
+
+/* ---------- Inline legend dots (for SVG / colour callouts) ---------- */
+.legend-row { display: flex; flex-wrap: wrap; gap: 2mm 6mm; margin: 3mm 0 4mm; }
+.legend-item { display: flex; align-items: center; gap: 2mm; font-size: 9.5pt; }
+.legend-dot { width: 3.5mm; height: 3.5mm; border-radius: 50%; flex-shrink: 0; }
+
+/* ===================================================================
+   v2 — cover, dividers, gallery, anatomy, personas, reference
+   =================================================================== */
+
+/* ---------- Reusable stat band ---------- */
+.stat-band {
+    display: flex; gap: 0; margin: 5mm 0;
+    border: 1px solid var(--border); border-radius: 6px; overflow: hidden;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+.stat-band .stat {
+    flex: 1; padding: 4mm 4mm; text-align: center;
+    border-right: 1px solid var(--border); background: var(--bg-subtle);
+}
+.stat-band .stat:last-child { border-right: none; }
+.stat-num { font-size: 17pt; font-weight: 800; color: var(--primary); line-height: 1.1; }
+.stat-num small { font-size: 10pt; font-weight: 700; color: var(--primary-teal); }
+.stat-label { font-size: 7.5pt; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-muted); margin-top: 1.5mm; }
+
+/* ---------- Cover (hero image variant) ---------- */
+.page-cover { position: relative; }
+.cover-hero-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center top; opacity: 0.30;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+.cover-shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, rgba(0,60,95,0.82) 0%, rgba(0,42,68,0.93) 55%, rgba(3,26,42,0.97) 100%);
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+.cover-body { position: relative; z-index: 2; background: transparent; }
+.cover-stat-band {
+    display: flex; gap: 0; margin-top: 8mm;
+    border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; overflow: hidden;
+}
+.cover-stat-band .cstat {
+    flex: 1; padding: 4mm 3mm; text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.14);
+}
+.cover-stat-band .cstat:last-child { border-right: none; }
+.cstat-num { font-size: 16pt; font-weight: 800; color: #ffffff; line-height: 1.05; }
+.cstat-label { font-size: 7pt; font-weight: 700; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--accent-green); margin-top: 1.5mm; }
+
+/* ---------- Dark chapter-divider page ---------- */
+.page-divider {
+    background: var(--primary);
+    display: flex; flex-direction: column; justify-content: center;
+    min-height: 297mm; padding: 0 26mm;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+.page-divider .divider-top {
+    position: absolute; top: 0; left: 0; right: 0; height: 3mm;
+    background: var(--accent-green);
+}
+.divider-kicker {
+    font-size: 8pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-green); margin-bottom: 6mm;
+}
+.divider-icon {
+    width: 22mm; height: 22mm; margin-bottom: 8mm;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid rgba(2,184,150,0.55); border-radius: 14px;
+    background: rgba(2,184,150,0.08);
+}
+.divider-icon svg { width: 12mm; height: 12mm; fill: none; stroke: var(--accent-green);
+    stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.divider-num { font-size: 11pt; font-weight: 700; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.05em; margin-bottom: 2mm; }
+.divider-title { font-size: 30pt; font-weight: 800; color: #ffffff; line-height: 1.08; }
+/* The chapter <h1> lives ON the divider page so the auto-TOC resolves to it. */
+.page-divider h1 { font-size: 30pt; font-weight: 800; color: #ffffff;
+    line-height: 1.08; margin: 0; }
+.page-divider h1 .chapter-num { display: block; font-size: 8pt; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-green);
+    margin-bottom: 3mm; }
+.page-divider h1::after { content: none; }
+.divider-rule { width: 16mm; height: 3px; background: var(--accent-green); margin: 6mm 0; }
+.divider-tagline { font-size: 12.5pt; font-weight: 300; color: rgba(255,255,255,0.78);
+    line-height: 1.5; max-width: 130mm; }
+.page-divider .divider-foot {
+    position: absolute; bottom: 14mm; left: 26mm; right: 26mm;
+    display: flex; justify-content: space-between;
+    font-size: 8pt; color: rgba(255,255,255,0.4);
+    border-top: 1px solid rgba(255,255,255,0.12); padding-top: 4mm;
+}
+
+/* ---------- Callouts with an icon ---------- */
+.callout { display: flex; gap: 4mm; align-items: flex-start;
+    padding: 3mm 5mm; margin: 4mm 0; border-radius: 0 4px 4px 0; font-size: 10pt; }
+.callout svg { width: 6mm; height: 6mm; flex-shrink: 0; margin-top: 0.5mm; }
+.callout p { margin: 0; }
+.callout.c-security { background: var(--error-bg); border-left: 3px solid var(--accent-red); }
+.callout.c-security svg { fill: var(--accent-red); }
+.callout.c-perm { background: var(--info-bg); border-left: 3px solid var(--primary-teal); }
+.callout.c-perm svg { fill: var(--primary-teal); }
+.callout.c-tip { background: var(--success-bg); border-left: 3px solid var(--accent-green); }
+.callout.c-tip svg { fill: var(--accent-green); }
+
+/* ---------- View gallery ---------- */
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 4mm 0; }
+.gallery-item { break-inside: avoid; }
+.gallery-item .screenshot { margin: 0; }
+.gallery-cap { font-size: 9pt; font-weight: 700; color: var(--primary); margin-top: 1.5mm; }
+.gallery-cap small { display: block; font-weight: 400; color: var(--text-muted); font-size: 8.5pt; }
+
+/* ---------- "What to look for" spotting boxes ---------- */
+.spot { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0 4mm; }
+.spot-card { border: 1px solid var(--border); border-radius: 4px; padding: 3mm 4mm; }
+.spot-card h5 { font-size: 8pt; font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 1.5mm; display: flex; align-items: center; gap: 1.5mm; }
+.spot-card p { font-size: 9.5pt; margin: 0; }
+.spot-good h5 { color: var(--success); }
+.spot-bad  h5 { color: var(--error); }
+.spot-good { background: var(--success-bg); border-color: #bfeee4; }
+.spot-bad  { background: var(--error-bg);   border-color: #f3d4d1; }
+
+/* ---------- Dashboard anatomy (annotated screenshot) ---------- */
+.anatomy { position: relative; border: 1px solid var(--border); border-radius: 6px;
+    overflow: hidden; margin: 0; }
+.anatomy img { display: block; width: 100%; height: auto; }
+.anatomy-pin {
+    position: absolute; width: 6mm; height: 6mm; border-radius: 50%;
+    background: var(--accent-gold); color: #2a1d00; font-weight: 800; font-size: 9pt;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+}
+.anatomy-legend { list-style: none; margin: 4mm 0 0; padding: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5mm 6mm; }
+.anatomy-legend li { font-size: 9.5pt; display: flex; align-items: baseline; gap: 2mm; }
+.anatomy-legend .pin-n {
+    flex-shrink: 0; width: 5mm; height: 5mm; border-radius: 50%;
+    background: var(--accent-gold); color: #2a1d00; font-weight: 800; font-size: 8pt;
+    display: inline-flex; align-items: center; justify-content: center;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* ---------- Persona cards ---------- */
+.persona-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5mm; margin: 4mm 0; }
+.persona { border: 1px solid var(--border); border-radius: 5px; overflow: hidden; break-inside: avoid; }
+.persona-head { background: var(--primary); color: #fff; padding: 3mm 4mm;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.persona-head svg { width: 7mm; height: 7mm; fill: var(--accent-green); margin-bottom: 1.5mm; }
+.persona-role { font-size: 10pt; font-weight: 800; }
+.persona-body { padding: 3mm 4mm; font-size: 9.5pt; }
+.persona-body .pq { color: var(--text-muted); font-style: italic; margin-bottom: 2mm; }
+.persona-body ul { margin: 0 0 0 4mm; padding-left: 3mm; }
+.persona-body li { margin-bottom: 1mm; }
+
+/* ---------- Glossary ---------- */
+.glossary { margin: 3mm 0; }
+.glossary dt { font-weight: 700; color: var(--primary); font-size: 10pt; margin-top: 3mm; }
+.glossary dd { margin: 0.5mm 0 0; font-size: 10pt; }
+
+/* ---------- List of figures ---------- */
+.lof-entry { display: flex; align-items: baseline; padding: 1.2mm 0; font-size: 10pt; }
+.lof-num { min-width: 16mm; flex-shrink: 0; color: var(--accent-green); font-weight: 700; font-size: 9pt; }
+.lof-dots { flex: 1; border-bottom: 1px dotted var(--border-light); margin: 0 2mm 1.2mm; }
+.lof-page { color: var(--primary-teal); font-size: 9pt; min-width: 6mm; text-align: right; }
+
+/* keep new compound blocks whole across page breaks */
+.gallery-item, .persona, .spot-card, .anatomy { break-inside: avoid; }
+
+/* ---------- Severity badges (CTS Sentinel) ---------- */
+.sev { display: inline-block; font-size: 7.5pt; font-weight: 800; padding: 0.5mm 2mm;
+    border-radius: 10px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+.sev-crit { background: #B55852; color: #ffffff; }
+.sev-high { background: #fbeeed; color: #B33F3E; }
+.sev-med  { background: #fff8e6; color: #c07800; }
+.sev-info { background: #ebf2f5; color: #00517e; }
+/* tighten event tables so 4 columns fit A4 portrait */
+table.evt { font-size: 9pt; }
+table.evt th, table.evt td { padding: 1.8mm 2.5mm; }
+table.evt .c-sev { text-align: center; white-space: nowrap; }
+.endpoint { font-family: 'Consolas','Courier New',monospace; font-size: 9pt;
+    background: var(--bg-subtle); color: var(--primary); padding: 0.5mm 1.5mm; border-radius: 2px; }
+
+/* This doc's cover is the plain Langate cover (no hero image) — restore the
+   solid dark-blue body that the main book's hero-cover override turned transparent. */
+.page-cover .cover-body { background: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+<div class="page page-cover">
+    <div class="cover-top-bar"></div>
+    <div class="cover-body">
+        <div class="cover-logo-area">
+            <span class="cover-logo-text">Langate</span>
+            <div class="cover-logo-dot"></div>
+        </div>
+        <div>
+            <div class="cover-tagline">Security &middot; Microsoft 365</div>
+            <div class="cover-title">CTS Sentinel</div>
+            <div class="cover-divider"></div>
+            <div class="cover-subtitle">Monitored events &amp; notifications</div>
+
+            <div class="cover-stat-band">
+                <div class="cstat">
+                    <div class="cstat-num">30</div>
+                    <div class="cstat-label">Monitored events</div>
+                </div>
+                <div class="cstat">
+                    <div class="cstat-num">6</div>
+                    <div class="cstat-label">Graph sources</div>
+                </div>
+                <div class="cstat">
+                    <div class="cstat-num">4</div>
+                    <div class="cstat-label">Severity levels</div>
+                </div>
+                <div class="cstat">
+                    <div class="cstat-num">3</div>
+                    <div class="cstat-label">Notify channels</div>
+                </div>
+            </div>
+        </div>
+        <div class="cover-meta">
+            Azure Function companion to Core Tenant Security &middot; 2026-06-17
+        </div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Contents</div>
+    </div>
+    <div class="page-content">
+        <div class="toc-title">Contents</div>
+                        <a class="toc-entry toc-h1" href="#ch1"><span class="toc-num">1</span>What Sentinel watches, and how it tells you<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#the-same-detections-server-side"><span class="toc-num"></span>The same detections, server-side<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#how-notifications-are-delivered"><span class="toc-num"></span>How notifications are delivered<div class="toc-dots"></div><span class="toc-page">3</span></a>
+        <a class="toc-entry toc-h2" href="#no-duplicate-alerts"><span class="toc-num"></span>No duplicate alerts<div class="toc-dots"></div><span class="toc-page">4</span></a>
+        <a class="toc-entry toc-h2" href="#reading-the-catalogue"><span class="toc-num"></span>Reading the catalogue<div class="toc-dots"></div><span class="toc-page">4</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch2"><span class="toc-num">2</span>Identity &amp; risk events<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#a-sign-ins-auditlogs-signins"><span class="toc-num"></span>A &middot; Sign-ins /auditLogs/signIns<div class="toc-dots"></div><span class="toc-page">5</span></a>
+        <a class="toc-entry toc-h2" href="#b-identity-protection-identityprotection-riskyusers-riskdete"><span class="toc-num"></span>B &middot; Identity Protection /identityProtection/riskyUsers &middot; /riskDetections<div class="toc-dots"></div><span class="toc-page">6</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch3"><span class="toc-num">3</span>Defender &amp; directory events<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h2" href="#c-defender-xdr-security-incidents-security-alerts-v2"><span class="toc-num"></span>C &middot; Defender XDR /security/incidents &middot; /security/alerts_v2<div class="toc-dots"></div><span class="toc-page">7</span></a>
+        <a class="toc-entry toc-h2" href="#d-directory-audit-what-changed-auditlogs-directoryaudits"><span class="toc-num"></span>D &middot; Directory audit &mdash; "what changed" /auditLogs/directoryAudits<div class="toc-dots"></div><span class="toc-page">7</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch4"><span class="toc-num">4</span>Network, infrastructure &amp; digest<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#e-network-infrastructure"><span class="toc-num"></span>E &middot; Network &amp; infrastructure<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        <a class="toc-entry toc-h2" href="#f-scheduled-digest"><span class="toc-num"></span>F &middot; Scheduled digest<div class="toc-dots"></div><span class="toc-page">8</span></a>
+        </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Overview</div>
+    </div>
+    <div class="page-content">
+        <h1 id="ch1"><span class="chapter-num">Chapter 1</span>What Sentinel watches, and how it tells you</h1>
+        <div class="chapter-rule"></div>
+
+        <div class="chapter-intro">
+            <p>CTS Sentinel is the always-on companion to the Core Tenant Security
+            dashboard. Where the dashboard is something an admin opens, Sentinel is an
+            Azure Function that runs on a schedule, applies the <em>same</em> detection
+            logic server-side, and pushes a notification the moment something worth
+            knowing happens. This chapter explains the severity model and how
+            notifications are delivered; the rest of the book is the event catalogue.</p>
+        </div>
+
+        <h2 id="the-same-detections-server-side">The same detections, server-side</h2>
+
+        <p>Sentinel does not re-invent the analysis. It reuses the dashboard&rsquo;s
+        detection modules unchanged &mdash; impossible-travel geometry, the
+        spray-that-succeeded correlator, the Entra risk classifier, and the per-user
+        baseline &mdash; so an alert you receive by email means exactly what the same
+        finding means on the dashboard. The only new parts are <em>when</em> it runs
+        (a timer, plus near-real-time Microsoft Graph subscriptions) and <em>how</em>
+        it reaches you.</p>
+
+        <h2 id="how-notifications-are-delivered">How notifications are delivered</h2>
+
+        <p>Sentinel keeps its own delivery deliberately simple. It does <strong>not</strong>
+        send mail itself. Instead, every finding is written as a row to a SharePoint
+        list, <strong>CTS Sentinel Notifications</strong>, and a <strong>Power Automate</strong>
+        flow watches that list and fans the row out to the right channels &mdash;
+        e-mail from a <strong>shared mailbox</strong>, a Teams message, or a webhook.</p>
+
+        <div class="tip-box">
+            <strong>Why this design:</strong> the Function already writes to SharePoint
+            lists (it shares the dashboard&rsquo;s lists), so appending a notification row
+            needs no new permission and no mail credential. Power Automate&rsquo;s built-in
+            connectors handle the actual send &mdash; one place to change the recipient list,
+            the wording, or the channel, with no redeploy of the Function.
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:34mm">Severity</th>
+                    <th>Delivered as</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><span class="sev sev-crit">Critical</span></td><td>Immediate &mdash; e-mail <em>and</em> Teams, plus a webhook to the SIEM. The "act now" tier.</td></tr>
+                <tr><td><span class="sev sev-high">High</span></td><td>Immediate &mdash; e-mail and Teams.</td></tr>
+                <tr><td><span class="sev sev-med">Medium</span></td><td>Batched into an hourly summary so a busy signal doesn&rsquo;t become noise.</td></tr>
+                <tr><td><span class="sev sev-info">Info</span></td><td>Rolled into the daily digest only.</td></tr>
+            </tbody>
+        </table>
+
+        <p class="note">A <strong>watchlist</strong> of VIP users, sensitive applications,
+        and privileged roles raises any matching finding by one severity level &mdash; so a
+        new-country sign-in is informational for most people but high for a Global
+        Administrator.</p>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 3</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Overview &middot; cont.</div>
+    </div>
+    <div class="page-content">
+        <h2 id="no-duplicate-alerts">No duplicate alerts</h2>
+
+        <p>Sentinel keeps a <strong>notified-id ledger</strong>. Each finding has a stable
+        key &mdash; a sign-in event id, an incident id, or a composite such as
+        <code>IP&middot;user&middot;hour</code> &mdash; and once a key has been notified it is
+        never notified again. A poll that re-reads an unchanged window therefore sends
+        <strong>zero</strong> notifications. This is what makes a five-minute timer safe.</p>
+
+        <h2 id="reading-the-catalogue">Reading the catalogue</h2>
+
+        <p>The remaining chapters list every monitored event, grouped by its Microsoft
+        Graph source. Each table gives the event, the detector it reuses, its severity,
+        and the condition that fires it (with the de-duplication key where relevant).</p>
+
+        <div class="stat-band">
+            <div class="stat"><div class="stat-num">A&ndash;B</div><div class="stat-label">Identity &amp; risk</div></div>
+            <div class="stat"><div class="stat-num">C&ndash;D</div><div class="stat-label">Defender &amp; directory</div></div>
+            <div class="stat"><div class="stat-num">E&ndash;F</div><div class="stat-label">Network &amp; digest</div></div>
+        </div>
+
+        <div class="info-box">
+            <strong>Severity is a starting point, not a verdict.</strong> A single signal
+            (one new country, one failed sign-in) is rarely an incident on its own; it is the
+            <em>clustering</em> &mdash; new country <em>and</em> new device <em>and</em>
+            off-hours on a risky sign-in &mdash; that the higher tiers are tuned to catch.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 4</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Identity &amp; risk</div>
+    </div>
+    <div class="page-content">
+        <h1 id="ch2"><span class="chapter-num">Chapter 2</span>Identity &amp; risk events</h1>
+        <div class="chapter-rule"></div>
+
+        <p>The largest group &mdash; everything derived from the tenant&rsquo;s sign-in
+        stream and Entra Identity Protection. These are the detections that catch an
+        account takeover in progress.</p>
+
+        <h2 id="a-sign-ins-auditlogs-signins">A &middot; Sign-ins <span class="endpoint">/auditLogs/signIns</span></h2>
+
+        <table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:42mm">Event</th>
+                    <th style="width:34mm">Detector (reused)</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Fires when / dedup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Impossible travel</strong></td><td>GlobeMath</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A user appears in two places too far apart, too fast. Dedup: UPN &middot; from-IP &middot; to-IP.</td></tr>
+                <tr><td><strong>Spray that succeeded</strong></td><td>SpraySuccess</td><td class="c-sev"><span class="sev sev-crit">Critical</span></td><td>&ge;5 accounts failed from one IP, then one logged in &mdash; all inside one hour. Dedup: IP &middot; hour.</td></tr>
+                <tr><td><strong>Brute-force burst</strong></td><td>RiskGroup</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>Many failures from one IP in a short window; rises to high on volume. Dedup: IP &middot; hour.</td></tr>
+                <tr><td><strong>Risky sign-in</strong></td><td>RiskClassifier</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>Entra scored it medium/high or at-risk; confirmed-compromised escalates to critical. Dedup: event id.</td></tr>
+                <tr><td><strong>New country for a user</strong></td><td>UserBaseline</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>A sign-in from a country not in the user&rsquo;s baseline. Dedup: UPN &middot; country.</td></tr>
+                <tr><td><strong>Anomaly cluster</strong></td><td>TimelineMath</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>&ge;2 anomaly tags (new device, new app, off-hours) on one sign-in; high on a risky one. Dedup: event id.</td></tr>
+                <tr><td><strong>Legacy-auth success</strong></td><td>SignInEvent</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>A legacy-protocol sign-in that succeeded (no MFA possible). Digested unless it spikes.</td></tr>
+                <tr><td><strong>Sign-in from a flagged IP</strong></td><td>Threat-intel + SignInEvent</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>Source IP is on a Tor / malicious / bad-ASN feed (Chapter 4). Dedup: UPN &middot; IP &middot; day.</td></tr>
+                <tr><td><strong>Repeated MFA failures</strong></td><td>Sign-in auth detail</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>Repeated MFA failures for one user within a window.</td></tr>
+                <tr><td><strong>Tenant-wide failure surge</strong></td><td>DailyAggregate</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>Failure rate far above the 30-day norm.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 5</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Identity &amp; risk &middot; cont.</div>
+    </div>
+    <div class="page-content">
+        <h2 id="b-identity-protection-identityprotection-riskyusers-riskdete">B &middot; Identity Protection <span class="endpoint">/identityProtection/riskyUsers &middot; /riskDetections</span></h2>
+
+        <table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:42mm">Event</th>
+                    <th style="width:34mm">Detector (reused)</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Fires when / dedup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>New high-risk user</strong></td><td>GraphRiskyUserClient</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A user newly at high risk, not previously notified.</td></tr>
+                <tr><td><strong>Escalation to confirmed-compromised</strong></td><td>Risk-state transition</td><td class="c-sev"><span class="sev sev-crit">Critical</span></td><td>A user&rsquo;s risk state flips to confirmed-compromised.</td></tr>
+                <tr><td><strong>Risk detection</strong> (leaked creds, anomalous token, malicious IP)</td><td>riskDetections</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A new Identity-Protection detection. Dedup: detection id.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>Licensing.</strong> The Identity-Protection signals (group B and the
+            risk fields in group A) are populated only on Entra ID P2. On lower tiers these
+            rows simply never fire &mdash; Sentinel falls back to the sign-in-shaped
+            detections (impossible travel, spray, brute force, legacy auth), which need no
+            premium licence.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 6</div>
+    </div>
+</div>
+
+
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Defender &amp; directory</div>
+    </div>
+    <div class="page-content">
+<h1 id="ch3"><span class="chapter-num">Chapter 3</span>Defender &amp; directory events</h1>
+        <div class="chapter-rule"></div>
+
+        <p>Two sources a server is especially well-placed to watch: Microsoft Defender
+        XDR (which Sentinel can subscribe to for near-real-time delivery) and the
+        directory audit log &mdash; the record of <em>what changed</em> in your tenant&rsquo;s
+        configuration.</p>
+<h2 id="c-defender-xdr-security-incidents-security-alerts-v2">C &middot; Defender XDR <span class="endpoint">/security/incidents &middot; /security/alerts_v2</span></h2>
+<table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:44mm">Event</th>
+                    <th style="width:32mm">Detector (reused)</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Fires when / dedup</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>New high/critical incident</strong></td><td>IncidentMath + TriageGuide</td><td class="c-sev"><span class="sev sev-crit">Critical</span></td><td>A new Defender incident at high or critical severity, with a plain-language summary. Dedup: incident id.</td></tr>
+                <tr><td><strong>Incident severity escalated</strong></td><td>IncidentMath</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>An existing incident&rsquo;s severity rose since the last poll.</td></tr>
+                <tr><td><strong>Alert in a watched category</strong></td><td>AlertMath</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A new alert in a watchlist category: credential access, lateral movement, or exfiltration.</td></tr>
+                <tr><td><strong>Assigned / aging unassigned</strong></td><td>Assignee field</td><td class="c-sev"><span class="sev sev-info">Info</span></td><td>An incident is assigned (notify the assignee), or has sat unassigned past its SLA. Rises to medium when overdue.</td></tr>
+            </tbody>
+        </table>
+<h2 id="d-directory-audit-what-changed-auditlogs-directoryaudits">D &middot; Directory audit &mdash; "what changed" <span class="endpoint">/auditLogs/directoryAudits</span></h2>
+<table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:44mm">Event</th>
+                    <th style="width:32mm">Detector</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Fires when</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>OAuth app consent</strong></td><td>Consent activity</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A new delegated-permission grant, especially to Mail, Files or Directory scopes.</td></tr>
+                <tr><td><strong>Privileged role assignment</strong></td><td>Role management</td><td class="c-sev"><span class="sev sev-crit">Critical</span></td><td>Any account added to a privileged role (e.g. Global Administrator).</td></tr>
+                <tr><td><strong>Conditional-Access change</strong></td><td>Policy activity</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A CA policy created, modified or disabled.</td></tr>
+                <tr><td><strong>New app credential</strong></td><td>App management</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>A new secret or certificate added to an app registration or service principal.</td></tr>
+                <tr><td><strong>MFA method removed</strong></td><td>Auth-method activity</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>An authentication method deleted for a user; high for a watchlisted account.</td></tr>
+                <tr><td><strong>Protection turned off</strong></td><td>Policy activity</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>Security defaults or per-user MFA disabled.</td></tr>
+                <tr><td><strong>Federation / domain change</strong></td><td>Domain activity</td><td class="c-sev"><span class="sev sev-crit">Critical</span></td><td>A federated domain added, or its trust changed.</td></tr>
+                <tr><td><strong>Mass password reset</strong></td><td>User activity</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>An unusual spike in password resets.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 7</div>
+    </div>
+</div>
+<div class="page">
+    <div class="page-header">
+        <div class="header-left">Langate &middot; CTS Sentinel</div>
+        <div class="header-right">Network &amp; digest</div>
+    </div>
+    <div class="page-content">
+        <h1 id="ch4"><span class="chapter-num">Chapter 4</span>Network, infrastructure &amp; digest</h1>
+        <div class="chapter-rule"></div>
+
+        <p>The events that only a server-side companion can produce: threat-intel
+        enrichment that needs a secret the browser can&rsquo;t hold, an optional bridge to
+        physical network gear, Sentinel&rsquo;s own health, and the scheduled digest.</p>
+
+        <h2 id="e-network-infrastructure">E &middot; Network &amp; infrastructure</h2>
+
+        <table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:44mm">Event</th>
+                    <th style="width:32mm">Detector / source</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Fires when</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Sign-in from a threat-feed IP</strong></td><td>Threat-intel enrichment</td><td class="c-sev"><span class="sev sev-high">High</span></td><td>Server-side enrichment matched the source IP to a Tor / malicious / bad-ASN feed. Dedup: UPN &middot; IP &middot; day.</td></tr>
+                <tr><td><strong>New ASN/ISP for the tenant</strong></td><td>ASN baseline</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>A network the tenant has never signed in from before.</td></tr>
+                <tr><td><strong>UniFi / Ubiquiti event</strong> <span class="badge badge-gray">Optional</span></td><td>UniFi client</td><td class="c-sev"><span class="sev sev-med">Medium</span></td><td>An IDS/IPS alarm, a new device on the LAN, a firewall-rule change, or a DPI anomaly &mdash; routed through the same notifier. High on an IDS hit.</td></tr>
+                <tr><td><strong>Monitor health</strong></td><td>Self-check</td><td class="c-sev"><span class="sev sev-info">Info</span></td><td>A missed run, sustained Graph throttling, or an auth failure; high when Sentinel itself is degraded.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="note-box">
+            <strong>Why this lane is server-only.</strong> A paid threat-intel feed&rsquo;s API
+            key cannot ship inside a browser bundle, and a SharePoint page&rsquo;s content
+            policy blocks calls to unknown origins. Sentinel holds the key server-side and
+            enriches every sign-in IP &mdash; then writes the verdict back where the
+            dashboard can show it.
+        </div>
+
+        <h2 id="f-scheduled-digest">F &middot; Scheduled digest</h2>
+
+        <table class="evt">
+            <thead>
+                <tr>
+                    <th style="width:44mm">Event</th>
+                    <th style="width:32mm">Detector (reused)</th>
+                    <th style="width:17mm" class="c-sev">Severity</th>
+                    <th>Cadence</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Daily / weekly digest</strong></td><td>DailyAggregate + IncidentMath</td><td class="c-sev"><span class="sev sev-info">Info</span></td><td>A scheduled roll-up: top risks, new incidents, legacy auth still in use, CA gaps, and posture deltas.</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <strong>One row, many channels.</strong> Every event in this book &mdash; identity,
+            Defender, directory, network, digest &mdash; reaches you the same way: Sentinel
+            writes a row to the <strong>CTS Sentinel Notifications</strong> list, and a
+            Power Automate flow sends it on as e-mail from the shared mailbox, a Teams
+            message, or a webhook. Change a recipient or reword an alert in the flow, not in
+            the Function.
+        </div>
+    </div>
+    <div class="page-footer">
+        <div class="footer-left">CTS Sentinel &middot; Monitored events</div>
+        <div class="footer-right">Langate &nbsp;&middot;&nbsp; 8</div>
+    </div>
+</div>
+
+
+</body>
+</html>

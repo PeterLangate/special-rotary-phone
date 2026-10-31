@@ -1,0 +1,27 @@
+[MEDIUM] Legacy-auth sign-in succeeded
+Identity · Sign-ins
+
+omar.reyes@langate.se signed in over IMAP4, a legacy protocol that can't enforce MFA.
+
+DO THIS NEXT
+Legacy auth bypasses modern controls — block it in Conditional Access if this account doesn't need it.
+
+DETAILS
+User: omar.reyes@langate.se
+Protocol: IMAP4
+App: Azure Portal
+Resource: Office 365 Exchange Online
+Client: BAV2ROPC
+IP: 198.51.100.7
+When: Torsdag 2026-06-18 11:14
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=legacy
+
+RESPOND
+How to block legacy auth: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=legacy
+📈 User timeline: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=timeline&cts_user=omar.reyes%40langate.se
+
+--
+Finding fixture-dedup · Detector: SignInEvent
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

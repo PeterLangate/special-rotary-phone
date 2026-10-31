@@ -1,0 +1,23 @@
+[HIGH] Incident severity escalated
+Defender XDR · Incident
+
+Incident Multi-stage incident escalated from Medium to High.
+
+⚠️ DO THIS NEXT
+A rising severity means new evidence — re-check the assignee and open it in Defender.
+
+DETAILS
+Incident: Multi-stage incident
+Severity change: Medium → High
+What changed: new alerts
+
+Open in CTS Dashboard:
+https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_tab=incidents&cts_inc=inc-901
+
+RESPOND
+🙋 Assign to me: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_act=assign&cts_inc=inc-901
+Open in Defender: https://security.microsoft.com/incidents/inc-901
+
+--
+Finding fixture-dedup · Detector: IncidentMath
+Manage notifications: https://contoso.sharepoint.com/sites/security/SitePages/CTS.aspx?cts_manage=1

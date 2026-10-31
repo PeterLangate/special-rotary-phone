@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Route" focusable="false">
+  <title>Route / Körning</title>
+  <path d="M6 9.7S3.1 7.6 3.1 5.6a2.9 2.9 0 0 1 5.8 0C8.9 7.6 6 9.7 6 9.7Z"/>
+  <circle cx="6" cy="5.5" r="1.1"/>
+  <path d="M18 21.4s-2.9-2.1-2.9-4a2.9 2.9 0 0 1 5.8 0c0 1.9-2.9 4-2.9 4Z"/>
+  <circle cx="18" cy="17.4" r="1.1"/>
+  <path d="M8.7 8.5 15.1 14.9" stroke-dasharray="2 2.5"/>
+</svg>
