@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Murtra Nonwovens - Ledningscentral (skiss)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* Murtra Nonwovens brand (branding-murtra skill): blue dominant, slate support, green/orange small accents */
+:root{--mnw-blue:#0032A0;--mnw-slate:#4B4F54;--mnw-green:#0E821B;--mnw-orange:#FD9B28;--bg:#ffffff;--panel:#ffffff;--panel2:#f2f3f5;--line:#dfe1e5;--ink:#333333;--dim:#4B4F54;--gold:#FD9B28;--green:#0E821B;--red:#4B4F54;--violet:#0032A0;--teal:#4B4F54}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.35 "Roboto","Segoe UI",Arial,sans-serif;height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:6px 14px;border-bottom:1px solid var(--line);background:#fff}
+.logo{display:flex;align-items:center;gap:10px}.logo img{height:56px;display:block}.logo span{font:500 13px "Roboto",sans-serif;color:var(--mnw-slate);border-left:1px solid var(--line);padding-left:10px}
+.res{display:flex;gap:8px}
+.res div{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:4px;padding:2px 9px;font-weight:700}
+.sp{flex:1}
+select,input,button{font:inherit;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:5px 8px}
+button{cursor:pointer}#show:hover,.chat form button:hover{background:var(--mnw-slate)!important}button:hover{border-color:var(--gold)}
+main{flex:1;display:grid;grid-template-columns:1fr 260px 400px;gap:10px;padding:10px;min-height:0}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));grid-auto-rows:84px;gap:6px;overflow:auto;align-content:start}
+.w{background:#fff;box-shadow:0 1px 3px #0000000f;border:1px solid var(--line);border-top:3px solid var(--c);border-radius:5px;padding:4px 6px;cursor:pointer;position:relative;transition:transform .35s,border-color .2s;overflow:hidden}
+.w:hover{border-color:var(--gold)}
+.w.big{grid-column:span 2}
+.w h4{margin:0;font-size:10px;color:var(--dim);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w .v{font-size:16px;font-weight:700}
+.w .d{font-size:10px;margin-left:4px}
+.w.new{animation:pop .9s}
+@keyframes pop{from{box-shadow:0 0 0 3px var(--violet)}to{box-shadow:none}}
+.plus{display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--violet);border:2px dashed var(--violet);border-radius:5px;cursor:pointer;background:#0032A00d}
+.plus:hover{background:#0032A022}
+.up{color:var(--green)}.dn{color:var(--red)}
+.paper{background:#fff;color:#333333;border-radius:8px;padding:10px 12px;box-shadow:0 1px 3px #0000000f;overflow:auto}
+.paper h2{margin:0;text-align:center;font-size:19px;border-bottom:2px solid var(--mnw-blue);color:var(--mnw-blue);font-weight:700;letter-spacing:.5px;padding-bottom:3px}
+.paper .ed{text-align:center;font-size:9px;letter-spacing:2px;margin:3px 0 4px;color:#4B4F54}
+.paper article{border-top:1px solid #dfe1e5;padding:6px 0;cursor:pointer;display:flex;gap:8px;align-items:center}
+.paper .ic{font-size:22px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--c);flex:none}
+.paper h3{margin:0;font-size:13px;line-height:1.2}
+.chat{background:var(--panel);border:2px solid var(--violet);border-radius:8px;display:flex;flex-direction:column;min-height:0;box-shadow:0 4px 20px #0032A026}
+.chat h4{margin:0;padding:10px 12px;border-bottom:1px solid var(--line);color:var(--violet);font-size:16px}
+#log{flex:1;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.m{padding:8px 10px;border-radius:8px;max-width:92%;font-size:14px}
+.m.u{align-self:flex-end;background:#e6ebf6}
+.m.a{background:var(--panel2);border-left:3px solid var(--violet)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 12px 8px}
+.chips button{border-radius:14px;font-size:12px;border-color:var(--violet)}
+.chat form{display:flex;gap:6px;padding:10px;border-top:1px solid var(--line)}.chat form input{flex:1;font-size:15px;padding:9px}
+.chat form button{background:var(--violet);color:#fff;font-weight:700}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--gold);border-radius:8px;width:min(720px,94vw);padding:0}
+dialog::backdrop{background:#33333366}
+#wiz{width:min(880px,96vw)}#imp{background:var(--mnw-green);color:#fff;font-weight:600;border-color:var(--mnw-green)}
+.steps{display:flex;gap:6px;margin:10px 12px 0;padding:0;list-style:none}.steps li{flex:1;text-align:center;padding:4px;border-bottom:3px solid var(--line);color:var(--dim);font-weight:600}
+.steps li.on{border-color:var(--mnw-green);color:var(--mnw-green)}.steps li.done{border-color:#61CE70}
+.wb{padding:8px 14px;max-height:62vh;overflow:auto}.wb table{width:100%;border-collapse:collapse}.wb th,.wb td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.wb th{background:var(--panel2)}.wb .sm{font-size:11px;color:var(--dim)}.wb pre{background:var(--panel2);padding:8px;font-size:11px;white-space:pre-wrap;border-radius:4px}
+.drop{display:block;border:2px dashed var(--mnw-green);border-radius:10px;padding:44px 20px;text-align:center;background:linear-gradient(#0E821B0a,#0E821B14);cursor:pointer;font-size:15px;transition:background .2s,transform .2s}
+.drop:hover,.drop.over{background:#0E821B22;transform:scale(1.01)}.drop span{color:var(--dim);font-size:12px}
+.wrow{display:flex;gap:16px;flex-wrap:wrap;align-items:center}.wrow label{display:flex;gap:6px;align-items:center;font-weight:600}
+.wh{margin:14px 0 4px;color:var(--dim);font-size:12px;text-transform:uppercase;letter-spacing:.5px}.wdel{font-size:11px;padding:3px 8px}.wdel:hover{border-color:#c0392b;color:#c0392b}
+.wb tr:hover td{background:#0E821B08}.wb select{min-width:150px}.steps li{transition:color .2s,border-color .2s}
+.conf{display:inline-block;height:7px;border-radius:3px;vertical-align:middle}
+.wprev{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}.wprev div{border:1px solid var(--line);border-top:3px solid var(--mnw-green);border-radius:5px;padding:6px 8px;display:flex;flex-direction:column}
+.wft{display:flex;gap:8px;padding:8px 14px;border-top:1px solid var(--line)}.wft .pri{margin-left:auto;background:var(--mnw-green);color:#fff;font-weight:700}.wft button:disabled{opacity:.4}
+.dh{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
+.dh h3{margin:0;flex:1;color:var(--gold)}
+.db{padding:12px;display:grid;grid-template-columns:1fr 220px;gap:12px}
+.insight{background:var(--panel2);border-left:3px solid var(--violet);padding:8px 10px;border-radius:4px;font-size:14px}
+.segs div{display:flex;align-items:center;gap:6px;margin:5px 0;font-size:12px}
+.segs i{height:10px;border-radius:3px;display:block}
+.ticker{overflow:hidden;white-space:nowrap;background:var(--mnw-slate);color:#ffffff;font-size:12px;flex:none}
+.ticker span{display:inline-block;padding:4px 0;animation:tk 70s linear infinite}
+.ticker:hover span{animation-play-state:paused}
+@keyframes tk{from{transform:translateX(20vw)}to{transform:translateX(-100%)}}
+.ticker i{font-style:normal;margin:0 8px 0 18px}
+#left{display:flex;flex-direction:column;gap:6px;min-height:0}
+#fbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sx{flex:1;min-width:170px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:0 12px}
+.sx:focus-within{border-color:var(--violet)}
+.sx input{border:0;background:none;flex:1;padding:7px 0;outline:none;min-width:0}
+.sx kbd{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:3px;padding:0 4px}
+.seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;flex:none}
+.seg button{border:0;border-radius:0;background:none;padding:6px 10px;white-space:nowrap}
+.seg .on{background:var(--mnw-blue);color:#fff}
+#fbtn{border-radius:20px;background:#fff;white-space:nowrap}#fbtn b{background:var(--violet);color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:3px}#fbtn b:empty{display:none}
+#cnt{color:var(--dim);font-size:12px;white-space:nowrap}
+#pills{display:flex;gap:5px;flex-wrap:wrap;align-items:center}#pills:empty{display:none}
+.pill{background:#e6ebf6;border:1px solid #c3cde6;color:var(--violet);border-radius:14px;padding:2px 2px 2px 10px;font-size:12px;display:flex;align-items:center}
+.pill button{border:0;background:none;padding:0 6px;color:var(--violet);font-size:13px}
+.clear{border:0;background:none;color:var(--dim);text-decoration:underline;font-size:12px}
+mark{background:#ffe2bd;color:inherit;border-radius:2px}
+.empty{grid-column:1/-1;grid-row:span 2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--dim);background:#fff;border:2px dashed var(--line);border-radius:8px}
+.empty button{border-color:var(--violet);color:var(--violet);border-radius:20px;padding:7px 14px}
+#drawer{position:fixed;top:0;right:0;bottom:0;width:320px;max-width:100vw;background:#fff;box-shadow:-8px 0 30px #0002;z-index:20;transform:translateX(105%);transition:transform .25s;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+#drawer .dhd{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;font-size:16px}
+#drawer .dhd span{flex:1}
+#facets{flex:1;overflow:auto;padding:0 16px 10px}
+#facets h5{margin:16px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim)}
+#facets label{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;font-size:14px}
+#facets label.off{opacity:.35}
+#facets label span{margin-left:auto;color:var(--dim);font-size:12px;background:var(--panel2);border-radius:10px;padding:0 7px}
+#facets input[type=checkbox],#facets input[type=radio]{accent-color:var(--violet);width:16px;height:16px;margin:0}
+.dates{display:flex;gap:6px;margin-top:4px}.dates input{flex:1;min-width:0;font-size:12px}
+#drawer .dft{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+#drawer .dft button{flex:1;padding:11px;border-radius:8px}
+#show{background:var(--mnw-blue)!important;color:#fff!important;font-weight:700}
+#scrim{position:fixed;inset:0;background:#33333355;z-index:19;display:none}#scrim.open{display:block}
+.w.none{opacity:.45}
+.rg{margin:6px 0 12px}.rgh{display:flex;justify-content:space-between;font-size:13px}.rgh span{color:var(--violet);font-weight:600}
+.rg svg{display:block;margin-top:4px}
+.rgs{position:relative;height:18px}
+.rgs::before{content:"";position:absolute;left:0;right:0;top:8px;height:3px;background:var(--line);border-radius:2px}
+.rgs input{position:absolute;left:0;top:0;width:100%;margin:0;height:18px;pointer-events:none;background:none;-webkit-appearance:none;appearance:none;border:0;padding:0}
+.rgs input::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--violet);cursor:grab}
+.rgs input::-moz-range-thumb{pointer-events:auto;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--violet);cursor:grab}
+#tabs,#fab{display:none}
+/* ---------- mobile: one pane at a time, bottom tab bar, bottom sheet ---------- */
+@media (max-width:760px){
+ body{height:auto;min-height:100vh}
+ header{position:sticky;top:0;z-index:5;gap:8px;padding:6px 10px}
+ .logo span{display:none}
+ .res{flex:1;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+ .res div{white-space:nowrap;flex:none}
+ .sp{display:none}
+ #role{width:46px;padding:5px 2px}
+ main{display:block;padding:8px 8px 76px}
+ main>*{display:none!important}
+ body[data-tab=grid] #left{display:flex!important}
+ #fbar{flex-wrap:nowrap}.sx{min-width:0}.sx kbd,#cnt{display:none}.seg{overflow-x:auto;max-width:44vw;scrollbar-width:none}
+ #drawer{width:100%;top:auto;height:86vh;border-radius:16px 16px 0 0;transform:translateY(105%)}
+ body[data-tab=grid] #grid{display:grid!important;grid-template-columns:1fr 1fr;grid-auto-rows:96px;overflow:visible}
+ body[data-tab=news] .paper{display:block!important}
+ body[data-tab=chat] .chat{display:flex!important;height:calc(100vh - 130px)}
+ .plus{display:none}
+ .w h4{font-size:11px}.w .v{font-size:18px}
+ .paper article{padding:12px 0}.paper h3{font-size:15px}.paper .ic{width:42px;height:42px}
+ .m{font-size:15px}.chips button{font-size:14px;padding:8px 12px}
+ #tabs{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:6;padding-bottom:env(safe-area-inset-bottom)}
+ #tabs button{flex:1;border:0;border-radius:0;background:none;font-size:22px;padding:6px 0;display:flex;flex-direction:column;align-items:center;color:var(--dim)}
+ #tabs span{font-size:11px}#tabs .on{color:var(--violet);box-shadow:inset 0 3px 0 var(--violet)}
+ #fab{display:flex;position:fixed;right:16px;bottom:76px;width:56px;height:56px;border-radius:50%;background:var(--violet);color:#fff;font-size:28px;border:0;box-shadow:0 4px 14px #0032A066;align-items:center;justify-content:center;z-index:6}
+ body[data-tab=chat] #fab{display:none}
+ dialog{width:100vw;max-width:100vw;margin:auto 0 0;border-radius:16px 16px 0 0;max-height:85vh;border-width:1px 0 0}
+ .db{grid-template-columns:1fr}
+ #dc svg{max-width:100%}
+}
+</style>
+</head>
+<body data-tab="grid">
+<header>
+  <div class="logo"><img src="data:image/png;base64,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" alt="Murtra Nonwovens"><span>Ledningscentral</span></div>
+  <div class="res" id="res"></div>
+  <div class="sp"></div>
+  <button id="imp" title="Importera Excel eller CSV">📥 Importera</button>
+  <select id="role">
+    <option value="ceo">👔 Anna Lindqvist - Fabrikschef</option>
+    <option value="shift">🌙 Erik Johansson - Skiftledare</option>
+    <option value="maint">🔧 Karin Berg - Underhåll</option>
+    <option value="qa">🔬 Johan Nilsson - Kvalitet</option>
+  </select>
+</header>
+<div class="ticker"><span id="tick"></span></div>
+<main>
+  <section id="left">
+    <div id="fbar">
+      <label class="sx">🔍<input id="q" type="search" placeholder="Sök rapport" autocomplete="off"><kbd>/</kbd></label>
+      <div class="seg" id="per"><button data-p="d1">24 h</button><button data-p="d7" class="on">Vecka</button><button data-p="d30">Månad</button><button data-p="d90">Kvartal</button></div>
+      <button id="fbtn">⚙ Filter<b id="fcount"></b></button>
+      <span id="cnt"></span>
+    </div>
+    <div id="pills"></div>
+    <div id="grid"></div>
+  </section>
+  <div class="paper">
+    <h2>Dagbladet</h2>
+    <div class="ed" id="ed"></div>
+    <div id="news"></div>
+  </div>
+  <div class="chat">
+    <h4>🜲 Claude</h4>
+    <div id="log"></div>
+    <div class="chips" id="chips"></div>
+    <form id="cf"><input id="ci" placeholder="Fråga om produktionen..."><button>➤</button></form>
+  </div>
+</main>
+<nav id="tabs"><button data-t="grid" class="on">📊<span>Översikt</span></button><button data-t="news">📰<span>Nyheter</span></button><button data-t="chat">🜲<span>Claude</span></button></nav>
+<button id="fab" title="Ny rapport">＋</button>
+<div id="scrim"></div>
+<aside id="drawer" aria-label="Filter">
+  <div class="dhd"><span>Filter</span><button id="dclose">✕</button></div>
+  <div id="facets"></div>
+  <div class="dft"><button id="dclear">Rensa</button><button id="show">Visa</button></div>
+</aside>
+<dialog id="wiz" aria-label="Importera data">
+  <div class="dh"><h3>📥 Importera data till lagret</h3><button id="wx">✕</button></div>
+  <ol class="steps" id="wsteps"><li>1 · Fil</li><li>2 · AI-mappning</li><li>3 · Koppling</li><li>4 · Rapporter</li></ol>
+  <div class="wb" id="wb"></div>
+  <div class="wft"><button id="wback">‹ Tillbaka</button><button id="wnext" class="pri">Nästa ›</button></div>
+</dialog>
+<dialog id="dlg">
+  <div class="dh"><h3 id="dt"></h3><button onclick="dlg.close()">✕</button></div>
+  <div class="db"><div id="dc"></div><div><div class="insight" id="di"></div><div class="segs" id="dtab"></div>
+  <button style="margin-top:8px;width:100%" id="dask">🜲 Fråga Claude</button></div></div>
+</dialog>
+<script>
+"use strict";
+// Seeded random numbers, so every reload looks the same
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const series=(n,base,vol)=>{let v=base;return Array.from({length:n},()=>v=Math.max(1,v+(rnd()-.45)*vol));};
+const C=["#0032A0","#0E821B","#4B4F54","#FD9B28","#61CE70","#7A7A7A"];
+const fmt=n=>n<10&&n%1?n.toFixed(1).replace(".",","):n>=1e3?(n/1e3).toFixed(1).replace(".",",")+"k":Math.round(n)+"";
+
+// ---------- mini chart renderers (inline SVG) ----------
+const svg=(w,h,body)=>`<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">${body}</svg>`;
+const R={
+ spark(d,c,w=120,h=34){const mx=Math.max(...d),mn=Math.min(...d),s=w/(d.length-1);
+  const p=d.map((v,i)=>`${i*s},${h-3-(v-mn)/(mx-mn||1)*(h-6)}`).join(" ");
+  return svg(w,h,`<polygon points="0,${h} ${p} ${w},${h}" fill="${c}" opacity=".2"/><polyline points="${p}" fill="none" stroke="${c}" stroke-width="2"/>`);},
+ bars(d,c,w=120,h=34){const mx=Math.max(...d),bw=w/d.length;
+  return svg(w,h,d.map((v,i)=>`<rect x="${i*bw+1}" y="${h-v/mx*h}" width="${bw-2}" height="${v/mx*h}" fill="${c}" opacity="${.45+.55*v/mx}"/>`).join(""));},
+ donut(d,c,w,h=36){const t=d.reduce((a,b)=>a+b,0);let a=-Math.PI/2,o="";
+  d.forEach((v,i)=>{const b=a+v/t*Math.PI*2,r=14,cx=18,cy=18,l=b-a>Math.PI?1:0;
+   o+=`<path d="M${cx+r*Math.cos(a)} ${cy+r*Math.sin(a)}A${r} ${r} 0 ${l} 1 ${cx+r*Math.cos(b)} ${cy+r*Math.sin(b)}" stroke="${C[i%6]}" stroke-width="7" fill="none"/>`;a=b;});
+  return `<svg viewBox="0 0 36 36" width="${h}" height="${h}">${o}</svg>`;},
+ heat(d,c,w=120,h=34){const cols=12,rows=Math.ceil(d.length/cols),cw=w/cols,ch=h/rows,mx=Math.max(...d);
+  return svg(w,h,d.map((v,i)=>`<rect x="${i%cols*cw}" y="${Math.floor(i/cols)*ch}" width="${cw-1}" height="${ch-1}" fill="${c}" opacity="${.1+.9*v/mx}"/>`).join(""));},
+ gauge(v,c,w=120,h=34){const a=Math.PI*(1-v/100),x=60+26*Math.cos(a),y=32-26*Math.sin(a),k=v>70?C[1]:v>40?C[0]:C[3];
+  return svg(w,h,`<path d="M34 32A26 26 0 0 1 86 32" stroke="#dfe1e5" stroke-width="7" fill="none"/><path d="M34 32A26 26 0 0 1 ${x} ${y}" stroke="${k}" stroke-width="7" fill="none"/>`);},
+ radar(d,c,w=120,h=36){const n=d.length,cx=60,cy=18,r=16,pt=(i,k)=>`${cx+r*k*Math.cos(i/n*6.283-1.57)},${cy+r*k*Math.sin(i/n*6.283-1.57)}`;
+  return svg(w,h,`<polygon points="${d.map((_,i)=>pt(i,1)).join(" ")}" fill="none" stroke="#dfe1e5"/><polygon points="${d.map((v,i)=>pt(i,v/100)).join(" ")}" fill="${c}" opacity=".55" stroke="${c}"/>`);},
+ // Funnel: shrinking stages (e.g. fibre in -> rolls shipped)
+ funnel(d,c,w=120,h=34){const v=d.slice(0,5).sort((a,b)=>b-a),mx=v[0],sh=h/v.length;
+  return svg(w,h,v.map((x,i)=>{const bw=x/mx*w;return `<rect x="${(w-bw)/2}" y="${i*sh}" width="${bw}" height="${sh-1}" fill="${C[i%6]}" opacity=".85"/>`;}).join(""));},
+ // Process flow: stations as boxes, arrows between, colour = status
+ flow(d,c,w=120,h=34){const n=d.length,bw=w/n*.62,g=w/n,y=h/2-7;
+  return svg(w,h,Array.from({length:n},(_,i)=>{const k=d[i]>58?C[3]:d[i]>48?C[0]:C[1],x=i*g+2;
+   return `<rect x="${x}" y="${y}" width="${bw}" height="14" rx="3" fill="${k}"/>`+(i<n-1?`<path d="M${x+bw+1} ${h/2}h${g-bw-4}l-3 -3m3 3l-3 3" stroke="#4B4F54" fill="none"/>`:"");}).join(""));},
+ // Waterfall: start, ups and downs, end
+ waterfall(d,c,w=120,h=34){const s=d.slice(0,8).map((x,i)=>i?x-d[i-1]:x*.3);let run=0;const pts=s.map(v=>{const a=run;run+=v;return [a,run];});
+  const mx=Math.max(...pts.flat()),mn=Math.min(0,...pts.flat()),Y=v=>h-(v-mn)/(mx-mn||1)*h,bw=w/pts.length;
+  return svg(w,h,pts.map(([a,b],i)=>`<rect x="${i*bw+1}" y="${Math.min(Y(a),Y(b))}" width="${bw-2}" height="${Math.max(1,Math.abs(Y(a)-Y(b)))}" fill="${b>=a?C[1]:C[3]}"/>`).join(""));},
+ // Bullet: value bar against grey bands and a target tick
+ bullet(d,c,w=120,h=34){const v=d[d.length-1]/Math.max(...d),t=.8;
+  return svg(w,h,`<rect width="${w}" height="${h}" fill="#f2f3f5"/><rect width="${w*.6}" height="${h}" fill="#dfe1e5"/><rect y="${h*.3}" width="${w*v}" height="${h*.4}" fill="${c}"/><rect x="${w*t}" y="${h*.1}" width="2" height="${h*.8}" fill="#333333"/>`);},
+ // Gantt: shift / stop timeline, rows = lines
+ gantt(d,c,w=120,h=34){const rows=4,rh=h/rows;let o="";
+  for(let r=0;r<rows;r++){let x=0;for(let k=0;k<4;k++){const len=(d[r*4+k]/60)*w/4;o+=`<rect x="${x}" y="${r*rh+1}" width="${Math.max(2,len-1)}" height="${rh-2}" fill="${k%2?C[3]:C[1]}" opacity="${k%2?.9:.6}"/>`;x+=len;}}
+  return svg(w,h,o);},
+ // Scatter: speed vs waste, a dot per hour
+ scatter(d,c,w=120,h=34){const n=d.length,mx=Math.max(...d),mn=Math.min(...d),X=v=>4+(v-mn)/(mx-mn||1)*(w-8);
+  // y correlates with x plus noise, so the cloud has a visible trend
+  const pts=d.map((v,i)=>[X(v),h-4-((v-mn)/(mx-mn||1)*.7+((i*37)%11)/11*.3)*(h-8)]);
+  return svg(w,h,`<line x1="4" y1="${h-4}" x2="${w-4}" y2="4" stroke="#4B4F54" stroke-dasharray="3 2"/>`+pts.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="2.6" fill="${y<h/3?C[3]:y<h*2/3?C[0]:C[1]}" opacity=".85"/>`).join(""));},
+ // Treemap: share of waste per source
+ treemap(d,c,w=120,h=34){const v=d.slice(0,5).sort((a,b)=>b-a),t=v.reduce((a,b)=>a+b,0);let x=0,o="";
+  v.forEach((q,i)=>{const bw=q/t*w;o+=i<2?`<rect x="${x}" y="0" width="${bw-1}" height="${h}" fill="${C[i]}"/>`:`<rect x="${x}" y="${(i-2)*h/3}" width="${w-x}" height="${h/3-1}" fill="${C[i]}"/>`;if(i<2)x+=bw;});
+  return svg(w,h,o);},
+ // Pareto: sorted bars plus cumulative line
+ pareto(d,c,w=120,h=34){const v=d.slice(0,8).sort((a,b)=>b-a),t=v.reduce((a,b)=>a+b,0),mx=v[0],bw=w/v.length;let cum=0;
+  const line=v.map((q,i)=>{cum+=q;return `${(i+.5)*bw},${h-cum/t*h}`;}).join(" ");
+  return svg(w,h,v.map((q,i)=>`<rect x="${i*bw+1}" y="${h-q/mx*h*.9}" width="${bw-2}" height="${q/mx*h*.9}" fill="${c}" opacity=".7"/>`).join("")+`<polyline points="${line}" fill="none" stroke="#333333" stroke-width="1.5"/>`);},
+ // Sankey: fibre in -> product / edge trim / scrap
+ sankey(d,c,w=120,h=34){const out=[.72,.18,.1],cols=[C[1],C[0],C[3]];let y=0,o="";
+  out.forEach((f,i)=>{const th=f*h,ty=i*h/3+(h/3-th)/2;o+=`<path d="M0 ${y}C${w/2} ${y} ${w/2} ${ty} ${w} ${ty}V${ty+th}C${w/2} ${ty+th} ${w/2} ${y+th} 0 ${y+th}Z" fill="${cols[i]}" opacity=".75"/>`;y+=th;});
+  return svg(w,h,o);},
+ // Stacked area: planned / unplanned / ok
+ stacked(d,c,w=120,h=34){const n=d.length,s=w/(n-1),mx=Math.max(...d)*2;let base=d.map(()=>0),o="";
+  [C[1],C[0],C[3]].forEach((col,k)=>{const top=d.map((v,i)=>base[i]+v*(k?.4:.9));
+   o+=`<polygon points="${top.map((v,i)=>`${i*s},${h-v/mx*h}`).join(" ")} ${base.map((v,i)=>`${i*s},${h-v/mx*h}`).reverse().join(" ")}" fill="${col}" opacity=".8"/>`;base=top;});
+  return svg(w,h,o);},
+ // Step chart: machine states over time
+ step(d,c,w=120,h=34){const mx=Math.max(...d),mn=Math.min(...d),q=v=>(v-mn)/(mx-mn||1),s=w/d.length,lv=[h-4,h/2,4],col=[C[3],C[0],C[1]];
+  // three machine states from the value's tercile: stopped / slow / running
+  let o="";d.forEach((v,i)=>{const k=q(v)<.33?0:q(v)<.66?1:2;o+=`<rect x="${i*s}" y="${lv[k]}" width="${s}" height="${h-lv[k]}" fill="${col[k]}" opacity=".75"/>`;});
+  return svg(w,h,o);}
+};
+
+// ---------- widget catalogue: icon, title, chart, role weights, unit, value, colour ----------
+const W=[
+ ["⚙","OEE","gauge",{ceo:10,shift:8},"%",71,4],["♻","Spill","spark",{ceo:9,qa:10,shift:7},"%",6.8,3],
+ ["⛔","Stopptid","pareto",{maint:10,ceo:8,shift:6},"h",31,3],["🏭","Linje 3 m/min","scatter",{shift:9},"",412,0],
+ ["✂","Kantspill","waterfall",{qa:8,shift:5},"t",4.2,5],["💥","Banbrott","gantt",{shift:8,maint:6},"",19,3],
+ ["📳","Vibration L2","spark",{maint:9},"mm/s",7.4,3],["⏱","MTBF","gauge",{maint:8,ceo:4},"%",58,0],
+ ["🍩","Spill per orsak","treemap",{qa:9,ceo:6},"",5,2],["⚖","Ytvikt","spark",{qa:8},"gsm",0.9,0],
+ ["⚡","kWh/ton","stacked",{ceo:7},"",1420,0],["🧶","Fiberlager","gauge",{ceo:5,shift:4},"%",64,1],
+ ["🩺","Linjehälsa","radar",{maint:7,ceo:6,shift:5},"",76,4],["📋","Arbetsordrar","funnel",{maint:8},"",37,5],
+ ["❌","Avvikande rullar","funnel",{qa:9,shift:5},"",22,3],["🌗","Spill per skift","bars",{shift:7,ceo:4,qa:5},"%",6.8,2],
+ ["🔮","Haveririsk 72h","gauge",{maint:9,shift:6},"%",34,2],["🔁","Återvunnet","sankey",{qa:5,ceo:5},"%",41,1],
+ ["📦","Ton idag","bullet",{ceo:8,shift:8},"t",186,1],["🔩","Reservdelar","donut",{maint:6},"",9,5],
+ ["🌡","Ugnstemp","spark",{shift:6,qa:5},"°C",142,3],["💧","Vattenjet bar","step",{shift:5,maint:5},"",180,4],
+ ["🧵","Kardning L1","flow",{shift:4},"",88,0],["🧪","Bindemedel","gauge",{qa:6},"%",52,2],
+ ["🚚","Leveranser i tid","gauge",{ceo:6},"%",94,1],["💰","Spill SEK/dag","waterfall",{ceo:7,qa:4},"k",48,3],
+ ["🔥","Gasförbrukning","stacked",{ceo:3},"Nm³",920,5],["🛢","Smörjning","gauge",{maint:5},"%",81,1],
+ ["📉","Hastighetsförlust","pareto",{shift:6,ceo:3},"%",9,3],["🔄","Kvalitetsbyten","flow",{shift:5,qa:4},"",14,2],
+ ["🧯","Säkerhet dagar","spark",{ceo:4,shift:3},"",212,1],["👷","Bemanning","gauge",{shift:5},"%",92,4],
+ ["🎯","Rullar i spec","gauge",{qa:7},"%",96,1],["🌀","Lindarspänning","scatter",{maint:4,qa:3},"N",310,2],
+ ["📊","Linje 4 nål","step",{shift:4},"m/min",95,0],["🧰","Planerat underhåll","gantt",{maint:6},"h",18,4],
+ ["💨","Tryckluft","step",{maint:4},"",7,4],["📈","Prognos vecka","bullet",{ceo:6},"t",1290,1],
+ ["🌍","CO₂ per ton","treemap",{ceo:5},"kg",310,1],["🏷","Order backlog","funnel",{ceo:5,shift:3},"t",2400,5],
+ ["🔌","Elpris","spark",{ceo:4},"öre",87,0],["🧲","Metalldetektor","scatter",{qa:4},"",3,3],
+ ["🔥","Spill per timme","heat",{qa:4,shift:4},"%",6.8,2],["🧻","Kund: hygien","donut",{ceo:4,qa:3},"",6,2]
+].map(([ic,t,k,roles,u,v,c],i)=>({id:i,ic,t,k,roles,u,v,c:C[c],delta:(rnd()-.4)*14,d:k==="donut"?[5,3,2,1]:k==="radar"?Array.from({length:6},()=>30+rnd()*70):series(60,50,12),clicks:0}));
+
+const role=document.getElementById("role"),grid=document.getElementById("grid");
+const who=()=>role.selectedOptions[0].text.split(" - ");
+// The resorting engine: role weight + recorded usage + how much the value moved
+function score(w){return (w.roles[role.value]||0)*10+w.clicks*12+Math.abs(w.delta)*.8;}
+// ---------- the mill's data: one row per line and hour, 90 days back ----------
+const DAY=864e5,today=new Date(new Date().toDateString()),HRS=90*24;
+const GR=[25,35,45,60,80,120],CU=["Hygien AB","MedTex","AutoFiber","FilterNord"],FI=["PP","PET","Viskos","Bomull"],CA=["Kant","Byte","Brott","Ytvikt","Övrigt"],SH=["Dag","Kväll","Natt"];
+const ROWS=[];
+for(let l=1;l<=4;l++){let g=GR[l],cu=l-1,fi=l%4,vib=3;
+ for(let h=0;h<HRS;h++){
+  const chg=h%8===0&&rnd()<.35;if(chg){g=GR[Math.floor(rnd()*6)];cu=Math.floor(rnd()*4);fi=Math.floor(rnd()*4);}
+  const hr=h%24,sh=hr>=6&&hr<14?"Dag":hr>=14&&hr<22?"Kväll":"Natt";
+  vib=l===2?Math.min(11,Math.max(2,vib+.003+(rnd()-.5)*.08)):3+(rnd()-.5);
+  const down=(l===2&&h>HRS-70&&h<=HRS-66)||rnd()<.005?60:rnd()<.05?rnd()*25:0;
+  const brk=rnd()<(sh==="Natt"?.1:.05)+(chg?.3:0)?1:0;
+  const base=l===3?420:l===4?95:300,speed=base*(1-down/60)*(.88+rnd()*.14)*(g>80?.82:1);
+  const waste=Math.max(.5,4.5+(sh==="Natt"?2:0)+(chg?5:0)+(l===2?1.5:0)+brk*4+(rnd()-.5)*3-h/HRS*1.5);
+  const gsm=g+(rnd()-.5)*(l===1?3:1.4),tons=speed*60*3.2*g/1e6,wt=tons*waste/100;
+  const cause=chg?"Byte":brk?"Brott":Math.abs(gsm-g)>1?"Ytvikt":rnd()<.6?"Kant":"Övrigt";
+  ROWS.push({h,l:"L"+l,sh,g:g+" gsm",gsm,cu:CU[cu],fi:FI[fi],speed,waste,down,brk,tons,wt,cost:wt*12,cause,
+   kwh:1300+rnd()*220+(g>80?160:0)+(sh==="Dag"?40:0),temp:136+rnd()*12+(l===2?3:0),vib,press:165+rnd()*25,
+   dev:Math.abs(gsm-g),off:Math.abs(gsm-g)>1?1:0,oee:Math.min(100,speed/base*100*(1-waste/100))});}}
+
+// ---------- filters cut the rows, so every visual on the screen follows them ----------
+const PER={d1:[1,"24 h"],d7:[7,"Vecka"],d30:[30,"Månad"],d90:[90,"Kvartal"]};
+const DIMS=[["l","Linje",["L1","L2","L3","L4"]],["sh","Skift",SH],["g","Kvalitet",GR.map(g=>g+" gsm")],["cu","Kund",CU],["fi","Fiber",FI]];
+const RANGES=[["gsm","Ytvikt","gsm",20,125],["speed","Hastighet","m/min",0,480],["waste","Spill","%",0,25],["temp","Ugnstemp","°C",134,152]];
+const F={q:"",per:(/[#&]per=(d1|d7|d30|d90)/.exec(location.hash)||[,"d7"])[1],from:"",to:"",sort:"ai",rg:{}};DIMS.forEach(([k])=>F[k]=new Set());
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:NaN;
+function span(){ // [first hour, end hour] of the chosen window
+ if(F.per!=="custom")return [HRS-PER[F.per][0]*24,HRS];
+ const f=F.from?new Date(F.from):new Date(today-6*DAY),t=F.to?new Date(F.to):today;
+ const end=HRS-Math.max(0,Math.round((today-t)/DAY))*24;
+ return [Math.max(0,end-Math.max(1,Math.round((t-f)/DAY)+1)*24),end];}
+function rowOk(r,skip){
+ for(const [k] of DIMS)if(k!==skip&&F[k].size&&!F[k].has(r[k]))return false;
+ for(const k in F.rg)if(k!==skip){const [a,b]=F.rg[k];if(r[k]<a||r[k]>b)return false;}
+ return true;}
+let ROWSF=[],ROWSP=[],T0=0,T1=HRS; // this render's rows, and the same filter one window earlier
+function cut(){[T0,T1]=span();const p0=2*T0-T1;ROWSF=[];ROWSP=[];
+ for(const r of ROWS){if(r.h>=T0&&r.h<T1){if(rowOk(r))ROWSF.push(r);}else if(r.h>=p0&&r.h<T0&&rowOk(r))ROWSP.push(r);}}
+
+// ---------- each report = one measure over the filtered rows ----------
+const MEAS=[[/OEE|Linjehälsa|Skiften|MTBF|Fiberlager|Bemanning|Smörjning|Bindemedel|Leveranser/,"oee","avg"],[/Spill SEK/,"cost","sum"],
+ [/Kantspill|Återvunnet|orsak|skift$/i,"wt","sum"],[/Spill/,"waste","avg"],[/Stopptid|Planerat|underhåll/i,"down","sum"],
+ [/Banbrott|Kvalitetsbyten|Arbetsordrar/,"brk","sum"],[/Vibration|Haveririsk|Reservdelar/,"vib","avg"],
+ [/m\/min|Hastighet|Kardning/,"speed","avg"],[/Ytvikt|Bredd/,"dev","avg"],[/Avvikande|spec|Metall|Kund/,"off","sum"],
+ [/kWh|Gas|CO₂|Elpris|Tryckluft/,"kwh","avg"],[/Ugn/,"temp","avg"],[/Vattenjet|Lindar/,"press","avg"],[/./,"tons","sum"]];
+const GROUP={donut:"cause",treemap:"cause",pareto:"cause",radar:"l",flow:"l",funnel:"g"};
+const KEYS={l:["L1","L2","L3","L4"],sh:SH,g:GR.map(x=>x+" gsm"),cause:CA};
+const agg=(w,rs)=>{if(!rs.length)return NaN;let s=0;for(const r of rs)s+=r[w.f];return w.agg==="sum"?s:s/rs.length;};
+const own=(w,rs)=>w.fix?rs.filter(r=>r.l===w.fix):rs;
+function measure(w){const m=MEAS.find(([r])=>r.test(w.t));w.f=m[1];w.agg=m[2];
+ w.fix=/L1\b|Linje 1/.test(w.t)?"L1":/L2\b|Linje 2/.test(w.t)?"L2":/L3\b|Linje 3/.test(w.t)?"L3":/L4\b|Linje 4/.test(w.t)?"L4":"";
+ w.grp=/Skiften|per skift/.test(w.t)?"sh":GROUP[w.k];
+ w.base=agg(w,own(w,ROWS.filter(r=>r.h>=HRS-168)))||1;}
+function win(w){if(w.imp)return impWin(w);
+ const rs=own(w,ROWSF);if(!rs.length)return {d:[],v:NaN,delta:0,none:true};
+ let d;
+ if(w.grp)d=KEYS[w.grp].map(k=>agg(w,rs.filter(r=>r[w.grp]===k))||0);
+ else{const b=Math.max(1,Math.round((T1-T0)/30)),n=Math.ceil((T1-T0)/b),s=Array(n).fill(0),c=Array(n).fill(0);
+  for(const r of rs){const i=Math.floor((r.h-T0)/b);s[i]+=r[w.f];c[i]++;}
+  d=s.map((x,i)=>c[i]?(w.agg==="sum"?x:x/c[i]):null).filter(x=>x!==null);}
+ const m=avg(d.filter(x=>x>0))||1;d=d.map(x=>x/m*50);
+ if(w.k==="radar"){const mx=Math.max(...d)||1;d=d.map(x=>x/mx*100);}
+ const now=agg(w,rs),prev=agg(w,own(w,ROWSP));
+ return {d,v:w.v*now/w.base,delta:prev?(now/prev-1)*100:0};}
+const chart=(w,P)=>P.none||!P.d.length?"":w.k==="gauge"?R.gauge(Math.min(100,P.v),w.c):R[w.k](P.d,w.c);
+function card(w){const big=score(w)>110&&F.sort==="ai",P=win(w);
+ return `<div class="w${big?" big":""}${w.fresh?" new":""}${P.none?" none":""}" data-id="${w.id}" style="--c:${w.c}"><h4>${w.ic} ${hl(w.t)}</h4>
+ <div><span class="v">${P.none?"–":fmt(P.v)+(w.u?" "+w.u:"")}</span>${P.none?"":`<span class="d ${P.delta>=0?"up":"dn"}">${P.delta>=0?"▲":"▼"}${Math.abs(P.delta).toFixed(0)}%</span>`}</div>${chart(w,P)}</div>`;}
+function resTiles(){const rs=ROWSF,last=rs.filter(r=>r.h===T1-1),lines=F.l.size||4;
+ const run=new Set(last.filter(r=>r.down<60).map(r=>r.l)).size;
+ document.getElementById("res").innerHTML=[["🏭",`${run}/${lines}`,run<lines?C[0]:C[1]],["♻",fmt(avg(rs.map(r=>r.waste))||0)+"%",C[0]],
+  ["⛔",fmt(rs.reduce((s,r)=>s+r.down,0)/60)+"h",C[3]],["⚡",fmt(avg(rs.map(r=>r.kwh))||0),C[0]],["📦",fmt(rs.reduce((s,r)=>s+r.tons,0))+" t",C[1]]]
+  .map(([i,v,c])=>`<div style="--c:${c}">${i} ${v}</div>`).join("");}
+function render(quick){
+ cut();resTiles();
+ // FLIP animation: remember the old positions, sort, then animate to the new ones
+ const old={};if(!quick)grid.querySelectorAll(".w").forEach(e=>old[e.dataset.id]=e.getBoundingClientRect());
+ W.sort((a,b)=>score(b)-score(a));const L=W.filter(w=>match(w)),S=SORT[F.sort];if(S)L.sort(S);
+ grid.innerHTML=L.map(card).join("")+(L.length?"":`<div class="empty">🔍 Inga rapporter${F.q?` för "<b>${esc(F.q)}</b>"`:""}<button id="mkq">✨ Skapa ${F.q?`"${esc(F.q)}"`:"en ny"}</button></div>`)+`<div class="plus" id="plus" title="Ny rapport">＋</div>`;W.forEach(w=>w.fresh=false);
+ filterUi(L.length,quick);
+ grid.querySelectorAll(".w").forEach(e=>{const o=old[e.dataset.id];if(!o)return;const n=e.getBoundingClientRect();
+  e.style.transition="none";e.style.transform=`translate(${o.left-n.left}px,${o.top-n.top}px)`;
+  requestAnimationFrame(()=>{e.style.transition="";e.style.transform="";});});
+}
+// ---------- search among the reports ----------
+const CAT=[["Spill",/spill|kant|återvunn|avvik/i],["Stopp",/stopp|brott|mtbf|haveri|hastighet/i],["Kvalitet",/ytvikt|spec|bredd|metall|kvalitet|kund|bindemedel/i],
+ ["Energi",/kwh|elpris|gas|co₂|tryckluft|ugn/i],["Underhåll",/vibration|smörj|reserv|arbetsord|underhåll|lindar|vattenjet/i],["Produktion",/./]];
+const SYN={Spill:"waste avfall kassation scrap",Stopp:"downtime outage avbrott haveri",Kvalitet:"quality",Energi:"energy power el",Underhåll:"maintenance service",Produktion:"output production volym"};
+const TYPES={spark:"Linje",bars:"Stapel",gauge:"Mätare",donut:"Ring",heat:"Värmekarta",radar:"Radar",funnel:"Tratt",flow:"Flöde",waterfall:"Vattenfall",bullet:"Mål",gantt:"Gantt",scatter:"Punkt",treemap:"Treemap",pareto:"Pareto",sankey:"Sankey",stacked:"Staplad yta",step:"Status"};
+function tag(w){measure(w);w.cat=CAT.find(([,r])=>r.test(w.t))[0];w.hay=(w.t+" "+w.cat+" "+(w.fix||"")+" "+TYPES[w.k]+" "+SYN[w.cat]).toLowerCase();}
+W.forEach(tag);
+const esc=t=>t.replace(/[&<>"]/g,c=>"&#"+c.charCodeAt(0)+";");
+const toks=()=>F.q.toLowerCase().split(/\s+/).filter(Boolean);
+const match=w=>toks().every(t=>w.hay.includes(t));
+function hl(t){let h=esc(t);for(const k of toks()){const i=h.toLowerCase().indexOf(k);if(i>=0&&!/[<>]/.test(h.slice(i,i+k.length)))h=h.slice(0,i)+"<mark>"+h.slice(i,i+k.length)+"</mark>"+h.slice(i+k.length);}return h;}
+const SORT={ai:null,move:(a,b)=>Math.abs(win(b).delta)-Math.abs(win(a).delta),worst:(a,b)=>win(a).delta-win(b).delta,az:(a,b)=>a.t.localeCompare(b.t,"sv")};
+const SORTL={ai:"✨ AI-relevans",move:"Störst förändring",worst:"Sämst utveckling först",az:"A–Ö"};
+
+// ---------- the filter panel: shop-style values with totals, and range sliders with a histogram ----------
+const inWin=skip=>ROWS.filter(r=>r.h>=T0&&r.h<T1&&rowOk(r,skip));
+function dimFacet([k,label,vals]){const sum={};for(const r of inWin(k))sum[r[k]]=(sum[r[k]]||0)+r.tons;
+ return `<h5>${label}</h5>`+vals.map(v=>{const c=sum[v]||0;return `<label class="${c||F[k].has(v)?"":"off"}"><input type="checkbox" data-f="${k}" value="${v}"${F[k].has(v)?" checked":""}>${v}<span>${fmt(c)} t</span></label>`;}).join("");}
+const RG=k=>RANGES.find(x=>x[0]===k);
+const rl=k=>{const [,,u,lo,hi]=RG(k),[a,b]=F.rg[k]||[lo,hi];return `${fmt(a)}–${fmt(b)} ${u}`;};
+function rangeFacet([k,label,,lo,hi]){const bins=Array(24).fill(0),st=(hi-lo)/24;
+ for(const r of inWin(k))bins[Math.min(23,Math.max(0,Math.floor((r[k]-lo)/st)))]++;
+ const mx=Math.max(...bins)||1,[a,b]=F.rg[k]||[lo,hi],step=(hi-lo)/100;
+ return `<div class="rg"><div class="rgh"><b>${label}</b><span id="rl-${k}">${rl(k)}</span></div>
+ <svg viewBox="0 0 240 28" width="100%" height="28" preserveAspectRatio="none" id="rh-${k}">${bins.map((n,i)=>`<rect data-x="${lo+i*st}" x="${i*10+.5}" y="${28-n/mx*28}" width="9" height="${n/mx*28}" fill="${lo+(i+1)*st>a&&lo+i*st<b?"#0032A0":"#dfe1e5"}"/>`).join("")}</svg>
+ <div class="rgs"><input type="range" data-r="${k}" data-e="0" min="${lo}" max="${hi}" step="${step}" value="${a}"><input type="range" data-r="${k}" data-e="1" min="${lo}" max="${hi}" step="${step}" value="${b}"></div></div>`;}
+function filterUi(n,quick){
+ const fc=DIMS.reduce((s,[k])=>s+F[k].size,0)+Object.keys(F.rg).length+(F.sort!=="ai"?1:0)+(F.per==="custom"?1:0);
+ document.getElementById("fcount").textContent=fc||"";
+ document.getElementById("cnt").textContent=`${n} av ${W.length}`;
+ document.querySelectorAll("#per button").forEach(b=>b.classList.toggle("on",b.dataset.p===F.per));
+ const pl=[];
+ if(F.q)pl.push(["q","","🔍 "+esc(F.q)]);
+ if(F.per==="custom")pl.push(["per","",`📅 ${F.from||"…"} – ${F.to||"idag"}`]);
+ for(const [k] of DIMS)F[k].forEach(v=>pl.push([k,v,v]));
+ for(const k in F.rg)pl.push(["rg",k,`${RG(k)[1]} ${rl(k)}`]);
+ if(F.sort!=="ai")pl.push(["sort","","↕ "+SORTL[F.sort]]);
+ document.getElementById("pills").innerHTML=pl.map(([f,v,l])=>`<span class="pill">${l}<button data-f="${f}" data-v="${v}" title="Ta bort">✕</button></span>`).join("")+(pl.length>1?`<button class="clear" id="pclear">Rensa alla</button>`:"");
+ document.getElementById("show").textContent=`Visa ${fmt(ROWSF.reduce((s,r)=>s+r.tons,0))} t · ${ROWSF.length} h`;
+ if(quick)return;
+ document.getElementById("facets").innerHTML=
+  `<h5>Period</h5>`+[...Object.keys(PER),"custom"].map(k=>`<label><input type="radio" name="per" value="${k}"${F.per===k?" checked":""}>${k==="custom"?"📅 Välj datum":PER[k][1]}</label>`).join("")+
+  `<div class="dates"><input type="date" id="from" value="${F.from}" max="${iso(today)}"><input type="date" id="to" value="${F.to}" max="${iso(today)}"></div>`+
+  `<h5>Värden</h5>`+RANGES.map(rangeFacet).join("")+DIMS.map(dimFacet).join("")+
+  `<h5>Sortera rapporter</h5>`+Object.keys(SORTL).map(k=>`<label><input type="radio" name="sort" value="${k}"${F.sort===k?" checked":""}>${SORTL[k]}</label>`).join("");}
+const iso=d=>d.toISOString().slice(0,10);
+function clearAll(){F.q="";F.per="d7";F.from=F.to="";DIMS.forEach(([k])=>F[k].clear());F.rg={};F.sort="ai";document.getElementById("q").value="";render();}
+const qi=document.getElementById("q");
+qi.oninput=()=>{F.q=qi.value.trim();render();};
+qi.onkeydown=e=>{if(e.key==="Escape"){qi.value="";F.q="";render();}if(e.key==="Enter"){const f=grid.querySelector(".w");if(f)f.click();}};
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();qi.focus();}});
+document.getElementById("per").onclick=e=>{const b=e.target.closest("button");if(b){F.per=b.dataset.p;render();}};
+document.getElementById("pills").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.id==="pclear")return clearAll();
+ const f=b.dataset.f,v=b.dataset.v;if(f==="q"){F.q="";qi.value="";}else if(f==="per"){F.per="d7";F.from=F.to="";}else if(f==="sort")F.sort="ai";else if(f==="rg")delete F.rg[v];else F[f].delete(v);render();};
+const drawer=document.getElementById("drawer"),scrim=document.getElementById("scrim");
+const dOpen=o=>{drawer.classList.toggle("open",o);scrim.classList.toggle("open",o);};
+document.getElementById("fbtn").onclick=()=>dOpen(true);
+scrim.onclick=document.getElementById("dclose").onclick=document.getElementById("show").onclick=()=>dOpen(false);
+document.getElementById("dclear").onclick=clearAll;
+let raf=0;
+// While a slider moves: update the visuals and its own histogram, but keep the panel (rebuilding it would drop the drag)
+document.getElementById("facets").addEventListener("input",e=>{const t=e.target;if(!t.dataset.r)return;
+ const k=t.dataset.r,[,,,lo,hi]=RG(k),ins=t.parentNode.querySelectorAll("input");let a=+ins[0].value,b=+ins[1].value;
+ if(a>b){if(t.dataset.e==="0")a=b;else b=a;t.value=String(t.dataset.e==="0"?a:b);}
+ if(a<=lo&&b>=hi)delete F.rg[k];else F.rg[k]=[a,b];
+ document.getElementById("rl-"+k).textContent=rl(k);
+ document.querySelectorAll(`#rh-${k} rect`).forEach(r=>{const x=+r.dataset.x,st=(hi-lo)/24;r.setAttribute("fill",x+st>a&&x<b?"#0032A0":"#dfe1e5");});
+ if(!raf)raf=requestAnimationFrame(()=>{raf=0;render(true);});});
+document.getElementById("facets").onchange=e=>{const t=e.target;
+ if(t.name==="sort")F.sort=t.value;else if(t.name==="per")F.per=t.value;
+ else if(t.type==="date"){F[t.id]=t.value;F.per="custom";}
+ else if(t.dataset.f){F[t.dataset.f][t.checked?"add":"delete"](t.value);}
+ render();};
+let wantChart=false;
+grid.onclick=e=>{if(e.target.closest("#mkq")){if(F.q){const t=F.q;clearAll();makeChart(t);say("a",`✨ <b>${t}</b> skapad`);}else document.getElementById("plus").click();return;}
+ if(e.target.closest("#plus")){wantChart=true;say("a","＋ Vilken rapport? Beskriv den.");chips(["Spill per skift","Stopp per linje","Energi per vecka","Brott per kvalitet"]);ci.focus();return;}
+ const el=e.target.closest(".w");if(!el)return;const w=W.find(x=>x.id==el.dataset.id);w.clicks++;open(w);};
+
+// ---------- detail dialog ----------
+const dlg=document.getElementById("dlg");let cur=null;
+function open(w){cur=w;const P=win(w);document.getElementById("dt").textContent=w.ic+" "+w.t;
+ const big=P.none?"<p>Ingen data för filtret</p>":w.k==="donut"?R.donut(P.d,w.c,0,200):w.k==="radar"?R.radar(P.d,w.c,120,36).replace('height="36"','height="200"'):w.k==="gauge"?R.gauge(Math.min(100,P.v),w.c,120,34).replace('height="34"','height="160"'):R[w.k](P.d,w.c,400,180);
+ document.getElementById("dc").innerHTML=big;
+ document.getElementById("di").innerHTML=`✨ ${PER[F.per]?PER[F.per][1]:"📅"} · ${P.none?"–":fmt(P.v)+" "+w.u} · ${P.delta>=0?"▲":"▼"} ${Math.abs(P.delta).toFixed(1)}% · ${w.imp?"📥 "+esc(w.imp.ds.name)+(w.imp.ds.links.length?" · kopplad via "+w.imp.ds.links.map(DLAB).join(" + "):""):P.delta>=0?"Linje 3 driver":"Nattskiftet, L2-lindaren"}`;
+ const [lk,per]=w.imp?impBreak(w):[KEYS.l,KEYS.l.map(s=>agg(w,ROWSF.filter(r=>r.l===s)))],pm=Math.max(...per.filter(x=>x>0))||1;
+ document.getElementById("dtab").innerHTML=lk.map((s,i)=>{const v=per[i]||0,q=v/pm*100;return `<div><b style="min-width:22px">${esc(s)}</b><i style="width:${q*1.4}px;background:${q>80?C[1]:q>50?C[0]:C[3]}"></i>${v?fmt(w.imp?v:w.v*v/w.base):"–"}</div>`;}).join("");
+ dlg.showModal();}
+document.getElementById("dask").onclick=()=>{dlg.close();ask(`Varför ändrades ${cur.t}?`);};
+dlg.addEventListener("close",render);
+
+// ---------- news, resources ----------
+const NEWS={ceo:[["♻",C[1],"Spill 6,8% - bästa veckan sedan mars"],["⛔",C[3],"L2 stoppad 4h 20m i natt - orsak: banbrott efter kvalitetsbyte"],["📞",C[3],"Kundklagomål: noppor, lot 4471"],["🔍",C[0],"Värt att titta på: kan en smalare kant minska spillet?"]],
+ shift:[["💥",C[3],"Banbrott 02-04 efter kvalitetsbyte"],["🏭",C[0],"L1 15% under målhastighet"],["🔄",C[2],"45 gsm startar 06:00"]],
+ maint:[["🔮",C[3],"L2-lager: 78% haveririsk inom 72h"],["🔩",C[0],"2 kritiska reservdelar saknas"],["⏱",C[5],"MTBF ner till 41h"]],
+ qa:[["⚖",C[0],"Ytvikt driver 0,9 gsm på L1"],["✂",C[1],"Smalare kant sparar 0,6 t/v"],["📞",C[3],"Kundklagomål: noppor, lot 4471"]]};
+// Ticker: every role's headlines, so you see what happens elsewhere in the mill
+function ticker(){document.getElementById("tick").innerHTML=Object.values(NEWS).flat().map(([i,,h])=>`<i>${i}</i>${h}`).join("");}
+function paper(){ticker();
+ document.getElementById("ed").textContent=new Date().toLocaleDateString("sv-SE")+" · NORRKÖPING · 24/7";
+ document.getElementById("news").innerHTML=NEWS[role.value].map(([i,c,h])=>`<article><div class="ic" style="--c:${c}">${i}</div><h3>${h}</h3></article>`).join("");}
+document.getElementById("news").onclick=e=>{const a=e.target.closest("article");if(a)ask(a.querySelector("h3").textContent+"?");};
+
+// ---------- advisor chat (canned answers in the mockup) ----------
+const log=document.getElementById("log"),ci=document.getElementById("ci");
+function say(who,t){log.insertAdjacentHTML("beforeend",`<div class="m ${who}">${t}</div>`);log.scrollTop=1e9;}
+function chips(list){document.getElementById("chips").innerHTML=list.map(t=>`<button>${t}</button>`).join("");}
+document.getElementById("chips").onclick=e=>{if(e.target.tagName==="BUTTON")ask(e.target.textContent);};
+function makeChart(t){const k=/orsak|andel|fördel/i.test(t)?"donut":/vecka|dag|timme|skift/i.test(t)?"heat":/trend|tid/i.test(t)?"spark":"bars";
+ const w={id:W.length,ic:"✨",t:t.replace(/^./,c=>c.toUpperCase()).slice(0,22),k,roles:{[role.value]:12},u:"",v:Math.round(50+rnd()*900),c:C[2],delta:(rnd()-.4)*10,d:k==="donut"?[4,3,2]:series(60,50,12),clicks:1,fresh:true};
+ tag(w);W.push(w);render();return w;}
+function ask(q){if(mobile.matches)tab("chat");say("u",q);
+ if(wantChart){wantChart=false;const w=makeChart(q);setTimeout(()=>say("a",`✨ <b>${w.t}</b> tillagd ↖`),300);return;}
+ setTimeout(()=>{const w=W.find(x=>q.toLowerCase().includes(x.t.toLowerCase().split(" ")[0])),P=w?win(w):null;
+  say("a",w?`${w.ic} <b>${fmt(P.v)}${w.u?" "+w.u:""}</b> <span class="${P.delta>=0?"up":"dn"}">${P.delta>=0?"▲":"▼"}${Math.abs(P.delta).toFixed(1)}%</span> · ${P.delta>=0?"Linje 3 leder":"Nattskift + L2-lindaren"}`:"🔍 Linje 2-lindaren: 78% risk. Planera byte lördag?");},400);}
+document.getElementById("cf").onsubmit=e=>{e.preventDefault();if(ci.value){ask(ci.value);ci.value="";}};
+
+role.onchange=()=>{paper();render();log.innerHTML="";say("a",`God morgon, ${who()[0].split(" ")[1]}! ${NEWS[role.value][0][0]} ${NEWS[role.value][0][2]}`);chips(["Varför ökar spillet?","Nästa stopp?","Bästa skiftet?","Spara energi"]);};
+// ---------- mobile tabs ----------
+const mobile=matchMedia("(max-width:760px)");
+function tab(t){document.body.dataset.tab=t;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));}
+document.getElementById("tabs").onclick=e=>{const b=e.target.closest("button");if(b)tab(b.dataset.t);};
+document.getElementById("fab").onclick=()=>{tab("chat");document.getElementById("plus").click();};
+// ---------- import wizard: Excel/CSV -> warehouse raw table, linked to the mill's dimensions -> new reports ----------
+const LINK=[["l","Linje",/^(linje|line|maskin|machine|lina)/i],["sh","Skift",/skift|shift/i],["g","Kvalitet",/kvalitet|grade|gsm|produkt/i],["cu","Kund",/kund|customer|client/i],["fi","Fiber",/fiber|material|råvara/i]];
+const DATE_RX=/datum|date|tid$|time|dag$|day|period/i,SUM_RX=/antal|count|qty|ton|kg|sek|kr\b|belopp|amount|kostnad|cost|minuter|reklam/i;
+const DLAB=k=>(LINK.find(x=>x[0]===k)||[,k])[1],DKEYS=k=>DIMS.find(d=>d[0]===k)[2];
+const num=s=>{if(typeof s==="number")return s;const t=String(s).trim().replace(/\s/g,"").replace(/,(?=\d+$)/,".");return t!==""&&isFinite(+t)?+t:NaN;};
+const ckey=s=>String(s).toLowerCase().replace(/\bab\b|[^a-zåäö0-9]/g,"");
+const FIB={polypropylen:"PP",polyester:"PET",viscose:"Viskos",viskos:"Viskos",cotton:"Bomull",bomull:"Bomull",pp:"PP",pet:"PET"};
+// One value of a linked column -> the warehouse dimension key it means, or "" when it matches nothing
+function norm(k,v){const s=String(v).trim(),lo=s.toLowerCase();if(!s)return "";
+ if(k==="l"){const m=s.match(/^(?:l|linje|line)?\s*([1-4])$/i);return m?"L"+m[1]:"";}
+ if(k==="sh")return /^(dag|day|morgon|fm)/.test(lo)?"Dag":/^(kv[äa]ll|evening|em)/.test(lo)?"Kväll":/^(natt|night)/.test(lo)?"Natt":"";
+ if(k==="g"){const m=s.match(/^(\d+)\s*(gsm|g\/m2|g)?$/i);return m&&GR.includes(+m[1])?m[1]+" gsm":"";}
+ if(k==="cu"){const a=ckey(s);return CU.find(c=>{const b=ckey(c);return a===b||a.length>=4&&(a.startsWith(b)||b.startsWith(a));})||"";}
+ if(k==="fi")return FIB[lo]||FI.find(f=>f.toLowerCase()===lo)||"";return "";}
+function toDate(v,serialOk){if(typeof v==="number")return serialOk&&v>20000&&v<80000?new Date(Date.UTC(1899,11,30)+Math.floor(v)*DAY):null;
+ const s=String(v).trim();let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return new Date(+m[1],m[2]-1,+m[3]);
+ m=s.match(/^(\d{1,2})[./](\d{1,2})[./](\d{4})/);return m?new Date(+m[3],m[2]-1,+m[1]):null;}
+function parseCsv(t){t=t.replace(/^﻿/,"");const first=t.split(/\r?\n/,1)[0],d=[";","\t",","].sort((a,b)=>first.split(b).length-first.split(a).length)[0];
+ const out=[];let row=[],f="",q=false;
+ for(let i=0;i<t.length;i++){const c=t[i];
+  if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+  else if(c==='"')q=true;else if(c===d){row.push(f);f="";}
+  else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);f="";if(row.some(x=>x!==""))out.push(row);row=[];}
+  else f+=c;}
+ row.push(f);if(row.some(x=>x!==""))out.push(row);return out;}
+// Minimal zip reader: central directory -> entries; deflate through the browser's DecompressionStream
+function unzip(buf){const v=new DataView(buf),u8=new Uint8Array(buf),dec=new TextDecoder();let e=buf.byteLength-22;
+ while(e>=0&&v.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error("Filen är ingen giltig .xlsx");
+ const n=v.getUint16(e+10,true),files={};let p=v.getUint32(e+16,true);
+ for(let i=0;i<n;i++){const nl=v.getUint16(p+28,true);files[dec.decode(u8.subarray(p+46,p+46+nl))]={meth:v.getUint16(p+10,true),size:v.getUint32(p+20,true),off:v.getUint32(p+42,true)};
+  p+=46+nl+v.getUint16(p+30,true)+v.getUint16(p+32,true);}
+ const get=async name=>{const f=files[name];if(!f)return "";const s=f.off+30+v.getUint16(f.off+26,true)+v.getUint16(f.off+28,true),data=u8.subarray(s,s+f.size);
+  return f.meth===0?dec.decode(data):new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();};
+ return {get,names:Object.keys(files)};}
+// Every sheet of the workbook, in tab order: name and part path (through xl/_rels/workbook.xml.rels)
+async function xlsxSheets(get,names,X){const rel={};for(const r of X(await get("xl/_rels/workbook.xml.rels")||"<x/>").getElementsByTagName("Relationship"))rel[r.getAttribute("Id")]=r.getAttribute("Target").replace(/^\/?(xl\/)?/,"xl/");
+ const sh=[...X(await get("xl/workbook.xml")||"<x/>").getElementsByTagName("sheet")].map(e=>({name:e.getAttribute("name"),path:rel[[...e.attributes].find(a=>/(^|:)id$/.test(a.name)&&a.name!=="sheetId")?.value]})).filter(x=>x.path&&names.includes(x.path));
+ return sh.length?sh:names.filter(n=>/^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort((a,b)=>parseInt(a.slice(19))-parseInt(b.slice(19))).map((path,i)=>({name:"Blad "+(i+1),path}));}
+async function parseXlsx(buf,want){const {get,names}=unzip(buf),X=s=>new DOMParser().parseFromString(s,"application/xml"),txt=n=>[...n.getElementsByTagName("t")].map(t=>t.textContent).join("");
+ const ss=[...X(await get("xl/sharedStrings.xml")||"<x/>").getElementsByTagName("si")].map(txt);
+ const sheets=await xlsxSheets(get,names,X);if(!sheets.length)throw new Error("Hittar inget kalkylblad i filen");
+ const read=async path=>{const out=[];for(const r of X(await get(path)).getElementsByTagName("row")){const row=[];
+  for(const c of r.getElementsByTagName("c")){const col=c.getAttribute("r").replace(/\d+/g,"").split("").reduce((a,ch)=>a*26+ch.charCodeAt(0)-64,0)-1;
+   const t=c.getAttribute("t"),vv=c.getElementsByTagName("v")[0]?.textContent??"";
+   row[col]=t==="s"?ss[+vv]:t==="inlineStr"?txt(c):t==="str"||t==="b"||vv===""?vv:+vv;}
+  out.push(Array.from(row,x=>x??""));}
+  return out.filter(r=>r.some(x=>x!==""));};
+ // No sheet asked for: the first one with data under its header row
+ let i=want??0,rows=await read(sheets[i].path);
+ if(want==null)for(let j=1;rows.length<2&&j<sheets.length;j++){const r=await read(sheets[j].path);if(r.length>=2){i=j;rows=r;}}
+ return {rows,sheets:sheets.map(x=>x.name),sheet:i};}
+// The "AI" step: every column gets a proposed role, a confidence and the reason, from its header and its values
+function profile(head,body){return head.map((h,i)=>{const name=String(h||"Kolumn "+(i+1)).trim(),vals=body.map(r=>r[i]).filter(v=>v!==""&&v!=null);
+ const nums=vals.filter(v=>!isNaN(num(v))).length,dates=vals.filter(v=>toDate(v,DATE_RX.test(name))).length,N=vals.length||1;
+ let b={role:"text",conf:.4,why:"fritext"};
+ if(dates>=N*.8&&(DATE_RX.test(name)||nums<N*.5))b={role:"date",conf:DATE_RX.test(name)?.97:.8,why:`${dates}/${N} är datum`};
+ else{for(const [k,lab,rx] of LINK){const hd=rx.test(name);if(nums>=N*.9&&!hd&&k!=="g")continue;
+   const hit=vals.filter(v=>norm(k,v)).length/N,c=hd?.55+hit*.44:hit*.85;
+   if((hit>=.5||hd&&hit>.2)&&c>b.conf)b={role:k,conf:c,why:`${Math.round(hit*100)}% matchar ${lab.toLowerCase()} i lagret`+(hd?" · rubriken":"")};}
+  if(b.role==="text"&&nums>=N*.9)b={role:SUM_RX.test(name)?"sum":"avg",conf:.9,why:SUM_RX.test(name)?"tal som summeras":"tal, medelvärde"};
+  if(b.role==="text"&&new Set(vals).size<=1)b={role:"skip",conf:.7,why:"samma värde överallt"};}
+ return {i,name,...b,sample:vals.slice(0,3).join(" · ")};});}
+const ROLES=[["date","📅 Datum"],["l","🔗 Linje"],["sh","🔗 Skift"],["g","🔗 Kvalitet"],["cu","🔗 Kund"],["fi","🔗 Fiber"],["sum","Σ Mått (summa)"],["avg","x̄ Mått (medel)"],["text","Text"],["skip","Ignorera"]];
+const isLink=r=>LINK.some(x=>x[0]===r);
+function buildDs(name,cols,body){const dc=cols.find(c=>c.role==="date"),links=cols.filter(c=>isLink(c.role)),meas=cols.filter(c=>c.role==="sum"||c.role==="avg");
+ const rows=body.map(r=>{const o={};if(dc){const d=toDate(r[dc.i],true);o.h=d?HRS-24*(Math.round((today-d)/DAY)+1)+12:null;}
+  for(const c of links)o[c.role]=norm(c.role,r[c.i]);for(const c of meas)o["m"+c.i]=num(r[c.i]);return o;});
+ return {name,cols,rows,dated:!!dc,links:links.map(c=>c.role),meas};}
+// The imported rows follow the dashboard's own period and dimension filters
+const impRows=(ds,a,b)=>ds.rows.filter(r=>(!ds.dated||r.h!=null&&r.h>=a&&r.h<b)&&ds.links.every(k=>!F[k].size||F[k].has(r[k])));
+function impVal(w,rs){const {m,agg}=w.imp;if(!rs.length)return NaN;if(agg==="count")return rs.length;
+ const xs=rs.map(r=>r[m]).filter(x=>!isNaN(x)),s=xs.reduce((a,b)=>a+b,0);return agg==="sum"?s:xs.length?s/xs.length:NaN;}
+// "per 100 t": the imported measure over the warehouse's own produced tons for the same line/customer and window
+function impPer(w,rs,key,val){const v=impVal(w,rs);if(!w.imp.per)return v;const t=ROWSF.reduce((s,r)=>!key||r[key]===val?s+r.tons:s,0);return t?v/t*100:NaN;}
+function impWin(w){const {ds,by}=w.imp,rs=impRows(ds,T0,T1);if(!rs.length)return {d:[],v:NaN,delta:0,none:true};
+ let d;
+ if(by)d=DKEYS(by).map(k=>impPer(w,rs.filter(r=>r[by]===k),by,k)||0);
+ else if(ds.dated){const b=Math.max(24,Math.round((T1-T0)/30)),n=Math.ceil((T1-T0)/b);d=Array.from({length:n},(_,i)=>impVal(w,rs.filter(r=>r.h>=T0+i*b&&r.h<T0+(i+1)*b))||0);}
+ else{const n=Math.min(30,rs.length),s=Math.ceil(rs.length/n);d=Array.from({length:n},(_,i)=>impVal(w,rs.slice(i*s,(i+1)*s))||0);}
+ if(!d.some(x=>x>0))d=d.map(()=>.01);if(d.length<2)d=[d[0],d[0]];
+ const v=impPer(w,rs),p=ds.dated?impPer(w,impRows(ds,2*T0-T1,T0)):NaN;
+ return {d,v,delta:p?(v/p-1)*100:0};}
+function impBreak(w){const {ds}=w.imp,k=w.imp.by||ds.links[0];if(!k)return [[ds.name],[impVal(w,impRows(ds,T0,T1))]];
+ const rs=impRows(ds,T0,T1),ks=DKEYS(k);return [ks,ks.map(x=>impPer(w,rs.filter(r=>r[k]===x),k,x))];}
+// Reports the data supports: each measure over time, per linked dimension, and per 100 t against production
+function impWidgets(ds){const out=[],by=ds.links[0],lc=k=>DLAB(k).toLowerCase();
+ for(const m of ds.meas){const f="m"+m.i;
+  out.push({t:m.name,k:ds.dated?"spark":"bars",imp:{ds,m:f,agg:m.role,by:ds.dated?"":by||""}});
+  for(const k of ds.links)if(ds.dated||k!==by)out.push({t:`${m.name} per ${lc(k)}`,k:"bars",imp:{ds,m:f,agg:m.role,by:k}});
+  if(by&&m.role==="sum"&&["l","cu","g","fi","sh"].includes(by))out.push({t:`${m.name} per 100 t`,k:"bars",imp:{ds,m:f,agg:"sum",by,per:"tons"}});}
+ out.push({t:`${ds.name}: antal rader`,k:ds.dated?"spark":"bars",imp:{ds,m:"",agg:"count",by:ds.dated?"":by||""}});
+ return out.slice(0,16).map(w=>({...w,ic:"📥",u:w.imp.per?"/100 t":"",c:C[1],roles:{ceo:9,shift:9,maint:9,qa:9},delta:0,d:[],clicks:1}));}
+const slug=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"")||"col";
+const DIMT={l:["line_id","dim_line"],sh:["shift","dim_shift"],g:["grade_gsm","dim_grade"],cu:["customer_id","dim_customer"],fi:["fiber","dim_fiber"]};
+function ddl(ds){const c=ds.cols.filter(c=>c.role!=="skip"),t="raw.import_"+slug(ds.name);
+ const col=x=>x.role==="date"?"  posting_date Date":isLink(x.role)?`  ${DIMT[x.role][0]} LowCardinality(String)`:x.role==="text"?`  ${slug(x.name)} String`:`  ${slug(x.name)} Float64`;
+ const keys=["posting_date",...ds.links.map(k=>DIMT[k][0])].filter((k,i)=>i||ds.dated);
+ return `CREATE TABLE ${t} ON CLUSTER dw (\n${c.map(col).join(",\n")}\n) ENGINE = ReplicatedMergeTree\nORDER BY (${keys.join(", ")||"tuple()"});\n`+
+  ds.links.map(k=>`-- ${DIMT[k][0]} → marts.${DIMT[k][1]}`).join("\n");}
+const IMPORTS=[];
+function addImport(src,quiet){const ds=buildDs(src.name,src.cols,src.body),ws=impWidgets(ds);
+ ws.forEach(w=>{w.id=W.reduce((m,x)=>Math.max(m,x.id),-1)+1;tag(w);w.fresh=!quiet;W.push(w);});src.at=src.at||new Date().toISOString();IMPORTS.push(src);ds.widgets=ws;return ds;}
+// Remove an import: its reports leave the grid and the stored copy is dropped
+function dropImport(i){const src=IMPORTS[i];if(!src)return;IMPORTS.splice(i,1);
+ for(let j=W.length-1;j>=0;j--)if(W[j].imp&&W[j].imp.ds.name===src.name&&W[j].imp.ds.cols===src.cols)W.splice(j,1);
+ saveImports();render(true);say("a",`🗑 <b>${esc(src.name)}</b> borttagen ur lagret`);}
+function saveImports(){try{localStorage.setItem("nw.imports",JSON.stringify(IMPORTS));}catch(e){say("a","⚠ Importen sparades inte lokalt: "+esc(e.message));}}
+// Demo file: complaints per day, line and customer - one customer is unknown to the warehouse
+function sampleCsv(){const cus=["Hygien AB","MedTex AB","Autofiber","Filter Nord","Nordic Wipes"],L=["Datum;Linje;Skift;Kund;Fiber;Reklamationer;Kostnad SEK;Kommentar"];
+ for(let i=0;i<80;i++){const d=new Date(today-Math.floor(rnd()*60)*DAY),l=1+Math.floor(rnd()*4),n=1+Math.floor(rnd()*(l===2?6:3));
+  L.push(`${d.toLocaleDateString("sv-SE")};Linje ${l};${SH[i%3]};${cus[Math.floor(rnd()*5)]};${FI[i%4]};${n};${(n*(800+rnd()*2400)).toFixed(0).replace(/\B(?=(\d{3})+$)/g," ")},00;lot ${4400+i}`);}
+ return L.join("\r\n");}
+const wiz=document.getElementById("wiz"),wb=document.getElementById("wb");let WZ=null,wstep=0;
+async function wizLoad(name,buf,sheet){try{const x=/\.xlsx$/i.test(name)?await parseXlsx(buf,sheet):{rows:parseCsv(new TextDecoder().decode(buf)),sheets:[],sheet:0},rows=x.rows;
+  if(rows.length<2)throw new Error("Filen har ingen datarad under rubrikraden");
+  const w=Math.max(...rows.map(r=>r.length)),head=rows[0].concat(Array(w).fill("")).slice(0,w),body=rows.slice(1).map(r=>r.concat(Array(w).fill("")).slice(0,w));
+  const base=name.replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim(),nm=(x.sheets.length>1?base+" "+x.sheets[x.sheet]:base).slice(0,28)||"Import";
+  WZ={name:nm,file:name,buf,sheets:x.sheets,sheet:x.sheet,head,body,cols:profile(head,body)};wizGo(1);}
+ catch(e){const er=document.getElementById("werr");if(er)er.textContent="⚠ "+e.message;else{wizGo(0);document.getElementById("werr").textContent="⚠ "+e.message;}}}
+function wizGo(s){wstep=s;document.querySelectorAll("#wsteps li").forEach((li,i)=>li.className=i<s?"done":i===s?"on":"");
+ document.getElementById("wback").disabled=s===0;const nx=document.getElementById("wnext");nx.textContent=s===3?"📥 Importera":"Nästa ›";nx.disabled=!WZ;
+ if(s===0)wb.innerHTML=`<label class="drop" id="wdrop">📄 <b>Släpp en Excel- eller CSV-fil här</b><br><span>eller klicka för att välja (.xlsx, .csv)</span><input type="file" id="wf" accept=".xlsx,.csv,.txt" hidden></label>
+  <p style="text-align:center"><button id="wsample">✨ Prova med exempelfil (reklamationer)</button></p><p id="werr" class="dn"></p>
+  ${IMPORTS.length?`<h4 class="wh">Importerat</h4><table>${IMPORTS.map((x,i)=>`<tr class="wimp"><td>📥 <b>${esc(x.name)}</b></td><td class="sm">${x.body.length} rader · ${esc(new Date(x.at).toLocaleString("sv-SE").slice(0,16))}</td><td style="text-align:right"><button class="wdel" data-i="${i}" title="Ta bort">🗑 Ta bort</button></td></tr>`).join("")}</table>`:""}`;
+ if(s===1)wb.innerHTML=`<p>✨ Claude har läst <b>${esc(WZ.file)}</b> (${WZ.body.length} rader) och föreslår hur varje kolumn ska in i lagret. Ändra där det blir fel.</p>
+  <p class="wrow">${WZ.sheets.length>1?`<label>📑 Blad <select id="wsheet">${WZ.sheets.map((n,i)=>`<option value="${i}"${i===WZ.sheet?" selected":""}>${esc(n)}</option>`).join("")}</select></label>`:""}<label>🏷 Namn i lagret <input id="wname" value="${esc(WZ.name)}" maxlength="28"></label></p>
+  <table><tr><th>Kolumn</th><th>Exempel</th><th>Roll</th><th>Säkerhet</th><th>Varför</th></tr>${WZ.cols.map(c=>`<tr><td><b>${esc(c.name)}</b></td><td class="sm">${esc(c.sample)}</td>
+  <td><select data-c="${c.i}">${ROLES.map(([v,l])=>`<option value="${v}"${v===c.role?" selected":""}>${l}</option>`).join("")}</select></td>
+  <td><i class="conf" style="width:${Math.round(c.conf*60)}px;background:${c.conf>.8?C[1]:c.conf>.6?C[3]:C[5]}"></i> ${Math.round(c.conf*100)}%</td><td class="sm">${esc(c.why)}</td></tr>`).join("")}</table>`;
+ if(s===2){const ds=buildDs(WZ.name,WZ.cols,WZ.body),dc=WZ.cols.find(c=>c.role==="date");
+  const lk=ds.links.map(k=>{const c=WZ.cols.find(x=>x.role===k),bad=new Set(WZ.body.filter(r=>!norm(k,r[c.i])&&r[c.i]!=="").map(r=>String(r[c.i]))),ok=ds.rows.filter(r=>r[k]).length,q=ok/ds.rows.length*100;
+   return `<tr><td>🔗 <b>${esc(c.name)}</b> → ${DLAB(k)}</td><td><i class="conf" style="width:${q*1.2}px;background:${q>90?C[1]:C[3]}"></i> ${ok}/${ds.rows.length}</td><td class="sm">${bad.size?"Okända: "+esc([...bad].slice(0,4).join(", "))+" - visas som okopplade":"✅ alla matchar"}</td></tr>`;}).join("");
+  const hs=ds.rows.map(r=>r.h).filter(h=>h!=null);
+  wb.innerHTML=`<p>Så kopplas <b>${esc(WZ.name)}</b> till datan som redan finns i lagret:</p><table>${lk||`<tr><td colspan="3">⚠ Ingen kolumn kopplas till lagrets dimensioner - rapporterna står för sig själva. Välj en roll 🔗 i steget innan.</td></tr>`}
+  <tr><td>📅 ${dc?esc(dc.name)+" → tidsaxel":"Inget datum"}</td><td colspan="2" class="sm">${hs.length?`${hs.length} rader, ${new Date(today-(HRS-Math.min(...hs))/24*DAY).toLocaleDateString("sv-SE")} – ${new Date(today-(HRS-Math.max(...hs))/24*DAY).toLocaleDateString("sv-SE")} · följer periodväljaren`:"Raderna visas för alla perioder"}</td></tr></table>
+  <p class="sm">Landar som rå tabell i ClickHouse:</p><pre>${esc(ddl(ds))}</pre>`;}
+ if(s===3){const ds=buildDs(WZ.name,WZ.cols,WZ.body),ws=impWidgets(ds);
+  wb.innerHTML=`<p>✨ ${ws.length} nya rapporter byggs av datan${ds.links.length?" och kopplingen till lagret":""}:</p><div class="wprev">${ws.map(w=>`<div>${w.ic} <b>${esc(w.t)}</b><span class="sm">${TYPES[w.k]}${w.imp.per?" · mot producerade ton":w.imp.by?" · per "+DLAB(w.imp.by).toLowerCase():""}</span></div>`).join("")}</div>`;}}
+wb.addEventListener("change",e=>{const t=e.target;
+ if(t.id==="wf"&&t.files[0]){const f=t.files[0];f.arrayBuffer().then(b=>wizLoad(f.name,b));}
+ if(t.dataset.c){const c=WZ.cols[+t.dataset.c];if(t.value==="date"||isLink(t.value))WZ.cols.forEach(x=>{if(x!==c&&x.role===t.value){x.role="text";x.why="flyttad";}});
+  c.role=t.value;c.conf=1;c.why="vald av dig";wizGo(1);}
+ if(t.id==="wname")WZ.name=t.value.trim()||WZ.name;
+ if(t.id==="wsheet")wizLoad(WZ.file,WZ.buf,+t.value);});
+wb.addEventListener("click",e=>{const d=e.target.closest(".wdel");if(d){dropImport(+d.dataset.i);wizGo(0);return;}if(e.target.id==="wsample")wizLoad("Reklamationer.csv",new TextEncoder().encode(sampleCsv()).buffer);});
+wb.addEventListener("dragover",e=>{e.preventDefault();document.getElementById("wdrop")?.classList.add("over");});
+wb.addEventListener("dragleave",()=>document.getElementById("wdrop")?.classList.remove("over"));
+wb.addEventListener("drop",e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)f.arrayBuffer().then(b=>wizLoad(f.name,b));});
+document.getElementById("wback").onclick=()=>wizGo(Math.max(0,wstep-1));
+document.getElementById("wnext").onclick=()=>{if(wstep<3)return wizGo(wstep+1);
+ const ds=addImport({name:WZ.name,cols:WZ.cols,body:WZ.body});saveImports();wiz.close();F.sort="ai";render();
+ say("a",`📥 <b>${esc(ds.name)}</b> importerad: ${ds.rows.length} rader${ds.links.length?", kopplad via "+ds.links.map(DLAB).join(" + "):""}. ${ds.widgets.length} nya rapporter ↖`);};
+document.getElementById("wx").onclick=()=>wiz.close();
+document.getElementById("imp").onclick=()=>{WZ=null;wizGo(0);wiz.showModal();};
+try{for(const s of JSON.parse(localStorage.getItem("nw.imports")||"[]"))addImport(s,true);}catch(e){console.warn("Sparade importer kunde inte läsas",e);}
+role.onchange();
+</script>
+<!-- ---------- AI report builder (demo 1, scene "egna rapporter"): scripted, no model call ---------- -->
+<style>
+#abd{width:min(980px,96vw)}#abd .ab{padding:14px;display:grid;gap:12px}
+#abp{width:100%;min-height:58px;font:inherit;font-size:15px;padding:8px;border:1px solid var(--line);border-radius:6px;box-sizing:border-box}
+#abd .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#abd .chip{padding:4px 10px;border-radius:999px;background:var(--panel2);font-size:13px;border:1px solid var(--line)}
+#abd .chip b{color:var(--mnw-blue)}#abd .lab{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--dim);min-width:92px}
+#abd .think{color:var(--dim);font-style:italic}#abd .why{font-size:13px;color:var(--dim)}
+#abd .seg button.on{background:var(--mnw-blue);color:#fff;border-color:var(--mnw-blue)}
+#abd .hide{display:none}#abc svg{width:100%;height:auto}
+</style>
+<dialog id="abd" aria-label="Bygg rapport med AI">
+  <div class="dh"><h3>✨ Bygg rapport med AI</h3><button id="abx">✕</button></div>
+  <div class="ab">
+    <div><div class="lab">BESKRIV RAPPORTEN MED EGNA ORD</div><textarea id="abp"></textarea></div>
+    <div class="row"><button id="abgo" class="pri" style="margin-left:0">✨ Bygg</button><span id="abt" class="think hide">AI:n tolkar frågan och väljer data…</span></div>
+    <div id="abr" class="hide">
+      <div class="row"><span class="lab">MÅTT</span><span id="abm"></span></div>
+      <div class="row"><span class="lab">DIMENSIONER</span><span class="chip">Kvalitet</span><span class="chip">Skift</span><span id="abl"></span></div>
+      <div class="row"><span class="lab">FILTER</span><span class="chip">Period: <b>senaste 3 månaderna</b></span><span class="chip">Markering: <b>byte av fiberleverantör 1 sep</b></span></div>
+      <div class="row"><span class="lab">DIAGRAMTYP</span><span class="seg" id="abk"><button data-k="line" class="on">Linje</button><button data-k="bars">Stapel</button><button data-k="heat">Värmekarta</button></span></div>
+      <div class="why" id="abw"></div>
+      <div id="abc"></div>
+      <div class="row"><button id="abe">＋ Energi per ton</button><button id="abj">⇄ Jämför linje 1 och linje 3</button><button id="abs" class="pri">💾 Spara</button></div>
+    </div>
+  </div>
+</dialog>
+<script>
+"use strict";
+// Scripted on purpose: the demo shows the IDEA of an AI report builder. Data are seeded and invented.
+const AB={k:"line",energy:false,cmp:false,q:""};
+const abd=document.getElementById("abd");
+const ABW=13,ABQ=[["Hygien 45 gsm",C[0]],["Wipes 60 gsm",C[1]],["Medical 30 gsm",C[3]]];
+const ABD=ABQ.map((_,i)=>Array.from({length:ABW},(_,w)=>+(5.2+i*.9+Math.sin(w*.7+i)*.5+(w>=7?-.9-i*.2:0)+rnd()*.3).toFixed(1)));
+const ABE=Array.from({length:ABW},(_,w)=>+(2.9+Math.sin(w*.5)*.15+(w>=7?-.12:0)).toFixed(2));
+function abChart(){const W2=900,H=260,L=44,B=28,T=12,x=i=>L+i*(W2-L-20)/(ABW-1),y=v=>T+(H-T-B)*(1-(v-3)/6);
+ let o=`<svg viewBox="0 0 ${W2} ${H}" role="img" aria-label="Spill per kvalitet och skift">`;
+ for(let v=3;v<=9;v+=2)o+=`<line x1="${L}" x2="${W2-20}" y1="${y(v)}" y2="${y(v)}" stroke="#dfe1e5"/><text x="6" y="${y(v)+4}" font-size="12" fill="#4B4F54">${v}%</text>`;
+ const series=AB.cmp?[["Linje 1",C[0],ABD[0].map(v=>v+.6)],["Linje 3",C[1],ABD[0].map(v=>v-.7)]]:ABQ.map(([n,c],i)=>[n,c,ABD[i]]);
+ if(AB.k==="bars"){const g=(W2-L-20)/ABW,bw=g/(series.length+1);series.forEach(([,c,d],s)=>d.forEach((v,i)=>{o+=`<rect x="${L+i*g+s*bw}" y="${y(v)}" width="${bw-2}" height="${H-B-y(v)}" fill="${c}"/>`;}));}
+ else if(AB.k==="heat"){const rh=(H-T-B)/series.length,cw=(W2-L-20)/ABW;series.forEach(([n,,d],s)=>{d.forEach((v,i)=>{const a=Math.min(1,Math.max(.1,(v-4)/4));o+=`<rect x="${L+i*cw}" y="${T+s*rh}" width="${cw-2}" height="${rh-2}" fill="#FD9B28" fill-opacity="${a}"/>`;});o+=`<text x="${L+4}" y="${T+s*rh+16}" font-size="12" fill="#333">${n}</text>`;});}
+ else series.forEach(([,c,d])=>{o+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${d.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>`;});
+ if(AB.energy&&AB.k!=="heat")o+=`<polyline fill="none" stroke="#4B4F54" stroke-width="2" stroke-dasharray="6 4" points="${ABE.map((v,i)=>x(i)+","+(T+(H-T-B)*(1-(v-2.5)/.8))).join(" ")}"/>`;
+ o+=`<line x1="${x(7)}" x2="${x(7)}" y1="${T}" y2="${H-B}" stroke="#FD9B28" stroke-width="2" stroke-dasharray="4 3"/><text x="${x(7)+6}" y="${T+14}" font-size="12" fill="#8a5a00">Ny fiberleverantör</text>`;
+ for(let i=0;i<ABW;i+=2)o+=`<text x="${x(i)-10}" y="${H-8}" font-size="12" fill="#4B4F54">v${33+i}</text>`;
+ o+=`</svg><div class="row" style="margin-top:4px">`+series.map(([n,c])=>`<span class="chip"><span style="color:${c}">●</span> ${n}</span>`).join("")+(AB.energy?`<span class="chip">┅ Energi per ton (MWh/t)</span>`:"")+`</div>`;
+ document.getElementById("abc").innerHTML=o;
+ document.getElementById("abm").innerHTML=`<span class="chip">Spill <b>% av producerad vikt</b></span>`+(AB.energy?`<span class="chip">Energi <b>MWh per ton</b></span>`:"");
+ document.getElementById("abl").innerHTML=AB.cmp?`<span class="chip">Linje: <b>1 och 3</b></span>`:"";
+ document.getElementById("abw").textContent=`Så räknade AI:n: spill = kasserad vikt / producerad vikt, per vecka, ${AB.cmp?"för hygien 45 gsm på linje 1 och linje 3":"per kvalitet och skift"}. ${AB.k==="line"?"Linjediagram föreslås eftersom frågan gäller utveckling över tid.":""}`;}
+function abOpen(q){AB.k="line";AB.energy=false;AB.cmp=false;AB.q=q;document.getElementById("abp").value="";document.getElementById("abr").classList.add("hide");document.getElementById("abt").classList.add("hide");document.querySelectorAll("#abk button").forEach(b=>b.classList.toggle("on",b.dataset.k==="line"));abd.showModal();document.getElementById("abp").focus();}
+document.getElementById("abgo").onclick=()=>{const t=document.getElementById("abt");t.classList.remove("hide");setTimeout(()=>{t.classList.add("hide");document.getElementById("abr").classList.remove("hide");abChart();},900);};
+document.getElementById("abk").onclick=e=>{const b=e.target.closest("button");if(!b)return;AB.k=b.dataset.k;document.querySelectorAll("#abk button").forEach(x=>x.classList.toggle("on",x===b));abChart();};
+document.getElementById("abe").onclick=()=>{AB.energy=true;abChart();};
+document.getElementById("abj").onclick=()=>{AB.cmp=true;abChart();};
+document.getElementById("abx").onclick=()=>abd.close();
+document.getElementById("abs").onclick=()=>{const w={id:W.length,ic:"✨",t:"Spill per kvalitet & skift",k:"spark",roles:{[role.value]:12},u:"%",v:6.1,c:C[0],delta:-1.2,d:ABD[0].concat(ABD[0]).slice(0,60),clicks:1,fresh:true};tag(w);W.push(w);abd.close();clearAll();render();say("a","💾 <b>Spill per kvalitet & skift</b> sparad på översikten ↖");};
+// Skapa with a search text opens the builder (capture phase, before the grid's own handler).
+grid.addEventListener("click",e=>{if(e.target.closest("#mkq")&&F.q){e.stopImmediatePropagation();e.preventDefault();abOpen(F.q);}},true);
+</script>
+</body>
+</html>
