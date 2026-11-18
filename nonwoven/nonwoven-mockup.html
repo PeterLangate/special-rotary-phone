@@ -278,23 +278,23 @@ const R={
 // ---------- widget catalogue: icon, title, chart, role weights, unit, value, colour ----------
 const W=[
  ["⚙","OEE","gauge",{ceo:10,shift:8},"%",71,4],["♻","Spill","spark",{ceo:9,qa:10,shift:7},"%",6.8,3],
- ["⛔","Stopptid","pareto",{maint:10,ceo:8,shift:6},"h",31,3],["🏭","Linje 3 m/min","scatter",{shift:9},"",412,0],
+ ["⛔","Stopptid","pareto",{maint:10,ceo:8,shift:6},"h",31,3],["🏭","Linje 5 m/min","scatter",{shift:9},"",412,0],
  ["✂","Kantspill","waterfall",{qa:8,shift:5},"t",4.2,5],["💥","Banbrott","gantt",{shift:8,maint:6},"",19,3],
- ["📳","Vibration L2","spark",{maint:9},"mm/s",7.4,3],["⏱","MTBF","gauge",{maint:8,ceo:4},"%",58,0],
+ ["📳","Vibration L987","spark",{maint:9},"mm/s",7.4,3],["⏱","MTBF","gauge",{maint:8,ceo:4},"%",58,0],
  ["🍩","Spill per orsak","treemap",{qa:9,ceo:6},"",5,2],["⚖","Ytvikt","spark",{qa:8},"gsm",0.9,0],
  ["⚡","kWh/ton","stacked",{ceo:7},"",1420,0],["🧶","Fiberlager","gauge",{ceo:5,shift:4},"%",64,1],
  ["🩺","Linjehälsa","radar",{maint:7,ceo:6,shift:5},"",76,4],["📋","Arbetsordrar","funnel",{maint:8},"",37,5],
- ["❌","Avvikande rullar","funnel",{qa:9,shift:5},"",22,3],["🌗","Spill per skift","bars",{shift:7,ceo:4,qa:5},"%",6.8,2],
+ ["❌","Avvikande rullar","funnel",{qa:9,shift:5},"",22,3],["🌗","Spill per skift","bars",{shift:7,ceo:4,qa:5},"t",6.8,2],
  ["🔮","Haveririsk 72h","gauge",{maint:9,shift:6},"%",34,2],["🔁","Återvunnet","sankey",{qa:5,ceo:5},"%",41,1],
  ["📦","Ton idag","bullet",{ceo:8,shift:8},"t",186,1],["🔩","Reservdelar","donut",{maint:6},"",9,5],
  ["🌡","Ugnstemp","spark",{shift:6,qa:5},"°C",142,3],["💧","Vattenjet bar","step",{shift:5,maint:5},"",180,4],
- ["🧵","Kardning L1","flow",{shift:4},"",88,0],["🧪","Bindemedel","gauge",{qa:6},"%",52,2],
+ ["🧵","Kardning L5","flow",{shift:4},"",88,0],["🧪","Bindemedel","gauge",{qa:6},"%",52,2],
  ["🚚","Leveranser i tid","gauge",{ceo:6},"%",94,1],["💰","Spill SEK/dag","waterfall",{ceo:7,qa:4},"k",48,3],
  ["🔥","Gasförbrukning","stacked",{ceo:3},"Nm³",920,5],["🛢","Smörjning","gauge",{maint:5},"%",81,1],
  ["📉","Hastighetsförlust","pareto",{shift:6,ceo:3},"%",9,3],["🔄","Kvalitetsbyten","flow",{shift:5,qa:4},"",14,2],
  ["🧯","Säkerhet dagar","spark",{ceo:4,shift:3},"",212,1],["👷","Bemanning","gauge",{shift:5},"%",92,4],
  ["🎯","Rullar i spec","gauge",{qa:7},"%",96,1],["🌀","Lindarspänning","scatter",{maint:4,qa:3},"N",310,2],
- ["📊","Linje 4 nål","step",{shift:4},"m/min",95,0],["🧰","Planerat underhåll","gantt",{maint:6},"h",18,4],
+ ["📊","Linje 987 nål","step",{shift:4},"m/min",95,0],["🧰","Planerat underhåll","gantt",{maint:6},"h",18,4],
  ["💨","Tryckluft","step",{maint:4},"",7,4],["📈","Prognos vecka","bullet",{ceo:6},"t",1290,1],
  ["🌍","CO₂ per ton","treemap",{ceo:5},"kg",310,1],["🏷","Order backlog","funnel",{ceo:5,shift:3},"t",2400,5],
  ["🔌","Elpris","spark",{ceo:4},"öre",87,0],["🧲","Metalldetektor","scatter",{qa:4},"",3,3],
@@ -308,8 +308,8 @@ function score(w){return (w.roles[role.value]||0)*10+w.clicks*12+Math.abs(w.delt
 // ---------- the mill's data: one row per line and hour, 90 days back ----------
 const DAY=864e5,today=new Date(new Date().toDateString()),HRS=90*24;
 const GR=[25,35,45,60,80,120],CU=["Hygien AB","MedTex","AutoFiber","FilterNord"],FI=["PP","PET","Viskos","Bomull"],CA=["Kant","Byte","Brott","Ytvikt","Övrigt"],SH=["Dag","Kväll","Natt"];
-const ROWS=[];
-for(let l=1;l<=4;l++){let g=GR[l],cu=l-1,fi=l%4,vib=3;
+const ROWS=[],LN={1:"L5",2:"L987"};
+for(let l=1;l<=2;l++){let g=GR[l],cu=l-1,fi=l%4,vib=3;
  for(let h=0;h<HRS;h++){
   const chg=h%8===0&&rnd()<.35;if(chg){g=GR[Math.floor(rnd()*6)];cu=Math.floor(rnd()*4);fi=Math.floor(rnd()*4);}
   const hr=h%24,sh=hr>=6&&hr<14?"Dag":hr>=14&&hr<22?"Kväll":"Natt";
@@ -320,13 +320,13 @@ for(let l=1;l<=4;l++){let g=GR[l],cu=l-1,fi=l%4,vib=3;
   const waste=Math.max(.5,4.5+(sh==="Natt"?2:0)+(chg?5:0)+(l===2?1.5:0)+brk*4+(rnd()-.5)*3-h/HRS*1.5);
   const gsm=g+(rnd()-.5)*(l===1?3:1.4),tons=speed*60*3.2*g/1e6,wt=tons*waste/100;
   const cause=chg?"Byte":brk?"Brott":Math.abs(gsm-g)>1?"Ytvikt":rnd()<.6?"Kant":"Övrigt";
-  ROWS.push({h,l:"L"+l,sh,g:g+" gsm",gsm,cu:CU[cu],fi:FI[fi],speed,waste,down,brk,tons,wt,cost:wt*12,cause,
+  ROWS.push({h,l:LN[l],sh,g:g+" gsm",gsm,cu:CU[cu],fi:FI[fi],speed,waste,down,brk,tons,wt,cost:wt*12,cause,
    kwh:1300+rnd()*220+(g>80?160:0)+(sh==="Dag"?40:0),temp:136+rnd()*12+(l===2?3:0),vib,press:165+rnd()*25,
    dev:Math.abs(gsm-g),off:Math.abs(gsm-g)>1?1:0,oee:Math.min(100,speed/base*100*(1-waste/100))});}}
 
 // ---------- filters cut the rows, so every visual on the screen follows them ----------
 const PER={d1:[1,"24 h"],d7:[7,"Vecka"],d30:[30,"Månad"],d90:[90,"Kvartal"]};
-const DIMS=[["l","Linje",["L1","L2","L3","L4"]],["sh","Skift",SH],["g","Kvalitet",GR.map(g=>g+" gsm")],["cu","Kund",CU],["fi","Fiber",FI]];
+const DIMS=[["l","Linje",["L5","L987"]],["sh","Skift",SH],["g","Kvalitet",GR.map(g=>g+" gsm")],["cu","Kund",CU],["fi","Fiber",FI]];
 const RANGES=[["gsm","Ytvikt","gsm",20,125],["speed","Hastighet","m/min",0,480],["waste","Spill","%",0,25],["temp","Ugnstemp","°C",134,152]];
 const F={q:"",per:(/[#&]per=(d1|d7|d30|d90)/.exec(location.hash)||[,"d7"])[1],from:"",to:"",sort:"ai",rg:{}};DIMS.forEach(([k])=>F[k]=new Set());
 const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:NaN;
@@ -350,11 +350,11 @@ const MEAS=[[/OEE|Linjehälsa|Skiften|MTBF|Fiberlager|Bemanning|Smörjning|Binde
  [/m\/min|Hastighet|Kardning/,"speed","avg"],[/Ytvikt|Bredd/,"dev","avg"],[/Avvikande|spec|Metall|Kund/,"off","sum"],
  [/kWh|Gas|CO₂|Elpris|Tryckluft/,"kwh","avg"],[/Ugn/,"temp","avg"],[/Vattenjet|Lindar/,"press","avg"],[/./,"tons","sum"]];
 const GROUP={donut:"cause",treemap:"cause",pareto:"cause",radar:"l",flow:"l",funnel:"g"};
-const KEYS={l:["L1","L2","L3","L4"],sh:SH,g:GR.map(x=>x+" gsm"),cause:CA};
+const KEYS={l:["L5","L987"],sh:SH,g:GR.map(x=>x+" gsm"),cause:CA};
 const agg=(w,rs)=>{if(!rs.length)return NaN;let s=0;for(const r of rs)s+=r[w.f];return w.agg==="sum"?s:s/rs.length;};
 const own=(w,rs)=>w.fix?rs.filter(r=>r.l===w.fix):rs;
 function measure(w){const m=MEAS.find(([r])=>r.test(w.t));w.f=m[1];w.agg=m[2];
- w.fix=/L1\b|Linje 1/.test(w.t)?"L1":/L2\b|Linje 2/.test(w.t)?"L2":/L3\b|Linje 3/.test(w.t)?"L3":/L4\b|Linje 4/.test(w.t)?"L4":"";
+ w.fix=/L5\b|Linje 5\b/.test(w.t)?"L5":/L987\b|Linje 987/.test(w.t)?"L987":"";
  w.grp=/Skiften|per skift/.test(w.t)?"sh":GROUP[w.k];
  w.base=agg(w,own(w,ROWS.filter(r=>r.h>=HRS-168)))||1;}
 function win(w){if(w.imp)return impWin(w);
@@ -471,7 +471,7 @@ const dlg=document.getElementById("dlg");let cur=null;
 function open(w){cur=w;const P=win(w);document.getElementById("dt").textContent=w.ic+" "+w.t;
  const big=P.none?"<p>Ingen data för filtret</p>":w.k==="donut"?R.donut(P.d,w.c,0,200):w.k==="radar"?R.radar(P.d,w.c,120,36).replace('height="36"','height="200"'):w.k==="gauge"?R.gauge(Math.min(100,P.v),w.c,120,34).replace('height="34"','height="160"'):R[w.k](P.d,w.c,400,180);
  document.getElementById("dc").innerHTML=big;
- document.getElementById("di").innerHTML=`✨ ${PER[F.per]?PER[F.per][1]:"📅"} · ${P.none?"–":fmt(P.v)+" "+w.u} · ${P.delta>=0?"▲":"▼"} ${Math.abs(P.delta).toFixed(1)}% · ${w.imp?"📥 "+esc(w.imp.ds.name)+(w.imp.ds.links.length?" · kopplad via "+w.imp.ds.links.map(DLAB).join(" + "):""):P.delta>=0?"Linje 3 driver":"Nattskiftet, L2-lindaren"}`;
+ document.getElementById("di").innerHTML=`✨ ${PER[F.per]?PER[F.per][1]:"📅"} · ${P.none?"–":fmt(P.v)+" "+w.u} · ${P.delta>=0?"▲":"▼"} ${Math.abs(P.delta).toFixed(1)}% · ${w.imp?"📥 "+esc(w.imp.ds.name)+(w.imp.ds.links.length?" · kopplad via "+w.imp.ds.links.map(DLAB).join(" + "):""):P.delta>=0?"Linje 5 driver":"Nattskiftet, L987-lindaren"}`;
  const [lk,per]=w.imp?impBreak(w):[KEYS.l,KEYS.l.map(s=>agg(w,ROWSF.filter(r=>r.l===s)))],pm=Math.max(...per.filter(x=>x>0))||1;
  document.getElementById("dtab").innerHTML=lk.map((s,i)=>{const v=per[i]||0,q=v/pm*100;return `<div><b style="min-width:22px">${esc(s)}</b><i style="width:${q*1.4}px;background:${q>80?C[1]:q>50?C[0]:C[3]}"></i>${v?fmt(w.imp?v:w.v*v/w.base):"–"}</div>`;}).join("");
  dlg.showModal();}
@@ -479,14 +479,14 @@ document.getElementById("dask").onclick=()=>{dlg.close();ask(`Varför ändrades 
 dlg.addEventListener("close",render);
 
 // ---------- news, resources ----------
-const NEWS={ceo:[["♻",C[1],"Spill 6,8% - bästa veckan sedan mars"],["⛔",C[3],"L2 stoppad 4h 20m i natt - orsak: banbrott efter kvalitetsbyte"],["📞",C[3],"Kundklagomål: noppor, lot 4471"],["🔍",C[0],"Värt att titta på: kan en smalare kant minska spillet?"]],
- shift:[["💥",C[3],"Banbrott 02-04 efter kvalitetsbyte"],["🏭",C[0],"L1 15% under målhastighet"],["🔄",C[2],"45 gsm startar 06:00"]],
- maint:[["🔮",C[3],"L2-lager: 78% haveririsk inom 72h"],["🔩",C[0],"2 kritiska reservdelar saknas"],["⏱",C[5],"MTBF ner till 41h"]],
- qa:[["⚖",C[0],"Ytvikt driver 0,9 gsm på L1"],["✂",C[1],"Smalare kant sparar 0,6 t/v"],["📞",C[3],"Kundklagomål: noppor, lot 4471"]]};
+const NEWS={ceo:[["♻",C[1],"Spill 6,8% - bästa veckan sedan mars"],["⛔",C[3],"L987 stoppad 4h 20m i natt - orsak: banbrott efter kvalitetsbyte"],["📞",C[3],"Kundklagomål: noppor, lot 4471"],["🔍",C[0],"Värt att titta på: kan en smalare kant minska spillet?"]],
+ shift:[["💥",C[3],"Banbrott 02-04 efter kvalitetsbyte"],["🏭",C[0],"L5 15% under målhastighet"],["🔄",C[2],"45 gsm startar 06:00"]],
+ maint:[["🔮",C[3],"L987-lager: 78% haveririsk inom 72h"],["🔩",C[0],"2 kritiska reservdelar saknas"],["⏱",C[5],"MTBF ner till 41h"]],
+ qa:[["⚖",C[0],"Ytvikt driver 0,9 gsm på L5"],["✂",C[1],"Smalare kant sparar 0,6 t/v"],["📞",C[3],"Kundklagomål: noppor, lot 4471"]]};
 // Ticker: every role's headlines, so you see what happens elsewhere in the mill
 function ticker(){document.getElementById("tick").innerHTML=Object.values(NEWS).flat().map(([i,,h])=>`<i>${i}</i>${h}`).join("");}
 function paper(){ticker();
- document.getElementById("ed").textContent=new Date().toLocaleDateString("sv-SE")+" · NORRKÖPING · 24/7";
+ document.getElementById("ed").textContent=new Date().toLocaleDateString("sv-SE")+" · YSTAD · 24/7";
  document.getElementById("news").innerHTML=NEWS[role.value].map(([i,c,h])=>`<article><div class="ic" style="--c:${c}">${i}</div><h3>${h}</h3></article>`).join("");}
 document.getElementById("news").onclick=e=>{const a=e.target.closest("article");if(a)ask(a.querySelector("h3").textContent+"?");};
 
@@ -501,7 +501,7 @@ function makeChart(t){const k=/orsak|andel|fördel/i.test(t)?"donut":/vecka|dag|
 function ask(q){if(mobile.matches)tab("chat");say("u",q);
  if(wantChart){wantChart=false;const w=makeChart(q);setTimeout(()=>say("a",`✨ <b>${w.t}</b> tillagd ↖`),300);return;}
  setTimeout(()=>{const w=W.find(x=>q.toLowerCase().includes(x.t.toLowerCase().split(" ")[0])),P=w?win(w):null;
-  say("a",w?`${w.ic} <b>${fmt(P.v)}${w.u?" "+w.u:""}</b> <span class="${P.delta>=0?"up":"dn"}">${P.delta>=0?"▲":"▼"}${Math.abs(P.delta).toFixed(1)}%</span> · ${P.delta>=0?"Linje 3 leder":"Nattskift + L2-lindaren"}`:"🔍 Linje 2-lindaren: 78% risk. Planera byte lördag?");},400);}
+  say("a",w?`${w.ic} <b>${fmt(P.v)}${w.u?" "+w.u:""}</b> <span class="${P.delta>=0?"up":"dn"}">${P.delta>=0?"▲":"▼"}${Math.abs(P.delta).toFixed(1)}%</span> · ${P.delta>=0?"Linje 5 leder":"Nattskift + L987-lindaren"}`:"🔍 Linje 987-lindaren: 78% risk. Planera byte lördag?");},400);}
 document.getElementById("cf").onsubmit=e=>{e.preventDefault();if(ci.value){ask(ci.value);ci.value="";}};
 
 role.onchange=()=>{paper();render();log.innerHTML="";say("a",`God morgon, ${who()[0].split(" ")[1]}! ${NEWS[role.value][0][0]} ${NEWS[role.value][0][2]}`);chips(["Varför ökar spillet?","Nästa stopp?","Bästa skiftet?","Spara energi"]);};
@@ -519,7 +519,7 @@ const ckey=s=>String(s).toLowerCase().replace(/\bab\b|[^a-zåäö0-9]/g,"");
 const FIB={polypropylen:"PP",polyester:"PET",viscose:"Viskos",viskos:"Viskos",cotton:"Bomull",bomull:"Bomull",pp:"PP",pet:"PET"};
 // One value of a linked column -> the warehouse dimension key it means, or "" when it matches nothing
 function norm(k,v){const s=String(v).trim(),lo=s.toLowerCase();if(!s)return "";
- if(k==="l"){const m=s.match(/^(?:l|linje|line)?\s*([1-4])$/i);return m?"L"+m[1]:"";}
+ if(k==="l"){const m=s.match(/^(?:l|linje|line)?\s*(5|987)$/i);return m?"L"+m[1]:"";}
  if(k==="sh")return /^(dag|day|morgon|fm)/.test(lo)?"Dag":/^(kv[äa]ll|evening|em)/.test(lo)?"Kväll":/^(natt|night)/.test(lo)?"Natt":"";
  if(k==="g"){const m=s.match(/^(\d+)\s*(gsm|g\/m2|g)?$/i);return m&&GR.includes(+m[1])?m[1]+" gsm":"";}
  if(k==="cu"){const a=ckey(s);return CU.find(c=>{const b=ckey(c);return a===b||a.length>=4&&(a.startsWith(b)||b.startsWith(a));})||"";}
@@ -619,7 +619,7 @@ function dropImport(i){const src=IMPORTS[i];if(!src)return;IMPORTS.splice(i,1);
 function saveImports(){try{localStorage.setItem("nw.imports",JSON.stringify(IMPORTS));}catch(e){say("a","⚠ Importen sparades inte lokalt: "+esc(e.message));}}
 // Demo file: complaints per day, line and customer - one customer is unknown to the warehouse
 function sampleCsv(){const cus=["Hygien AB","MedTex AB","Autofiber","Filter Nord","Nordic Wipes"],L=["Datum;Linje;Skift;Kund;Fiber;Reklamationer;Kostnad SEK;Kommentar"];
- for(let i=0;i<80;i++){const d=new Date(today-Math.floor(rnd()*60)*DAY),l=1+Math.floor(rnd()*4),n=1+Math.floor(rnd()*(l===2?6:3));
+ for(let i=0;i<80;i++){const d=new Date(today-Math.floor(rnd()*60)*DAY),l=[5,987][Math.floor(rnd()*4)%2],n=1+Math.floor(rnd()*(l===987?6:3));
   L.push(`${d.toLocaleDateString("sv-SE")};Linje ${l};${SH[i%3]};${cus[Math.floor(rnd()*5)]};${FI[i%4]};${n};${(n*(800+rnd()*2400)).toFixed(0).replace(/\B(?=(\d{3})+$)/g," ")},00;lot ${4400+i}`);}
  return L.join("\r\n");}
 const wiz=document.getElementById("wiz"),wb=document.getElementById("wb");let WZ=null,wstep=0;
@@ -690,7 +690,7 @@ role.onchange();
       <div class="row"><span class="lab">DIAGRAMTYP</span><span class="seg" id="abk"><button data-k="line" class="on">Linje</button><button data-k="bars">Stapel</button><button data-k="heat">Värmekarta</button></span></div>
       <div class="why" id="abw"></div>
       <div id="abc"></div>
-      <div class="row"><button id="abe">＋ Energi per ton</button><button id="abj">⇄ Jämför linje 1 och linje 3</button><button id="abs" class="pri">💾 Spara</button></div>
+      <div class="row"><button id="abe">＋ Energi per ton</button><button id="abj">⇄ Jämför linje 5 och linje 987</button><button id="abs" class="pri">💾 Spara</button></div>
     </div>
   </div>
 </dialog>
@@ -705,7 +705,7 @@ const ABE=Array.from({length:ABW},(_,w)=>+(2.9+Math.sin(w*.5)*.15+(w>=7?-.12:0))
 function abChart(){const W2=900,H=260,L=44,B=28,T=12,x=i=>L+i*(W2-L-20)/(ABW-1),y=v=>T+(H-T-B)*(1-(v-3)/6);
  let o=`<svg viewBox="0 0 ${W2} ${H}" role="img" aria-label="Spill per kvalitet och skift">`;
  for(let v=3;v<=9;v+=2)o+=`<line x1="${L}" x2="${W2-20}" y1="${y(v)}" y2="${y(v)}" stroke="#dfe1e5"/><text x="6" y="${y(v)+4}" font-size="12" fill="#4B4F54">${v}%</text>`;
- const series=AB.cmp?[["Linje 1",C[0],ABD[0].map(v=>v+.6)],["Linje 3",C[1],ABD[0].map(v=>v-.7)]]:ABQ.map(([n,c],i)=>[n,c,ABD[i]]);
+ const series=AB.cmp?[["Linje 5",C[0],ABD[0].map(v=>v+.6)],["Linje 987",C[1],ABD[0].map(v=>v-.7)]]:ABQ.map(([n,c],i)=>[n,c,ABD[i]]);
  if(AB.k==="bars"){const g=(W2-L-20)/ABW,bw=g/(series.length+1);series.forEach(([,c,d],s)=>d.forEach((v,i)=>{o+=`<rect x="${L+i*g+s*bw}" y="${y(v)}" width="${bw-2}" height="${H-B-y(v)}" fill="${c}"/>`;}));}
  else if(AB.k==="heat"){const rh=(H-T-B)/series.length,cw=(W2-L-20)/ABW;series.forEach(([n,,d],s)=>{d.forEach((v,i)=>{const a=Math.min(1,Math.max(.1,(v-4)/4));o+=`<rect x="${L+i*cw}" y="${T+s*rh}" width="${cw-2}" height="${rh-2}" fill="#FD9B28" fill-opacity="${a}"/>`;});o+=`<text x="${L+4}" y="${T+s*rh+16}" font-size="12" fill="#333">${n}</text>`;});}
  else series.forEach(([,c,d])=>{o+=`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${d.map((v,i)=>x(i)+","+y(v)).join(" ")}"/>`;});
@@ -715,8 +715,8 @@ function abChart(){const W2=900,H=260,L=44,B=28,T=12,x=i=>L+i*(W2-L-20)/(ABW-1),
  o+=`</svg><div class="row" style="margin-top:4px">`+series.map(([n,c])=>`<span class="chip"><span style="color:${c}">●</span> ${n}</span>`).join("")+(AB.energy?`<span class="chip">┅ Energi per ton (MWh/t)</span>`:"")+`</div>`;
  document.getElementById("abc").innerHTML=o;
  document.getElementById("abm").innerHTML=`<span class="chip">Spill <b>% av producerad vikt</b></span>`+(AB.energy?`<span class="chip">Energi <b>MWh per ton</b></span>`:"");
- document.getElementById("abl").innerHTML=AB.cmp?`<span class="chip">Linje: <b>1 och 3</b></span>`:"";
- document.getElementById("abw").textContent=`Så räknade AI:n: spill = kasserad vikt / producerad vikt, per vecka, ${AB.cmp?"för hygien 45 gsm på linje 1 och linje 3":"per kvalitet och skift"}. ${AB.k==="line"?"Linjediagram föreslås eftersom frågan gäller utveckling över tid.":""}`;}
+ document.getElementById("abl").innerHTML=AB.cmp?`<span class="chip">Linje: <b>5 och 987</b></span>`:"";
+ document.getElementById("abw").textContent=`Så räknade AI:n: spill = kasserad vikt / producerad vikt, per vecka, ${AB.cmp?"för hygien 45 gsm på linje 5 och linje 987":"per kvalitet och skift"}. ${AB.k==="line"?"Linjediagram föreslås eftersom frågan gäller utveckling över tid.":""}`;}
 function abOpen(q){AB.k="line";AB.energy=false;AB.cmp=false;AB.q=q;document.getElementById("abp").value="";document.getElementById("abr").classList.add("hide");document.getElementById("abt").classList.add("hide");document.querySelectorAll("#abk button").forEach(b=>b.classList.toggle("on",b.dataset.k==="line"));abd.showModal();document.getElementById("abp").focus();}
 document.getElementById("abgo").onclick=()=>{const t=document.getElementById("abt");t.classList.remove("hide");setTimeout(()=>{t.classList.add("hide");document.getElementById("abr").classList.remove("hide");abChart();},900);};
 document.getElementById("abk").onclick=e=>{const b=e.target.closest("button");if(!b)return;AB.k=b.dataset.k;document.querySelectorAll("#abk button").forEach(x=>x.classList.toggle("on",x===b));abChart();};
