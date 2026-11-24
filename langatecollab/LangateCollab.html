@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>LangateCollab - Användarhandbok</title>
+    <style>
+/* LangateCollab manual - A4 print stylesheet.
+   Structure from the building-html-print-docs skill; colours from branding-kalmstrom
+   (verified against the live kalmstrom.com stylesheet). Plain CSS, no {}-placeholders:
+   the build runs in --no-template mode. */
+
+@page { size: A4; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    /* Verdana is the brand face; the fallbacks all exist on the install target. */
+    font-family: 'Verdana', 'Segoe UI', 'Calibri', Arial, sans-serif;
+    font-size: 10.5pt; line-height: 1.65; color: #454545;
+    background: #e8edf2;
+}
+
+.page {
+    width: 210mm; min-height: 297mm;
+    background: white; margin: 8mm auto;
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.page-content { padding: 22mm 28mm; }
+
+@media print {
+    body { background: white; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+}
+
+/* Page-break control. Without these a heading strands at the foot of a page and callout
+   boxes get their coloured left border sliced in half across the break. */
+h1, h2, h3          { break-after: avoid; }
+p, li, tr           { break-inside: avoid; }
+.chapter-intro,
+.note-box, .tip-box,
+.info-box, .warn-box { break-inside: avoid; }
+.feature-card       { break-inside: avoid; }
+.two-col            { break-inside: avoid; }
+table               { break-inside: avoid; }
+.screenshot         { break-inside: avoid; }
+img                 { break-inside: avoid; }
+
+/* Cover */
+.cover-page { background: #154363; color: white; display: flex; flex-direction: column; min-height: 297mm; }
+.cover-accent-bar { height: 8px; background: linear-gradient(90deg, #095495, #a2bfd6); }
+.cover-body { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20mm 28mm; }
+.cover-title { font-size: 34pt; font-weight: 700; line-height: 1.15; }
+.cover-subtitle { font-size: 14pt; font-weight: 300; opacity: 0.75; margin-top: 4mm; }
+.cover-footer {
+    padding: 8mm 28mm; border-top: 1px solid rgba(255,255,255,0.12);
+    display: flex; justify-content: space-between;
+    font-size: 8.5pt; color: rgba(255,255,255,0.55);
+}
+
+/* Page header / footer. The footer is absolutely positioned, which works because .page
+   sets overflow:hidden; position:fixed is ignored in print output. */
+.page-header {
+    padding: 8mm 28mm 0; border-bottom: 2px solid #095495;
+    padding-bottom: 4mm; margin-bottom: 8mm;
+    display: flex; justify-content: space-between;
+    font-size: 8pt; color: #095495;
+}
+.page-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 5mm 28mm; border-top: 1px solid #e0e0e0;
+    display: flex; justify-content: space-between;
+    font-size: 7.5pt; color: #aaa;
+}
+
+/* Typography */
+h1 { font-size: 21pt; font-weight: 700; color: #454545; margin-bottom: 5mm; }
+h1 .chapter-num { display: block; font-size: 9pt; font-weight: 600; color: #095495; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 2mm; }
+h2 { font-size: 13pt; font-weight: 700; color: #454545; margin-top: 6mm; margin-bottom: 2mm; border-bottom: 1px solid #dde4ec; padding-bottom: 1.5mm; }
+h3 { font-size: 10.5pt; font-weight: 700; margin-top: 5mm; margin-bottom: 2mm; }
+h4 { font-size: 10pt; font-weight: 700; margin-bottom: 1.5mm; }
+p  { margin-bottom: 3mm; text-align: justify; }
+ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+li { margin-bottom: 1.5mm; }
+a  { color: #095495; text-decoration: none; }
+
+/* Tables. line-height is reset here on purpose: Chromium inherits body's 1.55 into tables and
+   that alone costs 3-5mm per multi-line cell, which is what pushes callouts onto a phantom page. */
+table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9.5pt; line-height: 1.4; }
+th { text-align: left; border-bottom: 2px solid #095495; padding: 2.5mm 3mm 2.5mm 0; color: #095495; }
+td { border-bottom: 1px solid #e6e6e6; padding: 2.5mm 3mm 2.5mm 0; vertical-align: top; }
+
+/* Callout boxes */
+.note-box { background: #fff8e1; border-left: 3px solid #f9a825; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.tip-box  { background: #eef4e9; border-left: 3px solid #4F8035; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.info-box { background: #eaf1f8; border-left: 3px solid #095495; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+.warn-box { background: #fdecea; border-left: 3px solid #FF0000; padding: 3mm 5mm; margin: 4mm 0; font-size: 9.5pt; }
+
+.chapter-intro { background: #eef3f9; border-left: 4px solid #095495; padding: 4mm 6mm; margin-bottom: 6mm; border-radius: 0 4px 4px 0; }
+
+/* Step list with circled numbers */
+.step-list { counter-reset: step-counter; list-style: none; padding-left: 0; margin: 3mm 0; }
+/* The counter is POSITIONED, never a flex sibling of the text: display:flex on the li makes every
+   inline child of a step its own flex item, so a step with <strong> in it renders as columns with
+   the spaces dropped. Flex inside ::before centres the digit and is fine. */
+.step-list li { counter-increment: step-counter; position: relative; padding-left: 8mm; margin-bottom: 2.5mm; }
+.step-list li::before {
+    content: counter(step-counter);
+    position: absolute; left: 0; top: 0.5mm;
+    background: #095495; color: white;
+    font-size: 8pt; font-weight: 700;
+    min-width: 5mm; height: 5mm; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* Cards */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; margin: 3mm 0; }
+.feature-card { background: #F9F9F9; border: 1px solid #dde4ec; border-radius: 5px; padding: 4mm 5mm; }
+
+/* Screenshots. The max-height cap matters: a wide dialog shot is counted as ~0mm by the
+   assembler's height estimator, so without it the page silently overflows. */
+.screenshot { margin: 4mm 0; text-align: center; }
+.screenshot img { max-width: 100%; max-height: 90mm; border: 1px solid #CCCCCC; }
+.screenshot figcaption { font-size: 8.5pt; color: #777; margin-top: 1.5mm; }
+
+/* Status badges - text classes, never emoji: emoji render at different sizes, or not at
+   all, across PDF viewers. */
+.badge { display: inline-block; font-size: 8pt; font-weight: 700; padding: 0.5mm 2mm; border-radius: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+.badge-green  { background: #eef4e9; color: #4F8035; }
+.badge-blue   { background: #eaf1f8; color: #095495; }
+.badge-red    { background: #fdecea; color: #c62828; }
+
+/* TOC */
+.toc-title { font-size: 18pt; font-weight: 700; color: #454545; margin-bottom: 8mm; }
+.toc-entry { display: flex; align-items: baseline; padding: 1.5mm 0; }
+.toc-entry.toc-h1 { font-weight: 700; margin-top: 3mm; }
+.toc-entry.toc-h2 { padding-left: 6mm; font-size: 9.5pt; color: #444; }
+.toc-num  { min-width: 12mm; flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1px dotted #ccc; margin: 0 2mm 1.5mm; }
+.toc-page { color: #095495; font-size: 9pt; }
+    </style>
+</head>
+<body>
+
+<div class="page cover-page">
+    <div class="cover-accent-bar"></div>
+    <div class="cover-body">
+        <div class="cover-title">LangateCollab</div>
+        <div class="cover-subtitle">Användarhandbok</div>
+    </div>
+    <div class="cover-footer">
+        <div>Langate <div>kalmstrom.com Business Solutions</div>middot; langate.se</div>
+        <div>Användarhandbok</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <div>LangateCollab</div>
+        <div>Innehåll</div>
+    </div>
+    <div class="page-content" style="padding-top:0">
+        <div class="toc-title">Innehåll</div>
+                        <a class="toc-entry toc-h1" href="#ch1"><span class="toc-num">1</span>Introduktion<div class="toc-dots"></div><span class="toc-page">3</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch2"><span class="toc-num">2</span>Kom igång<div class="toc-dots"></div><span class="toc-page">6</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch3"><span class="toc-num">3</span>Chatt och visuella hjälpmedel<div class="toc-dots"></div><span class="toc-page">10</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch4"><span class="toc-num">4</span>Delade hemligheter<div class="toc-dots"></div><span class="toc-page">13</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch5"><span class="toc-num">5</span>Fjärrwebbläsare<div class="toc-dots"></div><span class="toc-page">15</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch6"><span class="toc-num">6</span>Projekt, gäster och säkerhet<div class="toc-dots"></div><span class="toc-page">17</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch7"><span class="toc-num">7</span>Filer, färdigheter och video<div class="toc-dots"></div><span class="toc-page">20</span></a>
+
+        <a class="toc-entry toc-h1" href="#ch8"><span class="toc-num">8</span>Om något inte fungerar<div class="toc-dots"></div><span class="toc-page">22</span></a>
+        </div>
+    <div class="page-footer">
+        <div>LangateCollab</div>
+        <div>langate.se &nbsp;&middot;&nbsp; 2</div>
+    </div>
+</div>
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 1 &mdash; Introduktion</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch1"><span class="chapter-num">Kapitel 1</span>Introduktion</h1>
+<div class="chapter-intro"><p>LangateCollab är ett fristående, AI-drivet samarbetsrum för Langate och de personer Langate arbetar med. Allt ni behöver &ndash; chatt med AI, projektfiler, delade hemligheter, inloggningar på andra webbplatser och tydliga bilder av resultatet &ndash; finns på ett ställe, i webbläsaren, utan installation.</p></div>
+<h2 id="sek-1-1">1.1 Vad LangateCollab gör för er</h2>
+<p>I stället för att mejla filer, dela lösenord i chattar och förklara samma sak flera gånger, arbetar ni i ett gemensamt projekt. AI:n läser och skriver projektets filer, följer era färdiga arbetsinstruktioner (skills) och visar resultatet som diagram, tabeller och förhandsvisningar.</p>
+<div class="two-col">
+<div class="feature-card"><strong>Delade hemligheter</strong><br>Lösenord, nycklar och inloggningar sparas krypterat i projektets eget Azure Key Vault &ndash; aldrig i klartext i en chatt eller ett dokument.</div>
+<div class="feature-card"><strong>Fjärrwebbläsare</strong><br>Logga in på en webbplats i en webbläsare som körs på servern. Inloggningen sparas som en hemlighet och kan återanvändas utan att lösenordet delas.</div>
+<div class="feature-card"><strong>Visuella hjälpmedel</strong><br>AI:n svarar med diagram, flödesscheman, tabeller och bilder &ndash; inte bara text. Filer visas direkt i chatten.</div>
+<div class="feature-card"><strong>Säkra gäster</strong><br>Bjud in samarbetspartner utan licenskostnad. Gäster ser bara sina projekt och kan aldrig köra skript.</div>
+</div>
+<h2 id="sek-1-2">1.2 Fristående system</h2>
+<p>LangateCollab är ett eget, fristående system i Langates Azure-miljö. Det kräver ingen SharePoint, ingen installation hos användaren och inga separata licenser för gäster. Det enda som behövs är en modern webbläsare och ett Microsoft-konto (Entra ID).</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 3</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 1 &mdash; Introduktion</div></div>
+    <div class="page-content" style="padding-top:0">
+<table><tr><th>Krav</th><th>Vad som gäller</th></tr>
+<tr><td>Webbläsare</td><td>Edge, Chrome, Safari eller Firefox i aktuell version, på dator eller mobil</td></tr>
+<tr><td>Konto</td><td>Microsoft-konto i Langates katalog, eller som inbjuden gäst (ingen licens krävs)</td></tr>
+<tr><td>Installation</td><td>Ingen &ndash; allt körs i webbläsaren och i Azure</td></tr></table>
+<h2 id="sek-1-3">1.3 Så hänger det ihop</h2>
+<p>Bilden visar systemets delar. Servern startar automatiskt när någon loggar in och stängs av när ingen har använt den på fem minuter &ndash; ni betalar bara för den tid den används.</p>
+<svg viewBox="0 0 640 300" width="100%" style="height:78mm;max-height:78mm" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker></defs><rect x="20" y="30" width="160" height="60" rx="8" fill="#15803d"/><text x="100.0" y="57.0" text-anchor="middle" fill="#fff">Webbläsaren</text><text x="100.0" y="73.0" text-anchor="middle" fill="#fff">chatt och filer</text><rect x="240" y="30" width="160" height="60" rx="8" fill="#6d28d9"/><text x="320.0" y="57.0" text-anchor="middle" fill="#fff">Inloggning</text><text x="320.0" y="73.0" text-anchor="middle" fill="#fff">Entra ID</text><rect x="460" y="30" width="160" height="60" rx="8" fill="#b45309"/><text x="540.0" y="57.0" text-anchor="middle" fill="#fff">Startfunktion</text><text x="540.0" y="73.0" text-anchor="middle" fill="#fff">startar servern</text><rect x="240" y="170" width="160" height="70" rx="8" fill="#15803d"/><text x="320.0" y="202.0" text-anchor="middle" fill="#fff">Servern</text><text x="320.0" y="218.0" text-anchor="middle" fill="#fff">AI, filer, webbläsare</text><rect x="20" y="170" width="160" height="70" rx="8" fill="#6d28d9"/><text x="100.0" y="202.0" text-anchor="middle" fill="#fff">Key Vault</text><text x="100.0" y="218.0" text-anchor="middle" fill="#fff">delade hemligheter</text><rect x="460" y="170" width="160" height="70" rx="8" fill="#4b5563"/><text x="540.0" y="202.0" text-anchor="middle" fill="#fff">Projektfiler</text><text x="540.0" y="218.0" text-anchor="middle" fill="#fff">en mapp per projekt</text><line x1="180" y1="60" x2="238" y2="60" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="400" y1="60" x2="458" y2="60" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="540" y1="90" x2="400" y2="190" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="238" y1="205" x2="182" y2="205" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="400" y1="205" x2="458" y2="205" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="100" y1="90" x2="300" y2="168" stroke="#555" stroke-width="2" marker-end="url(#a)"/></svg>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 4</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 1 &mdash; Introduktion</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-1-4">1.4 Roller</h2>
+<table><tr><th>Förmåga</th><th>Ägare (Langate)</th><th>Gäst</th></tr>
+<tr><td>Logga in</td><td>Ja</td><td>Ja, efter inbjudan</td></tr>
+<tr><td>Chatta med AI:n</td><td>Ja, alla verktyg</td><td>Ja, filverktyg och skills</td></tr>
+<tr><td>Filer</td><td>Alla projekt</td><td>Bara de egna projekten</td></tr>
+<tr><td>Hemligheter och fjärrinloggning</td><td>Skapa, ändra, använda</td><td>Nej &ndash; värden når aldrig en gäst</td></tr>
+<tr><td>Bjuda in gäster</td><td>Ja</td><td>Nej</td></tr>
+<tr><td>Köra skript</td><td>Ja</td><td>Aldrig</td></tr></table>
+<div class="tip-box"><strong>Tips:</strong> Gränssnittet följer webbläsarens språk &ndash; svenska är standard, engelska visas om webbläsaren är inställd på engelska.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 5</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 2 &mdash; Kom igång</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch2"><span class="chapter-num">Kapitel 2</span>Kom igång</h1>
+<div class="chapter-intro"><p>Från inloggning till ett första svar från AI:n tar det ungefär tjugo sekunder.</p></div>
+<h2 id="sek-2-1">2.1 Logga in</h2>
+<ol class="step-list"><li>Öppna adressen till LangateCollab som ni fått av Langate.</li><li>Klicka <strong>Logga in</strong> och välj ert Microsoft-konto.</li><li>Första gången som gäst: godkänn inbjudan från Langate.</li></ol>
+<img class="screenshot" src="img/01-inloggning.png" style="max-height:80mm" alt="Inloggningssidan">
+<h2 id="sek-2-2">2.2 Servern startar</h2>
+<p>Efter inloggningen startar servern. En förloppsindikator visar hur långt den har kommit; vanligtvis är den klar inom 20 sekunder. Bara att föra muspekaren över knapparna för fjärrwebbläsaren eller inställningarna börjar värma upp servern i förväg.</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 6</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 2 &mdash; Kom igång</div></div>
+    <div class="page-content" style="padding-top:0">
+<img class="screenshot" src="img/02-servern-startar.png" style="max-height:80mm" alt="Servern startar">
+<h2 id="sek-2-3">2.3 Hitta rätt i arbetsytan</h2>
+<table><tr><th>Del</th><th>Vad den gör</th></tr>
+<tr><td>Projektväljaren</td><td>Byt projekt; varje projekt har egna filer, chattar, länkar och hemligheter</td></tr>
+<tr><td>Filträdet</td><td>Projektets filer &ndash; filtrera, expandera, ladda upp och öppna</td></tr>
+<tr><td>Chattflikarna</td><td>Flera chattar öppna samtidigt; olästa svar markeras</td></tr>
+<tr><td>Inmatningsrutan</td><td>Skriv, diktera med rösten eller dra in filer och bilder</td></tr>
+<tr><td>Kugghjulet</td><td>Projektinställningar: allmänt, hemligheter och delning</td></tr>
+<tr><td>+ Länk</td><td>Spara projektets viktiga adresser i projektets rubrikrad</td></tr></table>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 7</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 2 &mdash; Kom igång</div></div>
+    <div class="page-content" style="padding-top:0">
+<img class="screenshot" src="img/03-arbetsyta-skriv.png" style="max-height:70mm;max-width:100%" alt="Arbetsytan">
+<img class="screenshot" src="img/16-sidhuvud.png" style="max-height:30mm;max-width:100%" alt="Sidhuvudet">
+<h2 id="sek-2-4">2.4 Servern stängs av av sig själv</h2>
+<p>All aktivitet &ndash; att skriva, klicka eller få ett svar &ndash; håller servern igång. Efter fem minuter utan aktivitet från någon stängs den av, och nästa inloggning startar den igen. Inget arbete går förlorat: filer, chattar och hemligheter sparas utanför servern.</p>
+<h2 id="sek-2-5">2.5 På mobilen</h2>
+<p>På en telefon visas en egen mobillayout med projekt och chattar. Under <strong>&ctdot;</strong> finns Ny chatt, Byt namn, Stäng chatt, Logga ut och Datorvy.</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 8</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 2 &mdash; Kom igång</div></div>
+    <div class="page-content" style="padding-top:0">
+<img class="screenshot" src="img/18-mobil-chatt.png" style="max-height:120mm;max-width:100%" alt="Mobilvy">
+<div class="info-box"><strong>Obs:</strong> Om nätet försvinner visar sidan att den är offline och fortsätter när anslutningen är tillbaka.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 9</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 3 &mdash; Chatt och visuella hjälpmedel</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch3"><span class="chapter-num">Kapitel 3</span>Chatt och visuella hjälpmedel</h1>
+<div class="chapter-intro"><p>Det snabbaste sättet att förstå något är ofta att se det. LangateCollab låter AI:n svara med bilder, inte bara ord.</p></div>
+<h2 id="sek-3-1">3.1 Chatta med AI:n</h2>
+<p>Skriv vad ni vill ha gjort. AI:n kan läsa, söka, skapa och ändra filer i projektet och använda projektets skills &ndash; färdiga arbetsinstruktioner, t.ex. för Langates varumärke, utskriftsdokument och presentationer. Skriv <strong>@</strong> i rutan för att välja en skill.</p>
+<img class="screenshot" src="img/04-chatt-svar.png" style="max-height:70mm;max-width:100%" alt="Svar från AI:n">
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 10</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 3 &mdash; Chatt och visuella hjälpmedel</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-3-2">3.2 Få svar som bilder och tabeller</h2>
+<div class="two-col">
+<div class="feature-card"><strong>Diagram</strong><br>Flödesscheman, tidslinjer och sekvensdiagram (Mermaid) ritas direkt i svaret.</div>
+<div class="feature-card"><strong>Tabeller</strong><br>Jämförelser och listor visas som läsbara tabeller.</div>
+<div class="feature-card"><strong>Filer i chatten</strong><br>En fil AI:n nämner blir en klickbar knapp som öppnar den &ndash; PDF, bild eller dokument.</div>
+<div class="feature-card"><strong>Bilder in</strong><br>Dra in en skärmbild eller ett foto; AI:n ser bilder och PDF:er direkt. Stora filer laddas upp i projektet först.</div>
+</div>
+<svg viewBox="0 0 640 120" width="100%" style="height:31mm;max-height:31mm" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker></defs><rect x="10" y="30" width="140" height="60" rx="8" fill="#15803d"/><text x="80.0" y="65.0" text-anchor="middle" fill="#fff">Er fråga</text><rect x="250" y="30" width="140" height="60" rx="8" fill="#6d28d9"/><text x="320.0" y="57.0" text-anchor="middle" fill="#fff">AI:n arbetar</text><text x="320.0" y="73.0" text-anchor="middle" fill="#fff">med filerna</text><rect x="490" y="30" width="140" height="60" rx="8" fill="#b45309"/><text x="560.0" y="57.0" text-anchor="middle" fill="#fff">Diagram, tabell</text><text x="560.0" y="73.0" text-anchor="middle" fill="#fff">eller fil</text><line x1="150" y1="60" x2="248" y2="60" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="390" y1="60" x2="488" y2="60" stroke="#555" stroke-width="2" marker-end="url(#a)"/></svg>
+<img class="screenshot" src="img/07-markera-bild.png" style="max-height:60mm;max-width:100%" alt="Markera en bild">
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 11</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 3 &mdash; Chatt och visuella hjälpmedel</div></div>
+    <div class="page-content" style="padding-top:0">
+<img class="screenshot" src="img/09-ai-svarar-pa-bild.png" style="max-height:60mm;max-width:100%" alt="AI:n svarar på bilden">
+<img class="screenshot" src="img/05-filer-forhandsvisning.png" style="max-height:60mm;max-width:100%" alt="Förhandsvisning av fil">
+<h2 id="sek-3-3">3.3 Prata i stället för att skriva</h2>
+<p>Klicka på mikrofonen och tala &ndash; texten skrivs in åt er (Azure Speech). Bra på mobilen och när händerna är upptagna.</p>
+<h2 id="sek-3-4">3.4 Följ uppgifter och svara på frågor</h2>
+<p>Varje chatt håller en uppgiftslista som visas ovanför chatten. Behöver AI:n ett beslut visas frågan som ett kort med färdiga svarsalternativ &ndash; frågan finns kvar tills den är besvarad.</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 12</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 4 &mdash; Delade hemligheter</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch4"><span class="chapter-num">Kapitel 4</span>Delade hemligheter</h1>
+<div class="chapter-intro"><p>Lösenord i e-post och chattar är den vanligaste läckan. I LangateCollab har varje projekt ett eget valv, och AI:n kan använda en hemlighet utan att den någonsin visas.</p></div>
+<h2 id="sek-4-1">4.1 Varför det är bättre</h2>
+<table><tr><th>Förr</th><th>Med LangateCollab</th></tr>
+<tr><td>Lösenord skickas i mejl eller Teams</td><td>Sparas krypterat i projektets Azure Key Vault</td></tr>
+<tr><td>Alla som behöver det ser lösenordet</td><td>Bara ägaren ser och ändrar; gäster når aldrig värdet</td></tr>
+<tr><td>Ingen vet var kopiorna finns</td><td>En plats per projekt; byt värdet en gång så gäller det överallt</td></tr>
+<tr><td>Hemligheter hamnar i delade filer</td><td>Filer söks igenom efter hemligheter innan de delas</td></tr></table>
+<img class="screenshot" src="img/11-hemligheter.png" style="max-height:85mm;max-width:100%" alt="Fliken Hemligheter">
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 13</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 4 &mdash; Delade hemligheter</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-4-2">4.2 Lägg till en hemlighet</h2>
+<ol class="step-list"><li>Klicka på <strong>kugghjulet</strong> och välj fliken <strong>Hemligheter</strong>.</li><li>Klicka <strong>Lägg till hemlighet</strong> och välj typ: värde, Azure-inloggning eller webbläsarinloggning.</li><li>Ange namn och värde och spara. Värdet visas aldrig igen i klartext.</li></ol>
+<img class="screenshot" src="img/12-ny-hemlighet.png" style="max-height:75mm;max-width:100%" alt="Ny hemlighet">
+<h2 id="sek-4-3">4.3 Anslut Azure</h2>
+<p>Med <strong>Anslut Azure</strong> loggar ägaren in med en enhetskod och väljer klientorganisation och prenumeration. Flera Azure-inloggningar kan sparas, och AI:n kan sedan arbeta i Azure åt ägaren &ndash; utan att gästerna får del av behörigheten.</p>
+<div class="warn-box"><strong>Viktigt:</strong> Klistra aldrig in ett lösenord i chatten. Spara det som en hemlighet i stället.</div>
+<h2 id="sek-4-4">4.4 Kontrollera innan ni delar</h2>
+<p>Innan filer delas med gäster söks de igenom efter nycklar och lösenord. Hittas något visas en varning så att ni kan ta bort det först.</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 14</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 5 &mdash; Fjärrwebbläsare</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch5"><span class="chapter-num">Kapitel 5</span>Fjärrwebbläsare</h1>
+<div class="chapter-intro"><p>Fjärrwebbläsaren är en riktig webbläsare som körs på servern och visas i ert fönster. Ni loggar in en gång &ndash; sedan kan AI:n arbeta på webbplatsen åt er.</p></div>
+<h2 id="sek-5-1">5.1 Fördelar</h2>
+<div class="two-col">
+<div class="feature-card"><strong>Inget lösenord delas</strong><br>Ni skriver lösenordet själva; bara den inloggade sessionen sparas, som en krypterad hemlighet.</div>
+<div class="feature-card"><strong>Tvåstegsverifiering fungerar</strong><br>Godkänn med Authenticator eller sms som vanligt.</div>
+<div class="feature-card"><strong>Inget att installera</strong><br>Webbläsaren körs i Azure; det fungerar även från mobilen.</div>
+<div class="feature-card"><strong>Återanvändbart</strong><br>Inloggningen används av AI:n i senare chattar tills den går ut.</div>
+</div>
+<svg viewBox="0 0 640 130" width="100%" style="height:34mm;max-height:34mm" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13"><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker></defs><rect x="10" y="35" width="150" height="60" rx="8" fill="#15803d"/><text x="85.0" y="62.0" text-anchor="middle" fill="#fff">Ni klickar</text><text x="85.0" y="78.0" text-anchor="middle" fill="#fff">och skriver</text><rect x="245" y="35" width="150" height="60" rx="8" fill="#6d28d9"/><text x="320.0" y="62.0" text-anchor="middle" fill="#fff">Webbläsare</text><text x="320.0" y="78.0" text-anchor="middle" fill="#fff">på servern</text><rect x="480" y="35" width="150" height="60" rx="8" fill="#b45309"/><text x="555.0" y="62.0" text-anchor="middle" fill="#fff">Inloggning sparad</text><text x="555.0" y="78.0" text-anchor="middle" fill="#fff">i Key Vault</text><line x1="160" y1="65" x2="243" y2="65" stroke="#555" stroke-width="2" marker-end="url(#a)"/><line x1="395" y1="65" x2="478" y2="65" stroke="#555" stroke-width="2" marker-end="url(#a)"/></svg>
+<h2 id="sek-5-2">5.2 Logga in på en webbplats</h2>
+<ol class="step-list"><li>Öppna <strong>kugghjulet &rarr; Hemligheter &rarr; Lägg till hemlighet &rarr; Webbläsarinloggning</strong>.</li><li>Ange ett namn, webbplatsens adress och gärna användarnamnet.</li><li>Logga in i fönstret som öppnas, precis som i en vanlig webbläsare.</li><li>När ni är inloggade sparas sessionen automatiskt och fönstret stängs.</li></ol>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 15</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 5 &mdash; Fjärrwebbläsare</div></div>
+    <div class="page-content" style="padding-top:0">
+<img class="screenshot" src="img/14-fjarrwebblasare.png" style="max-height:85mm;max-width:100%" alt="Fjärrwebbläsaren">
+<div class="tip-box"><strong>Tips:</strong> Har inloggningen gått ut? Välj <strong>Logga in igen</strong> på hemlighetens rad.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 16</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 6 &mdash; Projekt, gäster och säkerhet</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch6"><span class="chapter-num">Kapitel 6</span>Projekt, gäster och säkerhet</h1>
+<h2 id="sek-6-1">6.1 Skapa ett projekt</h2>
+<p>Skapa ett projekt med <strong>+ Nytt projekt</strong>. I inställningarnas flik <strong>Allmänt</strong> ger ni projektet namn, ikon och ser var dess filer ligger. Länkar läggs till med <strong>+ Länk</strong> i rubrikraden.</p>
+<img class="screenshot" src="img/15-nytt-projekt.png" style="max-height:68mm;max-width:100%" alt="Nytt projekt">
+<img class="screenshot" src="img/10-installningar-allmant.png" style="max-height:68mm;max-width:100%" alt="Fliken Allmänt">
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 17</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 6 &mdash; Projekt, gäster och säkerhet</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-6-2">6.2 Bjud in gäster</h2>
+<ol class="step-list"><li>Öppna <strong>kugghjulet &rarr; Delning</strong>.</li><li>Ange gästens e-postadress och välj projekt.</li><li>Gästen får en inbjudan från Microsoft och kan logga in direkt &ndash; ingen licens krävs.</li></ol>
+<img class="screenshot" src="img/13-delning.png" style="max-height:60mm;max-width:100%" alt="Fliken Delning">
+<h2 id="sek-6-3">6.3 Så skyddas gästerna och era data</h2>
+<table><tr><th>Skydd</th><th>Vad det betyder</th></tr>
+<tr><td>Bara våra verktyg</td><td>En gäst-AI kan bara läsa, skriva, söka och lista filer samt läsa skills</td></tr>
+<tr><td>Inga skript</td><td>Inget skal och ingen körning av kod finns i gästens väg</td></tr>
+<tr><td>Egna projekt</td><td>Gästen ser bara de projekt hen är medlem i</td></tr>
+<tr><td>Inga behörigheter</td><td>Inga Azure-inloggningar eller hemligheter når en gästsession</td></tr>
+<tr><td>Begränsat nät</td><td>Servern når bara Azure OpenAI; allt annat utgående är stängt</td></tr>
+<tr><td>Loggning</td><td>Varje verktygsanrop loggas</td></tr></table>
+<div class="note-box"><strong>AI-modellen:</strong> LangateCollab använder en snabb GPT-modell i Azure OpenAI. Data stannar i Langates Azure-miljö.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 18</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 6 &mdash; Projekt, gäster och säkerhet</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-6-4">6.4 Vanliga frågor</h2>
+<p><strong>Varför tar första inloggningen 20 sekunder?</strong> Servern startas när den behövs och stängs när den inte används &ndash; det håller kostnaden nere.</p>
+<p><strong>Kan en gäst se våra lösenord?</strong> Nej. Hemligheters värden når aldrig en gäst.</p>
+<p><strong>Försvinner något när servern stängs?</strong> Nej. Filer, chattar och hemligheter sparas utanför servern.</p>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 19</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 7 &mdash; Filer, färdigheter och video</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch7"><span class="chapter-num">Kapitel 7</span>Filer, färdigheter och video</h1>
+<h2 id="sek-7-1">7.1 Hitta och lägg till filer</h2>
+<p>Allt som ni och AI:n skapar sparas i projektets filer. Klicka på <strong>Projektfiler</strong> i rubrikraden så öppnas filpanelen bredvid chatten.</p>
+<ol class="step-list">
+<li><strong>Bläddra</strong> i trädet, eller skriv i filterrutan för att bara se det som matchar.</li>
+<li><strong>Öppna</strong> en fil för att förhandsvisa den, eller ladda ner den.</li>
+<li><strong>Dra in</strong> filer och hela mappar, även stora videor och presentationer.</li>
+</ol>
+<img class="screenshot" src="img/20-projektfiler.png" style="max-height:52mm;max-width:100%" alt="Projektfiler med filter">
+<div class="note-box"><strong>Visa fil:</strong> när AI:n har tagit fram ett dokument lägger den en knapp i svaret. Klicka på den så öppnas filen direkt, utan att ni behöver leta i trädet.</div>
+<h2 id="sek-7-2">7.2 Använd färdigheter med @</h2>
+<p>En färdighet är en färdig arbetsbeskrivning som AI:n följer, till exempel Langates varumärke, ett utskriftsklart dokument eller ett bildspel. Skriv <strong>@</strong> i chatten och välj färdigheten i listan. AI:n läser den innan den börjar.</p>
+<svg viewBox="0 0 640 120" width="100%" style="height:31mm;max-height:31mm" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13"><defs><marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker></defs><rect x="10" y="30" width="140" height="60" rx="8" fill="#15803d"/><text x="80" y="57" text-anchor="middle" fill="#fff">Skriv @ och</text><text x="80" y="73" text-anchor="middle" fill="#fff">välj färdighet</text><rect x="250" y="30" width="140" height="60" rx="8" fill="#6d28d9"/><text x="320" y="57" text-anchor="middle" fill="#fff">AI:n läser</text><text x="320" y="73" text-anchor="middle" fill="#fff">arbetsbeskrivningen</text><rect x="490" y="30" width="140" height="60" rx="8" fill="#b45309"/><text x="560" y="57" text-anchor="middle" fill="#fff">Färdig fil i</text><text x="560" y="73" text-anchor="middle" fill="#fff">rätt stil</text><line x1="150" y1="60" x2="248" y2="60" stroke="#555" stroke-width="2" marker-end="url(#b)"/><line x1="390" y1="60" x2="488" y2="60" stroke="#555" stroke-width="2" marker-end="url(#b)"/></svg>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 20</div></div>
+</div>
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 7 &mdash; Filer, färdigheter och video</div></div>
+    <div class="page-content" style="padding-top:0">
+<h2 id="sek-7-3">7.3 Ta fram bildspel och dokument</h2>
+<p>Be AI:n om ett bildspel så bygger den det som en fil i projektet och visar det direkt i chatten. Exempel från ett IT-projekt:</p>
+<div class="note-box"><em>"Ta fram ett bildspel på svenska till styrgruppsmötet den 15 januari: läget i projektet, tidsplan, budget, de tre största riskerna och beslut vi behöver. Använd Langates varumärke och spara det under Styrgrupp/."</em></div>
+<p>Behöver AI:n ett val, till exempel vilken av Langates stilar bildspelet ska ha, får ni en fråga med färdiga alternativ. Ett klick, så fortsätter arbetet.</p>
+<img class="screenshot" src="img/21-bildspel-fraga.png" style="max-height:36mm;max-width:100%" alt="Fråga med alternativ och knapp för att öppna bildspelet">
+<table><tr><th>Ni ber om</th><th>Ni får</th></tr>
+<tr><td>Ett bildspel</td><td>En HTML-presentation som går att visa direkt</td></tr>
+<tr><td>Ett utskriftsdokument</td><td>En A4-sida som är klar att skriva ut som PDF</td></tr>
+<tr><td>En tidsplan eller ett flöde</td><td>Ett diagram i svaret och i en fil</td></tr>
+<tr><td>Ett riskregister</td><td>En tabell och ett stapeldiagram</td></tr></table>
+<h2 id="sek-7-4">7.4 Spela in video med telepromptern</h2>
+<p>Ska ni göra en video? Be AI:n skriva manuset. Öppna sedan telepromptern från manusfilens knapp.</p>
+<ol class="step-list">
+<li>Texten visas i delar om cirka 30 sekunder och rullar i takt med er röst.</li>
+<li>Klicka på <strong>Spela in</strong>, läs delen och klicka på <strong>Stopp</strong>. Gör om en del tills den låter rätt.</li>
+<li>Klicka på <strong>Skicka</strong>. Tagningen sparas direkt i projektet, ingenting laddas ner.</li>
+</ol>
+<div class="note-box"><strong>Tips:</strong> spela in på en dator med headset. Mobilens webbläsare hör inte rösten lika säkert.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 21</div></div>
+</div>
+
+
+<div class="page">
+    <div class="page-header"><div>LangateCollab</div><div>Kapitel 8 &mdash; Om något inte fungerar</div></div>
+    <div class="page-content" style="padding-top:0">
+<h1 id="ch8"><span class="chapter-num">Kapitel 8</span>Om något inte fungerar</h1>
+<p>De flesta problem löser sig med ett klick. Hitta det ni ser i vänstra kolumnen och gör det som står längst till höger.</p>
+<svg viewBox="0 0 640 100" width="100%" style="height:26mm;max-height:26mm" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13"><defs><marker id="t" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#555"/></marker></defs><rect x="10" y="25" width="140" height="56" rx="8" fill="#b45309"/><text x="80" y="50" text-anchor="middle" fill="#fff">Något ser</text><text x="80" y="66" text-anchor="middle" fill="#fff">fel ut</text><rect x="250" y="25" width="140" height="56" rx="8" fill="#6d28d9"/><text x="320" y="50" text-anchor="middle" fill="#fff">Leta upp det</text><text x="320" y="66" text-anchor="middle" fill="#fff">i tabellen</text><rect x="490" y="25" width="140" height="56" rx="8" fill="#15803d"/><text x="560" y="50" text-anchor="middle" fill="#fff">Gör åtgärden,</text><text x="560" y="66" text-anchor="middle" fill="#fff">fortsätt arbeta</text><line x1="150" y1="53" x2="248" y2="53" stroke="#555" stroke-width="2" marker-end="url(#t)"/><line x1="390" y1="53" x2="488" y2="53" stroke="#555" stroke-width="2" marker-end="url(#t)"/></svg>
+<table><tr><th>Ni ser</th><th>Orsak</th><th>Gör så här</th></tr>
+<tr><td>&rdquo;Startar din arbetsyta&rdquo;</td><td>Servern var avstängd och startar (se 2.2)</td><td>Vänta en eller ett par minuter, sidan öppnas av sig själv</td></tr>
+<tr><td>Arbetsytan slutar svara efter en paus</td><td>Servern stängs av när ingen använt den på fem minuter (se 2.4)</td><td>Ladda om sidan, servern startar igen och chattarna finns kvar</td></tr>
+<tr><td>En fil syns inte i Projektfiler</td><td>Filterrutan döljer den, eller filen ligger i ett annat projekt</td><td>Töm filterrutan och kontrollera projektet i rubrikraden (se 7.1)</td></tr>
+<tr><td>AI:n frågar i stället för att göra</td><td>Uppdraget kan tolkas på flera sätt</td><td>Välj ett av alternativen i frågan, eller skriv mer exakt vad ni vill ha (se 3.4)</td></tr>
+<tr><td>Diktering eller inspelning hör inte rösten</td><td>Webbläsaren saknar mikrofonbehörighet, eller mobilen tar fel ljudkälla</td><td>Tillåt mikrofonen i webbläsaren, använd gärna en dator med headset (se 3.3, 7.4)</td></tr>
+<tr><td>En inloggning i fjärrwebbläsaren gäller inte längre</td><td>Webbplatsen har loggat ut den sparade sessionen</td><td>Logga in igen i fjärrwebbläsaren, hemligheten uppdateras (se 5.2)</td></tr>
+<tr><td>En gäst kan inte köra något eller se en hemlighet</td><td>Gäster kör aldrig skript och ser aldrig hemliga värden</td><td>Det är avsiktligt, låt en ägare göra steget (se 6.3)</td></tr>
+<tr><td>Text i en delad fil är maskerad</td><td>Kontrollen före delning hittade något som liknar en hemlighet</td><td>Lägg värdet som delad hemlighet i stället för i filen (se 4.4)</td></tr></table>
+<div class="note-box"><strong>Fortfarande fast?</strong> Kontakta Langate via langate.se och beskriv vad ni gjorde, vad ni såg och i vilket projekt.</div>
+    </div>
+    <div class="page-footer"><div>LangateCollab</div><div>langate.se &nbsp;&middot;&nbsp; 22</div></div>
+</div>
+
+
+</body>
+</html>
