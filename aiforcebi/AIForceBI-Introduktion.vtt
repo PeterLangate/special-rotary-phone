@@ -1,0 +1,157 @@
+WEBVTT
+
+1
+00:00:00.600 --> 00:00:03.980
+Hej, jag heter Peter Kalmström, från Langate!
+
+2
+00:00:03.980 --> 00:00:11.060
+I den här demonstrationen visar jag AIForceBI, en fullt fungerande prototyp för affärsdata i webbläsaren.
+
+3
+00:00:11.060 --> 00:00:15.820
+Produktionsdata finns redan, i styrsystem, affärssystem och kalkylblad.
+
+4
+00:00:15.820 --> 00:00:20.750
+Det som saknas är en plats där alla ser sina siffror utan att vänta på en rapport.
+
+5
+00:00:21.978 --> 00:00:26.858
+Siffrorna du ser kommer från ett påhittat företag, ett textilbruk som gör fiberduk.
+
+6
+00:00:26.858 --> 00:00:33.278
+Bruket har fyra produktionslinjer, L1 till L4, som går i skift dygnet runt.
+
+7
+00:00:33.278 --> 00:00:40.403
+Där finns kunder, fibertyper, kvaliteter, stopp, spill och energi, allt med påhittade men realistiska data.
+
+8
+00:00:40.403 --> 00:00:45.178
+Med era egna data ser översikten likadan ut, bara med era siffror.
+
+9
+00:00:46.412 --> 00:00:50.472
+Jag loggar in med mitt arbetskonto, och översikten öppnas direkt.
+
+10
+00:00:50.472 --> 00:00:55.872
+AIForceBI känner igen min roll från inloggningen och visar mina rapporter, viktigast först.
+
+11
+00:00:55.872 --> 00:01:00.672
+Varje ruta visar värdet, målet och förändringen mot förra perioden.
+
+12
+00:01:00.672 --> 00:01:05.677
+Grönt är bättre och rött är sämre, även när siffran sjunker, som för spill.
+
+13
+00:01:06.928 --> 00:01:08.843
+Överst väljer jag period.
+
+14
+00:01:08.843 --> 00:01:13.303
+Sedan klickar jag på linjen L1, och alla rapporter räknas om på en gång.
+
+15
+00:01:13.303 --> 00:01:17.083
+Jag söker på avfall, och sökningen hittar spillrapporterna.
+
+16
+00:01:17.083 --> 00:01:19.663
+Jag öppnar Filter och kryssar i en kund.
+
+17
+00:01:19.663 --> 00:01:22.593
+Siffran på knappen visar hur många filter som är aktiva.
+
+18
+00:01:23.838 --> 00:01:27.498
+Jag klickar på rapporten Stopptid och ser det stora diagrammet.
+
+19
+00:01:27.498 --> 00:01:32.218
+Med Samma period i fjol får jag en streckad kurva att jämföra med.
+
+20
+00:01:32.218 --> 00:01:36.938
+Förklara visar vilka linjer och skift som flyttat siffran mest.
+
+21
+00:01:36.938 --> 00:01:41.218
+Under Underlag ser jag raderna bakom siffran, här per Linje.
+
+22
+00:01:41.218 --> 00:01:45.968
+Siffrorna tar jag med mig som PDF till mötet, eller som Excel för egen analys.
+
+23
+00:01:47.201 --> 00:01:51.341
+Nu det nya: jag bygger en egen rapport, bara genom att beskriva den.
+
+24
+00:01:51.341 --> 00:01:56.351
+I panelen Fråga Claude skriver jag: spill per skift senaste månaden.
+
+25
+00:01:56.351 --> 00:02:03.521
+Claude läser hur datalagret ser ut och föreslår tre olika rapporter, var och en med sitt eget diagram.
+
+26
+00:02:03.521 --> 00:02:09.001
+På korten pekar Claude ut det som sticker ut, till exempel vilket skift som har mest spill.
+
+27
+00:02:09.001 --> 00:02:14.661
+Den grå raden längst ner visar vilka källor som använts och att frågan är kontrollerad.
+
+28
+00:02:14.661 --> 00:02:19.061
+Med knapparna under kortet ändrar jag rapporten, till exempel Per vecka.
+
+29
+00:02:19.061 --> 00:02:24.711
+Jag klickar på Använd den här, och rapporten hamnar direkt på min översikt.
+
+30
+00:02:24.711 --> 00:02:29.181
+Den sparas för mig och följer med till andra datorer och andra användare.
+
+31
+00:02:29.181 --> 00:02:33.131
+Claude kan bara läsa, ingenting i datalagret kan ändras.
+
+32
+00:02:34.362 --> 00:02:39.612
+Jag kan också ställa en vanlig fråga, till exempel: När var det senaste stoppet på L1?
+
+33
+00:02:40.852 --> 00:02:46.032
+Allt uppdateras av sig självt, ungefär en sekund efter att nya data kommit in.
+
+34
+00:02:46.032 --> 00:02:50.072
+Raden Data från visar alltid hur färsk siffran är.
+
+35
+00:02:50.072 --> 00:02:53.112
+Samma översikt fungerar i telefonen, utan app.
+
+36
+00:02:54.341 --> 00:03:01.101
+AIForceBI läser direkt från era befintliga system, ingen extra analysdatabas behövs.
+
+37
+00:03:01.101 --> 00:03:04.821
+AIForceBI är en fullt fungerande prototyp.
+
+38
+00:03:04.821 --> 00:03:08.641
+Vi på Langate inför den gärna i ert system redan nu.
+
+39
+00:03:08.641 --> 00:03:13.028
+Kontakta oss på sales@langate.se. Tack!
